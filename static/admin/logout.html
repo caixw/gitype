@@ -1,0 +1,12 @@
+<script>
+$(document).ready(function(){
+    $('body').addClass('loading');
+    del({
+        'url':        '/admin/api/login',
+    }).always(function(data, textStatus, jqXHR){
+        $('body').addClass('loading');
+        window.sessionStorage.token = '';
+        redirect('login');
+    });
+});
+</script>

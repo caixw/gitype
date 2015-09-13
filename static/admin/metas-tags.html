@@ -1,0 +1,48 @@
+<div style="width:35em;margin:auto;text-align:left">
+    <h1 class="header">标签管理</h1>
+    <div class="ui message warning">删除标签，将去除所有文章与之关联的信息，即使之后恢复该标签，也无法恢复该标签与文章之间的关联信息！</div>
+
+    <div class="ui blue labels" id="tags"></div>
+    <div class="ui form">
+        <div class="field">
+            <label for="name">唯一名称</label>
+            <input type="text" id="name" value="" />
+            <div class="description">最好是由英文和下划线及数字组成，以SEO友好的方式描述标签地址！</div>
+        </div>
+
+        <div class="field">
+            <label for="title">标题</label>
+            <input type="text" id="title" value="" />
+            <div class="description">标签的字面内容。</div>
+        </div>
+
+        <div class="field">
+            <label for="description">详细描述</label>
+            <textarea id="description" cols="30" rows="10"></textarea>
+        </div>
+
+        <div class="field">
+            <button class="ui fluid primary button" type="submit">确定修改</button>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function(){
+    setTitle('标签管理');
+
+    $('#tags').addClass('loading');
+    get({
+        'url': '/api/tags'
+    }).done(function(data, textStatus, jqXHR){
+        $.each(data.tags, function(index, elem){
+            var tag = $('<span class="ui label">'+elem.title+'<span class="detail">'+elem.count+'</span></span>');
+            $('#tags').append(tag);
+        });
+    }).fail(function(){
+        //
+    }).always(function(){
+        $('#tags').removeClass('loading');
+    });
+});
+</script>

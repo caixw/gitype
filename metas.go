@@ -1,0 +1,399 @@
+// Copyright 2015 by caixw, All rights reserved.
+// Use of this source code is governed by a MIT
+// license that can be found in the LICENSE file.
+
+package main
+
+import (
+	"net/http"
+
+	"github.com/issue9/logs"
+	"github.com/issue9/orm/fetch"
+)
+
+const (
+	metaTypeCat = iota + 1
+	metaTypeTag
+)
+
+type meta struct {
+	ID          int64  `orm:"name(id);ai"`
+	Name        string `orm:"name(name);len(50);unique(unq_name);nullable" json:"name"` // 唯一名称
+	Parent      int64  `orm:"name(parent)" json:"parent"`                               // 上级类别
+	Type        int    `orm:"name(type)" json:"type"`                                   // 类型
+	Order       int    `orm:"name(order)" json:"order"`                                 // 显示顺序
+	Title       string `orm:"name(title);len(50)" json:"title"`                         // 名称
+	Description string `orm:"name(description);len(-1)" json:"description"`             // 详细描述，可以用html
+}
+
+type relationship struct {
+	PostID int64 `orm:"name(postID);pk"`
+	MetaID int64 `orm:"name(metaID);pk"`
+}
+
+func (m *meta) Meta() string {
+	return `name(metas)`
+}
+
+func (r *relationship) Meta() string {
+	return `name(relationships)`
+}
+
+// @api get /api/tags 获取所有的标签
+// @apiGroup front
+// @apiSuccess 200 ok
+// @apiParams tags array 所有的标签列表
+// @apiExample json
+// { "tags"=[
+//     {"id":1, "name":"tag1", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
+//     {"id":2, "name":"tag2", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
+// ]}
+func getTags(w http.ResponseWriter, r *http.Request) {
+	sql := `SELECT m.{name},m.{title},m.{description},m.{id},count(r.{metaID}) AS {count}
+			FROM #metas AS m
+			LEFT JOIN #relationships AS r ON m.{id}=r.{metaID}
+			WHERE m.{type}=?
+			GROUP BY m.{id}`
+	rows, err := db.Query(true, sql, metaTypeTag)
+	if err != nil {
+		logs.Error("getTags:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	maps, err := fetch.MapString(false, rows)
+	rows.Close()
+	if err != nil {
+		logs.Error("getTags:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	renderJSON(w, http.StatusOK, map[string]interface{}{"tags": maps}, nil)
+}
+
+// @api get /api/cats 获取所有的分类
+// @apiGroup front
+// @apiSuccess 200 ok
+// @apiParams tags array 所有的分类列表
+// @apiExample json
+// { "cats"=[
+//     {"id":1, "name":"tag1", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
+//     {"id":2, "name":"tag2", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
+// ]}
+func getCats(w http.ResponseWriter, r *http.Request) {
+	sql := `SELECT {name},{title},{description},{id},{count},{parent},{order},count(r.{metaID}) AS {count}
+			FROM #metas AS m
+			LEFT JOIN #relationships AS r ON m.{id}=r.{metaID}
+			WHERE m.{type}=?
+			GROUP BY m.{id}`
+	rows, err := db.Query(true, sql, metaTypeCat)
+	if err != nil {
+		logs.Error("getCats:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	maps, err := fetch.MapString(false, rows)
+	rows.Close()
+	if err != nil {
+		logs.Error("getCats:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	renderJSON(w, http.StatusOK, map[string]interface{}{"cats": maps}, nil)
+}
+
+// @api put /admin/api/tags/{id} 修改某id的标签内容
+// @apiParam id int 需要修改的标签id
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+// @apiParam name string 唯一名称
+// @apiParam title string 显示的标题
+// @apiParam description string 描述信息，可以是html
+// @apiExample json
+// {
+//     "name": "tag-1",
+//     "title":"标签1",
+//     "description": "<h1>desc</h1>"
+// }
+//
+// @apiSuccess 204 no content
+// @apiError 400 bad request
+// @apiParam message string 错误信息
+// @apiParam detail array 说细的错误信息，用于描述哪个字段有错
+// @apiExample json
+// {
+//     "message": "格式错误",
+//     "detail":[
+//         {"title":"不能包含特殊字符"},
+//         {"name": "已经存在同名"}
+//     ]
+// }
+func putTag(w http.ResponseWriter, r *http.Request) {
+	putMeta(w, r)
+}
+
+// @api put /admin/api/cats/{id} 修改某id的分类内容
+// @apiParam id int 需要修改的分类id
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+// @apiParam name string 唯一名称
+// @apiParam title string 显示的标题
+// @apiParam parent int 父类
+// @apiParam order int 排列顺序
+// @apiParam description string 描述信息，可以是html
+// @apiExample json
+// {
+//     "name": "tag-1",
+//     "title":"标签1",
+//     "parent": 5,
+//     "order": 10,
+//     "description": "<h1>desc</h1>"
+// }
+//
+// @apiSuccess 200 ok
+// @apiError 400 bad request
+// @apiParam message string 错误信息
+// @apiParam detail array 说细的错误信息，用于描述哪个字段有错
+// @apiExample json
+// {
+//     "message": "格式错误",
+//     "detail":[
+//         {"title":"不能包含特殊字符"},
+//         {"name": "已经存在同名"}
+//     ]
+// }
+func putCat(w http.ResponseWriter, r *http.Request) {
+	putMeta(w, r)
+}
+
+// @api post /admin/api/tags 添加新标签
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+// @apiParam name string 唯一名称
+// @apiParam title string 显示的标题
+// @apiParam description string 描述信息，可以是html
+// @apiExample json
+// {
+//     "name": "tag-1",
+//     "title":"标签1",
+//     "description": "<h1>desc</h1>"
+// }
+//
+// @apiSuccess 201 created
+// @apiError 400 bad request
+// @apiParam message string 错误信息
+// @apiParam detail array 说细的错误信息，用于描述哪个字段有错
+// @apiExample json
+// {
+//     "message": "格式错误",
+//     "detail":[
+//         {"title":"不能包含特殊字符"},
+//         {"name": "已经存在同名"}
+//     ]
+// }
+func postTag(w http.ResponseWriter, r *http.Request) {
+	postMeta(w, r)
+}
+
+// @api post /admin/api/cats 添加新的分类
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+// @apiParam name string 唯一名称
+// @apiParam title string 显示的标题
+// @apiParam parent int 父类
+// @apiParam order int 排列顺序
+// @apiParam description string 描述信息，可以是html
+// @apiExample json
+// {
+//     "name": "tag-1",
+//     "title":"标签1",
+//     "parent": 5,
+//     "order": 10,
+//     "description": "<h1>desc</h1>"
+// }
+//
+// @apiSuccess 201 created
+// @apiError 400 bad request
+// @apiParam message string 错误信息
+// @apiParam detail array 说细的错误信息，用于描述哪个字段有错
+// @apiExample json
+// {
+//     "message": "格式错误",
+//     "detail":[
+//         {"title":"不能包含特殊字符"},
+//         {"name": "已经存在同名"}
+//     ]
+// }
+func postCat(w http.ResponseWriter, r *http.Request) {
+	postMeta(w, r)
+}
+
+// @api delete /admin/api/tags/{id} 删除该id的标签
+// @apiParam id int 需要删除的标签id
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+//
+// @apiSuccess 204 no content
+func deleteTag(w http.ResponseWriter, r *http.Request) {
+	deleteMeta(w, r)
+}
+
+// @api put /admin/api/cats/{id} 删除该id的分类
+// @apiParam id int 需要删除的分类id
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+//
+// @apiSuccess 204 no content
+func deleteCat(w http.ResponseWriter, r *http.Request) {
+	deleteMeta(w, r)
+}
+
+// 是否存在相同name的title
+func metaNameIsExists(m *meta) (bool, error) {
+	m2 := &meta{Name: m.Name}
+	if err := db.Select(m2); err != nil {
+		return true, err
+	}
+
+	return m2.ID != m.ID, nil
+}
+
+// 供putCat和putTag调用
+func putMeta(w http.ResponseWriter, r *http.Request) {
+	m := &meta{}
+	if !readJSON(w, r, m) {
+		return
+	}
+
+	var ok bool
+	m.ID, ok = paramID(w, r, "id")
+	if !ok {
+		return
+	}
+
+	exists, err := metaNameIsExists(m)
+	if err != nil {
+		logs.Error("getMetaFromRequest:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	errs := &ErrorResult{Message: "格式错误"}
+	if exists {
+		errs.Detail["name"] = "已有同名字体段"
+	}
+
+	// TODO 后台提交数据，是否有必要做安全检测？
+
+	if len(m.Title) == 0 {
+		errs.Detail["title"] = "标题不能为空"
+	}
+
+	if len(errs.Detail) > 0 {
+		renderJSON(w, http.StatusBadRequest, errs, nil)
+		return
+	}
+
+	if _, err := db.Update(m); err != nil {
+		logs.Error("putMeta:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+	renderJSON(w, http.StatusNoContent, nil, nil)
+}
+
+// 供postCat和postTag调用
+func postMeta(w http.ResponseWriter, r *http.Request) {
+	m := &meta{}
+	if !readJSON(w, r, m) {
+		return
+	}
+
+	errs := &ErrorResult{Message: "格式错误"}
+	if m.ID > 0 {
+		errs.Detail["id"] = "不允许的字段"
+	}
+	m.ID = 0
+
+	exists, err := metaNameIsExists(m)
+	if err != nil {
+		logs.Error("getMetaFromRequest:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	if exists {
+		errs.Detail["name"] = "已有同名字体段"
+	}
+
+	// TODO 后台提交数据，是否有必要做安全检测？
+
+	if len(m.Title) == 0 {
+		errs.Detail["title"] = "标题不能为空"
+	}
+
+	if len(errs.Detail) > 0 {
+		renderJSON(w, http.StatusBadRequest, errs, nil)
+		return
+	}
+
+	if _, err := db.Insert(m); err != nil {
+		logs.Error("postMeta:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+	renderJSON(w, http.StatusCreated, nil, nil)
+}
+
+// 删除meta数据，供deleteCat和deleteTag调用
+func deleteMeta(w http.ResponseWriter, r *http.Request) {
+	id, ok := paramID(w, r, "id")
+	if !ok {
+		return
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		logs.Error("deleteMeta:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	if _, err := tx.Delete(&meta{ID: id}); err != nil {
+		logs.Error("deleteMeta:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	// 删除与之对应的关联数据。
+	sql := "DELETE FROM #relationships WHERE {MetaID}=?"
+	if _, err := tx.Exec(true, sql, id); err != nil {
+		logs.Error("deleteMeta:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	if err := tx.Commit(); err != nil {
+		logs.Error("deleteMeta:", err)
+		tx.Rollback()
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	renderJSON(w, http.StatusNoContent, nil, nil)
+}

@@ -1,0 +1,125 @@
+<div style="width:35em;margin:auto;text-align:left">
+    <h1 class="header">用户信息</h1>
+    <form class="ui form" id="userForm">
+        <div class="field">
+            <label for="screenName">用户昵称</label>
+            <input id="screenName" type="text" value="" />
+            <div class="descriptional">所有前端页面都将显示此名称。</div>
+        </div>
+
+        <div class="field">
+            <label for="email">用户邮箱</label>
+            <input id="email" type="text" value="" />
+            <div class="descriptional">用户邮箱，将会在部分前端页面展示在。</div>
+        </div>
+    </form>
+
+    <br /><br />
+    <form class="ui form" id="changePasswordForm">
+        <div class="ui horizontal divider header">更新密码</div>
+
+        <div class="field">
+            <label for="oldPassword">旧密码</label>
+            <input id="oldPassword" type="password" name="oldPassword" value="" />
+        </div>
+
+        <div class="field">
+            <label for="newPassword">新密码</label>
+            <input id="newPassword" type="password" name="newPassword" value="" />
+        </div>
+
+        <div class="field">
+            <label for="retryPassword">确认新密码</label>
+            <input id="retryPassword" type="password" name="retryPassword" value="" />
+        </div>
+
+        <div class="field">
+            <button type="submit" class="ui primary fluid button">确认更新密码</button>
+        </div>
+    </form>
+</div>
+
+<script>
+function getData(id){
+    get({
+        'url': '/admin/api/options/'+id
+    }).done(function(data, textStatus, jqXHR) {
+        $('#'+id).attr('data-default', data.value);
+        $('#'+id).val(data.value);
+    }).fail(function() {
+        showMessage('red', '无法加载'+id+'设置项的值！');
+    });
+}
+
+function patchData(id){
+    $('#'+id).on('blur', function(){
+        patch({
+            'url': '/admin/api/options/'+id,
+            'data':JSON.stringify({'value':$('#'+id).val()})
+        }).done(function(){
+            $('#'+id).attr('data-default', $('#'+id).val());
+            showMessage('green', '设置已经保存');
+        }).fail(function(){
+            $('#'+id).val($('#'+id).attr('data-default'));
+            showMessage('red', '无法更新'+id+'设置项的值！');
+        });
+    });
+}
+$(document).ready(function(){
+    setTitle('用户信息');
+
+    /* BEGIN -- get */
+    $('userForm').addClass('loading');
+
+    var screenName = getData('screenName');
+    var email = getData('email');
+
+    $.when(screenName, email).always(function(){
+        $('userForm').removeClass('loading');
+    });
+    /* END -- get */
+
+    /* BEGIN -- patch */
+    patchData('screenName')
+    patchData('email')
+    /* END -- patch */
+
+    /* BEGIN -- update password */
+    $('form').on('submit', function(){
+        if (!$('#oldPassword').val()) {
+            showMessage('red', '旧密码不能为空');
+            return false;
+        }
+        if (!$('#newPassword').val()) {
+            showMessage('red', '新密码不能为空');
+            return false;
+        }
+        if ($('#newPassword').val() != $('#retryPassword').val()) {
+            showMessage('red', '两次新密码不相同');
+            return false;
+        }
+        if ($('#oldPassword').val() == $('#newPassword').val()) {
+            showMessage('red', '新旧密码是一样的，不需要更改');
+            return false;
+        }
+
+        $('#changePasswordForm').addClass('loading');
+        put({
+            'url': '/admin/api/password',
+            'data':JSON.stringify({'old':$('#oldPassword').val(), 'new':$('#newPassword').val()})
+        }).done(function() {
+            showMessage('green', '更新密码成功');
+            $('#oldPassword').val('');
+            $('#newPassword').val('');
+            $('#retryPassword').val('');
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            showMessage('red', '更新密码失败:'+errorThrown);
+        }).always(function(){
+            $('#changePasswordForm').removeClass('loading');
+        });
+
+        return false
+    });
+    /* END -- update password */
+});
+</script>

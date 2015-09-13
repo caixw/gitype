@@ -1,0 +1,10 @@
+{
+    "name":        "default",
+    "version": "    0.1.0.150803",
+    "description": "默认主题",
+    "author":{
+        "name": "caixw",
+        "email":"xnotepad@gmail.com",
+        "url":  "github.com/caixw"
+    }
+}

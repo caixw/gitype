@@ -1,0 +1,45 @@
+<div class="ui grid">
+<div class="row">
+<!-- 系统设置菜单 -->
+    <aside id="sidebar" class="ui three wide column" style="padding-right:0em;background:#333">
+        <div class="ui inverted header" style="padding:0.5em 1em 1em 1em;margin:0em;background:#111 !important;">
+            <img class="ui mini circular image" src="./favicon.png" alt="logo" style="background:white" />
+            <div class="content">
+                <a href="#dashboard" style="color:white">TYPING</a>
+                <div class="sub header">个人博客系统</div>
+            </div>
+            <a href="#logout" style="float:right;font-size:1.1em;color:white" title="退出系统">
+                <i class="power off icon" style="margin-right:0em"></i>
+            </a>
+        </div>
+
+        <div class="ui large vertical fluid text inverted menu" style="padding:0.5711em;margin-top:0em">
+            <a class="active item" href="#settings/system"><i class="settings icon"></i>系统设置</a>
+            <a class="item" href="#settings/users"><i class="user icon"></i>用户信息</a>
+
+            <div class="ui divider"></div>
+
+            <a class="item" href="#metas/tags"><i class="tags icon"></i>标签</a>
+            <a class="item" href="#metas/cats"><i class="tasks icon"></i>分类</a>
+
+            <div class="divider ui"></div>
+
+            <a class="item" href="#posts/list"><i class="folder icon"></i>文章</a>
+            <a class="item" href="#posts/comments"><i class="comments icon"></i>评论</a>
+            <a class="item" href="#posts/add"><i class="file icon"></i>添加文章</a>
+        </div>
+    </aside>
+
+    <div class="ui center aligned thirteen wide column grid" id="content"></div>
+</div><!-- end .row -->
+
+<div class="message-row"></div>
+
+</div><!-- end .grid -->
+
+<script>
+    $(document).ready(function() {
+        // 保证sidebar最少和窗口齐高
+        $('#sidebar').css('min-height', $(window).height());
+    });
+</script>
