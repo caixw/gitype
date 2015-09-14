@@ -34,8 +34,8 @@ type post struct {
 	Created  int64 `orm:"name(created)"`  // 创建时间
 	Modified int64 `orm:"name(modified)"` // 最后次修改时间
 
-	AllowPing    bool `orm:"allowPing"`
-	AllowComment bool `orm:"allowComment"`
+	AllowPing    bool `orm:"name(allowPing)"`
+	AllowComment bool `orm:"name(allowComment)"`
 }
 
 func (p *post) Meta() string {
@@ -60,7 +60,7 @@ func (p *post) Meta() string {
 // @apiParam cats array 关联的分类
 //
 // @apiSuccess 201 created
-func postPost(w http.ResponseWriter, r *http.Request) {
+func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	p := &struct {
 		Name         string  `json:"name"`
 		Title        string  `json:"title"`
@@ -155,7 +155,7 @@ func postPost(w http.ResponseWriter, r *http.Request) {
 // @apiParam cats array 关联的分类
 //
 // @apiSuccess 200 no content
-func putPost(w http.ResponseWriter, r *http.Request) {
+func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	id, ok := paramID(w, r, "id")
 	if !ok {
 		return
@@ -247,7 +247,7 @@ func putPost(w http.ResponseWriter, r *http.Request) {
 // @apiHeader Authorization xxx
 //
 // @apiSuccess 204 no content
-func deletePost(w http.ResponseWriter, r *http.Request) {
+func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 	id, ok := paramID(w, r, "id")
 	if !ok {
 		return
@@ -304,8 +304,42 @@ func deletePost(w http.ResponseWriter, r *http.Request) {
 // @apiQuery state int
 // @apiGroup admin
 //
+// @apiSuccess ok 200
+// @apiParam count int 符合条件的所有记录数量，不包含page和size条件
+// @apiParam posts array 当前页的记录数量
 func adminGetPosts(w http.ResponseWriter, r *http.Request) {
+	var page, size, state int
+	var ok bool
+	if state, ok = queryInt(w, r, "state", commentStateAll); !ok {
+		return
+	}
 
+	sql := db.SQL().Table("#posts")
+	if state != postStateAll {
+		sql.And("{state}=?", state)
+	}
+	count, err := sql.Count(true)
+	if err != nil {
+		logs.Error("adminGetPosts:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	if page, ok = queryInt(w, r, "page", 0); !ok {
+		return
+	}
+	if size, ok = queryInt(w, r, "size", opt.PageSize); !ok {
+		return
+	}
+	sql.Limit(size, page*size)
+	maps, err := sql.SelectMap(true, "*")
+	if err != nil {
+		logs.Error("adminGetPosts:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	renderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "posts": maps}, nil)
 }
 
 // @api get /admin/api/posts/{id} 获取某一篇文章的详细内容
@@ -342,28 +376,70 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO
-}
+	tags, err := getPostMetas(id, metaTypeTag)
+	if err != nil {
+		logs.Error("adminGetPost:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
 
-// @api get /admin/api/posts/{id}/comments 获取该文章下的所有评论
-// @apiQuery page int
-// @apiQuery size int
-// @apiQuery state int
-// @apiGroup admin
-//
-func adminGetPostComments(w http.ResponseWriter, r *http.Request) {
+	cats, err := getPostMetas(id, metaTypeCat)
+	if err != nil {
+		logs.Error("adminGetPost:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
 
+	obj := &struct {
+		ID           int64   `json:"id"`
+		Name         string  `json:"name"`
+		Title        string  `json:"title"`
+		Content      string  `json:"content"`
+		State        int     `json:"state"`
+		Order        int     `json:"order"`
+		Created      int64   `json:"created"`
+		Modified     int64   `json:"modified"`
+		Template     string  `json:"template"`
+		Password     string  `json:"password"`
+		AllowPing    bool    `json:"AllowPing"`
+		AllowComment bool    `json:"AllowComment"`
+		Tags         []int64 `json:"tags"`
+		Cats         []int64 `json:"cats"`
+	}{
+		ID:           p.ID,
+		Name:         p.Name,
+		Title:        p.Title,
+		Content:      p.Content,
+		State:        p.State,
+		Order:        p.Order,
+		Created:      p.Created,
+		Modified:     p.Modified,
+		Template:     p.Template,
+		Password:     p.Password,
+		AllowPing:    p.AllowPing,
+		AllowComment: p.AllowComment,
+		Tags:         tags,
+		Cats:         cats,
+	}
+	renderJSON(w, http.StatusOK, obj, nil)
 }
 
 // @api get /api/posts/{id} 获取某一文章的详细内容
 // @apiGroup front
 //
 // @apiSuccess 200 ok
-// @apiParam post object 文章的内容
+// @apiParam id int id值
+// @apiParam name string 唯一名称，可以为空
+// @apiParam title string 标题
+// @apiParam content string 文章内容
+// @apiParam created int 创建时间
+// @apiParam modified int 修改时间
+// @apiParam template string 所使用的模板
+// @apiParam allowPing bool 允许ping
+// @apiParam allowComment bool 允许评论
 // @apiParam tags array 文章关联的标签
 // @apiParam cats array 文章关联的类别
-// @apiParam commentsNum int 文章关联的评论数量
-func getPost(w http.ResponseWriter, r *http.Request) {
+func frontGetPost(w http.ResponseWriter, r *http.Request) {
 	id, ok := paramID(w, r, "id")
 	if !ok {
 		return
@@ -376,23 +452,139 @@ func getPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO
+	if p.State != postStateNormal {
+		renderJSON(w, http.StatusNotFound, nil, nil)
+		return
+	}
+
+	tags, err := getPostMetas(id, metaTypeTag)
+	if err != nil {
+		logs.Error("getPost:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	cats, err := getPostMetas(id, metaTypeCat)
+	if err != nil {
+		logs.Error("getPost:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	obj := &struct {
+		ID           int64   `json:"id"`
+		Name         string  `json:"name"`
+		Title        string  `json:"title"`
+		Content      string  `json:"content"`
+		Created      int64   `json:"created"`
+		Modified     int64   `json:"modified"`
+		Template     string  `json:"template"`
+		AllowPing    bool    `json:"AllowPing"`
+		AllowComment bool    `json:"AllowComment"`
+		Tags         []int64 `json:"tags"`
+		Cats         []int64 `json:"cats"`
+	}{
+		ID:           p.ID,
+		Name:         p.Name,
+		Title:        p.Title,
+		Content:      p.Content,
+		Created:      p.Created,
+		Modified:     p.Modified,
+		Template:     p.Template,
+		AllowPing:    p.AllowPing,
+		AllowComment: p.AllowComment,
+		Tags:         tags,
+		Cats:         cats,
+	}
+	renderJSON(w, http.StatusOK, obj, nil)
 }
 
 // @api get /api/posts 获取前端可访问的文章列表
 // @apiQuery page int
 // @apiQuery size int
 // @apiGroup front
-func getPosts(w http.ResponseWriter, r *http.Request) {
+//
+// @apiSuccess 200 OK
+func frontGetPosts(w http.ResponseWriter, r *http.Request) {
+	sql := db.Where("{state}=?", postStateNormal).Table("#posts")
+	count, err := sql.Count(true)
+	if err != nil {
+		logs.Error("adminGetPosts:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
 
+	var page, size int
+	var ok bool
+	if page, ok = queryInt(w, r, "page", 0); !ok {
+		return
+	}
+	if size, ok = queryInt(w, r, "size", opt.PageSize); !ok {
+		return
+	}
+	sql.Limit(size, page*size)
+	maps, err := sql.SelectMap(true, "*")
+	if err != nil {
+		logs.Error("adminGetPosts:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	renderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "posts": maps}, nil)
 }
 
 // @api get /api/posts/{id}/comments
 // @apiQuery page int
 // @apiQuery size int
 // @apiGroup front
-func getPostComments(w http.ResponseWriter, r *http.Request) {
+//
+// @apiSuccess 200 OK
+// @apiParam count int 当前文章的所有评论数量
+// @apiParam comments array 当前页的评论
+func frontGetPostComments(w http.ResponseWriter, r *http.Request) {
+	id, ok := paramID(w, r, "id")
+	if !ok {
+		return
+	}
 
+	p := &post{ID: id}
+	if err := db.Select(p); err != nil {
+		logs.Error("frontGetPostComments:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	if p.State != postStateNormal {
+		renderJSON(w, http.StatusNotFound, nil, nil)
+		return
+	}
+
+	sql := db.Where("{postID}=?", id).
+		And("{state}=?", commentStateApproved).
+		Table("#comments")
+	count, err := sql.Count(true)
+	if err != nil {
+		logs.Error("frontGetPostComments:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	var page, size int
+	if page, ok = queryInt(w, r, "page", 0); !ok {
+		return
+	}
+	if size, ok = queryInt(w, r, "size", opt.PageSize); !ok {
+		return
+	}
+	sql.Limit(size, page*size)
+	maps, err := sql.SelectMap(true, "*")
+	if err != nil {
+		logs.Error("getComments:", err)
+		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	renderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "comments": maps}, nil)
 }
 
 // @api post /api/posts/{id}/comments 提交新评论
@@ -407,7 +599,7 @@ func getPostComments(w http.ResponseWriter, r *http.Request) {
 // @apiParam authorEmail string 评论作者的邮箱
 //
 // @apiSuccess 201 created
-func postPostComment(w http.ResponseWriter, r *http.Request) {
+func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 	c := &struct {
 		Parent      int64  `json:"parent"`
 		PostID      int64  `json:"postID"`

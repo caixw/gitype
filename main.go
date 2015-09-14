@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	version = "0.1.0.150803" // 版本号
+	version = "0.1.1.150914" // 版本号
 
 	// 两个配置文件路径
 	configPath    = "./config/app.json"
@@ -25,7 +25,7 @@ const (
 
 var (
 	db  *orm.DB // 数据库实例
-	opt = &options{}
+	opt *options
 )
 
 func main() {
@@ -72,6 +72,10 @@ func main() {
 		panic(err)
 	}
 
+	if err := initThemes(cfg.ThemeDir); err != nil {
+		panic(err)
+	}
+
 	if err := initModule(cfg); err != nil {
 		panic(err)
 	}
@@ -87,49 +91,64 @@ func initModule(cfg *config) error {
 	if err != nil {
 		return err
 	}
-	initAdminRoutes(m.Prefix(cfg.AdminAPIPrefix))
+	initAdminAPIRoutes(m.Prefix(cfg.AdminAPIPrefix))
 
 	m, err = web.NewModule("front")
 	if err != nil {
 		return err
 	}
-	initFrontRoutes(m.Prefix(cfg.FrontAPIPrefix))
+	initFrontAPIRoutes(m.Prefix(cfg.FrontAPIPrefix))
+
+	initFrontPageRoutes(m)
 
 	return nil
 }
 
-func initFrontRoutes(front *mux.Prefix) {
-	front.GetFunc("/tags", getTags).
-		GetFunc("/cats", getCats)
-
-	// post
-	front.PostFunc("/posts/{id}/comments", postPostComment)
+func initFrontPageRoutes(m *web.Module) {
+	m.GetFunc("/", pageIndex)
 }
 
-func initAdminRoutes(admin *mux.Prefix) {
-	admin.PostFunc("/login", postLogin).
-		Delete("/login", loginHandlerFunc(deleteLogin)).
-		Put("/password", loginHandlerFunc(changePassword))
+func initFrontAPIRoutes(front *mux.Prefix) {
+	front.GetFunc("/tags", frontGetTags).
+		GetFunc("/cats", frontGetCats)
+
+	// post
+	front.PostFunc("/posts/{id:\\d+}/comments", frontPostPostComment).
+		GetFunc("/posts/{id:\\d+}", frontGetPost).
+		GetFunc("/posts/{id:\\d+}/comments", frontGetPostComments).
+		GetFunc("/posts", frontGetPosts)
+}
+
+func initAdminAPIRoutes(admin *mux.Prefix) {
+	admin.PostFunc("/login", adminPostLogin).
+		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
+		Put("/password", loginHandlerFunc(adminChangePassword))
 
 	// options
-	admin.Get("/options/{key}", loginHandlerFunc(getOption)).
-		Patch("/options/{key}", loginHandlerFunc(patchOption))
+	admin.Get("/options/{key}", loginHandlerFunc(adminGetOption)).
+		Patch("/options/{key}", loginHandlerFunc(adminPatchOption))
 
 	// cats
-	admin.Put("/cats/{id:\\d+}", loginHandlerFunc(putCat)).
-		Delete("/cats/{id:\\d+}", loginHandlerFunc(deleteCat)).
-		Post("/cats", loginHandlerFunc(postCat))
+	admin.Put("/cats/{id:\\d+}", loginHandlerFunc(adminPutCat)).
+		Delete("/cats/{id:\\d+}", loginHandlerFunc(adminDeleteCat)).
+		Post("/cats", loginHandlerFunc(adminPostCat))
 
 	// tags
-	admin.Put("/tags/{id:\\d+}", loginHandlerFunc(putTag)).
-		Delete("/tags/{id:\\d+}", loginHandlerFunc(deleteTag)).
-		Post("/tags", loginHandlerFunc(postTag))
+	admin.Put("/tags/{id:\\d+}", loginHandlerFunc(adminPutTag)).
+		Delete("/tags/{id:\\d+}", loginHandlerFunc(adminDeleteTag)).
+		Post("/tags", loginHandlerFunc(adminPostTag))
 
 	// comments
 	admin.Get("/comments", loginHandlerFunc(getComments)).
 		Post("/comments", loginHandlerFunc(adminPostComment)).
-		Put("/comments/{id}", loginHandlerFunc(putComment)).
-		Post("/comments/{id}/waiting", loginHandlerFunc(setCommentWaiting)).
-		Post("/comments/{id}/spam", loginHandlerFunc(setCommentSpam)).
-		Post("/comments/{id}/approved", loginHandlerFunc(setCommentApproved))
+		Put("/comments/{id:\\d+}", loginHandlerFunc(putComment)).
+		Post("/comments/{id:\\d+}/waiting", loginHandlerFunc(setCommentWaiting)).
+		Post("/comments/{id:\\d+}/spam", loginHandlerFunc(setCommentSpam)).
+		Post("/comments/{id:\\d+}/approved", loginHandlerFunc(setCommentApproved))
+
+	admin.Get("/posts", loginHandlerFunc(adminGetPosts)).
+		Post("/posts", loginHandlerFunc(adminPostPost)).
+		Get("/posts/{id:\\d+}", loginHandlerFunc(adminGetPost)).
+		Delete("/posts/{id:\\d+}", loginHandlerFunc(adminDeletePost)).
+		Put("/posts/{id:\\d+}", loginHandlerFunc(adminPutPost))
 }

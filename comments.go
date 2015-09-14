@@ -54,7 +54,7 @@ func getComments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sql := db.SQL()
+	sql := db.SQL().Table("#comments")
 	if state != commentStateAll {
 		sql.And("{state}=?", state)
 	}

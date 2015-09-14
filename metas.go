@@ -6,6 +6,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
@@ -15,6 +16,8 @@ const (
 	metaTypeCat = iota + 1
 	metaTypeTag
 )
+
+const metaNoParent = -1
 
 type meta struct {
 	ID          int64  `orm:"name(id);ai"`
@@ -48,7 +51,7 @@ func (r *relationship) Meta() string {
 //     {"id":1, "name":"tag1", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
 //     {"id":2, "name":"tag2", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
 // ]}
-func getTags(w http.ResponseWriter, r *http.Request) {
+func frontGetTags(w http.ResponseWriter, r *http.Request) {
 	sql := `SELECT m.{name},m.{title},m.{description},m.{id},count(r.{metaID}) AS {count}
 			FROM #metas AS m
 			LEFT JOIN #relationships AS r ON m.{id}=r.{metaID}
@@ -81,7 +84,7 @@ func getTags(w http.ResponseWriter, r *http.Request) {
 //     {"id":1, "name":"tag1", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
 //     {"id":2, "name":"tag2", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
 // ]}
-func getCats(w http.ResponseWriter, r *http.Request) {
+func frontGetCats(w http.ResponseWriter, r *http.Request) {
 	sql := `SELECT {name},{title},{description},{id},{count},{parent},{order},count(r.{metaID}) AS {count}
 			FROM #metas AS m
 			LEFT JOIN #relationships AS r ON m.{id}=r.{metaID}
@@ -89,7 +92,7 @@ func getCats(w http.ResponseWriter, r *http.Request) {
 			GROUP BY m.{id}`
 	rows, err := db.Query(true, sql, metaTypeCat)
 	if err != nil {
-		logs.Error("getCats:", err)
+		logs.Error("frontGetCats:", err)
 		renderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
@@ -97,7 +100,7 @@ func getCats(w http.ResponseWriter, r *http.Request) {
 	maps, err := fetch.MapString(false, rows)
 	rows.Close()
 	if err != nil {
-		logs.Error("getCats:", err)
+		logs.Error("frontGetCats:", err)
 		renderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
@@ -133,7 +136,7 @@ func getCats(w http.ResponseWriter, r *http.Request) {
 //         {"name": "已经存在同名"}
 //     ]
 // }
-func putTag(w http.ResponseWriter, r *http.Request) {
+func adminPutTag(w http.ResponseWriter, r *http.Request) {
 	putMeta(w, r)
 }
 
@@ -169,7 +172,7 @@ func putTag(w http.ResponseWriter, r *http.Request) {
 //         {"name": "已经存在同名"}
 //     ]
 // }
-func putCat(w http.ResponseWriter, r *http.Request) {
+func adminPutCat(w http.ResponseWriter, r *http.Request) {
 	putMeta(w, r)
 }
 
@@ -200,7 +203,7 @@ func putCat(w http.ResponseWriter, r *http.Request) {
 //         {"name": "已经存在同名"}
 //     ]
 // }
-func postTag(w http.ResponseWriter, r *http.Request) {
+func adminPostTag(w http.ResponseWriter, r *http.Request) {
 	postMeta(w, r)
 }
 
@@ -235,7 +238,7 @@ func postTag(w http.ResponseWriter, r *http.Request) {
 //         {"name": "已经存在同名"}
 //     ]
 // }
-func postCat(w http.ResponseWriter, r *http.Request) {
+func adminPostCat(w http.ResponseWriter, r *http.Request) {
 	postMeta(w, r)
 }
 
@@ -247,7 +250,7 @@ func postCat(w http.ResponseWriter, r *http.Request) {
 // @apiHeader Authorization xxx
 //
 // @apiSuccess 204 no content
-func deleteTag(w http.ResponseWriter, r *http.Request) {
+func adminDeleteTag(w http.ResponseWriter, r *http.Request) {
 	deleteMeta(w, r)
 }
 
@@ -259,7 +262,7 @@ func deleteTag(w http.ResponseWriter, r *http.Request) {
 // @apiHeader Authorization xxx
 //
 // @apiSuccess 204 no content
-func deleteCat(w http.ResponseWriter, r *http.Request) {
+func adminDeleteCat(w http.ResponseWriter, r *http.Request) {
 	deleteMeta(w, r)
 }
 
@@ -396,4 +399,31 @@ func deleteMeta(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderJSON(w, http.StatusNoContent, nil, nil)
+}
+
+// 获取与某post相关联的数据
+func getPostMetas(postID int64, mtype int) ([]int64, error) {
+	sql := `SELECT rs.{metaID} FROM #relationships AS rs
+	LEFT JOIN #metas AS m ON m.{id}=rs.{metaID}
+	WHERE rs.{postID}=? AND m.{type}=?`
+	rows, err := db.Query(true, sql, postID, mtype)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	maps, err := fetch.ColumnString(false, "metaID", rows)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make([]int64, 0, len(maps))
+	for _, v := range maps {
+		num, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, num)
+	}
+	return ret, nil
 }

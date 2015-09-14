@@ -26,10 +26,11 @@ type options struct {
 	SiteName     string `options:"system,siteName"`     // 重置的默认密码
 	SiteURL      string `options:"system,siteURL"`      // 网站的url
 	PageSize     int    `options:"system,pageSize"`     // 默认每页显示的数量
-	Theme        string `options:"system,theme"`        // 主题
 	Pretty       bool   `options:"system,pretty"`       // 格式化输出内容
 	DateFormat   string `options:"system,dateFormat"`   // 前端日期格式
 	CommentOrder int    `options:"system,commentOrder"` // 评论显示的顺序
+
+	Theme string `options:"themes,theme"` // 主题
 
 	ScreenName string `options:"users,screenName"` // 用户昵称
 	Email      string `options:"users,email"`      // 用户邮箱，可能会被显示在前端
@@ -154,13 +155,15 @@ func loadOptions() (*options, error) {
 
 // @api patch /admin/api/options/{key} 修改设置项的值
 // @apiParam key string 需要修改项的key
+// @apiGroup admin
+//
 // @apiRequest json
 // @apiHeader Authorization xxx
 // @apiParam value string 新值
 // @apiExample json
 // { "value": "abcdef" }
 // @apiSuccess 204 no content
-func patchOption(w http.ResponseWriter, r *http.Request) {
+func adminPatchOption(w http.ResponseWriter, r *http.Request) {
 	key, ok := paramString(w, r, "key")
 	if !ok {
 		return
@@ -187,21 +190,23 @@ func patchOption(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 更新数据库中的值
-	if _, err := db.Update(o); err != nil {
-		logs.Error("patchOption:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}
-
-	// 更新opt变量中的值
-	if err := opt.updateFromOption(o); err != nil {
+	if err := patchOption(o); err != nil {
 		logs.Error("patchOption:", err)
 		renderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	renderJSON(w, http.StatusNoContent, nil, nil)
+}
+
+func patchOption(o *option) error {
+	// 更新数据库中的值
+	if _, err := db.Update(o); err != nil {
+		return err
+	}
+
+	// 更新opt变量中的值
+	return opt.updateFromOption(o)
 }
 
 // @api get /admin/api/options/{key} 更新设置项的值，不能更新password字段。
@@ -215,7 +220,7 @@ func patchOption(w http.ResponseWriter, r *http.Request) {
 // {
 //     "value": "20",
 // }
-func getOption(w http.ResponseWriter, r *http.Request) {
+func adminGetOption(w http.ResponseWriter, r *http.Request) {
 	key, ok := paramString(w, r, "key")
 	if !ok {
 		return
@@ -233,15 +238,4 @@ func getOption(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderJSON(w, http.StatusOK, map[string]interface{}{"value": val}, nil)
-}
-
-// @api get /admin/api/themes 获取所有主题列表
-// @apiGroup admin
-//
-// @apiRequest json
-// @apiHeader Authorization xxx
-//
-// @apiSuccess 200 OK
-func getThemes(w http.ResponseWriter, r *http.Request) {
-	// TODO
 }

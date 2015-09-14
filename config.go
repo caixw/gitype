@@ -30,6 +30,8 @@ type config struct {
 
 	FrontAPIPrefix string `json:"frontApiPrefix"` // 前端api地址前缀
 	AdminAPIPrefix string `json:"adminApiPrefix"` // 后台api地址前经
+
+	ThemeDir string `json:"themeDir"` // 主题文件所在的目录
 }
 
 // 加载配置文件到全局变量cfg中。
@@ -59,6 +61,10 @@ func loadConfig() (*config, error) {
 	}
 	if cfg.FrontAPIPrefix[len(cfg.FrontAPIPrefix)-1] == '/' {
 		return nil, errors.New("frontApiPrefix不能以/符号结尾")
+	}
+
+	if len(cfg.ThemeDir) == 0 {
+		return nil, errors.New("themeDir未指定")
 	}
 
 	if len(cfg.DBDSN) == 0 {

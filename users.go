@@ -33,11 +33,10 @@ var token string
 // {
 //     "token":  "adfwerqeqaeqe313aa",
 // }
-func postLogin(w http.ResponseWriter, r *http.Request) {
-	type l struct {
+func adminPostLogin(w http.ResponseWriter, r *http.Request) {
+	inst := &struct {
 		Password string `json:"password"`
-	}
-	inst := &l{}
+	}{}
 	if !readJSON(w, r, inst) {
 		return
 	}
@@ -71,7 +70,7 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 // @apiRequest json
 // @apiHeader Authorization xxxxx
 // @apiSuccess 204 no content
-func deleteLogin(w http.ResponseWriter, r *http.Request) {
+func adminDeleteLogin(w http.ResponseWriter, r *http.Request) {
 	token = ""
 	renderJSON(w, http.StatusNoContent, nil, nil)
 }
@@ -89,12 +88,11 @@ func deleteLogin(w http.ResponseWriter, r *http.Request) {
 // }
 //
 // @apiSuccess 204 no content
-func changePassword(w http.ResponseWriter, r *http.Request) {
-	type login struct {
+func adminChangePassword(w http.ResponseWriter, r *http.Request) {
+	l := &struct {
 		Old string `json:"old"`
 		New string `json:"new"`
-	}
-	l := &login{}
+	}{}
 
 	if !readJSON(w, r, l) {
 		return

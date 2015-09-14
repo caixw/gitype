@@ -29,8 +29,6 @@ func outputConfig() error {
 			ServerName: "typing",
 			Static: map[string]string{
 				"/admin": "./static/admin/",
-				"/":      "./static/front/",
-				"":       "./static/front/",
 			},
 		},
 
@@ -40,6 +38,8 @@ func outputConfig() error {
 
 		FrontAPIPrefix: "/api",
 		AdminAPIPrefix: "/admin/api",
+
+		ThemeDir: "./static/front/",
 	}
 	data, err := json.Marshal(cfg)
 	if err != nil {
@@ -68,13 +68,11 @@ func fillDB(db *orm.DB) error {
 		return err
 	}
 	metas := []*meta{
-		{Name: "tag1", Title: "Tag1", Type: metaTypeTag, Description: "<h5>tag1</h5>"},
-		{Name: "tag2", Title: "Tag2", Type: metaTypeTag, Description: "<h5>tag2</h5>"},
-		{Name: "tag3", Title: "Tag3", Type: metaTypeTag, Description: "<h5>tag3</h5>"},
+		{Name: "default", Title: "默认分类", Type: metaTypeCat, Order: 10, Parent: metaNoParent, Description: "所有添加的文章，默认添加此分类下。"},
 
-		{Name: "cat1", Title: "cat1", Type: metaTypeCat, Order: 10, Parent: -1, Description: "<h5>cat1</h5>"},
-		{Name: "cat2", Title: "cat2", Type: metaTypeCat, Order: 10, Parent: -1, Description: "<h5>cat2</h5>"},
-		{Name: "cat3", Title: "cat3", Type: metaTypeCat, Order: 10, Parent: -1, Description: "<h5>cat3</h5>"},
+		{Name: "tag1", Title: "标签一", Type: metaTypeTag, Description: "<h5>tag1</h5>"},
+		{Name: "tag2", Title: "标签二", Type: metaTypeTag, Description: "<h5>tag2</h5>"},
+		{Name: "tag3", Title: "标签三", Type: metaTypeTag, Description: "<h5>tag3</h5>"},
 	}
 	tx, err := db.Begin()
 	if err != nil {
@@ -88,8 +86,29 @@ func fillDB(db *orm.DB) error {
 		return err
 	}
 
+	// post
+	if err := db.Create(&post{}); err != nil {
+		return err
+	}
+
+	if _, err := db.Insert(&post{Title: "第一篇日志", Content: "<p>这是你的第一篇日志</p>"}); err != nil {
+		return err
+	}
+
+	// comment
+	if err := db.Create(&comment{}); err != nil {
+		return err
+	}
+
+	if _, err := db.Insert(&comment{PostID: 1, Content: "<p>沙发</p>", AuthorName: "游客"}); err != nil {
+		return err
+	}
+
 	// relationship
 	if err := db.Create(&relationship{}); err != nil {
+		return err
+	}
+	if _, err := db.Insert(&relationship{MetaID: 1, PostID: 1}); err != nil {
 		return err
 	}
 
@@ -103,6 +122,7 @@ func fillOptions(db *orm.DB) error {
 		SiteName:   "typing blog",
 		ScreenName: "typing",
 		Password:   hashPassword(defaultPassword),
+		Theme:      "default",
 	}
 
 	maps, err := opt.toMaps()
