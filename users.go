@@ -30,9 +30,7 @@ var token string
 // @apiHeader Pragma:no-cache
 // @apiParam token string 登录凭证；
 // @apiExample json
-// {
-//     "token":  "adfwerqeqaeqe313aa",
-// }
+// { "token":  "adfwerqeqaeqe313aa" }
 func adminPostLogin(w http.ResponseWriter, r *http.Request) {
 	inst := &struct {
 		Password string `json:"password"`

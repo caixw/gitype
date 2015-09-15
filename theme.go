@@ -6,6 +6,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -43,6 +44,7 @@ func initThemes(themeDir string) error {
 	}
 
 	if len(fs) == 0 {
+		return errors.New("不存在任何主题目录")
 	}
 
 	themes = make(map[string]*theme, len(fs))

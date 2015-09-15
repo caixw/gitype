@@ -9,13 +9,25 @@
         <div class="field">
             <label for="siteURL">网站地址</label>
             <input id="siteURL" type="url" value="" />
-            <div class="descriptional">网站根地址，必须以<strong>http://</strong>或<strong>https://</strong>开头！</div>
+            <div class="description">网站根地址，必须以<strong>http://</strong>或<strong>https://</strong>开头！</div>
         </div>
 
         <div class="field">
             <label for="pageSize">每页显示数量</label>
             <input id="pageSize" type="number" min="1" max="100" value="" />
-            <div class="descriptional">每页显示的记录数量，包括前端和后台一些数据列表都使用此值！<br />取值范围(0-100]</div>
+            <div class="description">每页显示的记录数量！<br />取值范围(0-100]</div>
+        </div>
+
+        <div class="field">
+            <label for="keywords">Keywords</label>
+            <input id="keywords" type="text" value="" />
+            <div class="description">页面的默认keywords</div>
+        </div>
+
+        <div class="field">
+            <label for="description">Description</label>
+            <input id="description" type="text" value="" />
+            <div class="description">页面的默认description</div>
         </div>
 
         <div class="field">
@@ -24,7 +36,7 @@
                 <label for="pretty">启用</label>
                 <input class="hidden" id="pretty" type="checkbox" value="1" tabindex="0" />
             </div>
-            <div class="descriptional">格式化输出内容，包括api和普通的html输出！</div>
+            <div class="description">格式化输出内容，包括api和普通的html输出！</div>
         </div>
     </form>
 </div>
@@ -67,9 +79,11 @@ $(document).ready(function(){
     /* BEGIN -- 加载数据 */
     $('form').addClass('loading');
 
-    var siteName = getData('siteName');
-    var siteURL = getData('siteURL');
-    var pageSize = getData('pageSize');
+    var siteName    = getData('siteName');
+    var siteURL     = getData('siteURL');
+    var pageSize    = getData('pageSize');
+    var keywords    = getData('keywords');
+    var description = getData('description');
     var pretty = get({
         'url': '/admin/api/options/pretty'
     }).done(function(data, textStatus, jqXHR){
@@ -79,7 +93,7 @@ $(document).ready(function(){
         showMessage('red', '加载pretty资源失败');
     });
 
-    $.when(siteName, siteURL, pageSize, pretty).always(function(){
+    $.when(siteName, siteURL, pageSize, keywords, description, pretty).always(function(){
         $('form').removeClass('loading');
     });
     /* END -- 加载数据 */
@@ -88,6 +102,8 @@ $(document).ready(function(){
     patchData('siteName')
     patchData('siteURL')
     patchData('pageSize')
+    patchData('keywords')
+    patchData('description')
     $('#pretty').on('change', function(){
         patch({
             'url': '/admin/api/options/pretty',

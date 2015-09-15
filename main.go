@@ -13,6 +13,7 @@ import (
 	"github.com/issue9/web"
 )
 
+// 以下为一些源码级别的配置项，仅供强迫症患者使用。
 const (
 	version = "0.1.1.150914" // 版本号
 
@@ -21,6 +22,8 @@ const (
 	logConfigPath = "./config/logs.xml"
 
 	defaultPassword = "123" // 后台默认的登录密码
+
+	themeURLPrefix = "/themes/" // 主题静态文件的前缀
 )
 
 var (

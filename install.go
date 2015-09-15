@@ -59,6 +59,7 @@ func fillDB(db *orm.DB) error {
 	if err := db.Create(&option{}); err != nil {
 		return err
 	}
+
 	if err := fillOptions(db); err != nil {
 		return err
 	}
@@ -123,6 +124,7 @@ func fillOptions(db *orm.DB) error {
 		ScreenName: "typing",
 		Password:   hashPassword(defaultPassword),
 		Theme:      "default",
+		Keywords:   "typing",
 	}
 
 	maps, err := opt.toMaps()

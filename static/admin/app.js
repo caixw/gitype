@@ -131,6 +131,8 @@ $(document).ready(function() {
                 function(){ loadPage('settings-system.html'); },
         "settings/users":
                 function(){ loadPage('settings-users.html'); },
+        "settings/themes":
+                function(){ loadPage('settings-themes.html'); },
         "metas/tags":
                 function(){ loadPage('metas-tags.html'); },
     };

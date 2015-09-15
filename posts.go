@@ -25,6 +25,7 @@ type post struct {
 	ID       int64  `orm:"name(id);ai"`
 	Name     string `orm:"name(name);len(50);nullable;unique(unq_name)"` // 唯一名称
 	Title    string `orm:"name(title);len(200)"`                         // 标题
+	Summary  string `orm:"name(summary);len(2000)"`                      // 内容摘要
 	Content  string `orm:"name(content);len(-1)"`                        // 实际内容
 	State    int    `orm:"name(state)"`                                  // 状态
 	Order    int    `orm:"name(order)"`                                  // 排序
@@ -49,6 +50,7 @@ func (p *post) Meta() string {
 // @apiHeader Authorization xxx
 // @apiParam name string 唯一名称，可以为空
 // @apiParam title string 标题
+// @apiParam summary string 文章摘要
 // @apiParam content string 文章内容
 // @apiParam state int 状态
 // @apiParam order int 排序
@@ -64,6 +66,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	p := &struct {
 		Name         string  `json:"name"`
 		Title        string  `json:"title"`
+		Summary      string  `json:"summary"`
 		Content      string  `json:"content"`
 		State        int     `json:"state"`
 		Order        int     `json:"order"`
@@ -89,6 +92,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	pp := &post{
 		Name:         p.Name,
 		Title:        p.Title,
+		Summary:      p.Summary,
 		Content:      p.Content,
 		State:        p.State,
 		Order:        p.Order,
@@ -144,6 +148,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 // @apiHeader Authorization xxx
 // @apiParam name string 唯一名称，可以为空
 // @apiParam title string 标题
+// @apiParam summary string 文章摘要
 // @apiParam content string 文章内容
 // @apiParam state int 状态
 // @apiParam order int 排序
@@ -164,6 +169,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	p := &struct {
 		Name         string  `json:"name"`
 		Title        string  `json:"title"`
+		Summary      string  `json:"summary"`
 		Content      string  `json:"content"`
 		State        int     `json:"state"`
 		Order        int     `json:"order"`
@@ -182,6 +188,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		ID:           id,
 		Name:         p.Name,
 		Title:        p.Title,
+		Summary:      p.Summary,
 		Content:      p.Content,
 		State:        p.State,
 		Order:        p.Order,
@@ -352,6 +359,7 @@ func adminGetPosts(w http.ResponseWriter, r *http.Request) {
 // @apiParam id int id值
 // @apiParam name string 唯一名称，可以为空
 // @apiParam title string 标题
+// @apiParam summary string 文章摘要
 // @apiParam content string 文章内容
 // @apiParam state int 状态
 // @apiParam order int 排序
@@ -394,6 +402,7 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		ID           int64   `json:"id"`
 		Name         string  `json:"name"`
 		Title        string  `json:"title"`
+		Summary      string  `json:"summary"`
 		Content      string  `json:"content"`
 		State        int     `json:"state"`
 		Order        int     `json:"order"`
@@ -409,6 +418,7 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		ID:           p.ID,
 		Name:         p.Name,
 		Title:        p.Title,
+		Summary:      p.Summary,
 		Content:      p.Content,
 		State:        p.State,
 		Order:        p.Order,

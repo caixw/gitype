@@ -23,12 +23,15 @@ const (
 
 // 对应着从options表中加载而来的数据。
 type options struct {
-	SiteName     string `options:"system,siteName"`     // 重置的默认密码
-	SiteURL      string `options:"system,siteURL"`      // 网站的url
-	PageSize     int    `options:"system,pageSize"`     // 默认每页显示的数量
-	Pretty       bool   `options:"system,pretty"`       // 格式化输出内容
-	DateFormat   string `options:"system,dateFormat"`   // 前端日期格式
-	CommentOrder int    `options:"system,commentOrder"` // 评论显示的顺序
+	SiteName    string `options:"system,siteName"`    // 重置的默认密码
+	SiteURL     string `options:"system,siteURL"`     // 网站的url
+	PageSize    int    `options:"system,pageSize"`    // 默认每页显示的数量
+	Pretty      bool   `options:"system,pretty"`      // 格式化输出内容
+	Keywords    string `options:"system,keywords"`    // 默认页面的keywords内容
+	Description string `options:"system,description"` // 默认页面的description内容
+
+	DateFormat   string `options:"reading,dateFormat"`   // 前端日期格式
+	CommentOrder int    `options:"reading,commentOrder"` // 评论显示的顺序
 
 	Theme string `options:"themes,theme"` // 主题
 
@@ -217,9 +220,7 @@ func patchOption(o *option) error {
 // @apiSuccess 200 ok
 // @api value any 设置项的值
 // @apiExample json
-// {
-//     "value": "20",
-// }
+// { "value": "20" }
 func adminGetOption(w http.ResponseWriter, r *http.Request) {
 	key, ok := paramString(w, r, "key")
 	if !ok {
