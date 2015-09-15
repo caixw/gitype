@@ -5,49 +5,11 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
-	"io/ioutil"
-	"os"
 
-	"github.com/caixw/typing/install"
+	"github.com/caixw/typing/core"
 	"github.com/issue9/orm"
-	"github.com/issue9/web"
 )
-
-// 将默认的配置文件输出到`./config`目录下。
-// 包含了`./config/logs.xml`和`./config/app.json`两个文件。
-func outputConfig() error {
-	ioutil.WriteFile(logConfigPath, install.LogFile, os.ModePerm)
-
-	cfg := &config{
-		Core: &web.Config{
-			HTTPS:      false,
-			CertFile:   "",
-			KeyFile:    "",
-			Port:       "8080",
-			ServerName: "typing",
-			Static: map[string]string{
-				"/admin": "./static/admin/",
-			},
-		},
-
-		DBDSN:    "./output/main.db",
-		DBPrefix: "typing_",
-		DBDriver: "sqlite3",
-
-		FrontAPIPrefix: "/api",
-		AdminAPIPrefix: "/admin/api",
-
-		ThemeDir: "./static/front/",
-	}
-	data, err := json.Marshal(cfg)
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(configPath, data, os.ModePerm)
-}
 
 // 向数据库写入初始内容。
 func fillDB(db *orm.DB) error {
@@ -118,11 +80,10 @@ func fillDB(db *orm.DB) error {
 
 func fillOptions(db *orm.DB) error {
 	opt := &options{
-		Pretty:     true,
 		PageSize:   20,
 		SiteName:   "typing blog",
 		ScreenName: "typing",
-		Password:   hashPassword(defaultPassword),
+		Password:   core.HashPassword(defaultPassword),
 		Theme:      "default",
 		Keywords:   "typing",
 	}

@@ -8,8 +8,10 @@ import (
 	"html"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
+	"github.com/caixw/typing/core"
 	"github.com/issue9/is"
 	"github.com/issue9/logs"
 )
@@ -78,14 +80,14 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		Cats         []int64 `json:"cats"`
 	}{}
 
-	if !readJSON(w, r, p) {
+	if !core.ReadJSON(w, r, p) {
 		return
 	}
 
 	tx, err := db.Begin()
 	if err != nil {
 		logs.Error("postPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -107,13 +109,13 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	result, err := tx.Insert(pp)
 	if err != nil {
 		logs.Error("postPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	postID, err := result.LastInsertId()
 	if err != nil {
 		logs.Error("postPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -127,7 +129,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := tx.InsertMany(rs); err != nil {
 		logs.Error("postPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -135,10 +137,10 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	if err := tx.Commit(); err != nil {
 		tx.Rollback()
 		logs.Error("postPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	renderJSON(w, http.StatusCreated, nil, nil)
+	core.RenderJSON(w, http.StatusCreated, nil, nil)
 }
 
 // @api put /admin/api/posts/{id} 修改文章
@@ -161,7 +163,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 200 no content
 func adminPutPost(w http.ResponseWriter, r *http.Request) {
-	id, ok := paramID(w, r, "id")
+	id, ok := core.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
@@ -180,7 +182,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		Tags         []int64 `json:"tags"`
 		Cats         []int64 `json:"cats"`
 	}{}
-	if !readJSON(w, r, p) {
+	if !core.ReadJSON(w, r, p) {
 		return
 	}
 
@@ -202,7 +204,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	tx, err := db.Begin()
 	if err != nil {
 		logs.Error("putPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		tx.Rollback()
 		return
 	}
@@ -210,7 +212,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	// 更新文档内容
 	if _, err := tx.Update(pp); err != nil {
 		logs.Error("putPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		tx.Rollback()
 		return
 	}
@@ -219,7 +221,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	sql := "DELETE FROM #relationships WHERE {postID}=?"
 	if _, err := tx.Exec(true, sql, pp.ID); err != nil {
 		logs.Error("putPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		tx.Rollback()
 		return
 	}
@@ -234,7 +236,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := tx.InsertMany(rs); err != nil {
 		logs.Error("putPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		tx.Rollback()
 		return
 	}
@@ -244,7 +246,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		tx.Rollback()
 		return
 	}
-	renderJSON(w, http.StatusNoContent, nil, nil)
+	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // @api delete /admin/api/posts/{id} 删除文章
@@ -255,7 +257,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 204 no content
 func adminDeletePost(w http.ResponseWriter, r *http.Request) {
-	id, ok := paramID(w, r, "id")
+	id, ok := core.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
@@ -263,7 +265,7 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 	tx, err := db.Begin()
 	if err != nil {
 		logs.Error("deletePost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		tx.Rollback()
 		return
 	}
@@ -272,7 +274,7 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 	sql := "DELETE FROM #posts WHERE {id}=?"
 	if _, err := tx.Exec(true, sql, id); err != nil {
 		logs.Error("deletePost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		tx.Rollback()
 		return
 	}
@@ -281,7 +283,7 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 	sql = "DELETE FROM #comments WHERE {postID}=?"
 	if _, err := tx.Exec(true, sql, id); err != nil {
 		logs.Error("deletePost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		tx.Rollback()
 		return
 	}
@@ -290,7 +292,7 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 	sql = "DELETE FROM #relationships WHERE {postID}=?"
 	if _, err := tx.Exec(true, sql, id); err != nil {
 		logs.Error("deletePost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		tx.Rollback()
 		return
 	}
@@ -298,11 +300,11 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 	if err := tx.Commit(); err != nil {
 		tx.Rollback()
 		logs.Error("deletePost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	renderJSON(w, http.StatusNoContent, nil, nil)
+	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // @api get /admin/api/posts 获取文章列表
@@ -317,7 +319,7 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 func adminGetPosts(w http.ResponseWriter, r *http.Request) {
 	var page, size, state int
 	var ok bool
-	if state, ok = queryInt(w, r, "state", commentStateAll); !ok {
+	if state, ok = core.QueryInt(w, r, "state", commentStateAll); !ok {
 		return
 	}
 
@@ -328,25 +330,25 @@ func adminGetPosts(w http.ResponseWriter, r *http.Request) {
 	count, err := sql.Count(true)
 	if err != nil {
 		logs.Error("adminGetPosts:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	if page, ok = queryInt(w, r, "page", 0); !ok {
+	if page, ok = core.QueryInt(w, r, "page", 0); !ok {
 		return
 	}
-	if size, ok = queryInt(w, r, "size", opt.PageSize); !ok {
+	if size, ok = core.QueryInt(w, r, "size", opt.PageSize); !ok {
 		return
 	}
 	sql.Limit(size, page*size)
 	maps, err := sql.SelectMap(true, "*")
 	if err != nil {
 		logs.Error("adminGetPosts:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	renderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "posts": maps}, nil)
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "posts": maps}, nil)
 }
 
 // @api get /admin/api/posts/{id} 获取某一篇文章的详细内容
@@ -372,7 +374,7 @@ func adminGetPosts(w http.ResponseWriter, r *http.Request) {
 // @apiParam tags array 关联的标签
 // @apiParam cats array 关联的分类
 func adminGetPost(w http.ResponseWriter, r *http.Request) {
-	id, ok := paramID(w, r, "id")
+	id, ok := core.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
@@ -380,21 +382,21 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 	p := &post{ID: id}
 	if err := db.Select(p); err != nil {
 		logs.Error("adminGetPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	tags, err := getPostMetas(id, metaTypeTag)
 	if err != nil {
 		logs.Error("adminGetPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	cats, err := getPostMetas(id, metaTypeCat)
 	if err != nil {
 		logs.Error("adminGetPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -431,7 +433,7 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		Tags:         tags,
 		Cats:         cats,
 	}
-	renderJSON(w, http.StatusOK, obj, nil)
+	core.RenderJSON(w, http.StatusOK, obj, nil)
 }
 
 // @api get /api/posts/{id} 获取某一文章的详细内容
@@ -450,7 +452,7 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 // @apiParam tags array 文章关联的标签
 // @apiParam cats array 文章关联的类别
 func frontGetPost(w http.ResponseWriter, r *http.Request) {
-	id, ok := paramID(w, r, "id")
+	id, ok := core.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
@@ -458,26 +460,26 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 	p := &post{ID: id}
 	if err := db.Select(p); err != nil {
 		logs.Error("getPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	if p.State != postStateNormal {
-		renderJSON(w, http.StatusNotFound, nil, nil)
+		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
 	tags, err := getPostMetas(id, metaTypeTag)
 	if err != nil {
 		logs.Error("getPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	cats, err := getPostMetas(id, metaTypeCat)
 	if err != nil {
 		logs.Error("getPost:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -506,7 +508,7 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 		Tags:         tags,
 		Cats:         cats,
 	}
-	renderJSON(w, http.StatusOK, obj, nil)
+	core.RenderJSON(w, http.StatusOK, obj, nil)
 }
 
 // @api get /api/posts 获取前端可访问的文章列表
@@ -520,27 +522,27 @@ func frontGetPosts(w http.ResponseWriter, r *http.Request) {
 	count, err := sql.Count(true)
 	if err != nil {
 		logs.Error("adminGetPosts:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	var page, size int
 	var ok bool
-	if page, ok = queryInt(w, r, "page", 0); !ok {
+	if page, ok = core.QueryInt(w, r, "page", 0); !ok {
 		return
 	}
-	if size, ok = queryInt(w, r, "size", opt.PageSize); !ok {
+	if size, ok = core.QueryInt(w, r, "size", opt.PageSize); !ok {
 		return
 	}
 	sql.Limit(size, page*size)
 	maps, err := sql.SelectMap(true, "*")
 	if err != nil {
 		logs.Error("adminGetPosts:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	renderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "posts": maps}, nil)
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "posts": maps}, nil)
 }
 
 // @api get /api/posts/{id}/comments
@@ -552,7 +554,7 @@ func frontGetPosts(w http.ResponseWriter, r *http.Request) {
 // @apiParam count int 当前文章的所有评论数量
 // @apiParam comments array 当前页的评论
 func frontGetPostComments(w http.ResponseWriter, r *http.Request) {
-	id, ok := paramID(w, r, "id")
+	id, ok := core.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
@@ -560,12 +562,12 @@ func frontGetPostComments(w http.ResponseWriter, r *http.Request) {
 	p := &post{ID: id}
 	if err := db.Select(p); err != nil {
 		logs.Error("frontGetPostComments:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	if p.State != postStateNormal {
-		renderJSON(w, http.StatusNotFound, nil, nil)
+		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
@@ -575,26 +577,26 @@ func frontGetPostComments(w http.ResponseWriter, r *http.Request) {
 	count, err := sql.Count(true)
 	if err != nil {
 		logs.Error("frontGetPostComments:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	var page, size int
-	if page, ok = queryInt(w, r, "page", 0); !ok {
+	if page, ok = core.QueryInt(w, r, "page", 0); !ok {
 		return
 	}
-	if size, ok = queryInt(w, r, "size", opt.PageSize); !ok {
+	if size, ok = core.QueryInt(w, r, "size", opt.PageSize); !ok {
 		return
 	}
 	sql.Limit(size, page*size)
 	maps, err := sql.SelectMap(true, "*")
 	if err != nil {
 		logs.Error("getComments:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	renderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "comments": maps}, nil)
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "comments": maps}, nil)
 }
 
 // @api post /api/posts/{id}/comments 提交新评论
@@ -619,33 +621,33 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 		AuthorEmail string `json:"authorEmail"`
 	}{}
 
-	if !readJSON(w, r, c) {
+	if !core.ReadJSON(w, r, c) {
 		return
 	}
 
 	// 判断文章状态
 	if c.PostID <= 0 {
-		renderJSON(w, http.StatusNotFound, nil, nil)
+		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
 	p := &post{ID: c.PostID}
 	if err := db.Select(p); err != nil {
 		logs.Error("postPostComment:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	if (len(p.Title) == 0 && len(p.Content) == 0) || p.State != postStateNormal {
-		renderJSON(w, http.StatusNotFound, nil, nil)
+		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 	if !p.AllowComment {
-		renderJSON(w, http.StatusMethodNotAllowed, nil, nil)
+		core.RenderJSON(w, http.StatusMethodNotAllowed, nil, nil)
 		return
 	}
 
 	// 判断提交数据的状态
-	errs := &ErrorResult{}
+	errs := &core.ErrorResult{}
 	if c.Parent < 0 {
 		errs.Detail["parent"] = "无效的parent"
 	}
@@ -668,13 +670,13 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 	u, err := url.Parse(c.AuthorURL)
 	if err != nil {
 		logs.Error("postComment:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	c.AuthorURL = u.Scheme + ":" + u.Host
 
 	c.Content = html.EscapeString(c.Content)
-	c.Content = nl2br(c.Content)
+	c.Content = strings.Replace(c.Content, "\n", "<br />", -1)
 
 	comm := &comment{
 		PostID:      c.PostID,
@@ -691,8 +693,8 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 	}
 	if _, err := db.Insert(comm); err != nil {
 		logs.Error("postComment:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	renderJSON(w, http.StatusCreated, nil, nil)
+	core.RenderJSON(w, http.StatusCreated, nil, nil)
 }

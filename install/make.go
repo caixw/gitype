@@ -7,7 +7,6 @@
 package main
 
 import (
-	//"bufio"
 	"io/ioutil"
 	"os"
 )
@@ -36,7 +35,7 @@ func main() {
 	w.WriteString(packageName)
 	w.WriteString("\n\n")
 
-	w.WriteString("var LogFile=[]byte(`")
+	w.WriteString("var logFile=[]byte(`")
 	data, err := ioutil.ReadFile(logFile)
 	if err != nil {
 		panic(err)

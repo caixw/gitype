@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/caixw/typing/core"
 	"github.com/issue9/logs"
 )
 
@@ -50,7 +51,7 @@ func (c *comment) Meta() string {
 func getComments(w http.ResponseWriter, r *http.Request) {
 	var page, size, state int
 	var ok bool
-	if state, ok = queryInt(w, r, "state", commentStateAll); !ok {
+	if state, ok = core.QueryInt(w, r, "state", commentStateAll); !ok {
 		return
 	}
 
@@ -61,25 +62,25 @@ func getComments(w http.ResponseWriter, r *http.Request) {
 	count, err := sql.Count(true)
 	if err != nil {
 		logs.Error("getComments:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	if page, ok = queryInt(w, r, "page", 0); !ok {
+	if page, ok = core.QueryInt(w, r, "page", 0); !ok {
 		return
 	}
-	if size, ok = queryInt(w, r, "size", opt.PageSize); !ok {
+	if size, ok = core.QueryInt(w, r, "size", opt.PageSize); !ok {
 		return
 	}
 	sql.Limit(size, page*size)
 	maps, err := sql.SelectMap(true, "*")
 	if err != nil {
 		logs.Error("getComments:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	renderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "comments": maps}, nil)
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "comments": maps}, nil)
 }
 
 // @api put /admin/api/comments/{id} 修改评论，只能修改管理员发布的评论
@@ -93,7 +94,7 @@ func getComments(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 200 ok
 func putComment(w http.ResponseWriter, r *http.Request) {
-	id, ok := paramID(w, r, "id")
+	id, ok := core.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
@@ -102,11 +103,11 @@ func putComment(w http.ResponseWriter, r *http.Request) {
 	cnt, err := db.Count(c)
 	if err != nil {
 		logs.Error("putComment:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	if cnt == 0 {
-		renderJSON(w, http.StatusNotFound, nil, nil)
+		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
@@ -114,7 +115,7 @@ func putComment(w http.ResponseWriter, r *http.Request) {
 		Content string `json:"content"`
 	}{}
 
-	if !readJSON(w, r, ct) {
+	if !core.ReadJSON(w, r, ct) {
 		return
 	}
 
@@ -122,10 +123,10 @@ func putComment(w http.ResponseWriter, r *http.Request) {
 
 	if _, err = db.Update(c); err != nil {
 		logs.Error("putComment", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	renderJSON(w, http.StatusNoContent, nil, nil)
+	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // @api post /admin/api/comments/{id}/waiting 将评论的状态改为waiting
@@ -153,7 +154,7 @@ func setCommentApproved(w http.ResponseWriter, r *http.Request) {
 }
 
 func setCommentState(w http.ResponseWriter, r *http.Request, state int) {
-	id, ok := paramID(w, r, "id")
+	id, ok := core.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
@@ -161,10 +162,10 @@ func setCommentState(w http.ResponseWriter, r *http.Request, state int) {
 	c := &comment{ID: id, State: state}
 	if _, err := db.Update(c); err != nil {
 		logs.Error("setCommentState:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	renderJSON(w, http.StatusNoContent, nil, nil)
+	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // @api post /admin/api/comments 提交新评论
@@ -183,7 +184,7 @@ func adminPostComment(w http.ResponseWriter, r *http.Request) {
 		Content string `json:"content"`
 	}{}
 
-	if !readJSON(w, r, c) {
+	if !core.ReadJSON(w, r, c) {
 		return
 	}
 
@@ -202,8 +203,8 @@ func adminPostComment(w http.ResponseWriter, r *http.Request) {
 	}
 	if _, err := db.Insert(comm); err != nil {
 		logs.Error("adminPostComment:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	renderJSON(w, http.StatusCreated, nil, nil)
+	core.RenderJSON(w, http.StatusCreated, nil, nil)
 }

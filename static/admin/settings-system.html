@@ -29,15 +29,6 @@
             <input id="description" type="text" value="" />
             <div class="description">页面的默认description</div>
         </div>
-
-        <div class="field">
-            <label for="pretty">格式化输出</label>
-            <div class="ui toggle checkbox">
-                <label for="pretty">启用</label>
-                <input class="hidden" id="pretty" type="checkbox" value="1" tabindex="0" />
-            </div>
-            <div class="description">格式化输出内容，包括api和普通的html输出！</div>
-        </div>
     </form>
 </div>
 
@@ -84,16 +75,7 @@ $(document).ready(function(){
     var pageSize    = getData('pageSize');
     var keywords    = getData('keywords');
     var description = getData('description');
-    var pretty = get({
-        'url': '/admin/api/options/pretty'
-    }).done(function(data, textStatus, jqXHR){
-        $('#pretty').val(data.value);
-        $('#pretty').prop('checked', data.value ? true : false);
-    }).fail(function(){
-        showMessage('red', '加载pretty资源失败');
-    });
-
-    $.when(siteName, siteURL, pageSize, keywords, description, pretty).always(function(){
+    $.when(siteName, siteURL, pageSize, keywords, description).always(function(){
         $('form').removeClass('loading');
     });
     /* END -- 加载数据 */
@@ -104,19 +86,6 @@ $(document).ready(function(){
     patchData('pageSize')
     patchData('keywords')
     patchData('description')
-    $('#pretty').on('change', function(){
-        patch({
-            'url': '/admin/api/options/pretty',
-            'data':JSON.stringify({"value":$('#pretty').prop('checked') ? '1' : '0'})
-        }).done(function(){
-            $('#pretty').attr('data-default', $('#pretty').val());
-            showMessage('green', '更新已经保存');
-        }).fail(function(){
-            $('#pretty').val($('#pretty').attr('data-default'));
-            showMessage('red', '更新'+id+'资源失败');
-        });
-    });
-
     /* END -- patch */
 });
 </script>

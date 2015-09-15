@@ -2,7 +2,7 @@
 
 package install
 
-var LogFile=[]byte(`<?xml version="1.0" encoding="utf-8" ?>
+var logFile=[]byte(`<?xml version="1.0" encoding="utf-8" ?>
 <logs>
     <info prefix="[INFO]" flag="">
         <console output="stderr" foreground="green" background="black" />

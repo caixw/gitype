@@ -2,26 +2,19 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package main
+package core
 
 import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 
-	"github.com/issue9/orm"
-	"github.com/issue9/orm/dialect"
-	"github.com/issue9/orm/forward"
 	"github.com/issue9/web"
-
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/lib/pq"
-	_ "github.com/mattn/go-sqlite3"
 )
 
-// 从app.json加载的配置内容。若要修改app.json的内容，需要重新运行程序。
-// 只有重启才能配置的参数，写入到config中，其它参数可以在options中指定。
-type config struct {
+// Config 表示程序级别的配置，修改这些配置需要重启程序才能启作用，
+// 比如数据库初始化信息，路由项设置等。
+type Config struct {
 	Core *web.Config `json:"core"`
 
 	DBDSN    string `json:"dbDSN"`
@@ -34,14 +27,14 @@ type config struct {
 	ThemeDir string `json:"themeDir"` // 主题文件所在的目录
 }
 
-// 加载配置文件到全局变量cfg中。
-func loadConfig() (*config, error) {
-	data, err := ioutil.ReadFile(configPath)
+// LoadConfig 用于加载path的内容，并尝试将其转换成Config实例。
+func LoadConfig(path string) (*Config, error) {
+	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	cfg := &config{}
+	cfg := &Config{}
 	err = json.Unmarshal(data, cfg)
 	if err != nil {
 		return nil, err
@@ -76,21 +69,4 @@ func loadConfig() (*config, error) {
 	}
 
 	return cfg, nil
-}
-
-// 从cfg中初始化一个*orm.DB实例
-func initDB(cfg *config) (*orm.DB, error) {
-	var d forward.Dialect
-	switch cfg.DBDriver {
-	case "sqlite3":
-		d = dialect.Sqlite3()
-	case "mysql":
-		d = dialect.Mysql()
-	case "postgres":
-		d = dialect.Postgres()
-	default:
-		return nil, errors.New("不能理解的dbDriver值：" + cfg.DBDriver)
-	}
-
-	return orm.NewDB(cfg.DBDriver, cfg.DBDSN, cfg.DBPrefix, d)
 }

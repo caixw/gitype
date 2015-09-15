@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/caixw/typing/core"
 	"github.com/issue9/conv"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
@@ -26,7 +27,6 @@ type options struct {
 	SiteName    string `options:"system,siteName"`    // 重置的默认密码
 	SiteURL     string `options:"system,siteURL"`     // 网站的url
 	PageSize    int    `options:"system,pageSize"`    // 默认每页显示的数量
-	Pretty      bool   `options:"system,pretty"`      // 格式化输出内容
 	Keywords    string `options:"system,keywords"`    // 默认页面的keywords内容
 	Description string `options:"system,description"` // 默认页面的description内容
 
@@ -167,7 +167,7 @@ func loadOptions() (*options, error) {
 // { "value": "abcdef" }
 // @apiSuccess 204 no content
 func adminPatchOption(w http.ResponseWriter, r *http.Request) {
-	key, ok := paramString(w, r, "key")
+	key, ok := core.ParamString(w, r, "key")
 	if !ok {
 		return
 	}
@@ -176,30 +176,30 @@ func adminPatchOption(w http.ResponseWriter, r *http.Request) {
 	cnt, err := db.Count(o)
 	if err != nil {
 		logs.Error("patchOption:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	if cnt == 0 {
-		renderJSON(w, http.StatusNotFound, nil, nil)
+		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
-	if !readJSON(w, r, o) {
+	if !core.ReadJSON(w, r, o) {
 		return
 	}
 
 	if o.Key != key || len(o.Group) > 0 { // 提交了额外的数据内容
-		renderJSON(w, http.StatusBadRequest, nil, nil)
+		core.RenderJSON(w, http.StatusBadRequest, nil, nil)
 		return
 	}
 
 	if err := patchOption(o); err != nil {
 		logs.Error("patchOption:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	renderJSON(w, http.StatusNoContent, nil, nil)
+	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 func patchOption(o *option) error {
@@ -222,21 +222,21 @@ func patchOption(o *option) error {
 // @apiExample json
 // { "value": "20" }
 func adminGetOption(w http.ResponseWriter, r *http.Request) {
-	key, ok := paramString(w, r, "key")
+	key, ok := core.ParamString(w, r, "key")
 	if !ok {
 		return
 	}
 
 	if key == "password" {
-		renderJSON(w, http.StatusBadRequest, nil, nil)
+		core.RenderJSON(w, http.StatusBadRequest, nil, nil)
 		return
 	}
 
 	val, found := opt.getValueByKey(key)
 	if !found {
-		renderJSON(w, http.StatusNotFound, nil, nil)
+		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
-	renderJSON(w, http.StatusOK, map[string]interface{}{"value": val}, nil)
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"value": val}, nil)
 }

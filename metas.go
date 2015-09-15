@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/caixw/typing/core"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
 )
@@ -60,7 +61,7 @@ func frontGetTags(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query(true, sql, metaTypeTag)
 	if err != nil {
 		logs.Error("getTags:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -68,11 +69,11 @@ func frontGetTags(w http.ResponseWriter, r *http.Request) {
 	rows.Close()
 	if err != nil {
 		logs.Error("getTags:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	renderJSON(w, http.StatusOK, map[string]interface{}{"tags": maps}, nil)
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"tags": maps}, nil)
 }
 
 // @api get /api/cats 获取所有的分类
@@ -93,7 +94,7 @@ func frontGetCats(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query(true, sql, metaTypeCat)
 	if err != nil {
 		logs.Error("frontGetCats:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -101,11 +102,11 @@ func frontGetCats(w http.ResponseWriter, r *http.Request) {
 	rows.Close()
 	if err != nil {
 		logs.Error("frontGetCats:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	renderJSON(w, http.StatusOK, map[string]interface{}{"cats": maps}, nil)
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"cats": maps}, nil)
 }
 
 // @api put /admin/api/tags/{id} 修改某id的标签内容
@@ -279,12 +280,12 @@ func metaNameIsExists(m *meta) (bool, error) {
 // 供putCat和putTag调用
 func putMeta(w http.ResponseWriter, r *http.Request) {
 	m := &meta{}
-	if !readJSON(w, r, m) {
+	if !core.ReadJSON(w, r, m) {
 		return
 	}
 
 	var ok bool
-	m.ID, ok = paramID(w, r, "id")
+	m.ID, ok = core.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
@@ -292,11 +293,11 @@ func putMeta(w http.ResponseWriter, r *http.Request) {
 	exists, err := metaNameIsExists(m)
 	if err != nil {
 		logs.Error("getMetaFromRequest:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	errs := &ErrorResult{Message: "格式错误"}
+	errs := &core.ErrorResult{Message: "格式错误"}
 	if exists {
 		errs.Detail["name"] = "已有同名字体段"
 	}
@@ -308,26 +309,26 @@ func putMeta(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(errs.Detail) > 0 {
-		renderJSON(w, http.StatusBadRequest, errs, nil)
+		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
 		return
 	}
 
 	if _, err := db.Update(m); err != nil {
 		logs.Error("putMeta:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	renderJSON(w, http.StatusNoContent, nil, nil)
+	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // 供postCat和postTag调用
 func postMeta(w http.ResponseWriter, r *http.Request) {
 	m := &meta{}
-	if !readJSON(w, r, m) {
+	if !core.ReadJSON(w, r, m) {
 		return
 	}
 
-	errs := &ErrorResult{Message: "格式错误"}
+	errs := &core.ErrorResult{Message: "格式错误"}
 	if m.ID > 0 {
 		errs.Detail["id"] = "不允许的字段"
 	}
@@ -336,7 +337,7 @@ func postMeta(w http.ResponseWriter, r *http.Request) {
 	exists, err := metaNameIsExists(m)
 	if err != nil {
 		logs.Error("getMetaFromRequest:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -351,21 +352,21 @@ func postMeta(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(errs.Detail) > 0 {
-		renderJSON(w, http.StatusBadRequest, errs, nil)
+		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
 		return
 	}
 
 	if _, err := db.Insert(m); err != nil {
 		logs.Error("postMeta:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	renderJSON(w, http.StatusCreated, nil, nil)
+	core.RenderJSON(w, http.StatusCreated, nil, nil)
 }
 
 // 删除meta数据，供deleteCat和deleteTag调用
 func deleteMeta(w http.ResponseWriter, r *http.Request) {
-	id, ok := paramID(w, r, "id")
+	id, ok := core.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
@@ -373,13 +374,13 @@ func deleteMeta(w http.ResponseWriter, r *http.Request) {
 	tx, err := db.Begin()
 	if err != nil {
 		logs.Error("deleteMeta:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	if _, err := tx.Delete(&meta{ID: id}); err != nil {
 		logs.Error("deleteMeta:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -387,18 +388,18 @@ func deleteMeta(w http.ResponseWriter, r *http.Request) {
 	sql := "DELETE FROM #relationships WHERE {MetaID}=?"
 	if _, err := tx.Exec(true, sql, id); err != nil {
 		logs.Error("deleteMeta:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	if err := tx.Commit(); err != nil {
 		logs.Error("deleteMeta:", err)
 		tx.Rollback()
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	renderJSON(w, http.StatusNoContent, nil, nil)
+	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // 获取与某post相关联的数据

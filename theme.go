@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/caixw/typing/core"
 	"github.com/issue9/logs"
 )
 
@@ -94,7 +95,7 @@ func loadCurrTheme() (err error) {
 // @apiSuccess 200 OK
 // @apiParam themes array 所有主题列表
 func adminGetThemes(w http.ResponseWriter, r *http.Request) {
-	renderJSON(w, http.StatusOK, map[string]interface{}{"themes": themes}, nil)
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"themes": themes}, nil)
 }
 
 // @api patch /admin/api/themes/current 更改当前的主题
@@ -106,25 +107,25 @@ func adminGetThemes(w http.ResponseWriter, r *http.Request) {
 // @apiSuccess 200 OK
 func adminPostTheme(w http.ResponseWriter, r *http.Request) {
 	o := &option{Key: "theme"}
-	if !readJSON(w, r, o) {
+	if !core.ReadJSON(w, r, o) {
 		return
 	}
 
 	if o.Key != "theme" || len(o.Group) > 0 { // 提交了额外的数据内容
-		renderJSON(w, http.StatusBadRequest, nil, nil)
+		core.RenderJSON(w, http.StatusBadRequest, nil, nil)
 		return
 	}
 
 	if err := patchOption(o); err != nil {
 		logs.Error("adminPostTheme:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	if err := loadCurrTheme(); err != nil {
 		logs.Error("adminPostTheme:", err)
-		renderJSON(w, http.StatusInternalServerError, nil, nil)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	renderJSON(w, http.StatusNoContent, nil, nil)
+	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }

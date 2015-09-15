@@ -5,12 +5,21 @@
 package main
 
 import (
+	"errors"
 	"flag"
 
+	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/install"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 	"github.com/issue9/orm"
+	"github.com/issue9/orm/dialect"
+	"github.com/issue9/orm/forward"
 	"github.com/issue9/web"
+
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // 以下为一些源码级别的配置项，仅供强迫症患者使用。
@@ -36,12 +45,15 @@ func main() {
 	flag.Parse()
 	switch *action {
 	case "config":
-		if err := outputConfig(); err != nil {
+		if err := install.OutputLogsConfigFile(logConfigPath); err != nil {
+			panic(err)
+		}
+		if err := install.OutputConfigFile(configPath); err != nil {
 			panic(err)
 		}
 		return
 	case "db":
-		cfg, err := loadConfig()
+		cfg, err := core.LoadConfig(configPath)
 		if err != nil {
 			panic(err)
 		}
@@ -57,7 +69,7 @@ func main() {
 		return
 	}
 
-	cfg, err := loadConfig()
+	cfg, err := core.LoadConfig(configPath)
 	if err != nil {
 		panic(err)
 	}
@@ -88,8 +100,25 @@ func main() {
 	db.Close()
 }
 
+// 从一个Config实例中初始一个orm.DB实例。
+func initDB(cfg *core.Config) (*orm.DB, error) {
+	var d forward.Dialect
+	switch cfg.DBDriver {
+	case "sqlite3":
+		d = dialect.Sqlite3()
+	case "mysql":
+		d = dialect.Mysql()
+	case "postgres":
+		d = dialect.Postgres()
+	default:
+		return nil, errors.New("不能理解的dbDriver值：" + cfg.DBDriver)
+	}
+
+	return orm.NewDB(cfg.DBDriver, cfg.DBDSN, cfg.DBPrefix, d)
+}
+
 // 初始化模块，及与模块相对应的路由。
-func initModule(cfg *config) error {
+func initModule(cfg *core.Config) error {
 	m, err := web.NewModule("admin")
 	if err != nil {
 		return err

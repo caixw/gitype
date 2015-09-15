@@ -36,7 +36,6 @@ func TestOptions_toMaps(t *testing.T) {
 
 	opt := &options{
 		PageSize: 30,
-		Pretty:   true,
 	}
 
 	maps, err := opt.toMaps()
@@ -44,10 +43,6 @@ func TestOptions_toMaps(t *testing.T) {
 	for _, item := range maps {
 		if item["group"] == "system" && item["key"] == "pageSize" {
 			a.Equal(item["value"], "30")
-		}
-
-		if item["group"] == "system" && item["key"] == "pretty" {
-			a.Equal(item["value"], "true")
 		}
 	}
 }
