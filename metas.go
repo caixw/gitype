@@ -9,39 +9,10 @@ import (
 	"strconv"
 
 	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
 )
-
-const (
-	metaTypeCat = iota + 1
-	metaTypeTag
-)
-
-const metaNoParent = -1
-
-type meta struct {
-	ID          int64  `orm:"name(id);ai"`
-	Name        string `orm:"name(name);len(50);unique(unq_name);nullable" json:"name"` // 唯一名称
-	Parent      int64  `orm:"name(parent)" json:"parent"`                               // 上级类别
-	Type        int    `orm:"name(type)" json:"type"`                                   // 类型
-	Order       int    `orm:"name(order)" json:"order"`                                 // 显示顺序
-	Title       string `orm:"name(title);len(50)" json:"title"`                         // 名称
-	Description string `orm:"name(description);len(-1)" json:"description"`             // 详细描述，可以用html
-}
-
-type relationship struct {
-	PostID int64 `orm:"name(postID);pk"`
-	MetaID int64 `orm:"name(metaID);pk"`
-}
-
-func (m *meta) Meta() string {
-	return `name(metas)`
-}
-
-func (r *relationship) Meta() string {
-	return `name(relationships)`
-}
 
 // @api get /api/tags 获取所有的标签
 // @apiGroup front
@@ -58,7 +29,7 @@ func frontGetTags(w http.ResponseWriter, r *http.Request) {
 			LEFT JOIN #relationships AS r ON m.{id}=r.{metaID}
 			WHERE m.{type}=?
 			GROUP BY m.{id}`
-	rows, err := db.Query(true, sql, metaTypeTag)
+	rows, err := db.Query(true, sql, models.MetaTypeTag)
 	if err != nil {
 		logs.Error("getTags:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -91,7 +62,7 @@ func frontGetCats(w http.ResponseWriter, r *http.Request) {
 			LEFT JOIN #relationships AS r ON m.{id}=r.{metaID}
 			WHERE m.{type}=?
 			GROUP BY m.{id}`
-	rows, err := db.Query(true, sql, metaTypeCat)
+	rows, err := db.Query(true, sql, models.MetaTypeCat)
 	if err != nil {
 		logs.Error("frontGetCats:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -268,8 +239,8 @@ func adminDeleteCat(w http.ResponseWriter, r *http.Request) {
 }
 
 // 是否存在相同name的title
-func metaNameIsExists(m *meta) (bool, error) {
-	m2 := &meta{Name: m.Name}
+func metaNameIsExists(m *models.Meta) (bool, error) {
+	m2 := &models.Meta{Name: m.Name}
 	if err := db.Select(m2); err != nil {
 		return true, err
 	}
@@ -279,7 +250,7 @@ func metaNameIsExists(m *meta) (bool, error) {
 
 // 供putCat和putTag调用
 func putMeta(w http.ResponseWriter, r *http.Request) {
-	m := &meta{}
+	m := &models.Meta{}
 	if !core.ReadJSON(w, r, m) {
 		return
 	}
@@ -323,7 +294,7 @@ func putMeta(w http.ResponseWriter, r *http.Request) {
 
 // 供postCat和postTag调用
 func postMeta(w http.ResponseWriter, r *http.Request) {
-	m := &meta{}
+	m := &models.Meta{}
 	if !core.ReadJSON(w, r, m) {
 		return
 	}
@@ -378,7 +349,7 @@ func deleteMeta(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := tx.Delete(&meta{ID: id}); err != nil {
+	if _, err := tx.Delete(&models.Meta{ID: id}); err != nil {
 		logs.Error("deleteMeta:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return

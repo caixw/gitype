@@ -59,6 +59,9 @@ func LoadConfig(path string) (*Config, error) {
 	if len(cfg.ThemeDir) == 0 {
 		return nil, errors.New("themeDir未指定")
 	}
+	if cfg.ThemeDir[len(cfg.ThemeDir)-1] != '/' {
+		return nil, errors.New("themeDir只能以/结尾")
+	}
 
 	if len(cfg.DBDSN) == 0 {
 		return nil, errors.New("app.json中未指定dbDSN")

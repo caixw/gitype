@@ -12,38 +12,10 @@ import (
 	"time"
 
 	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
 	"github.com/issue9/is"
 	"github.com/issue9/logs"
 )
-
-const (
-	postStateAll    = iota // 表示所有状态
-	postStateNormal        // 正常状态
-	postStateDraft         // 草稿
-)
-
-// 文章内容
-type post struct {
-	ID       int64  `orm:"name(id);ai"`
-	Name     string `orm:"name(name);len(50);nullable;unique(unq_name)"` // 唯一名称
-	Title    string `orm:"name(title);len(200)"`                         // 标题
-	Summary  string `orm:"name(summary);len(2000)"`                      // 内容摘要
-	Content  string `orm:"name(content);len(-1)"`                        // 实际内容
-	State    int    `orm:"name(state)"`                                  // 状态
-	Order    int    `orm:"name(order)"`                                  // 排序
-	Template string `orm:"name(template)"`                               // 使用的模板
-	Password string `orm:"name(password)"`                               // 访问密码
-
-	Created  int64 `orm:"name(created)"`  // 创建时间
-	Modified int64 `orm:"name(modified)"` // 最后次修改时间
-
-	AllowPing    bool `orm:"name(allowPing)"`
-	AllowComment bool `orm:"name(allowComment)"`
-}
-
-func (p *post) Meta() string {
-	return `orm:"name(posts)"`
-}
 
 // @api post /admin/api/posts 新建文章
 // @apiGroup admin
@@ -86,12 +58,12 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 
 	tx, err := db.Begin()
 	if err != nil {
-		logs.Error("postPost:", err)
+		logs.Error("adminPostPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	pp := &post{
+	pp := &models.Post{
 		Name:         p.Name,
 		Title:        p.Title,
 		Summary:      p.Summary,
@@ -108,27 +80,27 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	// 插入文章
 	result, err := tx.Insert(pp)
 	if err != nil {
-		logs.Error("postPost:", err)
+		logs.Error("adminPostPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	postID, err := result.LastInsertId()
 	if err != nil {
-		logs.Error("postPost:", err)
+		logs.Error("adminPostPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	// 插入relationship
-	rs := make([]*relationship, 0, len(p.Tags)+len(p.Cats))
+	rs := make([]*models.Relationship, 0, len(p.Tags)+len(p.Cats))
 	for _, v := range p.Tags {
-		rs = append(rs, &relationship{PostID: postID, MetaID: v})
+		rs = append(rs, &models.Relationship{PostID: postID, MetaID: v})
 	}
 	for _, v := range p.Cats {
-		rs = append(rs, &relationship{PostID: postID, MetaID: v})
+		rs = append(rs, &models.Relationship{PostID: postID, MetaID: v})
 	}
 	if err := tx.InsertMany(rs); err != nil {
-		logs.Error("postPost:", err)
+		logs.Error("adminPostPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
@@ -136,7 +108,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	// commit
 	if err := tx.Commit(); err != nil {
 		tx.Rollback()
-		logs.Error("postPost:", err)
+		logs.Error("adminPostPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
@@ -186,7 +158,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pp := &post{
+	pp := &models.Post{
 		ID:           id,
 		Name:         p.Name,
 		Title:        p.Title,
@@ -227,12 +199,12 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 添加新的关联
-	rs := make([]*relationship, 0, len(p.Tags)+len(p.Cats))
+	rs := make([]*models.Relationship, 0, len(p.Tags)+len(p.Cats))
 	for _, v := range p.Tags {
-		rs = append(rs, &relationship{MetaID: v, PostID: pp.ID})
+		rs = append(rs, &models.Relationship{MetaID: v, PostID: pp.ID})
 	}
 	for _, v := range p.Cats {
-		rs = append(rs, &relationship{MetaID: v, PostID: pp.ID})
+		rs = append(rs, &models.Relationship{MetaID: v, PostID: pp.ID})
 	}
 	if err := tx.InsertMany(rs); err != nil {
 		logs.Error("putPost:", err)
@@ -319,12 +291,12 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 func adminGetPosts(w http.ResponseWriter, r *http.Request) {
 	var page, size, state int
 	var ok bool
-	if state, ok = core.QueryInt(w, r, "state", commentStateAll); !ok {
+	if state, ok = core.QueryInt(w, r, "state", models.CommentStateAll); !ok {
 		return
 	}
 
 	sql := db.SQL().Table("#posts")
-	if state != postStateAll {
+	if state != models.PostStateAll {
 		sql.And("{state}=?", state)
 	}
 	count, err := sql.Count(true)
@@ -379,21 +351,21 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := &post{ID: id}
+	p := &models.Post{ID: id}
 	if err := db.Select(p); err != nil {
 		logs.Error("adminGetPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	tags, err := getPostMetas(id, metaTypeTag)
+	tags, err := getPostMetas(id, models.MetaTypeTag)
 	if err != nil {
 		logs.Error("adminGetPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	cats, err := getPostMetas(id, metaTypeCat)
+	cats, err := getPostMetas(id, models.MetaTypeCat)
 	if err != nil {
 		logs.Error("adminGetPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -457,26 +429,26 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := &post{ID: id}
+	p := &models.Post{ID: id}
 	if err := db.Select(p); err != nil {
 		logs.Error("getPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	if p.State != postStateNormal {
+	if p.State != models.PostStateNormal {
 		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
-	tags, err := getPostMetas(id, metaTypeTag)
+	tags, err := getPostMetas(id, models.MetaTypeTag)
 	if err != nil {
 		logs.Error("getPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	cats, err := getPostMetas(id, metaTypeCat)
+	cats, err := getPostMetas(id, models.MetaTypeCat)
 	if err != nil {
 		logs.Error("getPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -518,7 +490,7 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 200 OK
 func frontGetPosts(w http.ResponseWriter, r *http.Request) {
-	sql := db.Where("{state}=?", postStateNormal).Table("#posts")
+	sql := db.Where("{state}=?", models.PostStateNormal).Table("#posts")
 	count, err := sql.Count(true)
 	if err != nil {
 		logs.Error("adminGetPosts:", err)
@@ -559,20 +531,20 @@ func frontGetPostComments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := &post{ID: id}
+	p := &models.Post{ID: id}
 	if err := db.Select(p); err != nil {
 		logs.Error("frontGetPostComments:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	if p.State != postStateNormal {
+	if p.State != models.PostStateNormal {
 		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
 	sql := db.Where("{postID}=?", id).
-		And("{state}=?", commentStateApproved).
+		And("{state}=?", models.CommentStateApproved).
 		Table("#comments")
 	count, err := sql.Count(true)
 	if err != nil {
@@ -631,13 +603,13 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := &post{ID: c.PostID}
+	p := &models.Post{ID: c.PostID}
 	if err := db.Select(p); err != nil {
-		logs.Error("postPostComment:", err)
+		logs.Error("forntPostPostComment:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	if (len(p.Title) == 0 && len(p.Content) == 0) || p.State != postStateNormal {
+	if (len(p.Title) == 0 && len(p.Content) == 0) || p.State != models.PostStateNormal {
 		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
@@ -678,7 +650,7 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 	c.Content = html.EscapeString(c.Content)
 	c.Content = strings.Replace(c.Content, "\n", "<br />", -1)
 
-	comm := &comment{
+	comm := &models.Comment{
 		PostID:      c.PostID,
 		Parent:      c.Parent,
 		AuthorURL:   c.AuthorURL,
@@ -686,7 +658,7 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 		AuthorEmail: c.AuthorEmail,
 		Content:     c.Content,
 		Created:     time.Now().Unix(),
-		State:       commentStateWaiting,
+		State:       models.CommentStateWaiting,
 		IP:          r.RemoteAddr,
 		Agent:       r.UserAgent(),
 		IsAdmin:     false,

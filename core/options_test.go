@@ -2,11 +2,12 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package main
+package core
 
 import (
 	"testing"
 
+	"github.com/caixw/typing/models"
 	"github.com/issue9/assert"
 )
 
@@ -26,19 +27,19 @@ func TestOptions_fromMaps(t *testing.T) {
 		},
 	}
 
-	opt := &options{}
+	opt := &Options{}
 	a.NotError(opt.fromMaps(maps))
 	a.Equal(opt.PageSize, 50)
 }
 
-func TestOptions_toMaps(t *testing.T) {
+func TestOptions_ToMaps(t *testing.T) {
 	a := assert.New(t)
 
-	opt := &options{
+	opt := &Options{
 		PageSize: 30,
 	}
 
-	maps, err := opt.toMaps()
+	maps, err := opt.ToMaps()
 	a.NotError(err)
 	for _, item := range maps {
 		if item["group"] == "system" && item["key"] == "pageSize" {
@@ -47,23 +48,23 @@ func TestOptions_toMaps(t *testing.T) {
 	}
 }
 
-func TestOptions_updateFromOption(t *testing.T) {
+func TestOptions_UpdateFromOption(t *testing.T) {
 	a := assert.New(t)
-	opt := &options{}
+	opt := &Options{}
 
-	o := &option{Key: "pageSize", Group: "system", Value: "25"}
-	a.NotError(opt.updateFromOption(o))
+	o := &models.Option{Key: "pageSize", Group: "system", Value: "25"}
+	a.NotError(opt.UpdateFromOption(o))
 	a.Equal(opt.PageSize, 25)
 
-	o = &option{Key: "pageSize", Group: "system", Value: "45"}
-	a.NotError(opt.updateFromOption(o))
+	o = &models.Option{Key: "pageSize", Group: "system", Value: "45"}
+	a.NotError(opt.UpdateFromOption(o))
 	a.Equal(opt.PageSize, 45)
 }
 
-func TestOptions_getValueByKey(t *testing.T) {
+func TestOptions_GetValueByKey(t *testing.T) {
 	a := assert.New(t)
-	opt := &options{PageSize: 22}
+	opt := &Options{PageSize: 22}
 
-	val, found := opt.getValueByKey("pageSize")
+	val, found := opt.GetValueByKey("pageSize")
 	a.True(found).Equal(val, 22)
 }

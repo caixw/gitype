@@ -22,7 +22,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// 以下为一些源码级别的配置项，仅供强迫症患者使用。
+// 以下为一些源码级别的配置项。
 const (
 	version = "0.1.1.150914" // 版本号
 
@@ -30,14 +30,14 @@ const (
 	configPath    = "./config/app.json"
 	logConfigPath = "./config/logs.xml"
 
-	defaultPassword = "123" // 后台默认的登录密码
-
-	themeURLPrefix = "/themes/" // 主题静态文件的前缀
+	themeURLPrefix = "/themes" // 主题静态文件的前缀
 )
 
+// 一些全局变量
 var (
-	db  *orm.DB // 数据库实例
-	opt *options
+	db     *orm.DB // 数据库实例
+	opt    *core.Options
+	themes *core.Themes
 )
 
 func main() {
@@ -45,10 +45,7 @@ func main() {
 	flag.Parse()
 	switch *action {
 	case "config":
-		if err := install.OutputLogsConfigFile(logConfigPath); err != nil {
-			panic(err)
-		}
-		if err := install.OutputConfigFile(configPath); err != nil {
+		if err := install.OutputConfigFile(logConfigPath, configPath); err != nil {
 			panic(err)
 		}
 		return
@@ -63,7 +60,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		if err := fillDB(db); err != nil {
+		if err := install.FillDB(db); err != nil {
 			panic(err)
 		}
 		return
@@ -83,18 +80,25 @@ func main() {
 		panic(err)
 	}
 
-	if opt, err = loadOptions(); err != nil {
+	if opt, err = core.LoadOptions(db); err != nil {
 		panic(err)
 	}
 
-	if err := initThemes(cfg.ThemeDir); err != nil {
+	themes, err = core.LoadThemes(cfg.ThemeDir, opt.Theme)
+	if err != nil {
 		panic(err)
+	}
+
+	static := themes.StaticRouteMap(themeURLPrefix)
+	for k, v := range static {
+		cfg.Core.Static[k] = v
 	}
 
 	if err := initModule(cfg); err != nil {
 		panic(err)
 	}
 
+	//cfg.Core.Static[themeURLPrefix] = cfg.ThemeDir
 	cfg.Core.ErrHandler = mux.PrintDebug
 	web.Run(cfg.Core)
 	db.Close()
@@ -119,25 +123,35 @@ func initDB(cfg *core.Config) (*orm.DB, error) {
 
 // 初始化模块，及与模块相对应的路由。
 func initModule(cfg *core.Config) error {
+	// 初始化后的api
 	m, err := web.NewModule("admin")
 	if err != nil {
 		return err
 	}
 	initAdminAPIRoutes(m.Prefix(cfg.AdminAPIPrefix))
 
+	// 初始化前台使用的api
 	m, err = web.NewModule("front")
 	if err != nil {
 		return err
 	}
 	initFrontAPIRoutes(m.Prefix(cfg.FrontAPIPrefix))
 
+	// 初始化前端页面路由
 	initFrontPageRoutes(m)
 
 	return nil
 }
 
 func initFrontPageRoutes(m *web.Module) {
-	m.GetFunc("/", pageIndex)
+	m.GetFunc("/", pageIndex).
+		GetFunc("", pageIndex).
+		GetFunc("/cats", pageCats).
+		GetFunc("/tags", pageTags).
+		GetFunc("/tags/{id}", pageTag).
+		GetFunc("/cats/{id}", pageCat).
+		GetFunc("/posts", pagePosts).
+		GetFunc("/posts/{id}", pagePost)
 }
 
 func initFrontAPIRoutes(front *mux.Prefix) {
@@ -171,12 +185,12 @@ func initAdminAPIRoutes(admin *mux.Prefix) {
 		Post("/tags", loginHandlerFunc(adminPostTag))
 
 	// comments
-	admin.Get("/comments", loginHandlerFunc(getComments)).
+	admin.Get("/comments", loginHandlerFunc(adminGetComments)).
 		Post("/comments", loginHandlerFunc(adminPostComment)).
-		Put("/comments/{id:\\d+}", loginHandlerFunc(putComment)).
-		Post("/comments/{id:\\d+}/waiting", loginHandlerFunc(setCommentWaiting)).
-		Post("/comments/{id:\\d+}/spam", loginHandlerFunc(setCommentSpam)).
-		Post("/comments/{id:\\d+}/approved", loginHandlerFunc(setCommentApproved))
+		Put("/comments/{id:\\d+}", loginHandlerFunc(adminPutComment)).
+		Post("/comments/{id:\\d+}/waiting", loginHandlerFunc(adminSetCommentWaiting)).
+		Post("/comments/{id:\\d+}/spam", loginHandlerFunc(adminSetCommentSpam)).
+		Post("/comments/{id:\\d+}/approved", loginHandlerFunc(adminSetCommentApproved))
 
 	admin.Get("/posts", loginHandlerFunc(adminGetPosts)).
 		Post("/posts", loginHandlerFunc(adminPostPost)).

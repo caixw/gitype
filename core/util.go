@@ -120,9 +120,9 @@ func ParamString(w http.ResponseWriter, r *http.Request, key string) (string, bo
 	return v, true
 }
 
-// 获取路径匹配中的参数，并以int64的格式返回。
+// ParamInt64 功能同ParamString，但会尝试将返回值转换成int64类型。
 // 若不能找到该参数，返回false
-func paramInt64(w http.ResponseWriter, r *http.Request, key string) (int64, bool) {
+func ParamInt64(w http.ResponseWriter, r *http.Request, key string) (int64, bool) {
 	v, ok := ParamString(w, r, key)
 	if !ok {
 		return 0, false
@@ -130,7 +130,7 @@ func paramInt64(w http.ResponseWriter, r *http.Request, key string) (int64, bool
 
 	num, err := strconv.ParseInt(v, 10, 64)
 	if err != nil {
-		logs.Error("paramInt64:", err)
+		logs.Error("ParamInt64:", err)
 		RenderJSON(w, http.StatusGone, nil, nil)
 		return 0, false
 	}
@@ -138,14 +138,15 @@ func paramInt64(w http.ResponseWriter, r *http.Request, key string) (int64, bool
 	return num, true
 }
 
+// ParamID 功能同ParamInt64，但值必须大于0
 func ParamID(w http.ResponseWriter, r *http.Request, key string) (int64, bool) {
-	num, ok := paramInt64(w, r, key)
+	num, ok := ParamInt64(w, r, key)
 	if !ok {
 		return 0, false
 	}
 
 	if num <= 0 {
-		logs.Error("paramID:用户指定了一个小于0的id值:", num)
+		logs.Error("ParamID:用户指定了一个小于0的id值:", num)
 		RenderJSON(w, http.StatusGone, nil, nil)
 		return 0, false
 	}
@@ -153,7 +154,7 @@ func ParamID(w http.ResponseWriter, r *http.Request, key string) (int64, bool) {
 	return num, true
 }
 
-// 获取查询参数key的值，并将其转换成Int类型，若该值不存在返回def作为其默认值，
+// QueryInt 用于获取查询参数key的值，并将其转换成Int类型，若该值不存在返回def作为其默认值，
 // 若是类型不正确，则返回一个false，并向客户端输出一个400错误。
 func QueryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int, bool) {
 	val := r.FormValue(key)
@@ -169,7 +170,8 @@ func QueryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int,
 	return ret, true
 }
 
-// 简单的密码加密函数
+// HashPassword 是一个简单的密码加密函数。
+// 若需要更换密码加密算法，理发此函数即可。
 func HashPassword(password string) string {
 	m := md5.New()
 	m.Write([]byte(password))

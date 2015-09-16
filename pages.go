@@ -10,8 +10,31 @@ import (
 	"github.com/issue9/logs"
 )
 
+type anchor struct {
+	Link  string // 链接地址
+	Title string // 地址的字面文字
+	Ext   string // 扩展内容，比如title,alt等，根据链接来确定
+}
+
+// 页面的基本信息
+type page struct {
+	Title       string
+	Keywords    string
+	Description string
+	AppVersion  string
+	GoVersion   string
+	PostSize    int      // 文章数量
+	CommentSize int      // 评论数量
+	Tags        []anchor // 标签列表
+	Cats        []anchor // 分类列表
+	Topics      []anchor // 最新评论的10条内容
+}
+
 func pageIndex(w http.ResponseWriter, r *http.Request) {
-	if err := tpl.Execute(w, nil); err != nil {
+	data := map[string]interface{}{
+		"page": &page{},
+	}
+	if err := themes.Render(w, "index", data); err != nil {
 		logs.Error("pageIndex:", err)
 	}
 }

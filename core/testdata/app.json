@@ -1,0 +1,21 @@
+{
+    "core":{
+        "https"     : false,
+        "keyFile"   : "keyFile",
+        "certFile"  : "certFile",
+        "port"      : "8080",
+        "serverName": "typing",
+        "static"    : {
+            "/admin": "./static/admin/"
+        }
+    },
+
+    "dbDriver": "sqlite3",
+    "dbDSN"   : "./output/main.db",
+    "dbPrefix": "typing_",
+
+    "frontApiPrefix" : "/api",
+    "adminApiPrefix" : "/admin/api",
+
+    "themeDir":      "./static/front/themes"
+}

@@ -12,6 +12,7 @@ import (
 	"net/http"
 
 	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
 	"github.com/issue9/logs"
 )
 
@@ -109,7 +110,7 @@ func adminChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	o := &option{Key: "passowrd", Value: core.HashPassword(l.New)}
+	o := &models.Option{Key: "passowrd", Value: core.HashPassword(l.New)}
 	if _, err := db.Update(o); err != nil {
 		logs.Error("changePassword:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)

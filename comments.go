@@ -9,35 +9,9 @@ import (
 	"time"
 
 	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
 	"github.com/issue9/logs"
 )
-
-const (
-	commentStateAll      = iota // 表示所有以下的状态。
-	commentStateWaiting         // 等待审核
-	commentStateSpam            // 垃圾评论
-	commentStateApproved        // 通过验证
-)
-
-type comment struct {
-	ID      int64  `orm:"name(id);ai"`
-	Parent  int64  `orm:"name(parent)"`          // 子评论的话，这此为其上一级评论的id
-	Created int64  `orm:"name(created)"`         // 记录创建的时间
-	PostID  int64  `orm:"name(postID)"`          // 被评论的文章id
-	State   int    `orm:"name(state)"`           // 此条记录的状态
-	IP      string `orm:"name(ip);len(50)"`      // 评论者的ip
-	Agent   string `orm:"name(agent);len(200)"`  // 评论者的agent
-	Content string `orm:"name(content);len(-1)"` // 评论内容
-
-	IsAdmin     bool   `orm:"name(isAdmin)"`              // 网站的管理员评论
-	AuthorName  string `orm:"name(authorName);len(20)"`   // 评论用户的名称
-	AuthorEmail string `orm:"name(authorEmail);len(200)"` // 作者邮件地址
-	AuthorURL   string `orm:"name(authorURL);len(200)"`   // 作者站点
-}
-
-func (c *comment) Meta() string {
-	return `name(comments)`
-}
 
 // @api get /admin/api/comments 获取所有评论内容
 // @apiQuery page int
@@ -48,15 +22,15 @@ func (c *comment) Meta() string {
 // @apiSuccess 200 ok
 // @apiParam count int 符合条件(去除page和size条件)的所有评论数量
 // @apiParam comments array 当前页的评论
-func getComments(w http.ResponseWriter, r *http.Request) {
+func adminGetComments(w http.ResponseWriter, r *http.Request) {
 	var page, size, state int
 	var ok bool
-	if state, ok = core.QueryInt(w, r, "state", commentStateAll); !ok {
+	if state, ok = core.QueryInt(w, r, "state", models.CommentStateAll); !ok {
 		return
 	}
 
 	sql := db.SQL().Table("#comments")
-	if state != commentStateAll {
+	if state != models.CommentStateAll {
 		sql.And("{state}=?", state)
 	}
 	count, err := sql.Count(true)
@@ -93,13 +67,13 @@ func getComments(w http.ResponseWriter, r *http.Request) {
 // { "content", "content..." }
 //
 // @apiSuccess 200 ok
-func putComment(w http.ResponseWriter, r *http.Request) {
+func adminPutComment(w http.ResponseWriter, r *http.Request) {
 	id, ok := core.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
 
-	c := &comment{ID: id}
+	c := &models.Comment{ID: id}
 	cnt, err := db.Count(c)
 	if err != nil {
 		logs.Error("putComment:", err)
@@ -133,24 +107,24 @@ func putComment(w http.ResponseWriter, r *http.Request) {
 // @apiGroup admin
 //
 // @apiSuccess 204 no content
-func setCommentWaiting(w http.ResponseWriter, r *http.Request) {
-	setCommentState(w, r, commentStateWaiting)
+func adminSetCommentWaiting(w http.ResponseWriter, r *http.Request) {
+	setCommentState(w, r, models.CommentStateWaiting)
 }
 
 // @api post /admin/api/comments/{id}/spam 将评论的状态改为spam
 // @apiGroup admin
 //
 // @apiSuccess 204 no content
-func setCommentSpam(w http.ResponseWriter, r *http.Request) {
-	setCommentState(w, r, commentStateSpam)
+func adminSetCommentSpam(w http.ResponseWriter, r *http.Request) {
+	setCommentState(w, r, models.CommentStateSpam)
 }
 
 // @api post /admin/api/comments/{id}/approved 将评论的状态改为approved
 // @apiGroup admin
 //
 // @apiSuccess 204 no content
-func setCommentApproved(w http.ResponseWriter, r *http.Request) {
-	setCommentState(w, r, commentStateApproved)
+func adminSetCommentApproved(w http.ResponseWriter, r *http.Request) {
+	setCommentState(w, r, models.CommentStateApproved)
 }
 
 func setCommentState(w http.ResponseWriter, r *http.Request, state int) {
@@ -159,7 +133,7 @@ func setCommentState(w http.ResponseWriter, r *http.Request, state int) {
 		return
 	}
 
-	c := &comment{ID: id, State: state}
+	c := &models.Comment{ID: id, State: state}
 	if _, err := db.Update(c); err != nil {
 		logs.Error("setCommentState:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -188,11 +162,11 @@ func adminPostComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	comm := &comment{
+	comm := &models.Comment{
 		Parent:      c.Parent,
 		PostID:      c.PostID,
 		Content:     c.Content,
-		State:       commentStateApproved,
+		State:       models.CommentStateApproved,
 		IP:          "",
 		Agent:       "",
 		Created:     time.Now().Unix(),
