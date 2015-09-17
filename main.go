@@ -155,6 +155,7 @@ func initFrontPageRoutes(m *web.Module) {
 }
 
 func initFrontAPIRoutes(front *mux.Prefix) {
+	// meta
 	front.GetFunc("/tags", frontGetTags).
 		GetFunc("/cats", frontGetCats)
 
@@ -168,7 +169,8 @@ func initFrontAPIRoutes(front *mux.Prefix) {
 func initAdminAPIRoutes(admin *mux.Prefix) {
 	admin.PostFunc("/login", adminPostLogin).
 		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
-		Put("/password", loginHandlerFunc(adminChangePassword))
+		Put("/password", loginHandlerFunc(adminChangePassword)).
+		Get("/state", loginHandlerFunc(adminGetState))
 
 	// options
 	admin.Get("/options/{key}", loginHandlerFunc(adminGetOption)).

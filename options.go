@@ -96,3 +96,23 @@ func adminGetOption(w http.ResponseWriter, r *http.Request) {
 
 	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"value": val}, nil)
 }
+
+// @api get /admin/api/state 获取当前网站的些基本状态
+// @apiGroup admin
+//
+// @apiSuccess 200 OK
+// @apiParam posts            int 文章的数量
+// @apiParam draftPosts       int 草稿的数量
+// @apiParam normalPosts      int 正式文章的数量
+// @apiParam comments         int 评论数量
+// @apiParam waitingComments  int 待审评论数量
+// @apiParam spamComments     int 垃圾评论数量
+// @apiParam approvedComments int 已审评论数量
+// @apiParam lastLogin        int 最后次登录时间
+// @apiParam lastPost         int 最后次发表文章的时间
+// @apiParam lastIP           string 最后次登录的IP
+// @apiParam lastAgent        string 最后次登录的浏览器相关资料
+// @apiParam screenName       string 用户的当前昵称
+func adminGetState(w http.ResponseWriter, r *http.Request) {
+	// TODO
+}
