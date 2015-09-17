@@ -4,6 +4,13 @@
 // @copyright 2015 by caixw
 // @link https://github.com/caixw/typing
 
+// api的统一前缀
+var adminAPIPrefix = '/admin/api';
+var frontAPIPrefix = '/api';
+
+// 每页加载的记录数量
+var size = 25;
+
 // 加载指定的模板页面，该页页会自动包含菜单等内容。
 // 若未登录，是会自动跳转到登录页面。
 // 除了模板名称之外，还可参传递其它任何参数给loadPage，一般为路由匹配项上的参数。
@@ -135,6 +142,14 @@ $(document).ready(function() {
                 function(){ loadPage('settings-themes.html'); },
         "metas/tags":
                 function(){ loadPage('metas-tags.html'); },
+        "metas/cats":
+                function(){ loadPage('metas-cats.html'); },
+        "posts/list":
+                function(){ loadPage('posts-list.html'); },
+        "posts/add":
+                function(){ loadPage('posts-add.html'); },
+        "comments/list":
+                function(){ loadPage('comments-list.html'); },
     };
 
     var router = Router(routes).init();

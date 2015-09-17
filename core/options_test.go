@@ -17,7 +17,7 @@ func TestOptions_fromMaps(t *testing.T) {
 	maps := []map[string]string{
 		{
 			"key":   "pageSize",
-			"group": "system",
+			"group": "reading",
 			"value": "50",
 		},
 		{ // 不存在的数据，会忽略

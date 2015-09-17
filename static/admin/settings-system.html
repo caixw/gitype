@@ -1,21 +1,28 @@
-<div style="width:35em;margin:auto;text-align:left">
+<div class="config-div">
     <h1 class="header">系统设置</h1>
     <form class="ui form">
+        <style>
+            .inline.field>label{
+                width:9em !important;
+            }
+            .inline.field>.description{
+                margin-left:9em !important;
+            }
+        </style>
         <div class="field">
             <label for="siteName">网站名称</label>
             <input id="siteName" type="text" value="" />
         </div>
 
         <div class="field">
-            <label for="siteURL">网站地址</label>
-            <input id="siteURL" type="url" value="" />
-            <div class="description">网站根地址，必须以<strong>http://</strong>或<strong>https://</strong>开头！</div>
+            <label for="secondTitle">副标题</label>
+            <input id="secondTitle" type="text" value="" />
         </div>
 
         <div class="field">
-            <label for="pageSize">每页显示数量</label>
-            <input id="pageSize" type="number" min="1" max="100" value="" />
-            <div class="description">每页显示的记录数量！<br />取值范围(0-100]</div>
+            <label for="siteURL">网站地址</label>
+            <input id="siteURL" type="url" value="" />
+            <div class="description">网站根地址，必须以<strong>http://</strong>或<strong>https://</strong>开头！</div>
         </div>
 
         <div class="field">
@@ -29,13 +36,44 @@
             <input id="description" type="text" value="" />
             <div class="description">页面的默认description</div>
         </div>
+
+        <br /><br />
+        <div class="ui horizontal divider header">阅读</div>
+
+        <div class="inline field">
+            <label for="pageSize">每页显示数量</label>
+            <input id="pageSize" type="number" min="1" max="100" value="" />
+            <div class="description">每页最多显示的文章数量。</div>
+        </div>
+
+        <div class="inline field">
+            <label for="sidebarSize">侧边栏列表项数量</label>
+            <input id="sidebarSize" type="number" min="1" max="100" value="" />
+            <div class="description">指定侧边栏中各列表中列表项的数量。</div>
+        </div>
+
+        <div class="inline field">
+            <label for="commentOrder">评论显示顺序</label>
+            <select id="commentOrder" class="ui dropdown">
+                <option value="0">随意</option>
+                <option value="1">新的在前</option>
+                <option value="2">旧的在前</option>
+            </select>
+        </div>
+
+        <div class="inline field">
+            <label for="dateFormat">日期格式</label>
+            <input type="text" id="dateFormat" />
+            <div class="description">所有时间的显示格式，具体参数可参考<a href="http://godoc.org/time">http://godoc.org/time</a></div>
+        </div>
+
     </form>
 </div>
 
 <script>
 function getData(id){
     get({
-        'url': '/admin/api/options/'+id
+        'url': adminAPIPrefix+'/options/'+id
     }).done(function(data, textStatus, jqXHR){
         $('#'+id).val(data.value);
         $('#'+id).attr('data-default', data.value);
@@ -44,15 +82,15 @@ function getData(id){
     });
 }
 
-function patchData(id) {
-    $('#'+id).on('blur', function(){
+function patchData(event, id) {
+    $('#'+id).on(event, function(){
         var elem = $('#'+id)
         if (elem.attr('data-default') == elem.val()) {
             return
         }
 
         patch({
-            'url': '/admin/api/options/'+id,
+            'url': adminAPIPrefix+'/options/'+id,
             'data':JSON.stringify({"value": elem.val()})
         }).done(function(){
             elem.attr('data-default', elem.val());
@@ -65,27 +103,37 @@ function patchData(id) {
 }
 $(document).ready(function(){
     setTitle('系统设置');
-    $('.ui.checkbox').checkbox();
 
     /* BEGIN -- 加载数据 */
     $('form').addClass('loading');
 
     var siteName    = getData('siteName');
+    var secondTitle = getData('secondTitle');
     var siteURL     = getData('siteURL');
-    var pageSize    = getData('pageSize');
     var keywords    = getData('keywords');
     var description = getData('description');
-    $.when(siteName, siteURL, pageSize, keywords, description).always(function(){
+    var pageSize    = getData('pageSize');
+    var sidebarSize = getData('sidebarSize');
+    var commentOrder= getData('commentOrder');
+    var dateFormat  = getData('dateFormat');
+
+    $.when(siteName, secondTitle, siteURL, keywords, description, pageSize, sidebarSize, commentOrder, dateFormat).always(function(){
         $('form').removeClass('loading');
     });
     /* END -- 加载数据 */
 
     /* BEGIN -- patch */
-    patchData('siteName')
-    patchData('siteURL')
-    patchData('pageSize')
-    patchData('keywords')
-    patchData('description')
+    patchData('blur', 'siteName')
+    patchData('blur', 'secondTitle')
+    patchData('blur', 'siteURL')
+    patchData('blur', 'keywords')
+    patchData('blur', 'description')
+    patchData('blur', 'pageSize')
+    patchData('blur', 'sidebarSize')
+    patchData('blur', 'dateFormat')
+    patchData('change', 'commentOrder')
     /* END -- patch */
+
+    $('.ui.dropdown').dropdown();
 });
 </script>

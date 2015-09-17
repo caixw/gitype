@@ -1,5 +1,38 @@
 {{define "sidebar"}}
-<aside>
+<aside id="sidebar">
+    <div class="block">
+        <div class="header">分类</div>
+        <ol class="content">
+        {{range .page.Cats}}
+            <li><a href="{{.Link}}" title="{{.Ext}}">{{.Title}}</a></li>
+        {{end}}
+        </ol>
+    </div>
 
+    <div class="block">
+        <div class="header">标签</div>
+        <ol class="content">
+        {{range .page.Tags}}
+            <li><a href="{{.Link}}" title="{{.Ext}}">{{.Title}}</a></li>
+        {{end}}
+        </ol>
+    </div>
+
+    <div class="block">
+        <div class="header">最新评论</div>
+        <ol class="content">
+        {{range .page.Topics}}
+            <li><a href="{{.Link}}" title="{{.Ext}}">{{.Title}}</a></li>
+        {{end}}
+        </ol>
+    </div>
+
+    <div class="block">
+        <div class="hader">数据</div>
+        <div class="content">
+            <p>文章数量:{{.page.PageSize}}</p>
+            <p>评论数量:{{.page.CommentSize}}</p>
+        </div>
+    </div>
 </aside>
 {{end}}

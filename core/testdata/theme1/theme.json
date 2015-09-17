@@ -1,0 +1,11 @@
+{
+    "name":        "default",
+    "version":     "0.1.0.150803",
+    "screenshot":  "screenshot.png",
+    "description": "这是系统的<b>默认主题</b>",
+    "author":{
+        "name":  "caixw",
+        "email": "xnotepad@gmail.com",
+        "url":   "github.com/caixw"
+    }
+}

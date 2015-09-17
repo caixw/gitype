@@ -1,0 +1,65 @@
+<div text-align="text-align:left">
+    <h1 class="header">评论管理</h1>
+
+    <div class="labels" style="text-align:left">
+        <div class="ui yellow label" id="waiting">未审核<div class="detail"></div></div>
+        <div class="ui red label" id="spam">垃圾评论<div class="detail"></div></div>
+        <div class="ui green label" id="approved">已审核<div class="detail"></div></div>
+    </div>
+
+    <table class="ui compact celled striped table">
+        <thead>
+            <tr>
+                <th class="six wide">评论内容</th>
+                <th>所属文章</th>
+                <th>用户信息</th>
+                <th>状态</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+function loadComments(page, state){
+    $('table').addClass('loading');
+    get({
+        'url': adminAPIPrefix+'/comments?state='+state+'&page='+page
+    }).done(function(data, textStatus, jqXHR){
+        var tpl = $('#comments-template').html();
+        Mustache.parse(tpl);
+        $('table tbody').append(Mustache.render(tpl, data));
+    }).fail(function(){
+        showMessage('red', '加载评论失败');
+    }).always(function(){
+        $('table').removeClass('loading');
+    });
+}
+$(document).ready(function(){
+    /*----- BEGIN 加载标签上的数字 */
+    get({
+        'url': adminAPIPrefix+'/comments/count'
+    }).done(function(data, textStatus, jqXHR){
+        $('#waiting .detail').text(data.waiting);
+        $('#spam .detail').text(data.spam);
+        $('#approved .detail').text(data.approved);
+    }).fail(function(jqXHR, textStatus, errorThrown){
+        showMessage('red', '加载/comments/count内容失败'+errorThrown);
+    }).always(function(){
+    });
+    /*----- END 加载标签上的数字 */
+
+    loadComments(0,0);
+});
+</script>
+
+<script id="comments-template" type="x-template-mustache">
+{{#comments}}
+<tr>
+    <td>{{content}}</td>
+    <td></td>
+    <td>{{authorName}}<br />{{authorURL}}<br />{{authorEmail}}</td>
+    <td></td>
+</tr>
+{{/comments}}
+</script>

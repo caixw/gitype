@@ -27,6 +27,8 @@ type Post struct {
 
 	AllowPing    bool `orm:"name(allowPing)"`
 	AllowComment bool `orm:"name(allowComment)"`
+
+	//License string `orm:"name(license)"`
 }
 
 func (p *Post) Meta() string {

@@ -117,7 +117,7 @@ func FillDB(db *orm.DB) error {
 		return err
 	}
 
-	if _, err := db.Insert(&models.Comment{PostID: 1, Content: "<p>沙发</p>", AuthorName: "游客"}); err != nil {
+	if _, err := db.Insert(&models.Comment{PostID: 1, Content: "<p>沙发</p>", AuthorName: "游客", State: models.CommentStateWaiting}); err != nil {
 		return err
 	}
 
@@ -128,18 +128,25 @@ func FillDB(db *orm.DB) error {
 	if _, err := db.Insert(&models.Relationship{MetaID: 1, PostID: 1}); err != nil {
 		return err
 	}
+	if _, err := db.Insert(&models.Relationship{MetaID: 2, PostID: 1}); err != nil {
+		return err
+	}
 
 	return nil
 }
 
 func fillOptions(db *orm.DB) error {
 	opt := &core.Options{
-		PageSize:   20,
-		SiteName:   "typing blog",
-		ScreenName: "typing",
-		Password:   core.HashPassword("123"),
-		Theme:      "default",
-		Keywords:   "typing",
+		PageSize:     20,
+		SiteName:     "typing blog",
+		ScreenName:   "typing",
+		Password:     core.HashPassword("123"),
+		Theme:        "default",
+		Keywords:     "typing",
+		Description:  "typing-极简的博客系统",
+		DateFormat:   "2006-01-02 15:04:05",
+		SidebarSize:  10,
+		CommentOrder: core.CommentOrderDesc,
 	}
 
 	maps, err := opt.ToMaps()

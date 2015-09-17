@@ -1,4 +1,4 @@
-<div style="width:35em;margin:auto;text-align:left">
+<div class="config-div">
     <h1 class="header">用户信息</h1>
     <form class="ui form" id="userForm">
         <div class="field">
@@ -42,7 +42,7 @@
 <script>
 function getData(id){
     get({
-        'url': '/admin/api/options/'+id
+        'url': adminAPIPrefix+'/options/'+id
     }).done(function(data, textStatus, jqXHR) {
         $('#'+id).attr('data-default', data.value);
         $('#'+id).val(data.value);
@@ -54,7 +54,7 @@ function getData(id){
 function patchData(id){
     $('#'+id).on('blur', function(){
         patch({
-            'url': '/admin/api/options/'+id,
+            'url': adminAPIPrefix+'/options/'+id,
             'data':JSON.stringify({'value':$('#'+id).val()})
         }).done(function(){
             $('#'+id).attr('data-default', $('#'+id).val());
@@ -105,7 +105,7 @@ $(document).ready(function(){
 
         $('#changePasswordForm').addClass('loading');
         put({
-            'url': '/admin/api/password',
+            'url': adminAPIPrefix+'/password',
             'data':JSON.stringify({'old':$('#oldPassword').val(), 'new':$('#newPassword').val()})
         }).done(function() {
             showMessage('green', '更新密码成功');

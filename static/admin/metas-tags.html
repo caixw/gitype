@@ -6,19 +6,19 @@
     <div class="ui form">
         <div class="field">
             <label for="name">唯一名称</label>
-            <input type="text" id="name" value="" />
+            <input type="text" id="name" name="name" />
             <div class="description">最好是由英文和下划线及数字组成，以SEO友好的方式描述标签地址！</div>
         </div>
 
         <div class="field">
             <label for="title">标题</label>
-            <input type="text" id="title" value="" />
+            <input type="text" id="title" name="title" />
             <div class="description">标签的字面内容。</div>
         </div>
 
         <div class="field">
             <label for="description">详细描述</label>
-            <textarea id="description" cols="30" rows="10"></textarea>
+            <textarea id="description" name="description" cols="30" rows="10"></textarea>
         </div>
 
         <div class="field">
@@ -33,16 +33,43 @@ $(document).ready(function(){
 
     $('#tags').addClass('loading');
     get({
-        'url': '/api/tags'
+        'url': frontAPIPrefix+'/tags'
     }).done(function(data, textStatus, jqXHR){
-        $.each(data.tags, function(index, elem){
-            var tag = $('<span class="ui label">'+elem.title+'<span class="detail">'+elem.count+'</span></span>');
-            $('#tags').append(tag);
-        });
+        var tpl = $('#tags-template').html();
+        Mustache.parse(tpl);
+        $('#tags').append(Mustache.render(tpl, data));
     }).fail(function(){
-        //
+        showMessage('red', '加载标签列表失败');
     }).always(function(){
         $('#tags').removeClass('loading');
+
+        // onclick事件
+        $('#tags .ui.label').on('click', function(){
+            var elem = $(this);
+            $('#name').val(elem.attr('data-name'));
+            $('#title').val(elem.attr('data-title'));
+            $('#description').val(elem.attr('data-description'));
+        });
     });
+
+
+    /*$('form').addClass('loading');
+    $('form').on('submit', function(){
+
+        return false;
+    }).always(function(){
+        $('form').removeClass('loading');
+    });*/
 });
+</script>
+
+<script id="tags-template" type="x-template-mustache">
+    {{#tags}}
+    <span class="ui label" style="cursor:pointer"
+        data-name="{{name}}"
+        data-title="{{title}}"
+        data-description="{{description}}">
+        {{title}}<span class="detail">{{count}}</span>
+    </span>
+    {{/tags}}
 </script>

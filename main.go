@@ -186,6 +186,7 @@ func initAdminAPIRoutes(admin *mux.Prefix) {
 
 	// comments
 	admin.Get("/comments", loginHandlerFunc(adminGetComments)).
+		Get("/comments/count", loginHandlerFunc(adminGetCommentsCount)).
 		Post("/comments", loginHandlerFunc(adminPostComment)).
 		Put("/comments/{id:\\d+}", loginHandlerFunc(adminPutComment)).
 		Post("/comments/{id:\\d+}/waiting", loginHandlerFunc(adminSetCommentWaiting)).

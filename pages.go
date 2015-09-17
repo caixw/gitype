@@ -10,15 +10,11 @@ import (
 	"github.com/issue9/logs"
 )
 
-type anchor struct {
-	Link  string // 链接地址
-	Title string // 地址的字面文字
-	Ext   string // 扩展内容，比如title,alt等，根据链接来确定
-}
-
 // 页面的基本信息
 type page struct {
 	Title       string
+	SiteName    string
+	SecondTitle string
 	Keywords    string
 	Description string
 	AppVersion  string
@@ -28,6 +24,12 @@ type page struct {
 	Tags        []anchor // 标签列表
 	Cats        []anchor // 分类列表
 	Topics      []anchor // 最新评论的10条内容
+}
+
+type anchor struct {
+	Link  string // 链接地址
+	Title string // 地址的字面文字
+	Ext   string // 扩展内容，比如title,alt等，根据链接来确定
 }
 
 func pageIndex(w http.ResponseWriter, r *http.Request) {

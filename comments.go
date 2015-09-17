@@ -6,17 +6,19 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/models"
 	"github.com/issue9/logs"
+	"github.com/issue9/orm/fetch"
 )
 
 // @api get /admin/api/comments 获取所有评论内容
-// @apiQuery page int
-// @apiQuery size int
-// @apiQuery state int
+// @apiQuery page int 显示第page页的内容，基数0;
+// @apiQuery size int 每页显示的数量；
+// @apiQuery state int 仅显示状态值为state的记录；
 // @apiGroup admin
 //
 // @apiSuccess 200 ok
@@ -35,7 +37,7 @@ func adminGetComments(w http.ResponseWriter, r *http.Request) {
 	}
 	count, err := sql.Count(true)
 	if err != nil {
-		logs.Error("getComments:", err)
+		logs.Error("adminGetComments:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
@@ -47,14 +49,69 @@ func adminGetComments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sql.Limit(size, page*size)
-	maps, err := sql.SelectMap(true, "*")
+	maps, err := sql.SelectMapString(true, "*")
 	if err != nil {
-		logs.Error("getComments:", err)
+		logs.Error("adminGetComments:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "comments": maps}, nil)
+}
+
+// @api get /admin/api/comments/count 获取各种状态下的评论数量
+// @apiGroup admin
+//
+// @apiSuccess 200 OK
+// @apiParam all      int 评论的总量
+// @apiParam waiting  int 等待审核的评论数量
+// @apiParam spam     int 垃圾评论的数量
+// @apiParam approved int 通过审核的评论数量
+func adminGetCommentsCount(w http.ResponseWriter, r *http.Request) {
+	sql := "SELECT {state}, count(*) AS cnt FROM #comments GROUP BY {state}"
+	rows, err := db.Query(true, sql)
+	if err != nil {
+		logs.Error("adminGetCommentsCount:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+	defer rows.Close()
+
+	maps, err := fetch.MapString(false, rows)
+	if err != nil {
+		logs.Error("adminGetCommentsCount:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	data := map[string]int{
+		"all":      0,
+		"waiting":  0,
+		"spam":     0,
+		"approved": 0,
+	}
+	count := 0
+	for _, v := range maps {
+		num, err := strconv.Atoi(v["cnt"])
+		if err != nil {
+			logs.Error("adminGetCommentsCount:", err)
+			core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+			return
+		}
+		count += num
+		switch v["state"] {
+		case "1":
+			data["waiting"] = num
+		case "2":
+			data["spam"] = num
+		case "3":
+			data["approved"] = num
+		default:
+			logs.Error("adminGetCommentsCount: 未知的评论状态:", v["state"])
+		}
+	}
+	data["all"] = count // 所有评论的数量
+	core.RenderJSON(w, http.StatusOK, data, nil)
 }
 
 // @api put /admin/api/comments/{id} 修改评论，只能修改管理员发布的评论

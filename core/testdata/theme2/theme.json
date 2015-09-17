@@ -1,0 +1,11 @@
+{
+    "name":        "theme2",
+    "version":     "0.1.0.150803",
+    "screenshot":  "screenshot.png",
+    "description": "默认主题2",
+    "author":{
+        "name":  "caixw",
+        "email": "xnotepad@gmail.com",
+        "url":   "github.com/caixw"
+    }
+}

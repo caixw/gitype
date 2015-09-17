@@ -15,16 +15,26 @@ import (
 	"github.com/issue9/orm/fetch"
 )
 
+// 获取评论时的返回顺序
+const (
+	CommentOrderUndefined = iota
+	CommentOrderDesc
+	CommentOrderAsc
+)
+
 // Options 用于表示程序内的一些可更改配置项。
 // 对应着从options表中加载而来的数据，
 // 通过struct tag来确定其对应数据库中的那条记录。
 type Options struct {
 	SiteName    string `options:"system,siteName"`    // 重置的默认密码
+	SecondTitle string `options:"system,secondTitle"` // 副标题
 	SiteURL     string `options:"system,siteURL"`     // 网站的url
-	PageSize    int    `options:"system,pageSize"`    // 默认每页显示的数量
 	Keywords    string `options:"system,keywords"`    // 默认页面的keywords内容
 	Description string `options:"system,description"` // 默认页面的description内容
+	//Language    string `options:"system,language"`      // 界面语言
 
+	PageSize     int    `options:"reading,pageSize"`     // 默认每页显示的数量
+	SidebarSize  int    `options:"reading,sidebarSize"`  // 侧边栏每个列表项内显示的数量
 	DateFormat   string `options:"reading,dateFormat"`   // 前端日期格式
 	CommentOrder int    `options:"reading,commentOrder"` // 评论显示的顺序
 
