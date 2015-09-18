@@ -1,3 +1,39 @@
 <div style="text-align:left">
     <h1 class="header">文章添加</h1>
+    <form class="ui form grid">
+        <div class="row">
+            <div class="thirteen wide column">
+                <div class="field">
+                    <input name="title" type="text" placeholder="标题" />
+                </div>
+                <div class="field">
+                    <textarea name="content" rows="8" cols="40"></textarea>
+                </div>
+            </div>
+
+            <div class="three wide column">
+                <div class="ui checkbox">
+                    <input type="checkbox" name="allowComment" />
+                    <label>允许评论</label>
+                </div>
+
+                <div class="ui checkbox">
+                    <input type="checkbox" name="allowPing" id="allowPing" />
+                    <label for="allowPing">允许Ping</label>
+                </div>
+
+                <div class="ui horizontal divider header">分类</div>
+                <div class="ui checkbox">
+                    <input type="checkbox" name="allowPing" />
+                    <label>默认分类</label>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
+
+<script>
+$(document).ready(function(){
+    $('.ui.checkobx').checkbox();
+});
+</script>

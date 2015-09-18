@@ -5,7 +5,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 
 	"github.com/caixw/typing/core"
@@ -13,8 +12,6 @@ import (
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 	"github.com/issue9/orm"
-	"github.com/issue9/orm/dialect"
-	"github.com/issue9/orm/forward"
 	"github.com/issue9/web"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -55,7 +52,7 @@ func main() {
 			panic(err)
 		}
 
-		db, err := initDB(cfg)
+		db, err := core.InitDB(cfg)
 		defer db.Close()
 		if err != nil {
 			panic(err)
@@ -71,7 +68,7 @@ func main() {
 		panic(err)
 	}
 
-	db, err = initDB(cfg)
+	db, err = core.InitDB(cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -102,23 +99,6 @@ func main() {
 	cfg.Core.ErrHandler = mux.PrintDebug
 	web.Run(cfg.Core)
 	db.Close()
-}
-
-// 从一个Config实例中初始一个orm.DB实例。
-func initDB(cfg *core.Config) (*orm.DB, error) {
-	var d forward.Dialect
-	switch cfg.DBDriver {
-	case "sqlite3":
-		d = dialect.Sqlite3()
-	case "mysql":
-		d = dialect.Mysql()
-	case "postgres":
-		d = dialect.Postgres()
-	default:
-		return nil, errors.New("不能理解的dbDriver值：" + cfg.DBDriver)
-	}
-
-	return orm.NewDB(cfg.DBDriver, cfg.DBDSN, cfg.DBPrefix, d)
 }
 
 // 初始化模块，及与模块相对应的路由。
@@ -152,6 +132,9 @@ func initFrontPageRoutes(m *web.Module) {
 		GetFunc("/cats/{id}", pageCat).
 		GetFunc("/posts", pagePosts).
 		GetFunc("/posts/{id}", pagePost)
+
+	//m.GetFunc("/rss", getRSS).
+	//GetFunc("/rss/posts/{id}", getPostRSS)
 }
 
 func initFrontAPIRoutes(front *mux.Prefix) {

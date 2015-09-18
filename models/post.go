@@ -32,5 +32,5 @@ type Post struct {
 }
 
 func (p *Post) Meta() string {
-	return `orm:"name(posts)"`
+	return `name(posts)`
 }

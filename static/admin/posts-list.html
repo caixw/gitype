@@ -18,3 +18,18 @@
         <tbody></tbody>
     </table>
 </div>
+
+<script>
+$(document).ready(function(){
+    $('table').addClass('loading');
+    get({
+        'url': adminAPIPrefix+'/posts'
+    }).done(function(data, textStatus, jqXHR){
+        console.log(data);
+    }).fail(function(){
+        showMessage('red', '加载文章列表失败');
+    }).always(function(){
+        $('table').removeClass('loading');
+    });
+});
+</script>

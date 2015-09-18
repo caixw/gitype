@@ -8,6 +8,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -15,6 +16,9 @@ import (
 
 	"github.com/issue9/context"
 	"github.com/issue9/logs"
+	"github.com/issue9/orm"
+	"github.com/issue9/orm/dialect"
+	"github.com/issue9/orm/forward"
 )
 
 // RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
@@ -176,4 +180,21 @@ func HashPassword(password string) string {
 	m := md5.New()
 	m.Write([]byte(password))
 	return hex.EncodeToString(m.Sum(nil))
+}
+
+// 从一个Config实例中初始一个orm.DB实例。
+func InitDB(cfg *Config) (*orm.DB, error) {
+	var d forward.Dialect
+	switch cfg.DBDriver {
+	case "sqlite3":
+		d = dialect.Sqlite3()
+	case "mysql":
+		d = dialect.Mysql()
+	case "postgres":
+		d = dialect.Postgres()
+	default:
+		return nil, errors.New("不能理解的dbDriver值：" + cfg.DBDriver)
+	}
+
+	return orm.NewDB(cfg.DBDriver, cfg.DBDSN, cfg.DBPrefix, d)
 }

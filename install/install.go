@@ -62,19 +62,59 @@ func FillDB(db *orm.DB) error {
 		return errors.New("db==nil")
 	}
 
-	// option
-	if err := db.Create(&models.Option{}); err != nil {
+	// 创建表
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	err = tx.MultCreate(
+		&models.Option{},
+		&models.Comment{},
+		&models.Meta{},
+		&models.Post{},
+		&models.Relationship{},
+	)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err = tx.Commit(); err != nil {
+		tx.Rollback()
 		return err
 	}
 
+	// option
 	if err := fillOptions(db); err != nil {
 		return err
 	}
 
 	// meta
-	if err := db.Create(&models.Meta{}); err != nil {
+	if err = fillMetas(db); err != nil {
 		return err
 	}
+
+	// post
+	if _, err := db.Insert(&models.Post{Title: "第一篇日志", Content: "<p>这是你的第一篇日志</p>"}); err != nil {
+		return err
+	}
+
+	// comment
+	if _, err := db.Insert(&models.Comment{PostID: 1, Content: "<p>沙发</p>", AuthorName: "游客", State: models.CommentStateWaiting}); err != nil {
+		return err
+	}
+
+	// relationship
+	if _, err := db.Insert(&models.Relationship{MetaID: 1, PostID: 1}); err != nil {
+		return err
+	}
+	if _, err := db.Insert(&models.Relationship{MetaID: 2, PostID: 1}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func fillMetas(db *orm.DB) error {
 	metas := []*models.Meta{
 		// cats
 		{
@@ -99,40 +139,12 @@ func FillDB(db *orm.DB) error {
 		tx.Rollback()
 		return err
 	}
-	if err := tx.Commit(); err != nil {
-		return err
-	}
 
-	// post
-	if err := db.Create(&models.Post{}); err != nil {
-		return err
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
 	}
-
-	if _, err := db.Insert(&models.Post{Title: "第一篇日志", Content: "<p>这是你的第一篇日志</p>"}); err != nil {
-		return err
-	}
-
-	// models.Comment
-	if err := db.Create(&models.Comment{}); err != nil {
-		return err
-	}
-
-	if _, err := db.Insert(&models.Comment{PostID: 1, Content: "<p>沙发</p>", AuthorName: "游客", State: models.CommentStateWaiting}); err != nil {
-		return err
-	}
-
-	// relationship
-	if err := db.Create(&models.Relationship{}); err != nil {
-		return err
-	}
-	if _, err := db.Insert(&models.Relationship{MetaID: 1, PostID: 1}); err != nil {
-		return err
-	}
-	if _, err := db.Insert(&models.Relationship{MetaID: 2, PostID: 1}); err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func fillOptions(db *orm.DB) error {
@@ -154,12 +166,22 @@ func fillOptions(db *orm.DB) error {
 		return err
 	}
 
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
 	sql := "INSERT INTO #options ({key},{group},{value}) VALUES(?,?,?)"
 	for _, item := range maps {
-		_, err := db.Exec(true, sql, item["key"], item["group"], item["value"])
+		_, err := tx.Exec(true, sql, item["key"], item["group"], item["value"])
 		if err != nil {
+			tx.Rollback()
 			return err
 		}
 	}
-	return nil
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+	}
+	return err
 }
