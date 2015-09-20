@@ -24,32 +24,43 @@ func adminGetThemes(w http.ResponseWriter, r *http.Request) {
 	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"themes": themes.Themes()}, nil)
 }
 
-// @api patch /admin/api/themes/current 更改当前的主题
+// @api get /admin/api/themes/current 获取当前的主题信息。
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+//
+// @apiSuccess 200 OK
+// @apiParam theme string 主题名称
+func adminGetCurrentTheme(w http.ResponseWriter, r *http.Request) {
+	core.RenderJSON(w, http.StatusOK, map[string]string{"theme": opt.Theme}, nil)
+}
+
+// @api put /admin/api/themes/current 更改当前的主题
+// @apiGroup admin
 //
 // @apiRequest json
 // @apiHeader Authorization xxx
 // @apiParam value string 新值
 //
 // @apiSuccess 200 OK
-func adminPatchTheme(w http.ResponseWriter, r *http.Request) {
-	o := &models.Option{Key: "theme"}
-	if !core.ReadJSON(w, r, o) {
+func adminPutCurrentTheme(w http.ResponseWriter, r *http.Request) {
+	v := &struct {
+		Value string `json:"value"`
+	}{}
+	if !core.ReadJSON(w, r, v) {
 		return
 	}
 
-	if o.Key != "theme" || len(o.Group) > 0 { // 提交了额外的数据内容
-		core.RenderJSON(w, http.StatusBadRequest, nil, nil)
-		return
-	}
-
+	o := &models.Option{Key: "theme", Value: v.Value}
 	if err := patchOption(o); err != nil {
-		logs.Error("adminPatchTheme:", err)
+		logs.Error("adminPutTheme:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	if err := themes.LoadTheme(o.Value); err != nil {
-		logs.Error("adminPatchTheme:", err)
+		logs.Error("adminPutTheme:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}

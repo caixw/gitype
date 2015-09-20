@@ -14,8 +14,20 @@ import (
 	"github.com/issue9/orm/fetch"
 )
 
+// @api put /admin/api/tags/{id}/merge 将指定的标签合并到当前标签
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiParam tags array 所有需要合并的标签ID列表。
+// @apiExample json
+// {"tags": [1,2,3] }
+func adminPutTagMerge(w http.ResponseWriter, r *http.Request) {
+	// TODO
+}
+
 // @api get /api/tags 获取所有的标签
 // @apiGroup front
+//
 // @apiSuccess 200 ok
 // @apiParams tags array 所有的标签列表
 // @apiExample json
@@ -176,7 +188,7 @@ func adminPutCat(w http.ResponseWriter, r *http.Request) {
 //     ]
 // }
 func adminPostTag(w http.ResponseWriter, r *http.Request) {
-	postMeta(w, r)
+	postMeta(w, r, models.MetaTypeTag)
 }
 
 // @api post /admin/api/cats 添加新的分类
@@ -211,7 +223,7 @@ func adminPostTag(w http.ResponseWriter, r *http.Request) {
 //     ]
 // }
 func adminPostCat(w http.ResponseWriter, r *http.Request) {
-	postMeta(w, r)
+	postMeta(w, r, models.MetaTypeCat)
 }
 
 // @api delete /admin/api/tags/{id} 删除该id的标签
@@ -293,7 +305,7 @@ func putMeta(w http.ResponseWriter, r *http.Request) {
 }
 
 // 供postCat和postTag调用
-func postMeta(w http.ResponseWriter, r *http.Request) {
+func postMeta(w http.ResponseWriter, r *http.Request, typ int) {
 	m := &models.Meta{}
 	if !core.ReadJSON(w, r, m) {
 		return
@@ -326,6 +338,7 @@ func postMeta(w http.ResponseWriter, r *http.Request) {
 		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
 		return
 	}
+	m.Type = typ
 
 	if _, err := db.Insert(m); err != nil {
 		logs.Error("postMeta:", err)

@@ -28,7 +28,7 @@
 </div>
 
 <script>
-$(document).ready(function(){
+function pageInit(){
     setTitle('标签管理');
 
     $('#tags').addClass('loading');
@@ -58,7 +58,7 @@ $(document).ready(function(){
     }).always(function(){
         $('form').removeClass('loading');
     });*/
-});
+}
 </script>
 
 <script id="tags-template" type="x-template-mustache">

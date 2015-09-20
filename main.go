@@ -145,8 +145,11 @@ func initAdminAPIRoutes(admin *mux.Prefix) {
 	admin.PostFunc("/login", adminPostLogin).
 		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
 		Put("/password", loginHandlerFunc(adminChangePassword)).
-		Get("/themes", loginHandlerFunc(adminGetThemes)).
 		Get("/state", loginHandlerFunc(adminGetState))
+
+	admin.Get("/themes", loginHandlerFunc(adminGetThemes)).
+		Get("/themes/current", loginHandlerFunc(adminGetCurrentTheme)).
+		Put("/themes/current", loginHandlerFunc(adminPutCurrentTheme))
 
 	// options
 	admin.Get("/options/{key}", loginHandlerFunc(adminGetOption)).

@@ -4,6 +4,8 @@
 // @copyright 2015 by caixw
 // @link https://github.com/caixw/typing
 
+// BUG(caixw): 每个页面必须得有一个pageInit函数，否则会调用上一个页面的pageInit函数。
+
 // api的统一前缀
 var adminAPIPrefix = '/admin/api';
 var frontAPIPrefix = '/api';

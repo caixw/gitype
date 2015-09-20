@@ -26,9 +26,7 @@ function loadComments(page, state){
     get({
         'url': adminAPIPrefix+'/comments?state='+state+'&page='+page
     }).done(function(data, textStatus, jqXHR){
-        var tpl = $('#comments-template').html();
-        Mustache.parse(tpl);
-        $('table tbody').append(Mustache.render(tpl, data));
+        loadTemplate('table tbody', '#comments-template', data);
     }).fail(function(){
         showMessage('red', '加载评论失败');
     }).always(function(){
