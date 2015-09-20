@@ -21,8 +21,9 @@ type Config struct {
 	DBPrefix string `json:"dbPrefix"`
 	DBDriver string `json:"dbDriver"`
 
-	FrontAPIPrefix string `json:"frontApiPrefix"` // 前端api地址前缀
-	AdminAPIPrefix string `json:"adminApiPrefix"` // 后台api地址前经
+	FrontAPIPrefix string `json:"frontAPIPrefix"` // 前端api地址前缀
+	AdminAPIPrefix string `json:"adminAPIPrefix"` // 后台api地址前经
+	ThemeURLPrefix string `json:"themeURLPrefix"` // 各主题公开文件的根URL
 
 	ThemeDir string `json:"themeDir"` // 主题文件所在的目录
 }
@@ -45,7 +46,7 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, errors.New("必须指定adminApiPrefix值")
 	}
 	if cfg.AdminAPIPrefix[len(cfg.AdminAPIPrefix)-1] == '/' {
-		return nil, errors.New("adminApiPrefix不能以/符号结尾")
+		return nil, errors.New("adminAPIPrefix不能以/符号结尾")
 	}
 
 	// 检测FrontAPIPrefix是否符合要求
@@ -53,7 +54,15 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, errors.New("必须指定frontApiPrefix值")
 	}
 	if cfg.FrontAPIPrefix[len(cfg.FrontAPIPrefix)-1] == '/' {
-		return nil, errors.New("frontApiPrefix不能以/符号结尾")
+		return nil, errors.New("frontAPIPrefix不能以/符号结尾")
+	}
+
+	// 检测ThemeURLPrefix是否符合要求
+	if len(cfg.ThemeURLPrefix) == 0 {
+		return nil, errors.New("必须指定themeURLPrefix值")
+	}
+	if cfg.ThemeURLPrefix[len(cfg.ThemeURLPrefix)-1] == '/' {
+		return nil, errors.New("themeURLPrefix不能以/符号结尾")
 	}
 
 	if len(cfg.ThemeDir) == 0 {

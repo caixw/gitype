@@ -313,7 +313,7 @@ func adminGetPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sql.Limit(size, page*size)
-	maps, err := sql.SelectMap(true, "*")
+	maps, err := sql.SelectMapString(true, "*")
 	if err != nil {
 		logs.Error("adminGetPosts:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)

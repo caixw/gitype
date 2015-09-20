@@ -25,11 +25,30 @@ $(document).ready(function(){
     get({
         'url': adminAPIPrefix+'/posts'
     }).done(function(data, textStatus, jqXHR){
-        console.log(data);
+        $.each(data.posts, function(index, elem){
+            $.each(elem, function(key, val){
+                if (key == 'created'){
+                    elem[key] = (new Date(val*1000)).toLocaleString();
+                }
+            });
+        });
+
+        loadTemplate($('table tbody'), $('#posts-template'), data)
     }).fail(function(){
         showMessage('red', '加载文章列表失败');
     }).always(function(){
         $('table').removeClass('loading');
     });
 });
+</script>
+
+<script id="posts-template" type="x-template-mustache">
+{{#posts}}
+<tr>
+    <td>{{id}}</td>
+    <td>{{title}}</td>
+    <td>{{created}}</td>
+    <td>删除</td>
+</tr>
+{{/posts}}
 </script>

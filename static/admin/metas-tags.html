@@ -35,9 +35,7 @@ $(document).ready(function(){
     get({
         'url': frontAPIPrefix+'/tags'
     }).done(function(data, textStatus, jqXHR){
-        var tpl = $('#tags-template').html();
-        Mustache.parse(tpl);
-        $('#tags').append(Mustache.render(tpl, data));
+        loadTemplate('#tags', '#tags-template', data)
     }).fail(function(){
         showMessage('red', '加载标签列表失败');
     }).always(function(){

@@ -7,9 +7,24 @@
 // api的统一前缀
 var adminAPIPrefix = '/admin/api';
 var frontAPIPrefix = '/api';
+var themeURLPrefix = '/themes';
 
 // 每页加载的记录数量
 var size = 25;
+
+// 标题设置项
+var titleSuffix = 'typing';
+var titleSeparator = '-';
+
+// 提示信息关闭时间
+var messageTimeout = 5000;
+
+// 将tpl模板的内容解析并插入到container中，data为传递给模板的数据。
+function loadTemplate(containerSelector, templateSelector, data) {
+    var source = $(templateSelector).html();
+    var tpl = Handlebars.compile(source);
+    $(containerSelector).append(tpl(data));
+}
 
 // 加载指定的模板页面，该页页会自动包含菜单等内容。
 // 若未登录，是会自动跳转到登录页面。
@@ -59,11 +74,10 @@ function redirect(fregment) {
 
 // 设置当前页面的标题
 function setTitle(title) {
-    var suffix = 'typing';
     if (!title){
-        title = suffix
+        title = titleSuffix
     }else{
-        title = title + '-' + suffix;
+        title = title + titleSeparator + titleSuffix;
     }
     $('html head title').html(title);
 }
@@ -116,7 +130,7 @@ function showMessage(color, message) {
 
     window.setTimeout(function() {
         div.slideUp(function(){div.remove();});
-    }, 5000);
+    }, messageTimeout);
 }
 
 $(document).ready(function() {

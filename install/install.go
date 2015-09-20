@@ -13,6 +13,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/models"
@@ -94,7 +95,7 @@ func FillDB(db *orm.DB) error {
 	}
 
 	// post
-	if _, err := db.Insert(&models.Post{Title: "第一篇日志", Content: "<p>这是你的第一篇日志</p>"}); err != nil {
+	if _, err := db.Insert(&models.Post{Title: "第一篇日志", Content: "<p>这是你的第一篇日志</p>", Created: time.Now().Unix()}); err != nil {
 		return err
 	}
 

@@ -1,32 +1,42 @@
 <div style="text-align:left">
     <h1 class="header">选择主题</h1>
-    <div class="ui cards">
-        <div class="card">
-            <div class="image">
-                <img src="imsg" alt="screenshoot" />
-            </div>
+    <div id="themes" class="ui cards">
 
-            <div class="content">
-                <div class="header">default</div>
-                <div class="meta">1.0.150915</div>
-                <div class="description">默认的主题</div>
-            </div>
-
-            <div class="extra content">
-                <span><i class="user icon"></i>caixw</span>
-                <span><i class="user icon"></i>link</span>
-                <span><i class="user icon"></i>email</span>
-            </div>
-        </div>
     </div>
 </div>
 
 <script>
     get({
-        'url': '/admin/api/themes'
+        'url': adminAPIPrefix+'/themes'
     }).done(function(data, textStatus, jqXHR){
-        //
+        console.log(data);
+        loadTemplate($('#themes'), $('#themes-template'), data)
     }).fail(function(){
-        //
+        showMessage('red', '加载主题列表失败');
     });
+</script>
+
+<script id="themes-template" type="x-mustache-template">
+{{#each themes}}
+<div class="card">
+    <div class="image">
+        <img style="width:290px;height:160px" src="{{screenshot}}" alt="screenshoot" />
+    </div>
+
+    <div class="content">
+        <div class="header">{{name}}
+            <span class="right floated meta" style="font-size:0.7em">{{version}}</span>
+        </div>
+        <div class="description">{{description}}</div>
+    </div>
+
+    {{#author}}
+    <div class="extra content">
+        <span><i class="user icon"></i>{{name}}</span>
+        {{#if email}}<a class="right floated" href="mailto:{{email}}" title="作者邮箱"><i class="send icon"></i></a>{{/if}}
+        {{#if url}}<a class="right floated" href="{{url}}" title="作者网站"><i class="linkify icon"></i></a>{{/if}}
+    </div>
+    {{/author}}
+</div>
+{{/each}}
 </script>

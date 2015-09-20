@@ -26,8 +26,6 @@ const (
 	// 两个配置文件路径
 	configPath    = "./config/app.json"
 	logConfigPath = "./config/logs.xml"
-
-	themeURLPrefix = "/themes" // 主题静态文件的前缀
 )
 
 // 一些全局变量
@@ -81,21 +79,15 @@ func main() {
 		panic(err)
 	}
 
-	themes, err = core.LoadThemes(cfg.ThemeDir, opt.Theme)
+	themes, err = core.LoadThemes(cfg, opt.Theme)
 	if err != nil {
 		panic(err)
-	}
-
-	static := themes.StaticRouteMap(themeURLPrefix)
-	for k, v := range static {
-		cfg.Core.Static[k] = v
 	}
 
 	if err := initModule(cfg); err != nil {
 		panic(err)
 	}
 
-	//cfg.Core.Static[themeURLPrefix] = cfg.ThemeDir
 	cfg.Core.ErrHandler = mux.PrintDebug
 	web.Run(cfg.Core)
 	db.Close()
@@ -153,6 +145,7 @@ func initAdminAPIRoutes(admin *mux.Prefix) {
 	admin.PostFunc("/login", adminPostLogin).
 		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
 		Put("/password", loginHandlerFunc(adminChangePassword)).
+		Get("/themes", loginHandlerFunc(adminGetThemes)).
 		Get("/state", loginHandlerFunc(adminGetState))
 
 	// options

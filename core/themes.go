@@ -15,9 +15,11 @@ import (
 
 // 主题管理
 type Themes struct {
-	dir    string             // 主题目录
-	tpl    *template.Template // 当前使用的模板
-	themes map[string]*Theme  // 所有的主题列表
+	dir       string             // 主题目录
+	urlPrefix string             // 主题的URL前缀
+	tpl       *template.Template // 当前使用的模板
+	themes    map[string]*Theme  // 所有的主题列表
+
 }
 
 // Theme 用于描述主题的相关信息，一般从主题目录下的theme.json获取。
@@ -35,10 +37,10 @@ type Author struct {
 	URL   string `json:"url"`
 }
 
-// 从主题根目录加载所有的主题内容。
+// 从主题根目录加载所有的主题内容，并初始所有的主题下静态文件的路由。
 // defaultTheme 为默认的主题。
-func LoadThemes(dir, defaultTheme string) (*Themes, error) {
-	dir += string(os.PathSeparator)
+func LoadThemes(cfg *Config, defaultTheme string) (*Themes, error) {
+	dir := cfg.ThemeDir + string(os.PathSeparator)
 	fs, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return nil, err
@@ -49,22 +51,28 @@ func LoadThemes(dir, defaultTheme string) (*Themes, error) {
 	}
 
 	themes := &Themes{
-		dir:    dir,
-		themes: make(map[string]*Theme, len(fs)),
+		dir:       dir,
+		urlPrefix: cfg.ThemeURLPrefix,
+		themes:    make(map[string]*Theme, len(fs)),
 	}
 
+	p := cfg.ThemeURLPrefix + "/"
 	for _, file := range fs {
 		if !file.IsDir() {
 			continue
 		}
+		name := file.Name()
+		themePath := dir + name + string(os.PathSeparator)
 
-		path := dir + file.Name() + "/theme.json"
+		path := themePath + "theme.json"
 		t, err := loadThemeFile(path)
 		if err != nil {
 			return nil, err
 		}
 
-		themes.themes[file.Name()] = t
+		t.Screenshot = p + name + "/" + t.Screenshot
+		themes.themes[name] = t
+		cfg.Core.Static[p+name] = themePath + "public/"
 	}
 
 	return themes, themes.LoadTheme(defaultTheme)
@@ -87,14 +95,6 @@ func loadThemeFile(path string) (*Theme, error) {
 // 返回所有的主题列表
 func (t *Themes) Themes() map[string]*Theme {
 	return t.themes
-}
-
-func (t *Themes) StaticRouteMap(prefix string) map[string]string {
-	ret := make(map[string]string, len(t.themes))
-	for k, _ := range t.themes {
-		ret[prefix+"/"+k] = t.dir + k + string(os.PathSeparator) + "public/"
-	}
-	return ret
 }
 
 // 将指定的主题加载到内存

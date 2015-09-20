@@ -2,10 +2,9 @@
     "name":        "default",
     "version":     "0.1.0.150803",
     "screenshot":  "screenshot.png",
-    "description": "默认主题",
+    "description": "系统默认主题",
     "author":{
         "name":  "caixw",
-        "email": "xnotepad@gmail.com",
-        "url":   "github.com/caixw"
+        "url":   "https://github.com/caixw"
     }
 }
