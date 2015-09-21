@@ -5,7 +5,8 @@
 package models
 
 const (
-	MetaTypeCat = iota + 1
+	MetaTypeAll = iota
+	MetaTypeCat
 	MetaTypeTag
 )
 

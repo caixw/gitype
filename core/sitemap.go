@@ -5,22 +5,128 @@
 package core
 
 import (
+	"bytes"
+	"os"
+	"strconv"
 	"time"
+
+	"github.com/caixw/typing/models"
+	"github.com/issue9/orm"
+	"github.com/issue9/orm/fetch"
 )
 
 const (
-	Always  = "always"
-	Hourly  = "hourly"
-	Daily   = "daily"
-	Weekly  = "weekly"
-	Monthly = "monthly"
-	Yearly  = "yearly"
-	Never   = "never"
+	header = `<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+	`
+
+	footer = `</urlset>`
 )
 
-type URL struct {
-	Loc        string
-	Lastmod    time.Time
-	Changefreq string
-	Priority   float32
+// BuildSitemap 构建一个sitemap.xml文件到path文件中，若该文件已经存在，则覆盖。
+func BuildSitemap(path string, db *orm.DB, opt *Options) error {
+	buf := bytes.NewBufferString(header)
+	buf.Grow(10000)
+
+	if err := addPostsToBuffer(buf, db, opt); err != nil {
+		return err
+	}
+
+	if err := addMetasToBuffer(buf, db, opt); err != nil {
+		return err
+	}
+
+	buf.WriteString(footer)
+
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+
+	_, err = buf.WriteTo(file)
+	file.Close()
+	return err
+}
+
+func addPostsToBuffer(buf *bytes.Buffer, db *orm.DB, opt *Options) error {
+	sql := "SELECT {id}, {name}, {title}, {summary}, {content}, {created}, {modified} FROM #posts WHERE {state}=?"
+	rows, err := db.Query(true, sql, models.PostStateNormal)
+	if err != nil {
+		return err
+	}
+	maps, err := fetch.MapString(false, rows)
+	rows.Close()
+	if err != nil {
+		return err
+	}
+
+	for _, v := range maps {
+		loc := opt.SiteURL + "/posts/"
+		if len(v["name"]) > 0 {
+			loc += v["name"]
+		} else {
+			loc += v["id"]
+		}
+
+		modified, err := strconv.ParseInt(v["modified"], 10, 64)
+		if err != nil {
+			return err
+		}
+		addItemToBuffer(buf, loc, opt.PostsChangefreq, modified, 0.5)
+	}
+	return nil
+}
+
+func addMetasToBuffer(buf *bytes.Buffer, db *orm.DB, opt *Options) error {
+	sql := "SELECT {id}, {name}, {title}, {description}, {type} FROM #metas"
+	rows, err := db.Query(true, sql)
+	if err != nil {
+		return err
+	}
+	maps, err := fetch.MapString(false, rows)
+	rows.Close()
+	if err != nil {
+		return err
+	}
+
+	for _, v := range maps {
+		var loc string
+		if v["type"] == "1" {
+			loc = opt.SiteURL + "/cats"
+		} else {
+			loc = opt.SiteURL + "/tags"
+		}
+
+		if len(v["name"]) > 0 {
+			loc += v["name"]
+		} else {
+			loc += v["id"]
+		}
+
+		addItemToBuffer(buf, loc, opt.PostsChangefreq, time.Now().Unix(), 0.5)
+	}
+	return nil
+}
+
+func addItemToBuffer(buf *bytes.Buffer, loc, changefreq string, lastmod int64, priority float64) {
+	buf.WriteString("<url>")
+
+	buf.WriteString("<loc>")
+	buf.WriteString(loc)
+	buf.WriteString("</loc>")
+
+	t := time.Unix(lastmod, 0)
+	buf.WriteString("<lastmod>")
+	buf.WriteString(t.Format("2006-01-02T15:04:05+08:00"))
+	buf.WriteString("</lastmod>")
+
+	buf.WriteString("<changefreq>")
+	buf.WriteString(changefreq)
+	buf.WriteString("</changefreq>")
+
+	buf.WriteString("<priority>")
+	buf.WriteString(strconv.FormatFloat(priority, 'f', 1, 32))
+	buf.WriteString("</priority>")
+
+	buf.WriteString("</url>")
 }

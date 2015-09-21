@@ -33,6 +33,8 @@ var (
 	db     *orm.DB // 数据库实例
 	opt    *core.Options
 	themes *core.Themes
+
+	sitemapPath string
 )
 
 func main() {
@@ -84,6 +86,8 @@ func main() {
 		panic(err)
 	}
 
+	sitemapPath = cfg.TempDir + "sitemap.xml"
+
 	if err := initModule(cfg); err != nil {
 		panic(err)
 	}
@@ -128,7 +132,7 @@ func initFrontPageRoutes(m *web.Module) {
 	//m.GetFunc("/rss", getRSS).
 	//GetFunc("/rss/posts/{id}", getPostRSS)
 
-	// m.GetFunc("/sitemap", getSitemap)
+	m.GetFunc("/sitemap.xml", pageSitemap)
 }
 
 func initFrontAPIRoutes(front *mux.Prefix) {
@@ -147,7 +151,8 @@ func initAdminAPIRoutes(admin *mux.Prefix) {
 	admin.PostFunc("/login", adminPostLogin).
 		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
 		Put("/password", loginHandlerFunc(adminChangePassword)).
-		Get("/state", loginHandlerFunc(adminGetState))
+		Get("/state", loginHandlerFunc(adminGetState)).
+		Post("/sitemap", loginHandlerFunc(adminPostSitemap))
 
 	admin.Get("/themes", loginHandlerFunc(adminGetThemes)).
 		Get("/themes/current", loginHandlerFunc(adminGetCurrentTheme)).
