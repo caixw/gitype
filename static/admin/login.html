@@ -15,7 +15,7 @@
 </div>
 
 <script>
-$(document).ready(function(){
+function pageInit(){
     setTitle('登录');
 
     $('form').on('submit', function(){
@@ -35,5 +35,5 @@ $(document).ready(function(){
 
         return false; // 记得在submit最后返回，取消submit操作。
     }); // end form.submit
-});
+} // end pageInit
 </script>

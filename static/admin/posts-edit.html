@@ -1,5 +1,5 @@
 <div style="text-align:left">
-    <h1 class="header">文章添加</h1>
+    <h1 class="header">添加/编辑文章</h1>
     <form class="ui form grid">
         <div class="row">
             <div class="twelve wide column">
@@ -13,6 +13,15 @@
 
             <div class="four wide column">
                 <div class="field">
+                    <input type="text" name="name" value="" />
+                </div>
+
+                <!-- cats -->
+                <div class="ui horizontal divider header">分类</div>
+                <div id="cats"></div>
+                <!-- end cats -->
+
+                <div class="field">
                     <div class="ui checkbox">
                         <input id="allowComment" type="checkbox" name="allowComment" />
                         <label for="allowComment">允许评论</label>
@@ -25,19 +34,32 @@
                         <label for="allowPing">允许Ping</label>
                     </div>
                 </div>
-
-                <div class="ui horizontal divider header">分类</div>
-                <div class="ui checkbox">
-                    <input type="checkbox" name="allowPing" />
-                    <label>默认分类</label>
-                </div>
             </div>
-        </div>
+        </div> <!-- end .row -->
     </form>
 </div>
 
 <script>
-$(document).ready(function(){
+function pageInit() {
+    setTitle("编辑文章");
+
+    get({
+        'url': frontAPIPrefix+'/cats'
+    }).done(function(data, textStatus, jqXHR){
+        loadTemplate('#cats', '#cats-templates', data.cats)
+    }).fail(function(){
+        showMessage('red', '加载分类列表失败');
+    });
+
     $('.ui.checkobx').checkbox();
-});
+} // end pageInit
+</script>
+
+<script id="cats-templates" type="x-template-handlebars">
+{{cats}}
+<div class="ui checkbox">
+    <input type="checkbox" name="cats[]" value="{{id}}" />
+    <label>{{title}}</label>
+</div>
+{{/cats}}
 </script>
