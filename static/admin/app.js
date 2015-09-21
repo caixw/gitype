@@ -126,8 +126,8 @@ function patch(settings) {
 // 向elem元素输出color颜色的信息
 function showMessage(color, message) {
     var div = $('<div id="message" class="ui '+color+' visible message">'+message+'</div>');
+    div.hide();
     $('.message-row').prepend(div);
-    div.hide()
     div.slideDown();
 
     window.setTimeout(function() {
@@ -162,8 +162,8 @@ $(document).ready(function() {
                 function(){ loadPage('metas-cats.html'); },
         "posts/list":
                 function(){ loadPage('posts-list.html'); },
-        "posts/add":
-                function(){ loadPage('posts-add.html'); },
+        "posts/edit/:id":
+                function(){ loadPage('posts-edit.html'); },
         "comments/list":
                 function(){ loadPage('comments-list.html'); },
     };

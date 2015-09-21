@@ -1,54 +1,66 @@
 <div style="text-align:left">
     <h1 class="header">文章管理</h1>
 
-    <div class="labels" style="text-align:left">
-        <div class="ui yellow label" id="draft">草稿<div class="detail"></div></div>
-        <div class="ui green label" id="normal">正常<div class="detail"></div></div>
+    <div id="states" class="labels" style="text-align:left">
     </div>
 
     <table class="ui compact celled striped table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th class="six wide">标题</th>
-                <th>时间</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
+
     </table>
 </div>
 
 <script>
-$(document).ready(function(){
+function pageInit(){
     $('table').addClass('loading');
+    var loadCount = get({
+        'url': adminAPIPrefix+'/posts/count'
+    }).done(function(data, textStatus, jqXHR){
+        loadTemplate('#states', '#state-template', data)
+    }).fail(function(){
+
+    });
     get({
         'url': adminAPIPrefix+'/posts'
     }).done(function(data, textStatus, jqXHR){
         $.each(data.posts, function(index, elem){
             $.each(elem, function(key, val){
-                if (key == 'created'){
+                if (key == 'created'||key=='modified'){
                     elem[key] = (new Date(val*1000)).toLocaleString();
                 }
             });
         });
 
-        loadTemplate($('table tbody'), $('#posts-template'), data)
+        loadTemplate('table', '#posts-template', data)
     }).fail(function(){
         showMessage('red', '加载文章列表失败');
     }).always(function(){
         $('table').removeClass('loading');
     });
-});
+} // end pageInit
 </script>
 
-<script id="posts-template" type="x-template-mustache">
+<script id="state-template" type="x-template-handlebars">
+    <div class="ui yellow label" id="draft">草稿<div class="detail">{{draft}}</div></div>
+    <div class="ui green label" id="normal">正常<div class="detail">{{normal}}</div></div>
+</script>
+
+<script id="posts-template" type="x-template-handlebars">
+<thead>
+    <tr>
+        <th>ID</th>
+        <th class="six wide">标题/唯一名称</th>
+        <th>更新/修改</th>
+        <th>操作</th>
+    </tr>
+</thead>
+<tbody>
 {{#posts}}
-<tr>
-    <td>{{id}}</td>
-    <td>{{title}}</td>
-    <td>{{created}}</td>
-    <td>删除</td>
-</tr>
+    <tr>
+        <td>{{id}}</td>
+        <td><a href="#posts/edit/{{id}}">{{title}}</a><br />{{name}}</td>
+        <td>{{created}}<br />{{modified}}</td>
+        <td>删除</td>
+    </tr>
 {{/posts}}
+</tbody>
 </script>

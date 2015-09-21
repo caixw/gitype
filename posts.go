@@ -8,6 +8,7 @@ import (
 	"html"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -15,7 +16,59 @@ import (
 	"github.com/caixw/typing/models"
 	"github.com/issue9/is"
 	"github.com/issue9/logs"
+	"github.com/issue9/orm/fetch"
 )
+
+// @api get /admin/api/posts/count 获取各种状态下的文章数量
+// @apiGroup admin
+//
+// @apiSuccess 200 OK
+// @apiParam all     int 评论的总量
+// @apiParam draft   int 等待审核的评论数量
+// @apiParam normal  int 垃圾评论的数量
+func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
+	sql := "SELECT {state}, count(*) AS cnt FROM #posts GROUP BY {state}"
+	rows, err := db.Query(true, sql)
+	if err != nil {
+		logs.Error("adminGetPostsCount:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+	defer rows.Close()
+
+	maps, err := fetch.MapString(false, rows)
+	if err != nil {
+		logs.Error("adminGetPostsCount:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	data := map[string]int{
+		"all":    0,
+		"draft":  0,
+		"normal": 0,
+	}
+	count := 0
+	for _, v := range maps {
+		num, err := strconv.Atoi(v["cnt"])
+		if err != nil {
+			logs.Error("adminGetCommentsCount:", err)
+			core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+			return
+		}
+		count += num
+		switch v["state"] {
+		case "1":
+			data["normal"] = num
+		case "2":
+			data["draft"] = num
+		default:
+			logs.Error("adminGetPostsCount: 未知的文章状态:", v["state"])
+		}
+	}
+	data["all"] = count // 所有评论的数量
+	core.RenderJSON(w, http.StatusOK, data, nil)
+}
 
 // @api post /admin/api/posts 新建文章
 // @apiGroup admin
@@ -63,6 +116,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	t := time.Now().Unix()
 	pp := &models.Post{
 		Name:         p.Name,
 		Title:        p.Title,
@@ -74,7 +128,8 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		Password:     p.Password,
 		AllowPing:    p.AllowPing,
 		AllowComment: p.AllowComment,
-		Created:      time.Now().Unix(),
+		Created:      t,
+		Modified:     t,
 	}
 
 	// 插入文章
