@@ -127,6 +127,8 @@ func initFrontPageRoutes(m *web.Module) {
 
 	//m.GetFunc("/rss", getRSS).
 	//GetFunc("/rss/posts/{id}", getPostRSS)
+
+	// m.GetFunc("/sitemap", getSitemap)
 }
 
 func initFrontAPIRoutes(front *mux.Prefix) {

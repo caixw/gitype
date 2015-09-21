@@ -2,7 +2,7 @@
     <h1 class="header">文章添加</h1>
     <form class="ui form grid">
         <div class="row">
-            <div class="thirteen wide column">
+            <div class="twelve wide column">
                 <div class="field">
                     <input name="title" type="text" placeholder="标题" />
                 </div>
@@ -11,15 +11,19 @@
                 </div>
             </div>
 
-            <div class="three wide column">
-                <div class="ui checkbox">
-                    <input type="checkbox" name="allowComment" />
-                    <label>允许评论</label>
+            <div class="four wide column">
+                <div class="field">
+                    <div class="ui checkbox">
+                        <input id="allowComment" type="checkbox" name="allowComment" />
+                        <label for="allowComment">允许评论</label>
+                    </div>
                 </div>
 
-                <div class="ui checkbox">
-                    <input type="checkbox" name="allowPing" id="allowPing" />
-                    <label for="allowPing">允许Ping</label>
+                <div class="field">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="allowPing" id="allowPing" />
+                        <label for="allowPing">允许Ping</label>
+                    </div>
                 </div>
 
                 <div class="ui horizontal divider header">分类</div>

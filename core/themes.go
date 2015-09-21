@@ -75,7 +75,7 @@ func LoadThemes(cfg *Config, defaultTheme string) (*Themes, error) {
 		cfg.Core.Static[p+name] = themePath + "public/"
 	}
 
-	return themes, themes.LoadTheme(defaultTheme)
+	return themes, themes.Switch(defaultTheme)
 }
 
 func loadThemeFile(path string) (*Theme, error) {
@@ -97,8 +97,8 @@ func (t *Themes) Themes() map[string]*Theme {
 	return t.themes
 }
 
-// 将指定的主题加载到内存
-func (t *Themes) LoadTheme(id string) (err error) {
+// 切换主题
+func (t *Themes) Switch(id string) (err error) {
 	t.tpl, err = template.ParseGlob(t.dir + id + "/*.html")
 	return
 }

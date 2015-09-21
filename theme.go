@@ -59,7 +59,7 @@ func adminPutCurrentTheme(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := themes.LoadTheme(o.Value); err != nil {
+	if err := themes.Switch(o.Value); err != nil {
 		logs.Error("adminPutTheme:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
