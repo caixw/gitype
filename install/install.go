@@ -95,12 +95,24 @@ func FillDB(db *orm.DB) error {
 	}
 
 	// post
-	if _, err := db.Insert(&models.Post{Title: "第一篇日志", Content: "<p>这是你的第一篇日志</p>", Created: time.Now().Unix()}); err != nil {
+	post := &models.Post{
+		Title:    "第一篇日志",
+		Content:  "<p>这是你的第一篇日志</p>",
+		Created:  time.Now().Unix(),
+		Modified: time.Now().Unix(),
+	}
+	if _, err := db.Insert(post); err != nil {
 		return err
 	}
 
 	// comment
-	if _, err := db.Insert(&models.Comment{PostID: 1, Content: "<p>沙发</p>", AuthorName: "游客", State: models.CommentStateWaiting}); err != nil {
+	comment := &models.Comment{
+		PostID:     1,
+		Content:    "<p>沙发</p>",
+		AuthorName: "游客",
+		State:      models.CommentStateWaiting,
+	}
+	if _, err := db.Insert(comment); err != nil {
 		return err
 	}
 
