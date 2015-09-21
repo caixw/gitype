@@ -188,3 +188,7 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 func pagePost(w http.ResponseWriter, r *http.Request) {
 
 }
+
+func pageSitemap(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, sitemapPath)
+}

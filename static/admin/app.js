@@ -58,7 +58,11 @@ function loadLoginPage() {
         return
     }
 
-    $('body').load('./login.html');
+    $('body').load('./login.html', function(){
+        if (typeof(pageInit) == 'function'){
+            pageInit.apply(null);
+        }
+    });
 }
 
 // 判断是否已经登录。
@@ -156,6 +160,8 @@ $(document).ready(function() {
                 function(){ loadPage('settings-users.html'); },
         "settings/themes":
                 function(){ loadPage('settings-themes.html'); },
+        "settings/sitemap":
+                function(){ loadPage('settings-sitemap.html'); },
         "metas/tags":
                 function(){ loadPage('metas-tags.html'); },
         "metas/cats":

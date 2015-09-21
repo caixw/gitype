@@ -26,6 +26,7 @@ type Config struct {
 	ThemeURLPrefix string `json:"themeURLPrefix"` // 各主题公开文件的根URL
 
 	ThemeDir string `json:"themeDir"` // 主题文件所在的目录
+	TempDir  string `json:"tempDir"`  // 临时文件所在的目录，该目录下的文件被删除不会影响程序整体运行。
 }
 
 // LoadConfig 用于加载path的内容，并尝试将其转换成Config实例。
@@ -70,6 +71,13 @@ func LoadConfig(path string) (*Config, error) {
 	}
 	if cfg.ThemeDir[len(cfg.ThemeDir)-1] != '/' {
 		return nil, errors.New("themeDir只能以/结尾")
+	}
+
+	if len(cfg.TempDir) == 0 {
+		return nil, errors.New("tempDir未指定")
+	}
+	if cfg.TempDir[len(cfg.TempDir)-1] != '/' {
+		return nil, errors.New("tempDir只能以/结尾")
 	}
 
 	if len(cfg.DBDSN) == 0 {

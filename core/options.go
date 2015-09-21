@@ -38,6 +38,13 @@ type Options struct {
 	DateFormat   string `options:"reading,dateFormat"`   // 前端日期格式
 	CommentOrder int    `options:"reading,commentOrder"` // 评论显示的顺序
 
+	PostsChangefreq string  `options:"sitemap,postsChangefreq"`
+	TagsChangefreq  string  `options:"sitemap,tagsChangefreq"`
+	CatsChangefreq  string  `options:"sitemap,catsChangefreq"`
+	PostsPriority   float64 `options:"sitemap,postsPriority"`
+	TagsPriority    float64 `options:"sitemap,tagsPriority"`
+	CatsPriority    float64 `options:"sitemap,catsPriority"`
+
 	Theme string `options:"themes,theme"` // 主题
 
 	ScreenName string `options:"users,screenName"` // 用户昵称
