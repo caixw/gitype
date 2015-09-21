@@ -97,7 +97,11 @@ func adminGetOption(w http.ResponseWriter, r *http.Request) {
 	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"value": val}, nil)
 }
 
-func adminPostSitemap(w http.ResponseWriter, r *http.Request) {
+// @api put /admin/api/sitemap 重新生成sitemap
+// @apiGroup admin
+//
+// @apiSuccess 200 Ok
+func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
 	err := core.BuildSitemap(sitemapPath, db, opt)
 	if err != nil {
 		logs.Error(err)

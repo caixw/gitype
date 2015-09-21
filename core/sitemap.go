@@ -17,8 +17,7 @@ import (
 
 const (
 	header = `<?xml version="1.0" encoding="utf-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-	`
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`
 
 	footer = `</urlset>`
 )
@@ -72,7 +71,7 @@ func addPostsToBuffer(buf *bytes.Buffer, db *orm.DB, opt *Options) error {
 		if err != nil {
 			return err
 		}
-		addItemToBuffer(buf, loc, opt.PostsChangefreq, modified, 0.5)
+		addItemToBuffer(buf, loc, opt.PostsChangefreq, modified, opt.PostsPriority)
 	}
 	return nil
 }
@@ -90,11 +89,18 @@ func addMetasToBuffer(buf *bytes.Buffer, db *orm.DB, opt *Options) error {
 	}
 
 	for _, v := range maps {
-		var loc string
-		if v["type"] == "1" {
-			loc = opt.SiteURL + "/cats"
-		} else {
-			loc = opt.SiteURL + "/tags"
+		typ, err := strconv.Atoi(v["type"])
+		if err != nil {
+			return err
+		}
+
+		loc := opt.SiteURL + "/cats/"
+		priority := opt.CatsPriority
+		changefreq := opt.CatsChangefreq
+		if typ == models.MetaTypeTag {
+			loc = opt.SiteURL + "/tags/"
+			priority = opt.TagsPriority
+			changefreq = opt.CatsChangefreq
 		}
 
 		if len(v["name"]) > 0 {
@@ -103,30 +109,30 @@ func addMetasToBuffer(buf *bytes.Buffer, db *orm.DB, opt *Options) error {
 			loc += v["id"]
 		}
 
-		addItemToBuffer(buf, loc, opt.PostsChangefreq, time.Now().Unix(), 0.5)
+		addItemToBuffer(buf, loc, changefreq, time.Now().Unix(), priority)
 	}
 	return nil
 }
 
 func addItemToBuffer(buf *bytes.Buffer, loc, changefreq string, lastmod int64, priority float64) {
-	buf.WriteString("<url>")
+	buf.WriteString("<url>\n")
 
 	buf.WriteString("<loc>")
 	buf.WriteString(loc)
-	buf.WriteString("</loc>")
+	buf.WriteString("</loc>\n")
 
 	t := time.Unix(lastmod, 0)
 	buf.WriteString("<lastmod>")
 	buf.WriteString(t.Format("2006-01-02T15:04:05+08:00"))
-	buf.WriteString("</lastmod>")
+	buf.WriteString("</lastmod>\n")
 
 	buf.WriteString("<changefreq>")
 	buf.WriteString(changefreq)
-	buf.WriteString("</changefreq>")
+	buf.WriteString("</changefreq>\n")
 
 	buf.WriteString("<priority>")
 	buf.WriteString(strconv.FormatFloat(priority, 'f', 1, 32))
-	buf.WriteString("</priority>")
+	buf.WriteString("</priority>\n")
 
-	buf.WriteString("</url>")
+	buf.WriteString("</url>\n")
 }

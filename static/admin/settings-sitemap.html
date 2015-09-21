@@ -1,0 +1,84 @@
+<div class="config-div">
+    <h1 class="header">Sitemap</h1>
+    <div class="ui form">
+        <div class="field">
+            <button id="rebuild" class="ui primary fluid button">重新生成Sitemap</button>
+        </div>
+
+        <div class="ui horizontal divider header">changefreq/priority</div>
+
+        <div class="inline field">
+            <label for="postsChangefreq">文章</label>
+            <select name="postsChangefreq" id="postsChangefreq" class="ui dropdown">
+                <option value="always">保持最新</option>
+                <option value="hourly">每小时</option>
+                <option value="daily">每天</option>
+                <option value="weekly">每周</option>
+                <option value="monthly">每月</option>
+                <option value="never">从不更新</option>
+            </select>
+
+            <div class="ui left labeled input" style="margin-left:1em">
+                <div class="ui basic label">0.</div>
+                <input type="number" min="0" max="10" name="postsPriority" id="postsPriority" />
+            </div>
+        </div>
+
+        <div class="inline field">
+            <label for="tagsChangefreq">标签</label>
+            <select name="tagsChangefreq" id="tagsChangefreq" class="ui dropdown">
+                <option value="always">保持最新</option>
+                <option value="hourly">每小时</option>
+                <option value="daily">每天</option>
+                <option value="weekly">每周</option>
+                <option value="monthly">每月</option>
+                <option value="never">从不更新</option>
+            </select>
+
+
+            <div class="ui left labeled input" style="margin-left:1em">
+                <div class="ui basic label">0.</div>
+                <input type="number" min="0" max="10" name="tagsPriority" id="tagsPriority" />
+            </div>
+        </div>
+
+        <div class="inline field">
+            <label for="catsChangefreq">分类</label>
+            <select name="catsChangefreq" id="catsChangefreq" class="ui dropdown">
+                <option value="always">保持最新</option>
+                <option value="hourly">每小时</option>
+                <option value="daily">每天</option>
+                <option value="weekly">每周</option>
+                <option value="monthly">每月</option>
+                <option value="never">从不更新</option>
+            </select>
+
+            <div class="ui left labeled input" style="margin-left:1em">
+                <div class="ui basic label">0.</div>
+                <input type="number" min="0" max="10" name="catsPriority" id="catsPriority" />
+            </div>
+        </div>
+    </div> <!-- end .ui.form -->
+</div>
+
+<script>
+function pageInit(){
+    setTitle('Sitemap');
+
+    $('#rebuild').on('click', function(){
+        $('#rebuild').addClass('loading');
+        put({
+            'url': adminAPIPrefix + '/sitemap'
+        }).done(function(){
+            showMessage('green', '成功生成新的sitemap');
+        }).fail(function(){
+            showMessage('red', '无法重新生成sitemap');
+        }).always(function(){
+            $('#rebuild').removeClass('loading');
+        });
+    });
+
+
+    $('.ui.dropdown').dropdown();
+} // end pageInit
+</script>
