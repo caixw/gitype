@@ -1,63 +1,65 @@
-<div text-align="text-align:left">
+<div style="text-align:left">
     <h1 class="header">评论管理</h1>
 
-    <div class="labels" style="text-align:left">
-        <div class="ui yellow label" id="waiting">未审核<div class="detail"></div></div>
-        <div class="ui red label" id="spam">垃圾评论<div class="detail"></div></div>
-        <div class="ui green label" id="approved">已审核<div class="detail"></div></div>
-    </div>
+    <table id="comments" class="ui compact celled striped table"></table>
 
-    <table class="ui compact celled striped table">
-        <thead>
-            <tr>
-                <th class="six wide">评论内容</th>
-                <th>所属文章</th>
-                <th>用户信息</th>
-                <th>状态</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <div id="pages" class="ui buttons">
+        <button class="ui button page" data-page="0">第一页</button>
+        <button class="ui button page" id="prev" data-page="0">上一页</button>
+        <button class="ui button page" id="next" data-page="0">下一页</button>
+    </div>
 </div>
 
 <script>
-function loadComments(page, state){
-    $('table').addClass('loading');
-    get({
-        'url': adminAPIPrefix+'/comments?state='+state+'&page='+page
-    }).done(function(data, textStatus, jqXHR){
-        loadTemplate('table tbody', '#comments-template', data);
-    }).fail(function(){
-        showMessage('red', '加载评论失败');
-    }).always(function(){
-        $('table').removeClass('loading');
-    });
-}
-$(document).ready(function(){
-    /*----- BEGIN 加载标签上的数字 */
-    get({
-        'url': adminAPIPrefix+'/comments/count'
-    }).done(function(data, textStatus, jqXHR){
-        $('#waiting .detail').text(data.waiting);
-        $('#spam .detail').text(data.spam);
-        $('#approved .detail').text(data.approved);
-    }).fail(function(jqXHR, textStatus, errorThrown){
-        showMessage('red', '加载/comments/count内容失败'+errorThrown);
-    }).always(function(){
-    });
-    /*----- END 加载标签上的数字 */
+function pageInit(){
+    function initActions(){
+        $('#pages .page').on('click', function(){
+            var page = $(this).attr('data-page');
+            loadComments(page);
+        });
+    }
 
-    loadComments(0,0);
-});
+    function loadComments(page){
+        get({
+            'url': adminAPIPrefix+'/comments?size='+size+'&page='+page
+        }).done(function(data, textStatus, jqXHR){
+            // 加载页码导航
+            if (page > 0){
+                $('#prev').attr('data-page', page-1);
+            }
+            if (page*size < data.count){
+                $('#next').attr('data-page', page+1);
+            }
+
+            $('#comments').html('');
+            loadTemplate('#comments', '#comments-template', data);
+        }).fail(function(){
+            showMessage('red', '加载评论失败');
+        });
+    } // end loadComments
+
+    loadComments(0);
+    initActions();
+} // end pageInit
 </script>
 
-<script id="comments-template" type="x-template-mustache">
+<script id="comments-template" type="x-template-handlebars">
+<thead>
+    <tr>
+        <th class="six wide">评论内容</th>
+        <th>所属文章</th>
+        <th>用户信息</th>
+        <th>状态</th>
+    </tr>
+</thead>
+<tbody>
 {{#comments}}
-<tr>
-    <td>{{content}}</td>
-    <td></td>
-    <td>{{authorName}}<br />{{authorURL}}<br />{{authorEmail}}</td>
-    <td></td>
-</tr>
+    <tr>
+        <td>{{content}}</td>
+        <td></td>
+        <td>{{authorName}}<br />{{authorURL}}<br />{{authorEmail}}</td>
+        <td></td>
+    </tr>
 {{/comments}}
+</tbody>
 </script>

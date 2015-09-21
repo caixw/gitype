@@ -1,47 +1,54 @@
 <div style="text-align:left">
     <h1 class="header">文章管理</h1>
 
-    <div id="states" class="labels" style="text-align:left">
+    <table id="posts" class="ui compact celled striped table"></table>
+    <div id="pages" class="ui buttons">
+        <button class="ui button page" data-page="0">第一页</button>
+        <button class="ui button page" id="prev" data-page="0">上一页</button>
+        <button class="ui button page" id="next" data-page="0">下一页</button>
     </div>
 
-    <table class="ui compact celled striped table">
-
-    </table>
 </div>
 
 <script>
 function pageInit(){
-    $('table').addClass('loading');
-    var loadCount = get({
-        'url': adminAPIPrefix+'/posts/count'
-    }).done(function(data, textStatus, jqXHR){
-        loadTemplate('#states', '#state-template', data)
-    }).fail(function(){
-
-    });
-    get({
-        'url': adminAPIPrefix+'/posts'
-    }).done(function(data, textStatus, jqXHR){
-        $.each(data.posts, function(index, elem){
-            $.each(elem, function(key, val){
-                if (key == 'created'||key=='modified'){
-                    elem[key] = (new Date(val*1000)).toLocaleString();
-                }
-            });
+    function initActions(){
+        $('#pages .page').on('click', function(){
+            var page = $(this).attr('data-page');
+            loadPosts(page);
         });
+    }
 
-        loadTemplate('table', '#posts-template', data)
-    }).fail(function(){
-        showMessage('red', '加载文章列表失败');
-    }).always(function(){
-        $('table').removeClass('loading');
-    });
+    function loadPosts(page) {
+        get({
+            'url': adminAPIPrefix+'/posts?size='+size+'&page='+page
+        }).done(function(data, textStatus, jqXHR){
+            $.each(data.posts, function(index, elem){
+                $.each(elem, function(key, val){
+                    if (key == 'created'||key=='modified'){
+                        elem[key] = (new Date(val*1000)).toLocaleString();
+                    }
+                });
+            });
+
+            // 加载页码导航
+            if (page > 0){
+                $('#prev').attr('data-page', page-1);
+            }
+            if (page*size < data.count){
+                $('#next').attr('data-page', page+1);
+            }
+
+            $('#posts').html('');
+            loadTemplate('#posts', '#posts-template', data);
+        }).fail(function(){
+            showMessage('red', '加载文章列表失败');
+        });
+    }
+
+    loadPosts(0);
+    initActions();
 } // end pageInit
-</script>
-
-<script id="state-template" type="x-template-handlebars">
-    <div class="ui yellow label" id="draft">草稿<div class="detail">{{draft}}</div></div>
-    <div class="ui green label" id="normal">正常<div class="detail">{{normal}}</div></div>
 </script>
 
 <script id="posts-template" type="x-template-handlebars">
