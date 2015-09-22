@@ -16,6 +16,8 @@
 
     "frontApiPrefix" : "/api",
     "adminApiPrefix" : "/admin/api",
+    "themeURLPrefix" : "/themes",
 
-    "themeDir":      "./static/front/themes/"
+    "themeDir":      "./static/front/themes/",
+    "tempDir":       "./output/temp/"
 }

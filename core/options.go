@@ -31,6 +31,7 @@ type Options struct {
 	SiteURL     string `options:"system,siteURL"`     // 网站的url
 	Keywords    string `options:"system,keywords"`    // 默认页面的keywords内容
 	Description string `options:"system,description"` // 默认页面的description内容
+	Suffix      string `options:"system,suffix"`      // URL地址的后缀名，仅对文章有效
 	//Language    string `options:"system,language"`      // 界面语言
 
 	PageSize     int    `options:"reading,pageSize"`     // 默认每页显示的数量
