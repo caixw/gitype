@@ -79,15 +79,11 @@
 
 <script>
 function getData(id){
-    get({
+    return get({
         'url': adminAPIPrefix+'/options/'+id
     }).done(function(data, textStatus, jqXHR){
         $('#'+id).val(data.value);
         $('#'+id).attr('data-default', data.value);
-
-        if (id=='commentOrder'){
-            $('.ui.dropdown').dropdown();
-        }
     }).fail(function(){
         showMessage('red', '加载'+id+'资源失败');
     });
@@ -131,6 +127,7 @@ function pageInit(){
     var dateFormat  = getData('dateFormat');
 
     $.when(siteName, secondTitle, siteURL, keywords, description, suffix, pageSize, sidebarSize, commentOrder, dateFormat).always(function(){
+        $('.ui.dropdown').dropdown();
         $('form').removeClass('loading');
     });
     /* END -- 加载数据 */

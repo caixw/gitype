@@ -63,6 +63,69 @@
 
 <script>
 function pageInit(){
+    function getChangefreq(id){
+        return get({
+            'url': adminAPIPrefix+'/options/'+id
+        }).done(function(data, textStatus, jqXHR){
+            $('#'+id).val(data.value);
+            $('#'+id).attr('data-default', data.value);
+        }).fail(function(){
+            showMessage('red', '加载'+id+'资源失败');
+        });
+    }
+
+    function getPriority(id){
+        return get({
+            'url': adminAPIPrefix+'/options/'+id
+        }).done(function(data, textStatus, jqXHR){
+            var val = parseFloat(data.value) * 10;
+            $('#'+id).val(val);
+            $('#'+id).attr('data-default', val);
+        }).fail(function(){
+            showMessage('red', '加载'+id+'资源失败');
+        });
+    }
+
+    function patchChangefreq(id) {
+        $('#'+id).on('blur', function(){
+            var elem = $('#'+id)
+            if (elem.attr('data-default') == elem.val()) {
+                return
+            }
+
+            patch({
+                'url': adminAPIPrefix+'/options/'+id,
+                'data':JSON.stringify({"value": elem.val()})
+            }).done(function(){
+                elem.attr('data-default', elem.val());
+                showMessage('green', '设置已经保存');
+            }).fail(function(){
+                elem.val(elem.attr('data-default'));
+                showMessage('red', '更新'+id+'资源失败');
+            });
+        });
+    }
+
+    function patchPriority(id) {
+        $('#'+id).on('blur', function(){
+            var elem = $('#'+id)
+            if (elem.attr('data-default') == elem.val()) {
+                return
+            }
+
+            patch({
+                'url': adminAPIPrefix+'/options/'+id,
+                'data':JSON.stringify({"value": elem.val()*10})
+            }).done(function(){
+                elem.attr('data-default', elem.val());
+                showMessage('green', '设置已经保存');
+            }).fail(function(){
+                elem.val(elem.attr('data-default'));
+                showMessage('red', '更新'+id+'资源失败');
+            });
+        });
+    }
+
     setTitle('Sitemap');
 
     $('#rebuild').on('click', function(){
@@ -79,7 +142,23 @@ function pageInit(){
         });
     });
 
+    $('.ui.form').addClass('loading');
+    var pc = getChangefreq('postsChangefreq');
+    var cc = getChangefreq('catsChangefreq');
+    var tc = getChangefreq('tagsChangefreq');
+    var pp = getPriority('postsPriority');
+    var cp = getPriority('catsPriority');
+    var tp = getPriority('tagsPriority');
+    $.when(pc, cc, tc, pp, cp, tp).always(function(){
+        $('.ui.form').removeClass('loading');
+        $('.ui.dropdown').dropdown();
+    });
 
-    $('.ui.dropdown').dropdown();
+    patchChangefreq('postsChangefreq');
+    patchChangefreq('catsChangefreq');
+    patchChangefreq('tagsChangefreq');
+    patchPriority('postsPriority');
+    patchPriority('catsPriority');
+    patchPriority('tagsPriority');
 } // end pageInit
 </script>
