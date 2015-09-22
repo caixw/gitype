@@ -68,8 +68,9 @@ function pageInit(){
     $('#rebuild').on('click', function(){
         $('#rebuild').addClass('loading');
         put({
-            'url': adminAPIPrefix + '/sitemap'
-        }).done(function(){
+            'url': adminAPIPrefix + '/sitemap',
+            'data':'{}'
+        }).done(function(data, textStatus, jqXHR){
             showMessage('green', '成功生成新的sitemap');
         }).fail(function(){
             showMessage('red', '无法重新生成sitemap');

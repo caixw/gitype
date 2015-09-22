@@ -3,10 +3,11 @@
     <form class="ui form">
         <style>
             .inline.field>label{
-                width:9em !important;
+                width:7em !important;
+                text-align:right;
             }
             .inline.field>.description{
-                margin-left:9em !important;
+                margin-left:7em !important;
             }
         </style>
         <div class="field">
@@ -37,17 +38,23 @@
             <div class="description">页面的默认description</div>
         </div>
 
+        <div class="field">
+            <label for="description">后缀名</label>
+            <input id="suffix" type="text" value="" />
+            <div class="description">文章URL地址显示的后缀名，对标签，类型等不启作用</div>
+        </div>
+
         <br /><br />
         <div class="ui horizontal divider header">阅读</div>
 
         <div class="inline field">
-            <label for="pageSize">每页显示数量</label>
+            <label for="pageSize">每页列表项</label>
             <input id="pageSize" type="number" min="1" max="100" value="" />
             <div class="description">每页最多显示的文章数量。</div>
         </div>
 
         <div class="inline field">
-            <label for="sidebarSize">侧边栏列表项数量</label>
+            <label for="sidebarSize">侧边栏列表项</label>
             <input id="sidebarSize" type="number" min="1" max="100" value="" />
             <div class="description">指定侧边栏中各列表中列表项的数量。</div>
         </div>
@@ -77,6 +84,10 @@ function getData(id){
     }).done(function(data, textStatus, jqXHR){
         $('#'+id).val(data.value);
         $('#'+id).attr('data-default', data.value);
+
+        if (id=='commentOrder'){
+            $('.ui.dropdown').dropdown();
+        }
     }).fail(function(){
         showMessage('red', '加载'+id+'资源失败');
     });
@@ -113,12 +124,13 @@ function pageInit(){
     var siteURL     = getData('siteURL');
     var keywords    = getData('keywords');
     var description = getData('description');
+    var suffix      = getData('suffix');
     var pageSize    = getData('pageSize');
     var sidebarSize = getData('sidebarSize');
     var commentOrder= getData('commentOrder');
     var dateFormat  = getData('dateFormat');
 
-    $.when(siteName, secondTitle, siteURL, keywords, description, pageSize, sidebarSize, commentOrder, dateFormat).always(function(){
+    $.when(siteName, secondTitle, siteURL, keywords, description, suffix, pageSize, sidebarSize, commentOrder, dateFormat).always(function(){
         $('form').removeClass('loading');
     });
     /* END -- 加载数据 */
@@ -129,12 +141,12 @@ function pageInit(){
     patchData('blur', 'siteURL')
     patchData('blur', 'keywords')
     patchData('blur', 'description')
+    patchData('blur', 'suffix')
     patchData('blur', 'pageSize')
     patchData('blur', 'sidebarSize')
     patchData('blur', 'dateFormat')
     patchData('change', 'commentOrder')
     /* END -- patch */
 
-    $('.ui.dropdown').dropdown();
 }
 </script>

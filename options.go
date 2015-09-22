@@ -109,7 +109,7 @@ func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	core.RenderJSON(w, http.StatusCreated, nil, nil)
+	core.RenderJSON(w, http.StatusOK, "{}", nil)
 }
 
 // @api get /admin/api/state 获取当前网站的些基本状态
