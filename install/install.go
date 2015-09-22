@@ -162,16 +162,27 @@ func fillMetas(db *orm.DB) error {
 
 func fillOptions(db *orm.DB) error {
 	opt := &core.Options{
+		SiteName:    "typing blog",
+		SecondTitle: "副标题",
+		ScreenName:  "typing",
+		Password:    core.HashPassword("123"),
+		Keywords:    "typing",
+		Description: "typing-极简的博客系统",
+		Suffix:      ".html",
+
 		PageSize:     20,
-		SiteName:     "typing blog",
-		ScreenName:   "typing",
-		Password:     core.HashPassword("123"),
-		Theme:        "default",
-		Keywords:     "typing",
-		Description:  "typing-极简的博客系统",
 		DateFormat:   "2006-01-02 15:04:05",
 		SidebarSize:  10,
 		CommentOrder: core.CommentOrderDesc,
+
+		PostsChangefreq: "never",
+		CatsChangefreq:  "daily",
+		TagsChangefreq:  "daily",
+		PostsPriority:   0.9,
+		CatsPriority:    0.6,
+		TagsPriority:    0.4,
+
+		Theme: "default",
 	}
 
 	maps, err := opt.ToMaps()

@@ -61,7 +61,7 @@ func main() {
 			panic(err)
 		}
 		return
-	}
+	} // end switch
 
 	cfg, err := core.LoadConfig(configPath)
 	if err != nil {
