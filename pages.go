@@ -52,7 +52,7 @@ func getPage() (*page, error) {
 
 	var err error
 	sql := "SELECT COUNT(*) as cnt FROM #posts WHERE {state}=? AND !password"
-	if p.PostSize, err = getSize(sql, models.PostStateNormal); err != nil {
+	if p.PostSize, err = getSize(sql, models.PostStatePublished); err != nil {
 		return nil, err
 	}
 
@@ -158,7 +158,7 @@ func getPosts(page int) ([]*models.Post, error) {
 	WHERE {state}=?
 	LIMIT ?, ?
 	ORDER BY {order}`
-	rows, err := db.Query(true, sql, models.PostStateNormal, opt.PageSize, opt.PageSize*page)
+	rows, err := db.Query(true, sql, models.PostStatePublished, opt.PageSize, opt.PageSize*page)
 	if err != nil {
 		return nil, err
 	}

@@ -49,7 +49,7 @@ func BuildSitemap(path string, db *orm.DB, opt *Options) error {
 
 func addPostsToBuffer(buf *bytes.Buffer, db *orm.DB, opt *Options) error {
 	sql := "SELECT {id}, {name}, {title}, {summary}, {content}, {created}, {modified} FROM #posts WHERE {state}=?"
-	rows, err := db.Query(true, sql, models.PostStateNormal)
+	rows, err := db.Query(true, sql, models.PostStatePublished)
 	if err != nil {
 		return err
 	}

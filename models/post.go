@@ -6,7 +6,7 @@ package models
 
 const (
 	PostStateAll    = iota // 表示所有状态
-	PostStateNormal        // 正常状态
+	PostStatePublished        // 已经发布
 	PostStateDraft         // 草稿
 )
 

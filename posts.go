@@ -491,7 +491,7 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if p.State != models.PostStateNormal {
+	if p.State != models.PostStatePublished {
 		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
@@ -545,7 +545,7 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 200 OK
 func frontGetPosts(w http.ResponseWriter, r *http.Request) {
-	sql := db.Where("{state}=?", models.PostStateNormal).Table("#posts")
+	sql := db.Where("{state}=?", models.PostStatePublished).Table("#posts")
 	count, err := sql.Count(true)
 	if err != nil {
 		logs.Error("adminGetPosts:", err)
@@ -593,7 +593,7 @@ func frontGetPostComments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if p.State != models.PostStateNormal {
+	if p.State != models.PostStatePublished {
 		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
@@ -664,7 +664,7 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	if (len(p.Title) == 0 && len(p.Content) == 0) || p.State != models.PostStateNormal {
+	if (len(p.Title) == 0 && len(p.Content) == 0) || p.State != models.PostStatePublished {
 		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}

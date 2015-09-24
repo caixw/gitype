@@ -69,7 +69,7 @@ func frontGetTags(w http.ResponseWriter, r *http.Request) {
 //     {"id":2, "name":"tag2", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
 // ]}
 func frontGetCats(w http.ResponseWriter, r *http.Request) {
-	sql := `SELECT {name},{title},{description},{id},{count},{parent},{order},count(r.{metaID}) AS {count}
+	sql := `SELECT m.{name},m.{title},m.{description},m.{id},m.{parent},m.{order},COUNT(r.{metaID}) AS {count}
 			FROM #metas AS m
 			LEFT JOIN #relationships AS r ON m.{id}=r.{metaID}
 			WHERE m.{type}=?

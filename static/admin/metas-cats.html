@@ -2,19 +2,45 @@
     <h1 class="header">分类管理</h1>
     <div class="ui grid">
         <div class="row">
-            <div class="eight wide column">
-                <table class="ui celled table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>标题</th>
-                            <th>名称</th>
-                            <th>详细介绍</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
+            <div class="eight wide column" id="cats"></div>
             <div class="eight wide column"></div>
         </div>
     </div>
 </div>
+
+<script>
+function pageInit(){
+    setTitle('分类管理');
+
+    get({
+        'url': frontAPIPrefix+'/cats'
+    }).done(function(data, textStatus, jqXHR){
+        loadTemplate('#cats', '#cats-template', data)
+    }).fail(function(){
+        showMessage('red', '加载分类信息失败');
+    });
+} // end pageInit
+</script>
+
+<script id="cats-template" type="x-template-handlebars">
+<table class="ui celled table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>标题</th>
+            <th>名称</th>
+            <th>详细介绍</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{#cats}}
+        <tr>
+            <td>{{id}}</td>
+            <td>{{title}}</td>
+            <td>{{name}}</td>
+            <td>{{description}}</td>
+        </tr>
+    {{/cats}}
+    </tbody>
+</table>
+</script>
