@@ -1,30 +1,36 @@
-<div style="width:35em;margin:auto;text-align:left">
+<div style="text-align:left">
     <h1 class="header">标签管理</h1>
-    <div class="ui message warning">删除标签，将去除所有文章与之关联的信息，即使之后恢复该标签，也无法恢复该标签与文章之间的关联信息！</div>
 
-    <div class="ui blue labels" id="tags"></div>
-    <div class="ui form">
-        <div class="field">
-            <label for="name">唯一名称</label>
-            <input type="text" id="name" name="name" />
-            <div class="description">最好是由英文和下划线及数字组成，以SEO友好的方式描述标签地址！</div>
-        </div>
+    <div class="ui grid">
+        <div class="ui labels eight wide column" id="tags"></div>
 
-        <div class="field">
-            <label for="title">标题</label>
-            <input type="text" id="title" name="title" />
-            <div class="description">标签的字面内容。</div>
-        </div>
+        <div class="ui form eight wide column">
+            <input type="hidden" id="id" />
 
-        <div class="field">
-            <label for="description">详细描述</label>
-            <textarea id="description" name="description" cols="30" rows="10"></textarea>
-        </div>
+            <div class="field">
+                <label for="name">唯一名称</label>
+                <input type="text" id="name" name="name" />
+                <div class="description">最好是由英文和下划线及数字组成，以SEO友好的方式描述标签地址！</div>
+            </div>
 
-        <div class="field">
-            <button class="ui fluid primary button" type="submit">确定修改</button>
-        </div>
-    </div>
+            <div class="field">
+                <label for="title">标题</label>
+                <input type="text" id="title" name="title" />
+                <div class="description">标签的字面内容。</div>
+            </div>
+
+            <div class="field">
+                <label for="description">详细描述</label>
+                <textarea id="description" name="description" cols="30" rows="10"></textarea>
+            </div>
+
+            <div class="field">
+                <button id="submit" class="ui fluid primary button" type="submit">提交</button>
+                <br />
+                <button id="delete" class="ui fluid red button">删除</button>
+            </div>
+        </div><!-- end .ui.form -->
+    </div><!-- end .grid -->
 </div>
 
 <script>
@@ -44,6 +50,7 @@ function pageInit(){
         // onclick事件
         $('#tags .ui.label').on('click', function(){
             var elem = $(this);
+            $('#id').val(elem.attr('data-id'));
             $('#name').val(elem.attr('data-name'));
             $('#title').val(elem.attr('data-title'));
             $('#description').val(elem.attr('data-description'));
@@ -51,23 +58,75 @@ function pageInit(){
     });
 
 
-    /*$('form').addClass('loading');
-    $('form').on('submit', function(){
-
+    $('#submit').on('click', function(){
+        $('.ui.form').addClass('loading');
+        if ($('#id').val()){
+            put({
+                'url': adminAPIPrefix+'/tags/'+$('#id').val(),
+                'data':buildJSON($('.ui.form'))
+            }).done(function(){
+                $('#id').val('');
+                $('#name').val('');
+                $('#title').val('');
+                $('#description').val('');
+            }).fail(function(){
+                showMessage('red', '更新'+$('#id').val()+'时失败');
+            }).always(function(){
+                $('.ui.form').removeClass('loading');
+            });
+        }else{
+            post({
+                'url': adminAPIPrefix+'/tags',
+                'data':buildJSON($('.ui.form'))
+            }).done(function(){
+                $('#id').val('');
+                $('#name').val('');
+                $('#title').val('');
+                $('#description').val('');
+            }).fail(function(){
+                showMessage('red', '添加时失败');
+            }).always(function(){
+                $('.ui.form').removeClass('loading');
+            });
+        }
         return false;
-    }).always(function(){
-        $('form').removeClass('loading');
-    });*/
+    });
+
+    $('#delete').on('click', function(){
+        $('.ui.form').addClass('loading');
+        del({
+            'url': adminAPIPrefix+'/tags/'+$('#id').val()
+        }).done(function(){
+            $('#id').val(0);
+            $('#name').val('');
+            $('#title').val('');
+            $('#description').val('');
+        }).fail(function(){
+            showMessage('red', '删除'+$('#id').val()+'失败');
+        }).always(function(){
+            $('.ui.form').removeClass('loading');
+        });
+        return false;
+    });
 }
 </script>
 
 <script id="tags-template" type="x-template-mustache">
     {{#tags}}
-    <span class="ui label" style="cursor:pointer"
+    <span class="ui blue label" style="cursor:pointer"
+        data-id="{{id}}"
         data-name="{{name}}"
         data-title="{{title}}"
         data-description="{{description}}">
         {{title}}<span class="detail">{{count}}</span>
     </span>
     {{/tags}}
+    <br /><br /><br />
+    <span class="ui green label" style="cursor:pointer"
+        data-id=""
+        data-name=""
+        data-title=""
+        data-description="">
+        新增
+    </span>
 </script>

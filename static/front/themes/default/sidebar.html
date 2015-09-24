@@ -3,7 +3,7 @@
     <div class="block">
         <div class="header">分类</div>
         <ol class="content">
-        {{range .page.Cats}}
+        {{range .Cats}}
             <li><a href="{{.Link}}" title="{{.Ext}}">{{.Title}}</a></li>
         {{end}}
         </ol>
@@ -12,7 +12,7 @@
     <div class="block">
         <div class="header">标签</div>
         <ol class="content">
-        {{range .page.Tags}}
+        {{range .Tags}}
             <li><a href="{{.Link}}" title="{{.Ext}}">{{.Title}}</a></li>
         {{end}}
         </ol>
@@ -21,7 +21,7 @@
     <div class="block">
         <div class="header">最新评论</div>
         <ol class="content">
-        {{range .page.Topics}}
+        {{range .Topics}}
             <li><a href="{{.Link}}" title="{{.Ext}}">{{.Title}}</a></li>
         {{end}}
         </ol>
@@ -30,8 +30,8 @@
     <div class="block">
         <div class="hader">数据</div>
         <div class="content">
-            <p>文章数量:{{.page.PageSize}}</p>
-            <p>评论数量:{{.page.CommentSize}}</p>
+            <p>文章数量:{{.PageSize}}</p>
+            <p>评论数量:{{.CommentSize}}</p>
         </div>
     </div>
 </aside>

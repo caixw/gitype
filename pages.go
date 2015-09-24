@@ -11,6 +11,7 @@ import (
 
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/models"
+	"github.com/issue9/conv"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
 )
@@ -20,6 +21,7 @@ type page struct {
 	Title       string
 	SiteName    string
 	SecondTitle string
+	Canonical   string // 当前页的链接
 	Keywords    string
 	Description string
 	AppVersion  string
@@ -149,6 +151,22 @@ func getSize(sql string, args ...interface{}) (int, error) {
 	return strconv.Atoi(cnts[0])
 }
 
+func getPosts(page int) ([]*models.Post, error) {
+	posts := make([]*models.Post, 0, opt.PageSize)
+	sql := `SELECT {id}, {title}, {name}, {content}, {summary}, {created}, {modified}, {allowComment}
+	FROM #posts
+	WHERE {state}=?
+	LIMIT ?, ?
+	ORDER BY {order}`
+	rows, err := db.Query(true, sql, models.PostStateNormal, opt.PageSize, opt.PageSize*page)
+	if err != nil {
+		return nil, err
+	}
+	_, err = fetch.Obj(posts, rows)
+	rows.Close()
+	return posts, err
+}
+
 func pageIndex(w http.ResponseWriter, r *http.Request) {
 	p, err := getPage()
 	if err != nil {
@@ -157,16 +175,31 @@ func pageIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]interface{}{
-		"page": p,
+	page := conv.MustInt(r.FormValue("page"), 1)
+	posts, err := getPosts(page - 1)
+	if err != nil {
+		logs.Error("pageIndex:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
 	}
-	if err := themes.Render(w, "index", data); err != nil {
+	data := map[string]interface{}{
+		"page":  p,
+		"posts": posts,
+	}
+	if err := themes.Render(w, "list", data); err != nil {
 		logs.Error("pageIndex:", err)
 	}
 }
 
 func pageTags(w http.ResponseWriter, r *http.Request) {
+	p, err := getPage()
+	if err != nil {
+		logs.Error("pageTags:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
 
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"page": p}, nil)
 }
 
 func pageTag(w http.ResponseWriter, r *http.Request) {
@@ -174,7 +207,14 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 }
 
 func pageCats(w http.ResponseWriter, r *http.Request) {
+	p, err := getPage()
+	if err != nil {
+		logs.Error("pageTags:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
 
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"page": p}, nil)
 }
 
 func pageCat(w http.ResponseWriter, r *http.Request) {

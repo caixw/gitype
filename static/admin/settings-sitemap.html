@@ -87,7 +87,7 @@ function pageInit(){
     }
 
     function patchChangefreq(id) {
-        $('#'+id).on('blur', function(){
+        $('#'+id).on('change', function(){
             var elem = $('#'+id)
             if (elem.attr('data-default') == elem.val()) {
                 return
@@ -115,7 +115,7 @@ function pageInit(){
 
             patch({
                 'url': adminAPIPrefix+'/options/'+id,
-                'data':JSON.stringify({"value": elem.val()*10})
+                'data':JSON.stringify({"value": (parseFloat(elem.val()) / 10).toString()})
             }).done(function(){
                 elem.attr('data-default', elem.val());
                 showMessage('green', '设置已经保存');

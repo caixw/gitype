@@ -1,6 +1,11 @@
 {{define "index"}}
     {{template "header" .page}}
     <div id="main">
+        {{range .list}}
+        <article>
+            <h2>{{.Title}}</h2>
+        </article>
+        {{end}}
     </div>
 
     {{template "sidebar" .page}}

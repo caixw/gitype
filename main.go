@@ -181,6 +181,7 @@ func initAdminAPIRoutes(admin *mux.Prefix) {
 		Post("/comments/{id:\\d+}/spam", loginHandlerFunc(adminSetCommentSpam)).
 		Post("/comments/{id:\\d+}/approved", loginHandlerFunc(adminSetCommentApproved))
 
+	// posts
 	admin.Get("/posts", loginHandlerFunc(adminGetPosts)).
 		Get("/posts/count", loginHandlerFunc(adminGetPostsCount)).
 		Post("/posts", loginHandlerFunc(adminPostPost)).
