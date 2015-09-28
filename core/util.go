@@ -151,8 +151,8 @@ func ParamID(w http.ResponseWriter, r *http.Request, key string) (int64, bool) {
 	}
 
 	if num <= 0 {
-		logs.Error("ParamID:用户指定了一个小于0的id值:", num)
-		RenderJSON(w, http.StatusGone, nil, nil)
+		logs.Trace("ParamID:用户指定了一个小于0的id值:", num)
+		RenderJSON(w, http.StatusNotFound, nil, nil)
 		return 0, false
 	}
 

@@ -92,6 +92,49 @@ func frontGetCats(w http.ResponseWriter, r *http.Request) {
 	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"cats": maps}, nil)
 }
 
+// @api patch /admin/api/{id}/order 修改某一分类的显示顺序
+// @apiParam id int 分类的id
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+// @apiParam order int 排序值
+//
+// @apiSuccess 204 No Content
+func adminPatchCatOrder(w http.ResponseWriter, r *http.Request) {
+	id, ok := core.ParamID(w, r, "id")
+	if !ok {
+		return
+	}
+	cat := &models.Meta{ID: id}
+	if err := db.Select(cat); err != nil {
+		logs.Error("adminPatchCatOrder:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+	if cat.Type != models.MetaTypeCat {
+		core.RenderJSON(w, http.StatusNotFound, nil, nil)
+		return
+	}
+
+	o := &struct {
+		Order int `json:"order"`
+	}{}
+	if !core.ReadJSON(w, r, o) {
+		return
+	}
+	cat = &models.Meta{
+		ID:    id,
+		Order: o.Order,
+	}
+	if _, err := db.Update(cat); err != nil {
+		logs.Error("adminPatchCatOrder:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+	core.RenderJSON(w, http.StatusNoContent, nil, nil)
+}
+
 // @api put /admin/api/tags/{id} 修改某id的标签内容
 // @apiParam id int 需要修改的标签id
 // @apiGroup admin
