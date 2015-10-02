@@ -32,7 +32,7 @@ function loadTemplate(containerSelector, templateSelector, data) {
 // 若未登录，是会自动跳转到登录页面。
 // 除了模板名称之外，还可参传递其它任何参数给loadPage，一般为路由匹配项上的参数。
 // 若存在这些参数，则会尝试调用加载页面的pageInit函数来做一些初始化。
-function loadPage(template) {
+function loadBodyPage(template) {
     if (!isLogin()){
         redirect('login')
         return
@@ -51,6 +51,18 @@ function loadPage(template) {
     });
 }
 
+function loadPage(template){
+    var args = [];
+    Array.prototype.push.apply(args, arguments);
+    args.shift();
+
+    $('body').load(template, function(){
+        if (typeof(pageInit) == 'function'){
+            pageInit.apply(null, args);
+        }
+    });
+}
+
 // 加载登录页面，若已经登录，则会跳转到dashboard页面。
 function loadLoginPage() {
     if (isLogin()){
@@ -58,12 +70,9 @@ function loadLoginPage() {
         return
     }
 
-    $('body').load('./login.html', function(){
-        if (typeof(pageInit) == 'function'){
-            pageInit.apply(null);
-        }
-    });
+    loadPage('login.html');
 }
+
 
 // 判断是否已经登录。
 function isLogin() {
@@ -151,32 +160,32 @@ $(document).ready(function() {
     });
 
     var routes = {
-        "":
+        '':
                 function(){ loadLoginPage(); },
-        "login":
+        'login':
                 function(){ loadLoginPage(); },
-        "logout":
-                function(){ $('body').load('logout.html'); }, // TODO 不经过loadPage加载模板，无法使用pageInit函数。
-        "dashboard":
-                function(){ loadPage('dashboard.html'); },
-        "settings/system":
-                function(){ loadPage('settings-system.html'); },
-        "settings/users":
-                function(){ loadPage('settings-users.html'); },
-        "settings/themes":
-                function(){ loadPage('settings-themes.html'); },
-        "settings/sitemap":
-                function(){ loadPage('settings-sitemap.html'); },
-        "metas/tags":
-                function(){ loadPage('metas-tags.html'); },
-        "metas/cats":
-                function(){ loadPage('metas-cats.html'); },
-        "posts/list":
-                function(){ loadPage('posts-list.html'); },
-        "posts/edit/:id":
-                function(){ loadPage('posts-edit.html'); },
-        "comments/list":
-                function(){ loadPage('comments-list.html'); },
+        'logout':
+                function(){ loadPage('logout.html'); },
+        'dashboard':
+                function(){ loadBodyPage('dashboard.html'); },
+        'settings/system':
+                function(){ loadBodyPage('settings-system.html'); },
+        'settings/users':
+                function(){ loadBodyPage('settings-users.html'); },
+        'settings/themes':
+                function(){ loadBodyPage('settings-themes.html'); },
+        'settings/sitemap':
+                function(){ loadBodyPage('settings-sitemap.html'); },
+        'metas/tags':
+                function(){ loadBodyPage('metas-tags.html'); },
+        'metas/cats':
+                function(){ loadBodyPage('metas-cats.html'); },
+        'posts/list':
+                function(){ loadBodyPage('posts-list.html'); },
+        'posts/edit/:id':
+                function(){ loadBodyPage('posts-edit.html'); },
+        'comments/list':
+                function(){ loadBodyPage('comments-list.html'); },
     };
 
     var router = Router(routes).init();
