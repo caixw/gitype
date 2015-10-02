@@ -51,7 +51,7 @@ func getPage() (*page, error) {
 	}
 
 	var err error
-	sql := "SELECT COUNT(*) as cnt FROM #posts WHERE {state}=? AND !password"
+	sql := "SELECT COUNT(*) as cnt FROM #posts WHERE {state}=? AND ({password} IS NOT NULL OR {password} <> '')"
 	if p.PostSize, err = getSize(sql, models.PostStatePublished); err != nil {
 		return nil, err
 	}
@@ -73,7 +73,8 @@ func getPage() (*page, error) {
 	sql = `SELECT c.{content}, p.{title}, p.{name}, p.{id}
 	FROM #comments AS c
 	LEFT JOIN #posts AS p ON c.{postID}=p.{id}
-	LIMIT ? ORDER BY c.{id} DESC`
+	ORDER BY c.{id} DESC
+	LIMIT ? `
 	rows, err := db.Query(true, sql, opt.SidebarSize)
 	if err != nil {
 		return nil, err
@@ -156,8 +157,8 @@ func getPosts(page int) ([]*models.Post, error) {
 	sql := `SELECT {id}, {title}, {name}, {content}, {summary}, {created}, {modified}, {allowComment}
 	FROM #posts
 	WHERE {state}=?
-	LIMIT ?, ?
-	ORDER BY {order}`
+	ORDER BY {order}
+	LIMIT ?, ?`
 	rows, err := db.Query(true, sql, models.PostStatePublished, opt.PageSize, opt.PageSize*page)
 	if err != nil {
 		return nil, err
@@ -186,9 +187,7 @@ func pageIndex(w http.ResponseWriter, r *http.Request) {
 		"page":  p,
 		"posts": posts,
 	}
-	if err := themes.Render(w, "list", data); err != nil {
-		logs.Error("pageIndex:", err)
-	}
+	themes.Render(w, "list", data)
 }
 
 func pageTags(w http.ResponseWriter, r *http.Request) {

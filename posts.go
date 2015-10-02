@@ -573,8 +573,9 @@ func frontGetPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 // @api get /api/posts/{id}/comments
-// @apiQuery page int
-// @apiQuery size int
+// @apiQuery page  int 页码
+// @apiQuery size  int 每页显示的数量
+// @apiQuery order int 排序方式
 // @apiGroup front
 //
 // @apiSuccess 200 OK
@@ -601,6 +602,23 @@ func frontGetPostComments(w http.ResponseWriter, r *http.Request) {
 	sql := db.Where("{postID}=?", id).
 		And("{state}=?", models.CommentStateApproved).
 		Table("#comments")
+
+	var order, page, size int
+	if order, ok = core.QueryInt(w, r, "order", core.CommentOrderUndefined); !ok {
+		return
+	}
+	switch order {
+	case core.CommentOrderAsc:
+		sql.Asc("{order}")
+	case core.CommentOrderDesc:
+		sql.Desc("{order}")
+	case core.CommentOrderUndefined:
+	default:
+		errs := &core.ErrorResult{Message: "格式错误"}
+		errs.Detail["order"] = "取值错误，只能是0,1,2"
+		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
+		return
+	}
 	count, err := sql.Count(true)
 	if err != nil {
 		logs.Error("frontGetPostComments:", err)
@@ -608,7 +626,6 @@ func frontGetPostComments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var page, size int
 	if page, ok = core.QueryInt(w, r, "page", 0); !ok {
 		return
 	}

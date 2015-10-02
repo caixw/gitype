@@ -92,7 +92,12 @@ function setTitle(title) {
 function buildJSON(form) {
     var ret = {};
     form.find('*[name]').each(function(index, elem){
-        ret[$(elem).attr('name')] = $(elem).val();
+        var v = $(elem).val();
+        // TODO 考虑其它类型的情况
+        if ($(elem).attr('type') == 'number'){
+            v = parseInt(v);
+        }
+        ret[$(elem).attr('name')] = v;
     });
     return JSON.stringify(ret);
 }
@@ -151,7 +156,7 @@ $(document).ready(function() {
         "login":
                 function(){ loadLoginPage(); },
         "logout":
-                function(){ $('body').load('logout.html'); },
+                function(){ $('body').load('logout.html'); }, // TODO 不经过loadPage加载模板，无法使用pageInit函数。
         "dashboard":
                 function(){ loadPage('dashboard.html'); },
         "settings/system":

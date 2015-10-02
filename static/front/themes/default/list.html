@@ -1,15 +1,16 @@
-{{define "index"}}
-    {{template "header" .page}}
+{{define "list"}}
+{{template "header" .page}}
     <div id="main">
-        {{range .list}}
+        {{range .posts}}
         <article>
-            <h2>{{.Title}}</h2>
+            <header>
+                <h2>{{.Title}}</h2>
+                <span>{{.Author}}</span><time>{{.Created}}</time>
+            </header>
+            {{.Content}}
         </article>
         {{end}}
     </div>
-
-    {{template "sidebar" .page}}
-
-    {{template "footer" .page}}
-
+{{template "sidebar" .page}}
+{{template "footer" .page}}
 {{end}}

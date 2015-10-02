@@ -11,6 +11,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	"github.com/issue9/logs"
 )
 
 // 主题管理
@@ -104,6 +106,11 @@ func (t *Themes) Switch(id string) (err error) {
 }
 
 // 输出指定模板
-func (t *Themes) Render(w http.ResponseWriter, name string, data interface{}) error {
-	return t.tpl.ExecuteTemplate(w, name, data)
+func (t *Themes) Render(w http.ResponseWriter, name string, data interface{}) {
+	err := t.tpl.ExecuteTemplate(w, name, data)
+	if err != nil {
+		logs.Error("core.Render:", err)
+		RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
 }

@@ -73,7 +73,8 @@ func frontGetCats(w http.ResponseWriter, r *http.Request) {
 			FROM #metas AS m
 			LEFT JOIN #relationships AS r ON m.{id}=r.{metaID}
 			WHERE m.{type}=?
-			GROUP BY m.{id}`
+			GROUP BY m.{id}
+			ORDER BY m.{order} ASC`
 	rows, err := db.Query(true, sql, models.MetaTypeCat)
 	if err != nil {
 		logs.Error("frontGetCats:", err)

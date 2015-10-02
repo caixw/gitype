@@ -1,0 +1,10 @@
+{{define "tags"}}
+{{template "header" .page}}
+<div id="main">
+    {{range .tags}}
+        <a href="{{.Link}}">{{.Title}}</a>
+    {{end}}
+</div>
+{{template "sidebar" .page}}
+{{template "footer" .page}}
+{{end}}

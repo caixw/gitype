@@ -16,8 +16,8 @@ import (
 )
 
 // @api get /admin/api/comments 获取所有评论内容
-// @apiQuery page int 显示第page页的内容，基数0;
-// @apiQuery size int 每页显示的数量；
+// @apiQuery page  int 显示第page页的内容，基数0;
+// @apiQuery size  int 每页显示的数量；
 // @apiQuery state int 仅显示状态值为state的记录；
 // @apiGroup admin
 //

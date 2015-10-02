@@ -2,8 +2,40 @@
     <h1 class="header">分类管理</h1>
     <div class="ui grid">
         <div class="row">
-            <div class="eight wide column" id="cats"></div>
-            <div class="eight wide column"></div>
+            <div class="nine wide column">
+                <div id="cats"></div><br />
+                <button class="ui green button" id="new">新增</button>
+            </div>
+
+            <div class="ui seven wide column form">
+                <input type="hidden" id="id" />
+
+                <div class="field">
+                    <label>唯一名称，可为空</label>
+                    <input type="text" id="name" name="name" />
+                </div>
+
+                <div class="field">
+                    <label>字面文字</label>
+                    <input type="text" id="title" name="title" />
+                </div>
+
+                <div class="field">
+                    <label>排序，小数字排在前</label>
+                    <input type="number" id="order" name="order" />
+                </div>
+
+                <div class="field">
+                    <label>描述内容</label>
+                    <textarea id="description" name="description"></textarea>
+                </div>
+
+                <div class="field">
+                    <button class="ui primary fluid button" id="submit">提交</button>
+                    <br />
+                    <button class="ui red fluid button" id="delete">删除</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -16,8 +48,78 @@ function pageInit(){
         'url': frontAPIPrefix+'/cats'
     }).done(function(data, textStatus, jqXHR){
         loadTemplate('#cats', '#cats-template', data)
+        $('#cats tbody td a').on('click', function(){
+            var a = $(this);
+            $('#id').val(a.attr('data-id'));
+            $('#name').val(a.attr('data-name'));
+            $('#title').val(a.attr('data-title'));
+            $('#order').val(a.attr('data-order'));
+            $('#description').val(a.attr('data-description'));
+        });
     }).fail(function(){
         showMessage('red', '加载分类信息失败');
+    });
+
+    $('#new').on('click', function(){
+        $('#id').val('');
+        $('#name').val('');
+        $('#title').val('');
+        $('#order').val('');
+        $('#description').val('');
+    });
+
+    $('#submit').on('click', function(){
+        $('.ui.form').addClass('loading');
+        if ($('#id').val()){
+            put({
+                'url': adminAPIPrefix+'/cats/'+$('#id').val(),
+                'data':buildJSON($('.ui.form'))
+            }).done(function(){
+                $('#id').val('');
+                $('#name').val('');
+                $('#title').val('');
+                $('#order').val('');
+                $('#description').val('');
+            }).fail(function(){
+                showMessage('red', '更新'+$('#id').val()+'时失败');
+            }).always(function(){
+                $('.ui.form').removeClass('loading');
+            });
+        }else{
+            post({
+                'url': adminAPIPrefix+'/cats',
+                'data':buildJSON($('.ui.form'))
+            }).done(function(){
+                $('#id').val('');
+                $('#name').val('');
+                $('#order').val('');
+                $('#title').val('');
+                $('#description').val('');
+            }).fail(function(){
+                showMessage('red', '添加时失败');
+            }).always(function(){
+                $('.ui.form').removeClass('loading');
+            });
+        }
+        return false;
+    });
+
+    $('#delete').on('click', function(){
+        $('.ui.form').addClass('loading');
+        del({
+            'url': adminAPIPrefix+'/cats/'+$('#id').val()
+        }).done(function(){
+            $('#id').val(0);
+            $('#name').val('');
+            $('#title').val('');
+            $('#order').val('');
+            $('#description').val('');
+        }).fail(function(){
+            showMessage('red', '删除'+$('#id').val()+'失败');
+        }).always(function(){
+            $('.ui.form').removeClass('loading');
+        });
+        return false;
     });
 } // end pageInit
 </script>
@@ -29,6 +131,7 @@ function pageInit(){
             <th>ID</th>
             <th>标题</th>
             <th>名称</th>
+            <th>排序</th>
             <th>详细介绍</th>
         </tr>
     </thead>
@@ -36,8 +139,16 @@ function pageInit(){
     {{#cats}}
         <tr>
             <td>{{id}}</td>
-            <td>{{title}}</td>
+            <td>
+                <a
+                    data-id="{{id}}"
+                    data-order="{{order}}"
+                    data-name="{{name}}"
+                    data-title="{{title}}"
+                    data-description="{{description}}">{{title}}</a>
+            </td>
             <td>{{name}}</td>
+            <td>{{order}}</td>
             <td>{{description}}</td>
         </tr>
     {{/cats}}
