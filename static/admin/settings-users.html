@@ -42,7 +42,7 @@
 <script>
 function getData(id){
     app.get({
-        'url': adminAPIPrefix+'/options/'+id
+        'url': app.adminAPI('/options/'+id)
     }).done(function(data, textStatus, jqXHR) {
         $('#'+id).attr('data-default', data.value);
         $('#'+id).val(data.value);
@@ -54,7 +54,7 @@ function getData(id){
 function patchData(id){
     $('#'+id).on('blur', function(){
         app.patch({
-            'url': adminAPIPrefix+'/options/'+id,
+            'url': app.adminAPI('/options/'+id),
             'data':JSON.stringify({'value':$('#'+id).val()})
         }).done(function(){
             $('#'+id).attr('data-default', $('#'+id).val());
@@ -105,7 +105,7 @@ function pageInit(){
 
         $('#changePasswordForm').addClass('loading');
         app.put({
-            'url': adminAPIPrefix+'/password',
+            'url': app.adminAPI('/password'),
             'data':JSON.stringify({'old':$('#oldPassword').val(), 'new':$('#newPassword').val()})
         }).done(function() {
             app.showMessage('green', '更新密码成功');

@@ -65,7 +65,7 @@
 function pageInit(){
     function getChangefreq(id){
         return app.get({
-            'url': adminAPIPrefix+'/options/'+id
+            'url': app.adminAPI('/options/'+id)
         }).done(function(data, textStatus, jqXHR){
             $('#'+id).val(data.value);
             $('#'+id).attr('data-default', data.value);
@@ -76,7 +76,7 @@ function pageInit(){
 
     function getPriority(id){
         return app.get({
-            'url': adminAPIPrefix+'/options/'+id
+            'url': app.adminAPI('/options/'+id)
         }).done(function(data, textStatus, jqXHR){
             var val = parseFloat(data.value) * 10;
             $('#'+id).val(val);
@@ -94,7 +94,7 @@ function pageInit(){
             }
 
             app.patch({
-                'url': adminAPIPrefix+'/options/'+id,
+                'url': app.adminAPI('/options/'+id),
                 'data':JSON.stringify({"value": elem.val()})
             }).done(function(){
                 elem.attr('data-default', elem.val());
@@ -114,7 +114,7 @@ function pageInit(){
             }
 
             app.patch({
-                'url': adminAPIPrefix+'/options/'+id,
+                'url': app.adminAPI('/options/'+id),
                 'data':JSON.stringify({"value": (parseFloat(elem.val()) / 10).toString()})
             }).done(function(){
                 elem.attr('data-default', elem.val());
@@ -131,7 +131,7 @@ function pageInit(){
     $('#rebuild').on('click', function(){
         $('#rebuild').addClass('loading');
         app.put({
-            'url': adminAPIPrefix + '/sitemap',
+            'url': app.adminAPI('/sitemap'),
             'data':'{}'
         }).done(function(data, textStatus, jqXHR){
             app.showMessage('green', '成功生成新的sitemap');

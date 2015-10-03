@@ -9,7 +9,7 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/Director/1.2.8/director.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.4/semantic.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.2/handlebars.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.3/handlebars.js"></script>
         <script src="./app.js"></script>
         <style>
             .config-div{
@@ -30,14 +30,15 @@
             }
         </style>
         <script>
-        // api的统一前缀
-        var adminAPIPrefix = '/admin/api';
-        var frontAPIPrefix = '/api';
-
         // 每页加载的记录数量
         var size = 25;
 
-        var app = new App({titleSeparator:'&gt;'});
+        var app = new App({
+            titleSeparator: '&#8250;',
+            adminAPIPrefix: '/admin/api',
+            frontAPIPrefix: '/api'
+        });
+
         var routes = {
             '':
                     function(){ app.loadLoginPage(); },

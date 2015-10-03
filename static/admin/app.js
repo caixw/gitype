@@ -8,24 +8,37 @@
 // - titleSuffix     标题后缀
 // - titleSeparator  标题分隔符
 // - messageTimeout  提示信息关闭时间
+// - adminAPIPrefix
+// - frontAPIPrefix
 function App(options) {
     var defaults = {
         titleSuffix:    'typing',
         titleSeparator: '-',
+        adminAPIPrefix: '/admin/api',
+        frontAPIPrefix: '/api',
         messageTimeout: 5000
     };
     var opt = $.extend({}, defaults, options);
 
-    // 设置标题
+    // 设置标题，若值为空，则只显示opt.titleSuffix。
     this.setTitle = function(title) {
         if (!title){
             title = opt.titleSuffix
         }else{
             title = title + opt.titleSeparator + opt.titleSuffix;
         }
-        $('html head title').html(title);
+        $('html>head>title').html(title);
     };
 
+    this.frontAPI = function(url) {
+        return opt.frontAPIPrefix + url;
+    };
+
+    this.adminAPI = function(url) {
+        return opt.adminAPIPrefix + url;
+    };
+
+    // 执行一条delete的restful api操作。
     this.delete = function(settings) {
         settings.contentType = 'application/json;charset=utf-8';
         settings.dataType    = 'json';
@@ -34,6 +47,7 @@ function App(options) {
         return $.ajax(settings);
     };
 
+    // 执行一条post的restful api操作。
     this.post = function(settings) {
         settings.contentType = 'application/json;charset=utf-8';
         settings.dataType    = 'json';
@@ -42,6 +56,7 @@ function App(options) {
         return $.ajax(settings);
     };
 
+    // 执行一条put的restful api操作。
     this.put = function(settings) {
         settings.contentType = 'application/json;charset=utf-8';
         settings.dataType    = 'json';
@@ -50,6 +65,7 @@ function App(options) {
         return $.ajax(settings);
     };
 
+    // 执行一条get的restful api操作。
     this.get = function(settings) {
         settings.contentType = 'application/json;charset=utf-8';
         settings.dataType    = 'json';
@@ -58,6 +74,7 @@ function App(options) {
         return $.ajax(settings);
     };
 
+    // 执行一条patch的restful api操作。
     this.patch = function(settings) {
         settings.contentType = 'application/json;charset=utf-8';
         settings.dataType    = 'json';
@@ -66,7 +83,7 @@ function App(options) {
         return $.ajax(settings);
     };
 
-    // 向elem元素输出color颜色的信息
+    // 在页面右下解显示一提示信息，该信息会自动消失。
     this.showMessage = function(color, message) {
         var div = $('<div id="message" class="ui '+color+' visible message">'+message+'</div>');
         div.hide();

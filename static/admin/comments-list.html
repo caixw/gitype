@@ -21,7 +21,7 @@ function pageInit(){
 
     function loadComments(page){
         app.get({
-            'url': adminAPIPrefix+'/comments?size='+size+'&page='+page
+            'url': app.adminAPI('/comments?size='+size+'&page='+page)
         }).done(function(data, textStatus, jqXHR){
             // 加载页码导航
             if (page > 0){

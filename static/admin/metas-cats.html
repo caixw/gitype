@@ -45,7 +45,7 @@ function pageInit(){
     app.setTitle('分类管理');
 
     app.get({
-        'url': frontAPIPrefix+'/cats'
+        'url': app.frontAPI('/cats')
     }).done(function(data, textStatus, jqXHR){
         app.loadTemplate('#cats', '#cats-template', data)
         $('#cats tbody td a').on('click', function(){
@@ -72,7 +72,7 @@ function pageInit(){
         $('.ui.form').addClass('loading');
         if ($('#id').val()){
             app.put({
-                'url': adminAPIPrefix+'/cats/'+$('#id').val(),
+                'url': app.adminAPI('/cats/'+$('#id').val()),
                 'data':buildJSON($('.ui.form'))
             }).done(function(){
                 $('#id').val('');
@@ -87,7 +87,7 @@ function pageInit(){
             });
         }else{
             app.post({
-                'url': adminAPIPrefix+'/cats',
+                'url': app.adminAPI('/cats'),
                 'data':buildJSON($('.ui.form'))
             }).done(function(){
                 $('#id').val('');
@@ -107,7 +107,7 @@ function pageInit(){
     $('#delete').on('click', function(){
         $('.ui.form').addClass('loading');
         app.delete({
-            'url': adminAPIPrefix+'/cats/'+$('#id').val()
+            'url': app.adminAPI('/cats/'+$('#id').val())
         }).done(function(){
             $('#id').val(0);
             $('#name').val('');

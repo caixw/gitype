@@ -4,7 +4,7 @@ function pageInit(){
 
     $('body').addClass('loading');
     app.delete({
-        'url': adminAPIPrefix+'/login'
+        'url': app.adminAPI('/login')
     }).always(function(){
         $('body').removeClass('loading');
         window.sessionStorage.token = '';

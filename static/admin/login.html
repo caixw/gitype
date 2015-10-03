@@ -22,7 +22,7 @@ function pageInit(){
         $('form').addClass('loading');
 
         app.post({
-            'url': '/admin/api/login',
+            'url': app.adminAPI('/login'),
             'data': app.buildJSON($('form'))
         }).done(function(data, textStatus, jqXHR){
             window.sessionStorage.token = data.token;
