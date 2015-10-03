@@ -78,37 +78,6 @@
 </div>
 
 <script>
-function getData(id){
-    return app.get({
-        'url': app.adminAPI('/options/'+id)
-    }).done(function(data, textStatus, jqXHR){
-        $('#'+id).val(data.value);
-        $('#'+id).attr('data-default', data.value);
-    }).fail(function(){
-        app.showMessage('red', '加载'+id+'资源失败');
-    });
-}
-
-function patchData(event, id) {
-    $('#'+id).on(event, function(){
-        var elem = $('#'+id)
-        if (elem.attr('data-default') == elem.val()) {
-            return
-        }
-
-        app.patch({
-            'url': app.adminAPI('/options/'+id),
-            'data':JSON.stringify({"value": elem.val()})
-        }).done(function(){
-            elem.attr('data-default', elem.val());
-            app.showMessage('green', '设置已经保存');
-        }).fail(function(){
-            elem.val(elem.attr('data-default'));
-            app.showMessage('red', '更新'+id+'资源失败');
-        });
-    });
-}
-
 function pageInit(){
     app.setTitle('系统设置');
 
@@ -133,17 +102,47 @@ function pageInit(){
     /* END -- 加载数据 */
 
     /* BEGIN -- patch */
-    patchData('blur', 'siteName')
-    patchData('blur', 'secondTitle')
-    patchData('blur', 'siteURL')
-    patchData('blur', 'keywords')
-    patchData('blur', 'description')
-    patchData('blur', 'suffix')
-    patchData('blur', 'pageSize')
-    patchData('blur', 'sidebarSize')
-    patchData('blur', 'dateFormat')
-    patchData('change', 'commentOrder')
+    patchData('blur', 'siteName');
+    patchData('blur', 'secondTitle');
+    patchData('blur', 'siteURL');
+    patchData('blur', 'keywords');
+    patchData('blur', 'description');
+    patchData('blur', 'suffix');
+    patchData('blur', 'pageSize');
+    patchData('blur', 'sidebarSize');
+    patchData('blur', 'dateFormat');
+    patchData('change', 'commentOrder');
     /* END -- patch */
 
-}
+    function getData(id){
+        return app.get({
+            'url': app.adminAPI('/options/'+id)
+        }).done(function(data, textStatus, jqXHR){
+            $('#'+id).val(data.value);
+            $('#'+id).attr('data-default', data.value);
+        }).fail(function(){
+            app.showMessage('red', '加载'+id+'资源失败');
+        });
+    }
+
+    function patchData(event, id) {
+        $('#'+id).on(event, function(){
+            var elem = $('#'+id);
+            if (elem.attr('data-default') == elem.val()) {
+                return
+            }
+
+            app.patch({
+                'url': app.adminAPI('/options/'+id),
+                'data':JSON.stringify({"value": elem.val()})
+            }).done(function(){
+                elem.attr('data-default', elem.val());
+                app.showMessage('green', '设置已经保存');
+            }).fail(function(){
+                elem.val(elem.attr('data-default'));
+                app.showMessage('red', '更新'+id+'资源失败');
+            });
+        });
+    }
+} // end pageInit
 </script>

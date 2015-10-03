@@ -40,42 +40,13 @@
 </div>
 
 <script>
-function getData(id){
-    app.get({
-        'url': app.adminAPI('/options/'+id)
-    }).done(function(data, textStatus, jqXHR) {
-        $('#'+id).attr('data-default', data.value);
-        $('#'+id).val(data.value);
-    }).fail(function() {
-        app.showMessage('red', '无法加载'+id+'设置项的值！');
-    });
-}
-
-function patchData(id){
-    $('#'+id).on('blur', function(){
-        app.patch({
-            'url': app.adminAPI('/options/'+id),
-            'data':JSON.stringify({'value':$('#'+id).val()})
-        }).done(function(){
-            $('#'+id).attr('data-default', $('#'+id).val());
-            app.showMessage('green', '设置已经保存');
-        }).fail(function(){
-            $('#'+id).val($('#'+id).attr('data-default'));
-            app.showMessage('red', '无法更新'+id+'设置项的值！');
-        });
-    });
-}
 function pageInit(){
     app.setTitle('用户信息');
 
     /* BEGIN -- get */
-    $('userForm').addClass('loading');
-
-    var screenName = getData('screenName');
-    var email = getData('email');
-
-    $.when(screenName, email).always(function(){
-        $('userForm').removeClass('loading');
+    $('#userForm').addClass('loading');
+    $.when(getData('screenName'), getData('email')).always(function(){
+        $('#userForm').removeClass('loading');
     });
     /* END -- get */
 
@@ -85,7 +56,7 @@ function pageInit(){
     /* END -- patch */
 
     /* BEGIN -- update password */
-    $('form').on('submit', function(){
+    $('#changePasswordForm').on('submit', function(){
         if (!$('#oldPassword').val()) {
             app.showMessage('red', '旧密码不能为空');
             return false;
@@ -121,5 +92,36 @@ function pageInit(){
         return false
     });
     /* END -- update password */
+
+    function getData(id){
+        app.get({
+            'url': app.adminAPI('/options/'+id)
+        }).done(function(data, textStatus, jqXHR) {
+            $('#'+id).attr('data-default', data.value);
+            $('#'+id).val(data.value);
+        }).fail(function() {
+            app.showMessage('red', '无法加载'+id+'设置项的值！');
+        });
+    }
+
+    function patchData(id){
+        $('#'+id).on('blur', function(){
+            var elem = $('#'+id);
+            if (elem.attr('data-default') == elem.val()) {
+                return
+            }
+
+            app.patch({
+                'url': app.adminAPI('/options/'+id),
+                'data':JSON.stringify({'value': elem.val()})
+            }).done(function(){
+                elem.attr('data-default', elem.val());
+                app.showMessage('green', '设置已经保存');
+            }).fail(function(){
+                elem.val(elem.attr('data-default'));
+                app.showMessage('red', '无法更新'+id+'设置项的值！');
+            });
+        });
+    }
 } // end pageInit
 </script>
