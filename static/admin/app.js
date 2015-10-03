@@ -5,7 +5,7 @@
 // @link https://github.com/caixw/typing
 
 // App 封装了后台的一些公共操作函数。
-// 通过options参数可更改以下内容：
+// 通过options参数可更改以下内容，除非有特殊需求，否则无需更改这些内容：
 // - titleSuffix    标题后缀
 // - titleSeparator 标题分隔符
 // - messageTimeout 提示信息关闭时间
@@ -105,8 +105,7 @@ function App(options) {
 
     // 加载指定的模板页面，该页面会自动包含菜单等内容。
     // 若未登录，是会自动跳转到登录页面。
-    // 除了模板名称之外，还可参传递其它任何参数给loadPage，一般为路由匹配项上的参数。
-    // 若存在这些参数，则会尝试调用加载页面的pageInit函数来做一些初始化。
+    // template用于指定需要加载的模板，如果还有额外的其它参数，将会被传递给页面的pageInit函数。
     this.loadBodyPage = function(template) {
         if (!this.isLogin()){
             this.redirect('login')
@@ -127,6 +126,7 @@ function App(options) {
     };
 
     // 加载指定的模板到body元素中。
+    // template用于指定需要加载的模板，如果还有额外的其它参数，将会被传递给页面的pageInit函数。
     this.loadPage = function(template) {
         var args = [];
         Array.prototype.push.apply(args, arguments);
