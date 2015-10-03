@@ -23,9 +23,9 @@ import (
 // @apiGroup admin
 //
 // @apiSuccess 200 OK
-// @apiParam all     int 评论的总量
-// @apiParam draft   int 等待审核的评论数量
-// @apiParam normal  int 垃圾评论的数量
+// @apiParam all       int 评论的总量
+// @apiParam draft     int 等待审核的评论数量
+// @apiParam published int 垃圾评论的数量
 func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
 	sql := "SELECT {state}, count(*) AS cnt FROM #posts GROUP BY {state}"
 	rows, err := db.Query(true, sql)
@@ -44,9 +44,9 @@ func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]int{
-		"all":    0,
-		"draft":  0,
-		"normal": 0,
+		"all":       0,
+		"draft":     0,
+		"published": 0,
 	}
 	count := 0
 	for _, v := range maps {
@@ -59,7 +59,7 @@ func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
 		count += num
 		switch v["state"] {
 		case "1":
-			data["normal"] = num
+			data["published"] = num
 		case "2":
 			data["draft"] = num
 		default:
@@ -96,6 +96,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		Summary      string  `json:"summary"`
 		Content      string  `json:"content"`
 		State        int     `json:"state"`
+		Type         int     `json:"type"`
 		Order        int     `json:"order"`
 		Template     string  `json:"template"`
 		Password     string  `json:"password"`
@@ -123,6 +124,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		Summary:      p.Summary,
 		Content:      p.Content,
 		State:        p.State,
+		Type:         p.Type,
 		Order:        p.Order,
 		Template:     p.Template,
 		Password:     p.Password,
@@ -201,6 +203,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		Summary      string  `json:"summary"`
 		Content      string  `json:"content"`
 		State        int     `json:"state"`
+		Type         int     `json:"type"`
 		Order        int     `json:"order"`
 		Template     string  `json:"template"`
 		Password     string  `json:"password"`
@@ -220,6 +223,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		Summary:      p.Summary,
 		Content:      p.Content,
 		State:        p.State,
+		Type:         p.Type,
 		Order:        p.Order,
 		Template:     p.Template,
 		Password:     p.Password,
@@ -335,24 +339,31 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 }
 
 // @api get /admin/api/posts 获取文章列表
-// @apiQuery page int
-// @apiQuery size int
-// @apiQuery state int
+// @apiQuery page int 页码，从0开始
+// @apiQuery size int 显示尺寸
+// @apiQuery state int 状态
+// @apiQuery type int 类型
 // @apiGroup admin
 //
 // @apiSuccess ok 200
 // @apiParam count int 符合条件的所有记录数量，不包含page和size条件
 // @apiParam posts array 当前页的记录数量
 func adminGetPosts(w http.ResponseWriter, r *http.Request) {
-	var page, size, state int
+	var page, size, state, typ int
 	var ok bool
 	if state, ok = core.QueryInt(w, r, "state", models.CommentStateAll); !ok {
+		return
+	}
+	if typ, ok = core.QueryInt(w, r, "type", models.PostTypeAll); !ok {
 		return
 	}
 
 	sql := db.SQL().Table("#posts")
 	if state != models.PostStateAll {
 		sql.And("{state}=?", state)
+	}
+	if typ != models.PostTypeAll {
+		sql.And("{type}=?", typ)
 	}
 	count, err := sql.Count(true)
 	if err != nil {
@@ -434,6 +445,7 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		Summary      string  `json:"summary"`
 		Content      string  `json:"content"`
 		State        int     `json:"state"`
+		Type         int     `json:"type"`
 		Order        int     `json:"order"`
 		Created      int64   `json:"created"`
 		Modified     int64   `json:"modified"`
@@ -450,6 +462,7 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		Summary:      p.Summary,
 		Content:      p.Content,
 		State:        p.State,
+		Type:         p.Type,
 		Order:        p.Order,
 		Created:      p.Created,
 		Modified:     p.Modified,
@@ -468,6 +481,7 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 200 ok
 // @apiParam id int id值
+// @apiParam type int 文章类型
 // @apiParam name string 唯一名称，可以为空
 // @apiParam title string 标题
 // @apiParam content string 文章内容
@@ -512,6 +526,7 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 
 	obj := &struct {
 		ID           int64   `json:"id"`
+		Type         int     `json:"type"`
 		Name         string  `json:"name"`
 		Title        string  `json:"title"`
 		Content      string  `json:"content"`
@@ -524,6 +539,7 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 		Cats         []int64 `json:"cats"`
 	}{
 		ID:           p.ID,
+		Type:         p.Type,
 		Name:         p.Name,
 		Title:        p.Title,
 		Content:      p.Content,

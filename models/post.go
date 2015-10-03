@@ -10,6 +10,13 @@ const (
 	PostStateDraft            // 草稿
 )
 
+const (
+	PostTypeAll   = iota
+	PostTypePage  // 页面
+	PostTypePost  // 普通的文章
+	PostTypeImage // 仅为一张图片
+)
+
 // 文章内容
 type Post struct {
 	ID       int64  `orm:"name(id);ai"`
@@ -18,6 +25,7 @@ type Post struct {
 	Summary  string `orm:"name(summary);len(2000)"`                      // 内容摘要
 	Content  string `orm:"name(content);len(-1)"`                        // 实际内容
 	State    int    `orm:"name(state)"`                                  // 状态
+	Type     int    `orm:"name(type)"`                                   // 类型
 	Order    int    `orm:"name(order)"`                                  // 排序
 	Template string `orm:"name(template)"`                               // 使用的模板
 	Password string `orm:"name(password)"`                               // 访问密码
