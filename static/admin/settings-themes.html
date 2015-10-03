@@ -19,35 +19,35 @@
 
 <script>
 function pageInit(){
-    setTitle('选择主题');
+    app.setTitle('选择主题');
 
-    var getThemes = get({
+    var getThemes = app.get({
         'url': adminAPIPrefix+'/themes'
     }).done(function(data, textStatus, jqXHR){
-        loadTemplate($('#themes'), $('#themes-template'), data)
+        app.loadTemplate($('#themes'), $('#themes-template'), data)
     }).fail(function(){
-        showMessage('red', '加载主题列表失败');
+        app.showMessage('red', '加载主题列表失败');
     });
 
-    var getCurrTheme = get({
+    var getCurrTheme = app.get({
         'url': adminAPIPrefix+'/themes/current'
     }).done(function(data, textStatus, jqXHR){
         updateActivedTheme(data.theme);
     }).fail(function(){
-        showMessage('red', '获取当前主题信息失败');
+        app.showMessage('red', '获取当前主题信息失败');
     });
 
     $.when(getThemes, getCurrTheme).then(function(){
         $('.ui.segment .label').on('click', function(){
             var theme = $(this).attr('data-key');
-            put({
+            app.put({
                 'url': adminAPIPrefix+'/themes/current',
                 'data':JSON.stringify({value:theme})
             }).done(function(){
                 updateActivedTheme(theme);
-                showMessage('green', '将主题切换到'+theme);
+                app.showMessage('green', '将主题切换到'+theme);
             }).fail(function(){
-                showMessage('red', '更新主题失败');
+                app.showMessage('red', '更新主题失败');
             });
         });
     });

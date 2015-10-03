@@ -35,15 +35,15 @@
 
 <script>
 function pageInit(){
-    setTitle('标签管理');
+    app.setTitle('标签管理');
 
     $('#tags').addClass('loading');
-    get({
+    app.get({
         'url': frontAPIPrefix+'/tags'
     }).done(function(data, textStatus, jqXHR){
-        loadTemplate('#tags', '#tags-template', data)
+        app.loadTemplate('#tags', '#tags-template', data)
     }).fail(function(){
-        showMessage('red', '加载标签列表失败');
+        app.showMessage('red', '加载标签列表失败');
     }).always(function(){
         $('#tags').removeClass('loading');
 
@@ -61,7 +61,7 @@ function pageInit(){
     $('#submit').on('click', function(){
         $('.ui.form').addClass('loading');
         if ($('#id').val()){
-            put({
+            app.put({
                 'url': adminAPIPrefix+'/tags/'+$('#id').val(),
                 'data':buildJSON($('.ui.form'))
             }).done(function(){
@@ -70,12 +70,12 @@ function pageInit(){
                 $('#title').val('');
                 $('#description').val('');
             }).fail(function(){
-                showMessage('red', '更新'+$('#id').val()+'时失败');
+                app.showMessage('red', '更新'+$('#id').val()+'时失败');
             }).always(function(){
                 $('.ui.form').removeClass('loading');
             });
         }else{
-            post({
+            app.post({
                 'url': adminAPIPrefix+'/tags',
                 'data':buildJSON($('.ui.form'))
             }).done(function(){
@@ -84,7 +84,7 @@ function pageInit(){
                 $('#title').val('');
                 $('#description').val('');
             }).fail(function(){
-                showMessage('red', '添加时失败');
+                app.showMessage('red', '添加时失败');
             }).always(function(){
                 $('.ui.form').removeClass('loading');
             });
@@ -94,7 +94,7 @@ function pageInit(){
 
     $('#delete').on('click', function(){
         $('.ui.form').addClass('loading');
-        del({
+        app.delete({
             'url': adminAPIPrefix+'/tags/'+$('#id').val()
         }).done(function(){
             $('#id').val(0);
@@ -102,7 +102,7 @@ function pageInit(){
             $('#title').val('');
             $('#description').val('');
         }).fail(function(){
-            showMessage('red', '删除'+$('#id').val()+'失败');
+            app.showMessage('red', '删除'+$('#id').val()+'失败');
         }).always(function(){
             $('.ui.form').removeClass('loading');
         });

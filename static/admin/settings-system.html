@@ -79,13 +79,13 @@
 
 <script>
 function getData(id){
-    return get({
+    return app.get({
         'url': adminAPIPrefix+'/options/'+id
     }).done(function(data, textStatus, jqXHR){
         $('#'+id).val(data.value);
         $('#'+id).attr('data-default', data.value);
     }).fail(function(){
-        showMessage('red', '加载'+id+'资源失败');
+        app.showMessage('red', '加载'+id+'资源失败');
     });
 }
 
@@ -96,21 +96,21 @@ function patchData(event, id) {
             return
         }
 
-        patch({
+        app.patch({
             'url': adminAPIPrefix+'/options/'+id,
             'data':JSON.stringify({"value": elem.val()})
         }).done(function(){
             elem.attr('data-default', elem.val());
-            showMessage('green', '设置已经保存');
+            app.showMessage('green', '设置已经保存');
         }).fail(function(){
             elem.val(elem.attr('data-default'));
-            showMessage('red', '更新'+id+'资源失败');
+            app.showMessage('red', '更新'+id+'资源失败');
         });
     });
 }
 
 function pageInit(){
-    setTitle('系统设置');
+    app.setTitle('系统设置');
 
     /* BEGIN -- 加载数据 */
     $('form').addClass('loading');

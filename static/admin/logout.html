@@ -1,14 +1,14 @@
 <script>
 function pageInit(){
-    setTitle('退出登录');
+    app.setTitle('退出登录');
 
     $('body').addClass('loading');
-    del({
+    app.delete({
         'url': '/admin/api/login'
     }).always(function(){
         $('body').removeClass('loading');
         window.sessionStorage.token = '';
-        redirect('login');
+        app.redirect('login');
     });
 } // end pageInit
 </script>

@@ -42,12 +42,12 @@
 
 <script>
 function pageInit(){
-    setTitle('分类管理');
+    app.setTitle('分类管理');
 
-    get({
+    app.get({
         'url': frontAPIPrefix+'/cats'
     }).done(function(data, textStatus, jqXHR){
-        loadTemplate('#cats', '#cats-template', data)
+        app.loadTemplate('#cats', '#cats-template', data)
         $('#cats tbody td a').on('click', function(){
             var a = $(this);
             $('#id').val(a.attr('data-id'));
@@ -57,7 +57,7 @@ function pageInit(){
             $('#description').val(a.attr('data-description'));
         });
     }).fail(function(){
-        showMessage('red', '加载分类信息失败');
+        app.showMessage('red', '加载分类信息失败');
     });
 
     $('#new').on('click', function(){
@@ -71,7 +71,7 @@ function pageInit(){
     $('#submit').on('click', function(){
         $('.ui.form').addClass('loading');
         if ($('#id').val()){
-            put({
+            app.put({
                 'url': adminAPIPrefix+'/cats/'+$('#id').val(),
                 'data':buildJSON($('.ui.form'))
             }).done(function(){
@@ -81,12 +81,12 @@ function pageInit(){
                 $('#order').val('');
                 $('#description').val('');
             }).fail(function(){
-                showMessage('red', '更新'+$('#id').val()+'时失败');
+                app.showMessage('red', '更新'+$('#id').val()+'时失败');
             }).always(function(){
                 $('.ui.form').removeClass('loading');
             });
         }else{
-            post({
+            app.post({
                 'url': adminAPIPrefix+'/cats',
                 'data':buildJSON($('.ui.form'))
             }).done(function(){
@@ -96,7 +96,7 @@ function pageInit(){
                 $('#title').val('');
                 $('#description').val('');
             }).fail(function(){
-                showMessage('red', '添加时失败');
+                app.showMessage('red', '添加时失败');
             }).always(function(){
                 $('.ui.form').removeClass('loading');
             });
@@ -106,7 +106,7 @@ function pageInit(){
 
     $('#delete').on('click', function(){
         $('.ui.form').addClass('loading');
-        del({
+        app.delete({
             'url': adminAPIPrefix+'/cats/'+$('#id').val()
         }).done(function(){
             $('#id').val(0);
@@ -115,7 +115,7 @@ function pageInit(){
             $('#order').val('');
             $('#description').val('');
         }).fail(function(){
-            showMessage('red', '删除'+$('#id').val()+'失败');
+            app.showMessage('red', '删除'+$('#id').val()+'失败');
         }).always(function(){
             $('.ui.form').removeClass('loading');
         });

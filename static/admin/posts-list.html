@@ -12,6 +12,8 @@
 
 <script>
 function pageInit(){
+    app.setTitle('文章列表');
+    
     function initActions(){
         $('#pages .page').on('click', function(){
             var page = $(this).attr('data-page');
@@ -20,7 +22,7 @@ function pageInit(){
     }
 
     function loadPosts(page) {
-        get({
+        app.get({
             'url': adminAPIPrefix+'/posts?size='+size+'&page='+page
         }).done(function(data, textStatus, jqXHR){
             $.each(data.posts, function(index, elem){
@@ -41,9 +43,9 @@ function pageInit(){
 
             // 加载列表
             $('#posts').html('');
-            loadTemplate('#posts', '#posts-template', data);
+            app.loadTemplate('#posts', '#posts-template', data);
         }).fail(function(){
-            showMessage('red', '加载文章列表失败');
+            app.showMessage('red', '加载文章列表失败');
         });
     }
 

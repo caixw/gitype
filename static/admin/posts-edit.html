@@ -52,17 +52,17 @@
 <script>
 function pageInit(id) {
     if (id>0) {
-        setTitle('编辑文章');
+        app.setTitle('编辑文章');
     }else{
-        setTitle('添加文章');
+        app.setTitle('添加文章');
     }
 
-    get({
+    app.get({
         'url': frontAPIPrefix+'/cats'
     }).done(function(data, textStatus, jqXHR){
-        loadTemplate('#cats', '#cats-templates', data.cats)
+        app.loadTemplate('#cats', '#cats-templates', data.cats)
     }).fail(function(){
-        showMessage('red', '加载分类列表失败');
+        app.showMessage('red', '加载分类列表失败');
     });
 
     $('.ui.checkobx').checkbox();

@@ -41,32 +41,32 @@
 
 <script>
 function getData(id){
-    get({
+    app.get({
         'url': adminAPIPrefix+'/options/'+id
     }).done(function(data, textStatus, jqXHR) {
         $('#'+id).attr('data-default', data.value);
         $('#'+id).val(data.value);
     }).fail(function() {
-        showMessage('red', '无法加载'+id+'设置项的值！');
+        app.showMessage('red', '无法加载'+id+'设置项的值！');
     });
 }
 
 function patchData(id){
     $('#'+id).on('blur', function(){
-        patch({
+        app.patch({
             'url': adminAPIPrefix+'/options/'+id,
             'data':JSON.stringify({'value':$('#'+id).val()})
         }).done(function(){
             $('#'+id).attr('data-default', $('#'+id).val());
-            showMessage('green', '设置已经保存');
+            app.showMessage('green', '设置已经保存');
         }).fail(function(){
             $('#'+id).val($('#'+id).attr('data-default'));
-            showMessage('red', '无法更新'+id+'设置项的值！');
+            app.showMessage('red', '无法更新'+id+'设置项的值！');
         });
     });
 }
 function pageInit(){
-    setTitle('用户信息');
+    app.setTitle('用户信息');
 
     /* BEGIN -- get */
     $('userForm').addClass('loading');
@@ -87,33 +87,33 @@ function pageInit(){
     /* BEGIN -- update password */
     $('form').on('submit', function(){
         if (!$('#oldPassword').val()) {
-            showMessage('red', '旧密码不能为空');
+            app.showMessage('red', '旧密码不能为空');
             return false;
         }
         if (!$('#newPassword').val()) {
-            showMessage('red', '新密码不能为空');
+            app.showMessage('red', '新密码不能为空');
             return false;
         }
         if ($('#newPassword').val() != $('#retryPassword').val()) {
-            showMessage('red', '两次新密码不相同');
+            app.showMessage('red', '两次新密码不相同');
             return false;
         }
         if ($('#oldPassword').val() == $('#newPassword').val()) {
-            showMessage('red', '新旧密码是一样的，不需要更改');
+            app.showMessage('red', '新旧密码是一样的，不需要更改');
             return false;
         }
 
         $('#changePasswordForm').addClass('loading');
-        put({
+        app.put({
             'url': adminAPIPrefix+'/password',
             'data':JSON.stringify({'old':$('#oldPassword').val(), 'new':$('#newPassword').val()})
         }).done(function() {
-            showMessage('green', '更新密码成功');
+            app.showMessage('green', '更新密码成功');
             $('#oldPassword').val('');
             $('#newPassword').val('');
             $('#retryPassword').val('');
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            showMessage('red', '更新密码失败:'+errorThrown);
+            app.showMessage('red', '更新密码失败:'+errorThrown);
         }).always(function(){
             $('#changePasswordForm').removeClass('loading');
         });

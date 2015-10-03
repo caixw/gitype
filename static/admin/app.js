@@ -4,21 +4,14 @@
 // @copyright 2015 by caixw
 // @link https://github.com/caixw/typing
 
-function App(options){
+// options 参数可指定以下内容：
+// - titleSuffix     标题后缀
+// - titleSeparator  标题分隔符
+// - messageTimeout  提示信息关闭时间
+function App(options) {
     var defaults = {
-        // api的统一前缀
-        adminAPIPrefix: '/admin/api',
-        frontAPIPrefix: '/api',
-        themeURLPrefix: '/themes',
-
-        // 每页加载的记录数量
-        size: 25,
-
-        // 标题设置项
         titleSuffix:    'typing',
         titleSeparator: '-',
-
-        // 提示信息关闭时间
         messageTimeout: 5000
     };
     var opt = $.extend({}, defaults, options);
@@ -165,6 +158,7 @@ function App(options){
         return JSON.stringify(ret);
     };
 
+    // 开始监听路由。
     this.listen = function(routes) {
         var router = Router(routes).init();
     };

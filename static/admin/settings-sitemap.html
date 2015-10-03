@@ -64,25 +64,25 @@
 <script>
 function pageInit(){
     function getChangefreq(id){
-        return get({
+        return app.get({
             'url': adminAPIPrefix+'/options/'+id
         }).done(function(data, textStatus, jqXHR){
             $('#'+id).val(data.value);
             $('#'+id).attr('data-default', data.value);
         }).fail(function(){
-            showMessage('red', '加载'+id+'资源失败');
+            app.showMessage('red', '加载'+id+'资源失败');
         });
     }
 
     function getPriority(id){
-        return get({
+        return app.get({
             'url': adminAPIPrefix+'/options/'+id
         }).done(function(data, textStatus, jqXHR){
             var val = parseFloat(data.value) * 10;
             $('#'+id).val(val);
             $('#'+id).attr('data-default', val);
         }).fail(function(){
-            showMessage('red', '加载'+id+'资源失败');
+            app.showMessage('red', '加载'+id+'资源失败');
         });
     }
 
@@ -93,15 +93,15 @@ function pageInit(){
                 return
             }
 
-            patch({
+            app.patch({
                 'url': adminAPIPrefix+'/options/'+id,
                 'data':JSON.stringify({"value": elem.val()})
             }).done(function(){
                 elem.attr('data-default', elem.val());
-                showMessage('green', '设置已经保存');
+                app.showMessage('green', '设置已经保存');
             }).fail(function(){
                 elem.val(elem.attr('data-default'));
-                showMessage('red', '更新'+id+'资源失败');
+                app.showMessage('red', '更新'+id+'资源失败');
             });
         });
     }
@@ -113,30 +113,30 @@ function pageInit(){
                 return
             }
 
-            patch({
+            app.patch({
                 'url': adminAPIPrefix+'/options/'+id,
                 'data':JSON.stringify({"value": (parseFloat(elem.val()) / 10).toString()})
             }).done(function(){
                 elem.attr('data-default', elem.val());
-                showMessage('green', '设置已经保存');
+                app.showMessage('green', '设置已经保存');
             }).fail(function(){
                 elem.val(elem.attr('data-default'));
-                showMessage('red', '更新'+id+'资源失败');
+                app.showMessage('red', '更新'+id+'资源失败');
             });
         });
     }
 
-    setTitle('Sitemap');
+    app.setTitle('Sitemap');
 
     $('#rebuild').on('click', function(){
         $('#rebuild').addClass('loading');
-        put({
+        app.put({
             'url': adminAPIPrefix + '/sitemap',
             'data':'{}'
         }).done(function(data, textStatus, jqXHR){
-            showMessage('green', '成功生成新的sitemap');
+            app.showMessage('green', '成功生成新的sitemap');
         }).fail(function(){
-            showMessage('red', '无法重新生成sitemap');
+            app.showMessage('red', '无法重新生成sitemap');
         }).always(function(){
             $('#rebuild').removeClass('loading');
         });

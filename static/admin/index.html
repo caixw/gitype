@@ -30,7 +30,15 @@
             }
         </style>
         <script>
-        var app = new App({});
+        // api的统一前缀
+        var adminAPIPrefix = '/admin/api';
+        var frontAPIPrefix = '/api';
+        var themeURLPrefix = '/themes';
+
+        // 每页加载的记录数量
+        var size = 25;
+
+        var app = new App({titleSeparator:'&gt;'});
         var routes = {
             '':
                     function(){ app.loadLoginPage(); },

@@ -21,12 +21,12 @@ function pageInit(){
     $('form').on('submit', function(){
         $('form').addClass('loading');
 
-        post({
+        app.post({
             'url': '/admin/api/login',
-            'data': buildJSON($('form'))
+            'data': app.buildJSON($('form'))
         }).done(function(data, textStatus, jqXHR){
             window.sessionStorage.token = data.token;
-            redirect('/dashboard');
+            app.redirect('/dashboard');
         }).fail(function(jqXHR, textStatus, errorThrown){
             $('#prompt').removeClass('hidden').addClass('visible');
         }).always(function(){

@@ -20,7 +20,7 @@ function pageInit(){
     }
 
     function loadComments(page){
-        get({
+        app.get({
             'url': adminAPIPrefix+'/comments?size='+size+'&page='+page
         }).done(function(data, textStatus, jqXHR){
             // 加载页码导航
@@ -32,9 +32,9 @@ function pageInit(){
             }
 
             $('#comments').html('');
-            loadTemplate('#comments', '#comments-template', data);
+            app.loadTemplate('#comments', '#comments-template', data);
         }).fail(function(){
-            showMessage('red', '加载评论失败');
+            app.showMessage('red', '加载评论失败');
         });
     } // end loadComments
 
