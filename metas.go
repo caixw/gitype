@@ -25,6 +25,71 @@ func adminPutTagMerge(w http.ResponseWriter, r *http.Request) {
 	// TODO
 }
 
+// @api get /admin/api/cats 获取所有分类信息
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiheader Authorization xxx
+//
+// @apiSuccess 200 OK
+// @apiParam cats array 所有分类的列表
+func adminGetCats(w http.ResponseWriter, r *http.Request) {
+	sql := `SELECT m.{name},m.{title},m.{description},m.{id},m.{parent},m.{order},COUNT(r.{metaID}) AS {count}
+			FROM #metas AS m
+			LEFT JOIN #relationships AS r ON m.{id}=r.{metaID}
+			WHERE m.{type}=?
+			GROUP BY m.{id}
+			ORDER BY m.{order} ASC`
+	rows, err := db.Query(true, sql, models.MetaTypeCat)
+	if err != nil {
+		logs.Error("frontGetCats:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	maps, err := fetch.MapString(false, rows)
+	rows.Close()
+	if err != nil {
+		logs.Error("frontGetCats:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"cats": maps}, nil)
+}
+
+// @api get /admin/api/tags 获取所有标签信息
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiheader Authorization xxx
+//
+// @apiSuccess 200 OK
+// @apiParam tags array 所有分类的列表
+func adminGetTags(w http.ResponseWriter, r *http.Request) {
+	sql := `SELECT m.{name},m.{title},m.{description},m.{id},count(r.{metaID}) AS {count}
+			FROM #metas AS m
+			LEFT JOIN #relationships AS r ON m.{id}=r.{metaID}
+			WHERE m.{type}=?
+			GROUP BY m.{id}`
+	rows, err := db.Query(true, sql, models.MetaTypeTag)
+	if err != nil {
+		logs.Error("getTags:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	maps, err := fetch.MapString(false, rows)
+	rows.Close()
+	if err != nil {
+		logs.Error("getTags:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"tags": maps}, nil)
+}
+
 // @api get /api/tags 获取所有的标签
 // @apiGroup front
 //
