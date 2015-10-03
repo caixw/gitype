@@ -29,6 +29,41 @@
                 right:0px;
             }
         </style>
+        <script>
+        var app = new App({});
+        var routes = {
+            '':
+                    function(){ app.loadLoginPage(); },
+            'login':
+                    function(){ app.loadLoginPage(); },
+            'logout':
+                    function(){ app.loadPage('logout.html'); },
+            'dashboard':
+                    function(){ app.loadBodyPage('dashboard.html'); },
+            'settings/system':
+                    function(){ app.loadBodyPage('settings-system.html'); },
+            'settings/users':
+                    function(){ app.loadBodyPage('settings-users.html'); },
+            'settings/themes':
+                    function(){ app.loadBodyPage('settings-themes.html'); },
+            'settings/sitemap':
+                    function(){ app.loadBodyPage('settings-sitemap.html'); },
+            'metas/tags':
+                    function(){ app.loadBodyPage('metas-tags.html'); },
+            'metas/cats':
+                    function(){ app.loadBodyPage('metas-cats.html'); },
+            'posts/list':
+                    function(){ app.loadBodyPage('posts-list.html'); },
+            'posts/edit/:id':
+                    function(){ app.loadBodyPage('posts-edit.html'); },
+            'comments/list':
+                    function(){ app.loadBodyPage('comments-list.html'); },
+        };
+
+        $(document).ready(function(){
+            app.listen(routes);
+        });
+        </script>
     </head>
     <body>
     </body>
