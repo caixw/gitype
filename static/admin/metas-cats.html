@@ -45,7 +45,7 @@ function pageInit(){
     app.setTitle('分类管理');
 
     app.get({
-        'url': app.frontAPI('/cats')
+        'url': app.adminAPI('/cats')
     }).done(function(data, textStatus, jqXHR){
         app.loadTemplate('#cats', '#cats-template', data)
         $('#cats tbody td a').on('click', function(){

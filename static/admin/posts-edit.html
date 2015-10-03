@@ -58,7 +58,7 @@ function pageInit(id) {
     }
 
     app.get({
-        'url': app.frontAPI('/cats')
+        'url': app.adminAPI('/cats')
     }).done(function(data, textStatus, jqXHR){
         app.loadTemplate('#cats', '#cats-templates', data.cats)
     }).fail(function(){

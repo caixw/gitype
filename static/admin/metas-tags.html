@@ -39,7 +39,7 @@ function pageInit(){
 
     $('#tags').addClass('loading');
     app.get({
-        'url': app.frontAPI('/tags')
+        'url': app.adminAPI('/tags')
     }).done(function(data, textStatus, jqXHR){
         app.loadTemplate('#tags', '#tags-template', data)
     }).fail(function(){
