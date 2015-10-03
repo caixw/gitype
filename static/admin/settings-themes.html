@@ -22,7 +22,7 @@ function pageInit(){
     app.setTitle('选择主题');
 
     var getThemes = app.get({
-        'url': adminAPIPrefix+'/themes'
+        'url': app.adminAPI('/themes')
     }).done(function(data, textStatus, jqXHR){
         app.loadTemplate($('#themes'), $('#themes-template'), data)
     }).fail(function(){
@@ -30,7 +30,7 @@ function pageInit(){
     });
 
     var getCurrTheme = app.get({
-        'url': adminAPIPrefix+'/themes/current'
+        'url': app.adminAPI('/themes/current')
     }).done(function(data, textStatus, jqXHR){
         updateActivedTheme(data.theme);
     }).fail(function(){
@@ -41,7 +41,7 @@ function pageInit(){
         $('.ui.segment .label').on('click', function(){
             var theme = $(this).attr('data-key');
             app.put({
-                'url': adminAPIPrefix+'/themes/current',
+                'url': app.adminAPI('/themes/current'),
                 'data':JSON.stringify({value:theme})
             }).done(function(){
                 updateActivedTheme(theme);

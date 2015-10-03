@@ -13,7 +13,7 @@
 <script>
 function pageInit(){
     app.setTitle('文章列表');
-    
+
     function initActions(){
         $('#pages .page').on('click', function(){
             var page = $(this).attr('data-page');
@@ -23,7 +23,7 @@ function pageInit(){
 
     function loadPosts(page) {
         app.get({
-            'url': adminAPIPrefix+'/posts?size='+size+'&page='+page
+            'url': app.adminAPI('/posts?size='+size+'&page='+page)
         }).done(function(data, textStatus, jqXHR){
             $.each(data.posts, function(index, elem){
                 $.each(elem, function(key, val){

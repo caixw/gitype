@@ -80,7 +80,7 @@
 <script>
 function getData(id){
     return app.get({
-        'url': adminAPIPrefix+'/options/'+id
+        'url': app.adminAPI('/options/'+id)
     }).done(function(data, textStatus, jqXHR){
         $('#'+id).val(data.value);
         $('#'+id).attr('data-default', data.value);
@@ -97,7 +97,7 @@ function patchData(event, id) {
         }
 
         app.patch({
-            'url': adminAPIPrefix+'/options/'+id,
+            'url': app.adminAPI('/options/'+id),
             'data':JSON.stringify({"value": elem.val()})
         }).done(function(){
             elem.attr('data-default', elem.val());

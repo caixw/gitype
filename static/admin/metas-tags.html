@@ -39,7 +39,7 @@ function pageInit(){
 
     $('#tags').addClass('loading');
     app.get({
-        'url': frontAPIPrefix+'/tags'
+        'url': app.frontAPI('/tags')
     }).done(function(data, textStatus, jqXHR){
         app.loadTemplate('#tags', '#tags-template', data)
     }).fail(function(){
@@ -62,7 +62,7 @@ function pageInit(){
         $('.ui.form').addClass('loading');
         if ($('#id').val()){
             app.put({
-                'url': adminAPIPrefix+'/tags/'+$('#id').val(),
+                'url': app.adminAPI('/tags/'+$('#id').val()),
                 'data':buildJSON($('.ui.form'))
             }).done(function(){
                 $('#id').val('');
@@ -76,7 +76,7 @@ function pageInit(){
             });
         }else{
             app.post({
-                'url': adminAPIPrefix+'/tags',
+                'url': app.adminAPI('/tags'),
                 'data':buildJSON($('.ui.form'))
             }).done(function(){
                 $('#id').val('');
@@ -95,7 +95,7 @@ function pageInit(){
     $('#delete').on('click', function(){
         $('.ui.form').addClass('loading');
         app.delete({
-            'url': adminAPIPrefix+'/tags/'+$('#id').val()
+            'url': app.adminAPI('/tags/'+$('#id').val())
         }).done(function(){
             $('#id').val(0);
             $('#name').val('');
