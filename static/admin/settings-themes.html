@@ -19,27 +19,31 @@
 
 <script>
 function pageInit(){
+    var currTheme = '';
+
     app.setTitle('选择主题');
 
-    var getThemes = app.get({
+    app.get({
         'url': app.adminAPI('/themes')
     }).done(function(data, textStatus, jqXHR){
         app.loadTemplate($('#themes'), $('#themes-template'), data)
-    }).fail(function(){
-        app.showMessage('red', '加载主题列表失败');
-    });
 
-    var getCurrTheme = app.get({
-        'url': app.adminAPI('/themes/current')
-    }).done(function(data, textStatus, jqXHR){
-        updateActivedTheme(data.theme);
-    }).fail(function(){
-        app.showMessage('red', '获取当前主题信息失败');
-    });
+        // 获取当前的主题名称
+        app.get({
+            'url': app.adminAPI('/themes/current')
+        }).done(function(data, textStatus, jqXHR){
+            updateActivedTheme(data.theme);
+        }).fail(function(){
+            app.showMessage('red', '获取当前主题信息失败');
+        });
 
-    $.when(getThemes, getCurrTheme).then(function(){
+        // 指定label的点击事件
         $('.ui.segment .label').on('click', function(){
             var theme = $(this).attr('data-key');
+            if (currTheme == theme){ // 点周在当前主题上，不触发事件
+                return
+            }
+
             app.put({
                 'url': app.adminAPI('/themes/current'),
                 'data':JSON.stringify({value:theme})
@@ -50,13 +54,17 @@ function pageInit(){
                 app.showMessage('red', '更新主题失败');
             });
         });
+    }).fail(function(){
+        app.showMessage('red', '加载主题列表失败');
     });
-}
 
-function updateActivedTheme(name) {
-    $('#themes .segment .ribbon.label').removeClass('teal');
-    $('#themes .segment .ribbon.label[data-key='+name+']').addClass('teal');
-}
+    // 更新当前选中主题标题的样式。
+    function updateActivedTheme(name) {
+        $('#themes .segment .ribbon.label').removeClass('teal');
+        $('#themes .segment .ribbon.label[data-key='+name+']').addClass('teal');
+        currTheme = name;
+    }
+} // end pageInit
 </script>
 
 <script id="themes-template" type="x-mustache-template">
