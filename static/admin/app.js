@@ -4,12 +4,13 @@
 // @copyright 2015 by caixw
 // @link https://github.com/caixw/typing
 
-// options 参数可指定以下内容：
-// - titleSuffix     标题后缀
-// - titleSeparator  标题分隔符
-// - messageTimeout  提示信息关闭时间
-// - adminAPIPrefix
-// - frontAPIPrefix
+// App 封装了后台的一些公共操作函数。
+// 通过options参数可更改以下内容：
+// - titleSuffix    标题后缀
+// - titleSeparator 标题分隔符
+// - messageTimeout 提示信息关闭时间
+// - adminAPIPrefix 后台操作api地址的前缀
+// - frontAPIPrefix 前端操作api地址的前缀
 function App(options) {
     var defaults = {
         titleSuffix:    'typing',
@@ -102,7 +103,7 @@ function App(options) {
         $(containerSelector).append(tpl(data));
     };
 
-    // 加载指定的模板页面，该页页会自动包含菜单等内容。
+    // 加载指定的模板页面，该页面会自动包含菜单等内容。
     // 若未登录，是会自动跳转到登录页面。
     // 除了模板名称之外，还可参传递其它任何参数给loadPage，一般为路由匹配项上的参数。
     // 若存在这些参数，则会尝试调用加载页面的pageInit函数来做一些初始化。
@@ -125,7 +126,8 @@ function App(options) {
         });
     };
 
-    this.loadPage = function(template){
+    // 加载指定的模板到body元素中。
+    this.loadPage = function(template) {
         var args = [];
         Array.prototype.push.apply(args, arguments);
         args.shift();
