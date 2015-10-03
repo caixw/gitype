@@ -90,74 +90,6 @@ func adminGetTags(w http.ResponseWriter, r *http.Request) {
 	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"tags": maps}, nil)
 }
 
-// @api get /api/tags 获取所有的标签
-// @apiGroup front
-//
-// @apiSuccess 200 ok
-// @apiParams tags array 所有的标签列表
-// @apiExample json
-// { "tags"=[
-//     {"id":1, "name":"tag1", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
-//     {"id":2, "name":"tag2", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
-// ]}
-func frontGetTags(w http.ResponseWriter, r *http.Request) {
-	sql := `SELECT m.{name},m.{title},m.{description},m.{id},count(r.{metaID}) AS {count}
-			FROM #metas AS m
-			LEFT JOIN #relationships AS r ON m.{id}=r.{metaID}
-			WHERE m.{type}=?
-			GROUP BY m.{id}`
-	rows, err := db.Query(true, sql, models.MetaTypeTag)
-	if err != nil {
-		logs.Error("getTags:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}
-
-	maps, err := fetch.MapString(false, rows)
-	rows.Close()
-	if err != nil {
-		logs.Error("getTags:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}
-
-	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"tags": maps}, nil)
-}
-
-// @api get /api/cats 获取所有的分类
-// @apiGroup front
-// @apiSuccess 200 ok
-// @apiParams tags array 所有的分类列表
-// @apiExample json
-// { "cats"=[
-//     {"id":1, "name":"tag1", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
-//     {"id":2, "name":"tag2", "title":"tag-title", "description":"<div>desc</div>", "count": 5},
-// ]}
-func frontGetCats(w http.ResponseWriter, r *http.Request) {
-	sql := `SELECT m.{name},m.{title},m.{description},m.{id},m.{parent},m.{order},COUNT(r.{metaID}) AS {count}
-			FROM #metas AS m
-			LEFT JOIN #relationships AS r ON m.{id}=r.{metaID}
-			WHERE m.{type}=?
-			GROUP BY m.{id}
-			ORDER BY m.{order} ASC`
-	rows, err := db.Query(true, sql, models.MetaTypeCat)
-	if err != nil {
-		logs.Error("frontGetCats:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}
-
-	maps, err := fetch.MapString(false, rows)
-	rows.Close()
-	if err != nil {
-		logs.Error("frontGetCats:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}
-
-	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"cats": maps}, nil)
-}
-
 // @api patch /admin/api/{id}/order 修改某一分类的显示顺序
 // @apiParam id int 分类的id
 // @apiGroup admin
@@ -495,7 +427,7 @@ func deleteMeta(w http.ResponseWriter, r *http.Request) {
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
-// 获取与某post相关联的数据
+// 获取与某post相关联的标签或是分类
 func getPostMetas(postID int64, mtype int) ([]int64, error) {
 	sql := `SELECT rs.{metaID} FROM #relationships AS rs
 	LEFT JOIN #metas AS m ON m.{id}=rs.{metaID}

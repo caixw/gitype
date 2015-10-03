@@ -136,10 +136,6 @@ func initFrontPageRoutes(m *web.Module) {
 }
 
 func initFrontAPIRoutes(front *mux.Prefix) {
-	// meta
-	front.GetFunc("/tags", frontGetTags).
-		GetFunc("/cats", frontGetCats)
-
 	// post
 	front.PostFunc("/posts/{id:\\d+}/comments", frontPostPostComment).
 		GetFunc("/posts/{id:\\d+}", frontGetPost).
