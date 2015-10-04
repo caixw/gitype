@@ -2,9 +2,9 @@
     <h1 class="header">标签管理</h1>
 
     <div class="ui grid">
-        <div class="ui labels eight wide column" id="tags"></div>
+        <div class="ui labels nine wide column" id="tags"></div>
 
-        <div class="ui form eight wide column">
+        <div class="ui form seven wide column">
             <input type="hidden" id="id" />
 
             <div class="field">
@@ -41,7 +41,8 @@ function pageInit(){
     app.get({
         'url': app.adminAPI('/tags')
     }).done(function(data, textStatus, jqXHR){
-        app.loadTemplate('#tags', '#tags-template', data)
+        app.loadTemplate('#tags', '#tags-template', data);
+        $('#tags .label').popup();
     }).fail(function(){
         app.showMessage('red', '加载标签列表失败');
     }).always(function(){
@@ -117,7 +118,8 @@ function pageInit(){
         data-id="{{id}}"
         data-name="{{name}}"
         data-title="{{title}}"
-        data-description="{{description}}">
+        data-description="{{description}}"
+        data-content="{{description}}">
         {{title}}<span class="detail">{{count}}</span>
     </span>
     {{/tags}}
