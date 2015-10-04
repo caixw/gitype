@@ -1,134 +1,92 @@
 <div style="text-align:left">
     <h1 class="header">标签管理</h1>
 
-    <div class="ui grid">
-        <div class="ui labels nine wide column" id="tags"></div>
-
-        <div class="ui form seven wide column">
-            <input type="hidden" id="id" />
-
-            <div class="field">
-                <label for="name">唯一名称</label>
-                <input type="text" id="name" name="name" />
-                <div class="description">最好是由英文和下划线及数字组成，以SEO友好的方式描述标签地址！</div>
-            </div>
-
-            <div class="field">
-                <label for="title">标题</label>
-                <input type="text" id="title" name="title" />
-                <div class="description">标签的字面内容。</div>
-            </div>
-
-            <div class="field">
-                <label for="description">详细描述</label>
-                <textarea id="description" name="description" cols="30" rows="10"></textarea>
-            </div>
-
-            <div class="field">
-                <button id="submit" class="ui fluid primary button" type="submit">提交</button>
-                <br />
-                <button id="delete" class="ui fluid red button">删除</button>
-            </div>
-        </div><!-- end .ui.form -->
+    <div class="ui">
+        <div class="ui labels" id="tags"></div>
+        <div class="ui divider"></div>
+        <div class="ui buttons">
+            <button class="ui green button" id="new">新增</button>
+            <button class="ui disabled button" id="delete">删除</button>
+            <button class="ui disabled button" id="edit">编辑</button>
+            <button class="ui disabled button" id="merge">合并</button>
+        </div>
     </div><!-- end .grid -->
 </div>
 
 <script>
-function pageInit(){
+function pageInit() {
     app.setTitle('标签管理');
+    loadTags();
+    initAction();
 
-    $('#tags').addClass('loading');
-    app.get({
-        'url': app.adminAPI('/tags')
-    }).done(function(data, textStatus, jqXHR){
-        app.loadTemplate('#tags', '#tags-template', data);
-        $('#tags .label').popup();
-    }).fail(function(){
-        app.showMessage('red', '加载标签列表失败');
-    }).always(function(){
-        $('#tags').removeClass('loading');
+    function loadTags() {
+        app.get({
+            'url': app.adminAPI('/tags')
+        }).done(function(data, textStatus, jqXHR){
+            app.loadTemplate('#tags', '#tags-template', data);
+            $('#tags .label').popup();
 
-        // onclick事件
-        $('#tags .ui.label').on('click', function(){
-            var elem = $(this);
-            $('#id').val(elem.attr('data-id'));
-            $('#name').val(elem.attr('data-name'));
-            $('#title').val(elem.attr('data-title'));
-            $('#description').val(elem.attr('data-description'));
-        });
-    });
-
-
-    $('#submit').on('click', function(){
-        $('.ui.form').addClass('loading');
-        if ($('#id').val()){
-            app.put({
-                'url': app.adminAPI('/tags/'+$('#id').val()),
-                'data':buildJSON($('.ui.form'))
-            }).done(function(){
-                $('#id').val('');
-                $('#name').val('');
-                $('#title').val('');
-                $('#description').val('');
-            }).fail(function(){
-                app.showMessage('red', '更新'+$('#id').val()+'时失败');
-            }).always(function(){
-                $('.ui.form').removeClass('loading');
+            $('#tags .label').on('click', function(){
+                $(this).toggleClass('blue');
+                updateActions();
             });
-        }else{
-            app.post({
-                'url': app.adminAPI('/tags'),
-                'data':buildJSON($('.ui.form'))
-            }).done(function(){
-                $('#id').val('');
-                $('#name').val('');
-                $('#title').val('');
-                $('#description').val('');
-            }).fail(function(){
-                app.showMessage('red', '添加时失败');
-            }).always(function(){
-                $('.ui.form').removeClass('loading');
-            });
-        }
-        return false;
-    });
-
-    $('#delete').on('click', function(){
-        $('.ui.form').addClass('loading');
-        app.delete({
-            'url': app.adminAPI('/tags/'+$('#id').val())
-        }).done(function(){
-            $('#id').val(0);
-            $('#name').val('');
-            $('#title').val('');
-            $('#description').val('');
         }).fail(function(){
-            app.showMessage('red', '删除'+$('#id').val()+'失败');
-        }).always(function(){
-            $('.ui.form').removeClass('loading');
+            app.showMessage('red', '加载标签列表失败');
         });
-        return false;
-    });
-}
+    } // end loadTags
+
+    function initAction() {
+        $('#new').on('click', function(){
+            app.redirect('meta/tags/edit/0');
+        });
+
+        $('#delete').on('click', function(){
+            $('#tags .blue.label').each(function(index, elem){
+                var id = $(elem).attr('data-id');
+                app.delete({
+                    'url': app.adminAPI('/tags/'+id)
+                }); 
+            });
+        });
+
+        $('#edit').on('click', function(){
+            var id = $('#tags .blue.label').attr('data-id');
+            app.redirect('meta/tags/edit/'+id);
+        });
+
+        $('#merge').on('click', function(){
+            //
+        });
+    }
+
+    function updateActions() {
+        var l = $('#tags .blue.label').length;
+        switch (l) {
+            case 0:
+                $('#delete').addClass('disabled').removeClass('red');
+                $('#edit').addClass('disabled').removeClass('blue');
+                $('#merge').addClass('disabled').removeClass('blue');
+                break;
+            case 1:
+                $('#delete').removeClass('disabled').addClass('red');
+                $('#edit').removeClass('disabled').addClass('blue');
+                $('#merge').addClass('disabled').removeClass('blue');
+                break;
+            default:
+                $('#delete').removeClass('disabled').addClass('red');
+                $('#edit').addClass('disabled').removeClass('blue');
+                $('#merge').removeClass('disabled').addClass('blue');
+        }
+    } // end updateActions
+} // end pageInit
 </script>
 
 <script id="tags-template" type="x-template-mustache">
     {{#tags}}
-    <span class="ui blue label" style="cursor:pointer"
+    <span class="ui label" style="cursor:pointer"
         data-id="{{id}}"
-        data-name="{{name}}"
-        data-title="{{title}}"
-        data-description="{{description}}"
-        data-content="{{description}}">
+        data-html="{{description}}">
         {{title}}<span class="detail">{{count}}</span>
     </span>
     {{/tags}}
-    <br /><br /><br />
-    <span class="ui green label" style="cursor:pointer"
-        data-id=""
-        data-name=""
-        data-title=""
-        data-description="">
-        新增
-    </span>
 </script>
