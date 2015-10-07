@@ -301,6 +301,62 @@ func metaNameIsExists(m *models.Meta) (bool, error) {
 	return m2.ID != m.ID, nil
 }
 
+func adminGetCat(w http.ResponseWriter, r *http.Request) {
+	id, ok := core.ParamID(w, r, "id")
+	if !ok {
+		return
+	}
+
+	m := &models.Meta{ID: id}
+	if err := db.Select(m); err != nil {
+		logs.Error("adminGetTag:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	data := &struct {
+		ID          int64  `json:"id"`
+		Name        string `json:"name"`
+		Title       string `json:"title"`
+		Order       int    `json:"order"`
+		Description string `json:"description"`
+	}{
+		ID:          m.ID,
+		Name:        m.Name,
+		Title:       m.Title,
+		Order:       m.Order,
+		Description: m.Description,
+	}
+	core.RenderJSON(w, http.StatusOK, data, nil)
+}
+
+func adminGetTag(w http.ResponseWriter, r *http.Request) {
+	id, ok := core.ParamID(w, r, "id")
+	if !ok {
+		return
+	}
+
+	m := &models.Meta{ID: id}
+	if err := db.Select(m); err != nil {
+		logs.Error("adminGetTag:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	data := &struct {
+		ID          int64  `json:"id"`
+		Name        string `json:"name"`
+		Title       string `json:"title"`
+		Description string `json:"description"`
+	}{
+		ID:          m.ID,
+		Name:        m.Name,
+		Title:       m.Title,
+		Description: m.Description,
+	}
+	core.RenderJSON(w, http.StatusOK, data, nil)
+}
+
 // 供putCat和putTag调用
 func putMeta(w http.ResponseWriter, r *http.Request) {
 	m := &models.Meta{}
@@ -316,7 +372,7 @@ func putMeta(w http.ResponseWriter, r *http.Request) {
 
 	exists, err := metaNameIsExists(m)
 	if err != nil {
-		logs.Error("getMetaFromRequest:", err)
+		logs.Error("putMeta:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
@@ -325,8 +381,6 @@ func putMeta(w http.ResponseWriter, r *http.Request) {
 	if exists {
 		errs.Detail["name"] = "已有同名字体段"
 	}
-
-	// TODO 后台提交数据，是否有必要做安全检测？
 
 	if len(m.Title) == 0 {
 		errs.Detail["title"] = "标题不能为空"
@@ -360,7 +414,7 @@ func postMeta(w http.ResponseWriter, r *http.Request, typ int) {
 
 	exists, err := metaNameIsExists(m)
 	if err != nil {
-		logs.Error("getMetaFromRequest:", err)
+		logs.Error("postMeta:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
@@ -368,8 +422,6 @@ func postMeta(w http.ResponseWriter, r *http.Request, typ int) {
 	if exists {
 		errs.Detail["name"] = "已有同名字体段"
 	}
-
-	// TODO 后台提交数据，是否有必要做安全检测？
 
 	if len(m.Title) == 0 {
 		errs.Detail["title"] = "标题不能为空"
@@ -386,7 +438,7 @@ func postMeta(w http.ResponseWriter, r *http.Request, typ int) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	core.RenderJSON(w, http.StatusCreated, nil, nil)
+	core.RenderJSON(w, http.StatusCreated, "{}", nil)
 }
 
 // 删除meta数据，供deleteCat和deleteTag调用

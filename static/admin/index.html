@@ -57,15 +57,15 @@
             'tags/list':
                     function(){ app.loadBodyPage('tags-list.html'); },
             'tags/edit/:id':
-                    function(){ app.loadBodyPage('tags-edit.html'); },
+                    function(id){ app.loadBodyPage('tags-edit.html', id); },
             'cats/list':
                     function(){ app.loadBodyPage('cats-list.html'); },
             'cats/edit/:id':
-                    function(){ app.loadBodyPage('cats-edit.html'); },
+                    function(id){ app.loadBodyPage('cats-edit.html', id); },
             'posts/list':
                     function(){ app.loadBodyPage('posts-list.html'); },
             'posts/edit/:id':
-                    function(){ app.loadBodyPage('posts-edit.html'); },
+                    function(id){ app.loadBodyPage('posts-edit.html', id); },
             'comments/list':
                     function(){ app.loadBodyPage('comments-list.html'); },
         };

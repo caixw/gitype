@@ -9,3 +9,11 @@ type ErrorResult struct {
 	Message string            `json:"message"`
 	Detail  map[string]string `json:"detail,omitempty"`
 }
+
+func (errs *ErrorResult) HasErrors() bool {
+	return len(errs.Detail) > 0
+}
+
+func (errs *ErrorResult) Add(key, message string) {
+	errs.Detail[key] = message
+}

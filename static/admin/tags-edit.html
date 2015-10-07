@@ -1,62 +1,84 @@
-<div class="ui form seven wide column">
-    <input type="hidden" id="id" />
+<div class="config-div">
+    <h1 class="header">编辑标签</h1>
+    <form id="tag" class="ui form"></form>
+</div><!-- end .ui.form -->
 
+<script>
+function pageInit(id){
+    if (id>0) {
+        app.setTitle('编辑标签');
+        $('h1.header').html('编辑标签');
+    }else{
+        app.setTitle('添加标签');
+        $('h1.header').html('添加标签');
+    }
+
+    // 加载数据
+    if(id>0) {
+        $('.ui.form').addClass('loading');
+        app.get({
+            'url': app.adminAPI('/tags/'+id)
+        }).done(function(data, textStatus, jqXHR){
+            app.loadTemplate('#tag', '#tag-template', data)
+            initAction();
+        }).fail(function(jqXHR, textStatus, errorThrown){
+            console.log(errorThrown);
+            app.showMessage('red', '无法加载当前被编辑的标签内容！新尝试刷新！');
+        }).always(function(){
+            $('.ui.form').removeClass('loading');
+        });
+    }else{
+        app.loadTemplate('#tag', '#tag-template', {name:'', title:'', description:''})
+        initAction();
+    }
+
+    function initAction(){
+        $('form').on('submit', function(){
+            if (id>0){
+                app.put({
+                    'url': app.adminAPI('/tags/'+id),
+                    'data':app.buildJSON($('.ui.form'))
+                }).done(function(){
+                    app.redirect('/tags/list');
+                }).fail(function(){
+                    app.showMessage('red', '提交数据失败');
+                });
+            }else{
+                app.post({
+                    'url': app.adminAPI('/tags'),
+                    'data':app.buildJSON($('.ui.form'))
+                }).done(function(){
+                    app.redirect('/tags/list');
+                }).fail(function(jqXHR, textStatus, errorThrown){
+                    app.showMessage('red', '提交数据失败'+errorThrown);
+                });
+            }
+
+            return false;
+        });
+    }
+} // end pageInit
+</script>
+
+<script id="tag-template" type="x-handlebars-template">
     <div class="field">
         <label for="name">唯一名称</label>
-        <input type="text" id="name" name="name" />
+        <input type="text" name="name" value="{{name}}" required="required" />
         <div class="description">最好是由英文和下划线及数字组成，以SEO友好的方式描述标签地址！</div>
     </div>
 
     <div class="field">
         <label for="title">标题</label>
-        <input type="text" id="title" name="title" />
+        <input type="text" name="title" value="{{title}}" required="required" />
         <div class="description">标签的字面内容。</div>
     </div>
 
     <div class="field">
         <label for="description">详细描述</label>
-        <textarea id="description" name="description" cols="30" rows="10"></textarea>
+        <textarea name="description" cols="30" rows="10" required="required">{{description}}</textarea>
     </div>
 
     <div class="field">
         <button id="submit" class="ui fluid primary button" type="submit">提交</button>
-        <br />
-        <button id="delete" class="ui fluid red button">删除</button>
     </div>
-</div><!-- end .ui.form -->
-
-<script>
-$('#submit').on('click', function(){
-        $('.ui.form').addClass('loading');
-        if ($('#id').val()){
-            app.put({
-                'url': app.adminAPI('/tags/'+$('#id').val()),
-                'data':buildJSON($('.ui.form'))
-            }).done(function(){
-                $('#id').val('');
-                $('#name').val('');
-                $('#title').val('');
-                $('#description').val('');
-            }).fail(function(){
-                app.showMessage('red', '更新'+$('#id').val()+'时失败');
-            }).always(function(){
-                $('.ui.form').removeClass('loading');
-            });
-        }else{
-            app.post({
-                'url': app.adminAPI('/tags'),
-                'data':buildJSON($('.ui.form'))
-            }).done(function(){
-                $('#id').val('');
-                $('#name').val('');
-                $('#title').val('');
-                $('#description').val('');
-            }).fail(function(){
-                app.showMessage('red', '添加时失败');
-            }).always(function(){
-                $('.ui.form').removeClass('loading');
-            });
-        }
-        return false;
-    });
 </script>

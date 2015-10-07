@@ -19,7 +19,10 @@ function pageInit() {
     loadTags();
     initAction();
 
+    // 加载标签列表
     function loadTags() {
+        $('tags').html('');
+
         app.get({
             'url': app.adminAPI('/tags')
         }).done(function(data, textStatus, jqXHR){
@@ -35,9 +38,10 @@ function pageInit() {
         });
     } // end loadTags
 
+    // 初始化按钮的操作
     function initAction() {
         $('#new').on('click', function(){
-            app.redirect('meta/tags/edit/0');
+            app.redirect('tags/edit/0');
         });
 
         $('#delete').on('click', function(){
@@ -45,13 +49,18 @@ function pageInit() {
                 var id = $(elem).attr('data-id');
                 app.delete({
                     'url': app.adminAPI('/tags/'+id)
-                }); 
+                }).fail(function(){
+                    app.showMessage('red', '删除'+id+'标签时出错');
+                }).done(function(){
+                    $(elem).remove();
+                    updateActions();
+                });
             });
         });
 
         $('#edit').on('click', function(){
             var id = $('#tags .blue.label').attr('data-id');
-            app.redirect('meta/tags/edit/'+id);
+            app.redirect('tags/edit/'+id);
         });
 
         $('#merge').on('click', function(){
@@ -59,6 +68,7 @@ function pageInit() {
         });
     }
 
+    // 更新各个按钮的界面。
     function updateActions() {
         var l = $('#tags .blue.label').length;
         switch (l) {

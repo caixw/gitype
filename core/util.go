@@ -24,15 +24,23 @@ import (
 
 // RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
 // 若v的值是string,[]byte,[]rune则直接转换成字符串写入w。
-// 当v值为nil, "", []byte(""), []rune("")等值时，将输出表示空对象的json字符串："{}"。
+// 当v为nil时，不输出任何内容，若需要输出一个空对象，请使用"{}"字符串。
 // headers用于指定额外的Header信息，若传递nil，则表示没有。
 func RenderJSON(w http.ResponseWriter, code int, v interface{}, headers map[string]string) {
 	if w == nil {
 		panic("RenderJSON:参数w不能为空")
 	}
 
+	if v == nil {
+		w.Header().Add("Content-Type", "application/json;charset=utf-8")
+		for k, v := range headers {
+			w.Header().Add(k, v)
+		}
+		w.WriteHeader(code)
+		return
+	}
+
 	var data []byte
-	var err error
 	switch val := v.(type) {
 	case string:
 		data = []byte(val)
@@ -41,10 +49,7 @@ func RenderJSON(w http.ResponseWriter, code int, v interface{}, headers map[stri
 	case []rune:
 		data = []byte(string(val))
 	default:
-		if val == nil {
-			break
-		}
-
+		var err error
 		data, err = json.Marshal(val)
 		if err != nil {
 			logs.Error("RenderJSON:", err)
@@ -59,10 +64,7 @@ func RenderJSON(w http.ResponseWriter, code int, v interface{}, headers map[stri
 	}
 
 	w.WriteHeader(code)
-	if v == nil {
-		return
-	}
-	if _, err = w.Write(data); err != nil {
+	if _, err := w.Write(data); err != nil {
 		logs.Error("RenderJSON:", err)
 	}
 }
