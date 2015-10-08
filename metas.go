@@ -162,7 +162,7 @@ func adminPatchCatOrder(w http.ResponseWriter, r *http.Request) {
 //     ]
 // }
 func adminPutTag(w http.ResponseWriter, r *http.Request) {
-	putMeta(w, r)
+	putMeta(w, r, models.MetaTypeTag)
 }
 
 // @api put /admin/api/cats/{id} 修改某id的分类内容
@@ -198,7 +198,7 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 //     ]
 // }
 func adminPutCat(w http.ResponseWriter, r *http.Request) {
-	putMeta(w, r)
+	putMeta(w, r, models.MetaTypeCat)
 }
 
 // @api post /admin/api/tags 添加新标签
@@ -291,16 +291,39 @@ func adminDeleteCat(w http.ResponseWriter, r *http.Request) {
 	deleteMeta(w, r)
 }
 
-// 是否存在相同name的title
-func metaNameIsExists(m *models.Meta) (bool, error) {
-	m2 := &models.Meta{Name: m.Name}
-	if err := db.Select(m2); err != nil {
-		return true, err
+// 是否存在相同name的meta
+func metaNameIsExists(m *models.Meta, typ int) (bool, error) {
+	sql := db.Where("{name}=?", m.Name).And("{type}=?", typ).Table("#metas")
+	maps, err := sql.SelectMapString(true, "id")
+	if err != nil {
+		return false, err
 	}
 
-	return m2.ID != m.ID, nil
+	if len(maps) == 0 {
+		return false, nil
+	}
+	if len(maps) > 1 {
+		return true, nil
+	}
+
+	id, err := strconv.ParseInt(maps[0]["id"], 10, 64)
+	println(maps[0]["id"])
+	if err != nil {
+		return false, err
+	}
+	return id != m.ID, nil
 }
 
+// @api get /admin/api/cats/{id} 获取指定id的分类内容
+// @apiParam id int 分类的id
+// @apiGroup admin
+//
+// @apiSuccess 200 OK
+// @apiParam id int 分类的id
+// @apiParam name string 分类的唯一名称，可能为空
+// @apiParam title string 分类名称
+// @apiParam order int 分类的排序值
+// @apiParam description string 对分类的详细描述
 func adminGetCat(w http.ResponseWriter, r *http.Request) {
 	id, ok := core.ParamID(w, r, "id")
 	if !ok {
@@ -330,6 +353,15 @@ func adminGetCat(w http.ResponseWriter, r *http.Request) {
 	core.RenderJSON(w, http.StatusOK, data, nil)
 }
 
+// @api get /admin/api/tags/{id} 获取指定id的标签内容
+// @apiParam id int 标签的id
+// @apiGroup admin
+//
+// @apiSuccess 200 OK
+// @apiParam id int 标签的id
+// @apiParam name string 标签的唯一名称，可能为空
+// @apiParam title string 标签名称
+// @apiParam description string 对标签的详细描述
 func adminGetTag(w http.ResponseWriter, r *http.Request) {
 	id, ok := core.ParamID(w, r, "id")
 	if !ok {
@@ -358,7 +390,7 @@ func adminGetTag(w http.ResponseWriter, r *http.Request) {
 }
 
 // 供putCat和putTag调用
-func putMeta(w http.ResponseWriter, r *http.Request) {
+func putMeta(w http.ResponseWriter, r *http.Request, typ int) {
 	m := &models.Meta{}
 	if !core.ReadJSON(w, r, m) {
 		return
@@ -370,7 +402,7 @@ func putMeta(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exists, err := metaNameIsExists(m)
+	exists, err := metaNameIsExists(m, typ)
 	if err != nil {
 		logs.Error("putMeta:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -412,7 +444,7 @@ func postMeta(w http.ResponseWriter, r *http.Request, typ int) {
 	}
 	m.ID = 0
 
-	exists, err := metaNameIsExists(m)
+	exists, err := metaNameIsExists(m, typ)
 	if err != nil {
 		logs.Error("postMeta:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
