@@ -2,7 +2,14 @@
     <h1 class="header">文章管理</h1>
 
     <table id="posts" class="ui compact celled striped table"></table>
-    <div id="pages" class="ui buttons">
+    <div id="actions" class="ui buttons">
+        <button class="ui green button" id="new">新增</button>
+        <button class="ui disabled button" id="delete">删除</button>
+        <button class="ui disabled button" id="edit">编辑</button>
+        <button class="ui disabled button" id="draft">草稿</button>
+        <button class="ui disabled button" id="published">发布</button>
+    </div>
+    <div id="pages" class="ui right floated buttons">
         <button class="ui button page" data-page="0">第一页</button>
         <button class="ui button page" id="prev" data-page="0">上一页</button>
         <button class="ui button page" id="next" data-page="0">下一页</button>
@@ -25,14 +32,6 @@ function pageInit(){
         app.get({
             'url': app.adminAPI('/posts?size='+size+'&page='+page)
         }).done(function(data, textStatus, jqXHR){
-            $.each(data.posts, function(index, elem){
-                $.each(elem, function(key, val){
-                    if (key == 'created'||key=='modified'){
-                        elem[key] = (new Date(val*1000)).toLocaleString();
-                    }
-                });
-            });
-
             // 加载页码导航
             if (page > 0){
                 $('#prev').attr('data-page', page-1);
@@ -41,9 +40,19 @@ function pageInit(){
                 $('#next').attr('data-page', page+1);
             }
 
+            // 初始化数据
+            $.each(data.posts, function(index, elem){
+                $.each(elem, function(key, val){
+                    if (key == 'created'||key=='modified'){
+                        elem[key] = (new Date(val*1000)).toLocaleString();
+                    }
+                });
+            });
+
             // 加载列表
             $('#posts').html('');
             app.loadTemplate('#posts', '#posts-template', data);
+            $('.ui.checkbox').checkbox();
         }).fail(function(){
             app.showMessage('red', '加载文章列表失败');
         });
@@ -60,20 +69,19 @@ function pageInit(){
         <th>ID</th>
         <th class="six wide">标题/唯一名称</th>
         <th>更新/修改</th>
-        <th>操作</th>
     </tr>
 </thead>
 <tbody>
 {{#posts}}
     <tr>
-        <td>{{id}}</td>
+        <td>
+            <div class="ui checkbox">
+                <label>{{id}}</label>
+                <input type="checkbox" value="{{id}}" />
+            </div>
+        </td>
         <td><a href="#posts/edit/{{id}}">{{title}}</a><br />{{name}}</td>
         <td>{{created}}<br />{{modified}}</td>
-        <td style="width:7em">
-            <span class="ui link .published" data-id="{{id}}">发布</span>
-            <span class="ui link .draft" data-id="{{id}}">草稿</span><br />
-            <span class="ui link .delete" data-id="{{id}}">删除</span>
-        </td>
     </tr>
 {{/posts}}
 </tbody>

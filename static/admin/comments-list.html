@@ -3,7 +3,13 @@
 
     <table id="comments" class="ui compact celled striped table"></table>
 
-    <div id="pages" class="ui buttons">
+    <div id="actions" class="ui buttons">
+        <button class="ui disabled button" id="delete">删除</button>
+        <button class="ui disabled button" id="edit">审核通过</button>
+        <button class="ui disabled button" id="draft">垃圾评论</button>
+        <button class="ui disabled button" id="published">等待审核</button>
+    </div>
+    <div id="pages" class="ui right floated buttons">
         <button class="ui button page" data-page="0">第一页</button>
         <button class="ui button page" id="prev" data-page="0">上一页</button>
         <button class="ui button page" id="next" data-page="0">下一页</button>
@@ -33,6 +39,7 @@ function pageInit(){
 
             $('#comments').html('');
             app.loadTemplate('#comments', '#comments-template', data);
+            $('.ui.checkbox').checkbox();
         }).fail(function(){
             app.showMessage('red', '加载评论失败');
         });
@@ -46,6 +53,7 @@ function pageInit(){
 <script id="comments-template" type="x-template-handlebars">
 <thead>
     <tr>
+        <th>ID</th>
         <th class="six wide">评论内容</th>
         <th>所属文章</th>
         <th>用户信息</th>
@@ -55,6 +63,12 @@ function pageInit(){
 <tbody>
 {{#comments}}
     <tr>
+        <td>
+            <div class="ui checkbox">
+                <label>{{id}}</label>
+                <input type="checkbox" value="{{id}}" />
+            </div>
+        </td>
         <td>{{content}}</td>
         <td>{{postTitle}}</td>
         <td>{{authorName}}<br />{{authorURL}}<br />{{authorEmail}}</td>
