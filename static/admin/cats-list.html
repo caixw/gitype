@@ -1,126 +1,88 @@
 <div style="text-align:left">
     <h1 class="header">分类管理</h1>
-    <div class="ui grid">
-        <div class="row">
-            <div class="nine wide column">
-                <div id="cats"></div><br />
-                <button class="ui green button" id="new">新增</button>
-            </div>
 
-            <div class="ui seven wide column form">
-                <input type="hidden" id="id" />
-
-                <div class="field">
-                    <label>唯一名称，可为空</label>
-                    <input type="text" id="name" name="name" />
-                </div>
-
-                <div class="field">
-                    <label>字面文字</label>
-                    <input type="text" id="title" name="title" />
-                </div>
-
-                <div class="field">
-                    <label>排序，小数字排在前</label>
-                    <input type="number" id="order" name="order" />
-                </div>
-
-                <div class="field">
-                    <label>描述内容</label>
-                    <textarea id="description" name="description"></textarea>
-                </div>
-
-                <div class="field">
-                    <button class="ui primary fluid button" id="submit">提交</button>
-                    <br />
-                    <button class="ui red fluid button" id="delete">删除</button>
-                </div>
-            </div>
-        </div>
+    <div id="cats"></div>
+    <div class="ui divider"></div>
+    <div class="ui buttons">
+        <button class="ui green button" id="new">新增</button>
+        <button class="ui disabled button" id="delete">删除</button>
+        <button class="ui disabled button" id="edit">编辑</button>
+        <button class="ui disabled button" id="merge">合并</button>
     </div>
+
 </div>
 
 <script>
 function pageInit(){
     app.setTitle('分类管理');
+    loadCats();
+    initAction();
 
-    app.get({
-        'url': app.adminAPI('/cats')
-    }).done(function(data, textStatus, jqXHR){
-        app.loadTemplate('#cats', '#cats-template', data)
-        $('#cats tbody td a').on('click', function(){
-            var a = $(this);
-            $('#id').val(a.attr('data-id'));
-            $('#name').val(a.attr('data-name'));
-            $('#title').val(a.attr('data-title'));
-            $('#order').val(a.attr('data-order'));
-            $('#description').val(a.attr('data-description'));
-        });
-    }).fail(function(){
-        app.showMessage('red', '加载分类信息失败');
-    });
+    function loadCats(){
+        app.get({
+            'url': app.adminAPI('/cats')
+        }).done(function(data, textStatus, jqXHR){
+            app.loadTemplate('#cats', '#cats-template', data)
+            $('.ui.checkbox').checkbox();
 
-    $('#new').on('click', function(){
-        $('#id').val('');
-        $('#name').val('');
-        $('#title').val('');
-        $('#order').val('');
-        $('#description').val('');
-    });
-
-    $('#submit').on('click', function(){
-        $('.ui.form').addClass('loading');
-        if ($('#id').val()){
-            app.put({
-                'url': app.adminAPI('/cats/'+$('#id').val()),
-                'data':buildJSON($('.ui.form'))
-            }).done(function(){
-                $('#id').val('');
-                $('#name').val('');
-                $('#title').val('');
-                $('#order').val('');
-                $('#description').val('');
-            }).fail(function(){
-                app.showMessage('red', '更新'+$('#id').val()+'时失败');
-            }).always(function(){
-                $('.ui.form').removeClass('loading');
+            $('#cats input').on('change', function(){
+                updateActions();
             });
-        }else{
-            app.post({
-                'url': app.adminAPI('/cats'),
-                'data':buildJSON($('.ui.form'))
-            }).done(function(){
-                $('#id').val('');
-                $('#name').val('');
-                $('#order').val('');
-                $('#title').val('');
-                $('#description').val('');
-            }).fail(function(){
-                app.showMessage('red', '添加时失败');
-            }).always(function(){
-                $('.ui.form').removeClass('loading');
-            });
-        }
-        return false;
-    });
-
-    $('#delete').on('click', function(){
-        $('.ui.form').addClass('loading');
-        app.delete({
-            'url': app.adminAPI('/cats/'+$('#id').val())
-        }).done(function(){
-            $('#id').val(0);
-            $('#name').val('');
-            $('#title').val('');
-            $('#order').val('');
-            $('#description').val('');
         }).fail(function(){
-            app.showMessage('red', '删除'+$('#id').val()+'失败');
-        }).always(function(){
-            $('.ui.form').removeClass('loading');
+            app.showMessage('red', '加载分类信息失败');
         });
-        return false;
-    });
+    }
+
+    // 初始化按钮的操作
+    function initAction() {
+        $('#new').on('click', function(){
+            app.redirect('cats/edit/0');
+        });
+
+        $('#delete').on('click', function(){
+            $('#cats input:checked').each(function(index, elem){
+                var id = $(elem).val();
+                app.delete({
+                    'url': app.adminAPI('/cats/'+id)
+                }).fail(function(){
+                    app.showMessage('red', '删除'+id+'分类时出错');
+                }).done(function(){
+                    $(elem).parents('tr').remove();
+                    updateActions();
+                });
+            });
+        });
+
+        $('#edit').on('click', function(){
+            var id = $('#cats input:checked').val();
+            app.redirect('cats/edit/'+id);
+        });
+
+        $('#merge').on('click', function(){
+            //
+        });
+    }
+
+    // 更新各个按钮的界面。
+    function updateActions() {
+        var l = $('#cats input:checked').length;
+        switch (l) {
+            case 0:
+                $('#delete').addClass('disabled').removeClass('red');
+                $('#edit').addClass('disabled').removeClass('blue');
+                $('#merge').addClass('disabled').removeClass('blue');
+                break;
+            case 1:
+                $('#delete').removeClass('disabled').addClass('red');
+                $('#edit').removeClass('disabled').addClass('blue');
+                $('#merge').addClass('disabled').removeClass('blue');
+                break;
+            default:
+                $('#delete').removeClass('disabled').addClass('red');
+                $('#edit').addClass('disabled').removeClass('blue');
+                $('#merge').removeClass('disabled').addClass('blue');
+        }
+    } // end updateActions
 } // end pageInit
 </script>
 
@@ -138,15 +100,13 @@ function pageInit(){
     <tbody>
     {{#cats}}
         <tr>
-            <td>{{id}}</td>
             <td>
-                <a
-                    data-id="{{id}}"
-                    data-order="{{order}}"
-                    data-name="{{name}}"
-                    data-title="{{title}}"
-                    data-description="{{description}}">{{title}}</a>
+                <div class="ui checkbox">
+                    <label>{{id}}</label>
+                    <input type="checkbox" value="{{id}}" />
+                </div>
             </td>
+            <td>{{title}}</td>
             <td>{{name}}</td>
             <td>{{order}}</td>
             <td>{{description}}</td>
