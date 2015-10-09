@@ -20,6 +20,7 @@ function App(options) {
         messageTimeout: 5000
     };
     var opt = $.extend({}, defaults, options);
+    var self = this;
 
     // 设置标题，若值为空，则只显示opt.titleSuffix。
     this.setTitle = function(title) {
@@ -39,49 +40,51 @@ function App(options) {
         return opt.adminAPIPrefix + url;
     };
 
-    // 执行一条delete的restful api操作。
-    this.delete = function(settings) {
+    // 执行一个ajax操作，提交和返回数据均为json
+    function ajax(settings) {
         settings.contentType = 'application/json;charset=utf-8';
         settings.dataType    = 'json';
-        settings.method      = 'DELETE';
         settings.headers     = {'Authorization': window.sessionStorage.token};
-        return $.ajax(settings);
+
+        return $.ajax(settings).fail(function(jqXHR, textStatus, errorThrown){
+            if (jqXHR.status == 401) {
+                self.redirect('login');
+                return;
+            }
+
+            var msg = '访问资源<'+settings.url+'>时发生以下错误：'+jqXHR.status;
+            self.showMessage('red', msg);
+        });
+    }
+
+    // 执行一条delete的restful api操作。
+    this.delete = function(settings) {
+        settings.method = 'DELETE';
+        return ajax(settings);
     };
 
     // 执行一条post的restful api操作。
     this.post = function(settings) {
-        settings.contentType = 'application/json;charset=utf-8';
-        settings.dataType    = 'json';
-        settings.method      = 'POST';
-        settings.headers     = {'Authorization': window.sessionStorage.token};
-        return $.ajax(settings);
+        settings.method = 'POST';
+        return ajax(settings);
     };
 
     // 执行一条put的restful api操作。
     this.put = function(settings) {
-        settings.contentType = 'application/json;charset=utf-8';
-        settings.dataType    = 'json';
-        settings.method      = 'PUT';
-        settings.headers     = {'Authorization': window.sessionStorage.token};
-        return $.ajax(settings);
+        settings.method = 'PUT';
+        return ajax(settings);
     };
 
     // 执行一条get的restful api操作。
     this.get = function(settings) {
-        settings.contentType = 'application/json;charset=utf-8';
-        settings.dataType    = 'json';
-        settings.method      = 'GET';
-        settings.headers     = {'Authorization': window.sessionStorage.token};
-        return $.ajax(settings);
+        settings.method = 'GET';
+        return ajax(settings);
     };
 
     // 执行一条patch的restful api操作。
     this.patch = function(settings) {
-        settings.contentType = 'application/json;charset=utf-8';
-        settings.dataType    = 'json';
-        settings.method      = 'PATCH';
-        settings.headers     = {'Authorization': window.sessionStorage.token};
-        return $.ajax(settings);
+        settings.method = 'PATCH';
+        return ajax(settings);
     };
 
     // 在页面右下解显示一提示信息，该信息会自动消失。

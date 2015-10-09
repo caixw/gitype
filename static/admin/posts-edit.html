@@ -61,8 +61,6 @@ function pageInit(id) {
         'url': app.adminAPI('/cats')
     }).done(function(data, textStatus, jqXHR){
         app.loadTemplate('#cats', '#cats-templates', data.cats)
-    }).fail(function(){
-        app.showMessage('red', '加载分类列表失败');
     });
 
     $('.ui.checkobx').checkbox();

@@ -120,8 +120,6 @@ function pageInit(){
         }).done(function(data, textStatus, jqXHR){
             $('#'+id).val(data.value);
             $('#'+id).attr('data-default', data.value);
-        }).fail(function(){
-            app.showMessage('red', '加载'+id+'资源失败');
         });
     }
 

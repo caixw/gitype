@@ -69,8 +69,6 @@ function pageInit(){
         }).done(function(data, textStatus, jqXHR){
             $('#'+id).val(data.value);
             $('#'+id).attr('data-default', data.value);
-        }).fail(function(){
-            app.showMessage('red', '加载'+id+'资源失败');
         });
     }
 
@@ -81,8 +79,6 @@ function pageInit(){
             var val = parseFloat(data.value) * 10;
             $('#'+id).val(val);
             $('#'+id).attr('data-default', val);
-        }).fail(function(){
-            app.showMessage('red', '加载'+id+'资源失败');
         });
     }
 

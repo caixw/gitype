@@ -23,7 +23,6 @@ function pageInit(id){
             app.loadTemplate('#cat', '#cat-template', data)
             initAction();
         }).fail(function(jqXHR, textStatus, errorThrown){
-            console.log(errorThrown);
             app.showMessage('red', '无法加载当前被编辑的标签内容！新尝试刷新！');
         }).always(function(){
             $('.ui.form').removeClass('loading');

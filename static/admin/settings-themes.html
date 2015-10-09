@@ -33,8 +33,6 @@ function pageInit(){
             'url': app.adminAPI('/themes/current')
         }).done(function(data, textStatus, jqXHR){
             updateActivedTheme(data.theme);
-        }).fail(function(){
-            app.showMessage('red', '获取当前主题信息失败');
         });
 
         // 指定label的点击事件
@@ -50,12 +48,8 @@ function pageInit(){
             }).done(function(){
                 updateActivedTheme(theme);
                 app.showMessage('green', '将主题切换到'+theme);
-            }).fail(function(){
-                app.showMessage('red', '更新主题失败');
             });
         });
-    }).fail(function(){
-        app.showMessage('red', '加载主题列表失败');
     });
 
     // 更新当前选中主题标题的样式。

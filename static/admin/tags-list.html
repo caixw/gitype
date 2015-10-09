@@ -9,7 +9,7 @@
         <button class="ui disabled button" id="edit">编辑</button>
         <button class="ui disabled button" id="merge">合并</button>
     </div>
-    
+
 </div>
 
 <script>
@@ -32,8 +32,6 @@ function pageInit() {
                 $(this).toggleClass('blue');
                 updateActions();
             });
-        }).fail(function(){
-            app.showMessage('red', '加载标签列表失败');
         });
     } // end loadTags
 
@@ -48,8 +46,6 @@ function pageInit() {
                 var id = $(elem).attr('data-id');
                 app.delete({
                     'url': app.adminAPI('/tags/'+id)
-                }).fail(function(){
-                    app.showMessage('red', '删除'+id+'标签时出错');
                 }).done(function(){
                     $(elem).remove();
                     updateActions();

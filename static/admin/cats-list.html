@@ -1,7 +1,7 @@
 <div style="text-align:left">
     <h1 class="header">分类管理</h1>
 
-    <div id="cats"></div>
+    <table id="cats" class="ui compact celled striped table"></table>
     <div class="ui buttons">
         <button class="ui green button" id="new">新增</button>
         <button class="ui disabled button" id="delete">删除</button>
@@ -15,7 +15,7 @@
 function pageInit(){
     app.setTitle('分类管理');
     loadCats();
-    initAction();
+    initActions();
 
     function loadCats(){
         app.get({
@@ -33,7 +33,7 @@ function pageInit(){
     }
 
     // 初始化按钮的操作
-    function initAction() {
+    function initActions() {
         $('#new').on('click', function(){
             app.redirect('cats/edit/0');
         });
@@ -86,7 +86,6 @@ function pageInit(){
 </script>
 
 <script id="cats-template" type="x-template-handlebars">
-<table class="ui celled table">
     <thead>
         <tr>
             <th>ID</th>
@@ -112,5 +111,4 @@ function pageInit(){
         </tr>
     {{/cats}}
     </tbody>
-</table>
 </script>

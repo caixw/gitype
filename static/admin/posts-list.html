@@ -21,11 +21,18 @@
 function pageInit(){
     app.setTitle('文章列表');
 
+    loadPosts(0);
+    initActions();
+
     function initActions(){
         $('#pages .page').on('click', function(){
             var page = $(this).attr('data-page');
             loadPosts(page);
         });
+    }
+
+    function updateActions(){
+        //
     }
 
     function loadPosts(page) {
@@ -57,9 +64,6 @@ function pageInit(){
             app.showMessage('red', '加载文章列表失败');
         });
     }
-
-    loadPosts(0);
-    initActions();
 } // end pageInit
 </script>
 

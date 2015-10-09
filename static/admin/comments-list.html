@@ -1,13 +1,14 @@
 <div style="text-align:left">
     <h1 class="header">评论管理</h1>
 
+    <div id="counts"></div>
     <table id="comments" class="ui compact celled striped table"></table>
 
     <div id="actions" class="ui buttons">
         <button class="ui disabled button" id="delete">删除</button>
-        <button class="ui disabled button" id="edit">审核通过</button>
-        <button class="ui disabled button" id="draft">垃圾评论</button>
-        <button class="ui disabled button" id="published">等待审核</button>
+        <button class="ui disabled button" id="approved">审核通过</button>
+        <button class="ui disabled button" id="waiting">等待审核</button>
+        <button class="ui disabled button" id="spam">垃圾评论</button>
     </div>
     <div id="pages" class="ui right floated buttons">
         <button class="ui button page" data-page="0">第一页</button>
@@ -18,15 +19,44 @@
 
 <script>
 function pageInit(){
-    function initActions(){
+    loadCounts();
+    loadComments(0);
+    initActions();
+
+    function initActions() {
         $('#pages .page').on('click', function(){
             var page = $(this).attr('data-page');
             loadComments(page);
         });
+
+        $('#delete').on('click', function(){
+            app.delete({
+                'url': app.adminAPI('/comments/0')
+            });
+        });
+        $('#approved').on('click', function(){
+            //
+        });
+        $('#spam').on('click', function(){
+            //
+        });
+        $('#waiting').on('click', function(){
+            //
+        });
     }
 
-    function loadComments(page){
+    function loadCounts() {
         app.get({
+            'url': app.adminAPI('/comments/count')
+        }).done(function(data, textStatus, jqXHR){
+            app.loadTemplate('#counts', '#counts-template', data);
+        }).fail(function(){
+            app.showMessage('red', '加载标签数据错误');
+        });
+    }
+
+    function loadComments(page) {
+        return app.get({
             'url': app.adminAPI('/comments?size='+size+'&page='+page)
         }).done(function(data, textStatus, jqXHR){
             // 加载页码导航
@@ -40,16 +70,42 @@ function pageInit(){
             $('#comments').html('');
             app.loadTemplate('#comments', '#comments-template', data);
             $('.ui.checkbox').checkbox();
+            $('#comments input').on('change', function(){
+                updateActions();
+            });
         }).fail(function(){
             app.showMessage('red', '加载评论失败');
         });
     } // end loadComments
 
-    loadComments(0);
-    initActions();
+    function updateActions() {
+        var l = $('#comments input:checked').length;
+        switch (l) {
+            case 0:
+                $('#delete').addClass('disabled').removeClass('red');
+                $('#approved').addClass('disabled').removeClass('green');
+                $('#spam').addClass('disabled').removeClass('red');
+                $('#waiting').addClass('disabled').removeClass('blue');
+                break;
+            default:
+                $('#delete').removeClass('disabled').addClass('red');
+                $('#approved').removeClass('disabled').addClass('green');
+                $('#spam').removeClass('disabled').addClass('red');
+                $('#waiting').removeClass('disabled').addClass('blue');
+        }
+    }
 } // end pageInit
 </script>
 
+<!-- 顶部标签模板 -->
+<script id="counts-template" type="x-template-handlebars">
+    <span class="ui label">所有<span class="detail">{{all}}</span></span>
+    <span class="ui green label">已审核<span class="detail">{{approved}}</span></span>
+    <span class="ui yellow label">待审核<span class="detail">{{waiting}}</span></span>
+    <span class="ui red label">垃圾<span class="detail">{{spam}}</span></span>
+</script>
+
+<!-- 表格模板 -->
 <script id="comments-template" type="x-template-handlebars">
 <thead>
     <tr>
