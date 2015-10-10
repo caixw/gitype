@@ -189,5 +189,7 @@ func initAdminAPIRoutes(admin *mux.Prefix) {
 		Post("/posts", loginHandlerFunc(adminPostPost)).
 		Get("/posts/{id:\\d+}", loginHandlerFunc(adminGetPost)).
 		Delete("/posts/{id:\\d+}", loginHandlerFunc(adminDeletePost)).
-		Put("/posts/{id:\\d+}", loginHandlerFunc(adminPutPost))
+		Put("/posts/{id:\\d+}", loginHandlerFunc(adminPutPost)).
+		Post("/posts/{id:\\d+}/draft", loginHandlerFunc(adminSetPostDraft)).
+		Post("/posts/{id:\\d+}/published", loginHandlerFunc(adminSetPostPublished))
 }

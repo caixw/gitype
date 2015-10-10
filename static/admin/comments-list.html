@@ -79,8 +79,6 @@ function pageInit(){
             'url': app.adminAPI('/comments/count')
         }).done(function(data, textStatus, jqXHR){
             app.loadTemplate('#counts', '#counts-template', data);
-        }).fail(function(){
-            app.showMessage('red', '加载标签数据错误');
         });
     }
 

@@ -19,6 +19,51 @@ import (
 	"github.com/issue9/orm/fetch"
 )
 
+// @api post /admin/api/posts/{id}/published 将一篇文章的状态改为已发布
+// @apiParam id int 文章的id
+// @apiGroup admin
+//
+// @apiSuccess 201 Created
+func adminSetPostPublished(w http.ResponseWriter, r *http.Request) {
+	adminSetPostState(w, r, models.PostStatePublished)
+}
+
+// @api post /admin/api/posts/{id}/draft 将一篇文章的状态改为草稿
+// @apiParam id int 文章的id
+// @apiGroup admin
+//
+// @apiSuccess 201 Created
+func adminSetPostDraft(w http.ResponseWriter, r *http.Request) {
+	adminSetPostState(w, r, models.PostStateDraft)
+}
+
+func adminSetPostState(w http.ResponseWriter, r *http.Request, state int) {
+	id, ok := core.ParamID(w, r, "id")
+	if !ok {
+		return
+	}
+
+	p := &models.Post{ID: id}
+	if err := db.Select(p); err != nil {
+		logs.Error("adminSetPostState:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+	// 不可能存在状态值为0的文章，出现此值，表明数据库没有该条记录
+	if p.State == models.PostStateAll {
+		core.RenderJSON(w, http.StatusNotFound, nil, nil)
+		return
+	}
+
+	p = &models.Post{ID: id, State: state}
+	if _, err := db.Update(p); err != nil {
+		logs.Error("adminSetPostState:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+	core.RenderJSON(w, http.StatusCreated, nil, nil)
+}
+
 // @api get /admin/api/posts/count 获取各种状态下的文章数量
 // @apiGroup admin
 //

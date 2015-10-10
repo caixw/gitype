@@ -1,7 +1,9 @@
 <div style="text-align:left">
     <h1 class="header">文章管理</h1>
 
+    <div id="counts"></div>
     <table id="posts" class="ui compact celled striped table"></table>
+
     <div id="actions" class="ui buttons">
         <button class="ui green button" id="new">新增</button>
         <button class="ui disabled button" id="delete">删除</button>
@@ -21,18 +23,84 @@
 function pageInit(){
     app.setTitle('文章列表');
 
+    loadCounts();
     loadPosts(0);
     initActions();
 
-    function initActions(){
+    function initActions() {
         $('#pages .page').on('click', function(){
             var page = $(this).attr('data-page');
             loadPosts(page);
         });
+
+        $('#delete').on('click', function(){
+            $('#posts input:checked').each(function(index, elem){
+                var id = $(elem).val();
+                app.delete({
+                    'url': app.adminAPI('/posts/'+id)
+                }).done(function(){
+                    $(elem).parents('tr').remove();
+                });
+            });
+        });
+
+        $('#edit').on('click', function(){
+            var id = $('#cats input:checked').val();
+            app.redirect('posts/edit/'+id);
+        });
+
+        $('#published').on('click', function(){
+            $('#posts input:checked').each(function(index, elem){
+                var id = $(elem).val();
+                app.post({
+                    'url': app.adminAPI('/posts/'+id+'/published')
+                }).done(function(){
+                    $(elem).prop('checked', false);
+                });
+            });
+        });
+
+        $('#draft').on('click', function(){
+            $('#posts input:checked').each(function(index, elem){
+                var id = $(elem).val();
+                app.post({
+                    'url': app.adminAPI('/posts/'+id+'/draft')
+                }).done(function(){
+                    $(elem).prop('checked', false);
+                });
+            });
+        });
+    } // end initActions
+
+    function updateActions() {
+        var l = $('#posts input:checked').length;
+        switch (l) {
+            case 0:
+                $('#delete').addClass('disabled').removeClass('red');
+                $('#edit').addClass('disabled').removeClass('blue');
+                $('#published').addClass('disabled').removeClass('green');
+                $('#draft').addClass('disabled').removeClass('yellow');
+                break;
+            case 1:
+                $('#delete').removeClass('disabled').addClass('red');
+                $('#edit').removeClass('disabled').addClass('blue');
+                $('#published').removeClass('disabled').addClass('green');
+                $('#draft').removeClass('disabled').addClass('yellow');
+                break;
+            default:
+                $('#delete').removeClass('disabled').addClass('red');
+                $('#edit').addClass('disabled').removeClass('blue');
+                $('#published').removeClass('disabled').addClass('green');
+                $('#draft').removeClass('disabled').addClass('yellow');
+        }
     }
 
-    function updateActions(){
-        //
+    function loadCounts() {
+        app.get({
+            'url': app.adminAPI('/posts/count')
+        }).done(function(data, textStatus, jqXHR){
+            app.loadTemplate('#counts', '#counts-template', data);
+        });
     }
 
     function loadPosts(page) {
@@ -60,13 +128,24 @@ function pageInit(){
             $('#posts').html('');
             app.loadTemplate('#posts', '#posts-template', data);
             $('.ui.checkbox').checkbox();
-        }).fail(function(){
-            app.showMessage('red', '加载文章列表失败');
+
+            // 初始化checkbox事件
+            $('#posts input').on('change', function(){
+                updateActions();
+            });
         });
     }
 } // end pageInit
 </script>
 
+<!-- 顶部标签模板 -->
+<script id="counts-template" type="x-template-handlebars">
+    <span class="ui label">所有<span class="detail">{{all}}</span></span>
+    <span class="ui green label">已发布<span class="detail">{{published}}</span></span>
+    <span class="ui yellow label">草稿<span class="detail">{{draft}}</span></span>
+</script>
+
+<!-- 文章列表模板 -->
 <script id="posts-template" type="x-template-handlebars">
 <thead>
     <tr>

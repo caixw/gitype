@@ -98,6 +98,7 @@ func FillDB(db *orm.DB) error {
 	post := &models.Post{
 		Title:    "第一篇日志",
 		Content:  "<p>这是你的第一篇日志</p>",
+		State:    models.PostStatePublished,
 		Created:  time.Now().Unix(),
 		Modified: time.Now().Unix(),
 	}
