@@ -48,6 +48,7 @@ function App(options) {
 
         return $.ajax(settings).fail(function(jqXHR, textStatus, errorThrown){
             if (jqXHR.status == 401) {
+                window.sessionStorage.token = '';
                 self.redirect('login');
                 return;
             }
