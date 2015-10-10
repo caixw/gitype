@@ -15,13 +15,33 @@ import (
 	"github.com/issue9/orm/fetch"
 )
 
+// @api delete /admin/api/comments/{id} 删除某条评论
+// @apiParam id int 评论的id值
+// @apiGroup admin
+//
+// @apiSuccess 204 no content
+func adminDeleteComment(w http.ResponseWriter, r *http.Request) {
+	id, ok := core.ParamID(w, r, "id")
+	if !ok {
+		return
+	}
+
+	c := &models.Comment{ID: id}
+	if _, err := db.Delete(c); err != nil {
+		logs.Error("adminDeleteComment:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+	core.RenderJSON(w, http.StatusNoContent, nil, nil)
+}
+
 // @api get /admin/api/comments 获取所有评论内容
 // @apiQuery page  int 显示第page页的内容，基数0;
 // @apiQuery size  int 每页显示的数量；
 // @apiQuery state int 仅显示状态值为state的记录；
 // @apiGroup admin
 //
-// @apiSuccess 200 ok
+// @apiSuccess 200 OK
 // @apiParam count int 符合条件(去除page和size条件)的所有评论数量
 // @apiParam comments array 当前页的评论
 func adminGetComments(w http.ResponseWriter, r *http.Request) {

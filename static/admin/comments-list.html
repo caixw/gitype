@@ -30,20 +30,49 @@ function pageInit(){
         });
 
         $('#delete').on('click', function(){
-            app.delete({
-                'url': app.adminAPI('/comments/0')
+            $('#comments input:checked').each(function(index, elem){
+                var id = $(elem).val();
+                app.delete({
+                    'url': app.adminAPI('/comments/'+id)
+                }).done(function(){
+                    $(elem).parents('tr').remove();
+                });
             });
         });
+
         $('#approved').on('click', function(){
-            //
+            $('#comments input:checked').each(function(index, elem){
+                var id = $(elem).val();
+                app.post({
+                    'url': app.adminAPI('/comments/'+id+'/approved')
+                }).done(function(){
+                    $(elem).prop('checked', false);
+                });
+            });
         });
+
         $('#spam').on('click', function(){
-            //
+            $('#comments input:checked').each(function(index, elem){
+                var id = $(elem).val();
+                app.post({
+                    'url': app.adminAPI('/comments/'+id+'/spam')
+                }).done(function(){
+                    $(elem).prop('checked', false);
+                });
+            });
         });
+
         $('#waiting').on('click', function(){
-            //
+            $('#comments input:checked').each(function(index, elem){
+                var id = $(elem).val();
+                app.post({
+                    'url': app.adminAPI('/comments/'+id+'/waiting')
+                }).done(function(){
+                    $(elem).prop('checked', false);
+                });
+            });
         });
-    }
+    } // end initActions
 
     function loadCounts() {
         app.get({
@@ -67,14 +96,32 @@ function pageInit(){
                 $('#next').attr('data-page', page+1);
             }
 
+            // 初始化评论列表数据
+            $.each(data.comments, function(index, elem){
+                switch (parseInt(elem.state)) { // TODO 去掉parsetInt
+                    case 1: // waiting
+                        elem.stateText = '等待审核';
+                        break;
+                    case 2: // spam
+                        elem.stateText = '垃圾评论';
+                        break
+                    case 3: // approved
+                        elem.stateText = '已审核';
+                        break
+                    default:
+                        elem.stateText = '未知状态:'+elem.state;
+                }
+            });
+
+            // 加载评论列表
             $('#comments').html('');
             app.loadTemplate('#comments', '#comments-template', data);
             $('.ui.checkbox').checkbox();
+
+            // 初始化checkbox事件
             $('#comments input').on('change', function(){
                 updateActions();
             });
-        }).fail(function(){
-            app.showMessage('red', '加载评论失败');
         });
     } // end loadComments
 
@@ -128,7 +175,7 @@ function pageInit(){
         <td>{{content}}</td>
         <td>{{postTitle}}</td>
         <td>{{authorName}}<br />{{authorURL}}<br />{{authorEmail}}</td>
-        <td></td>
+        <td>{{stateText}}</td>
     </tr>
 {{/comments}}
 </tbody>
