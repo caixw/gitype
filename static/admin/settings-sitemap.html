@@ -41,23 +41,6 @@
                 <input type="number" min="0" max="10" name="tagsPriority" id="tagsPriority" />
             </div>
         </div>
-
-        <div class="inline field">
-            <label for="catsChangefreq">分类</label>
-            <select name="catsChangefreq" id="catsChangefreq" class="ui dropdown">
-                <option value="always">保持最新</option>
-                <option value="hourly">每小时</option>
-                <option value="daily">每天</option>
-                <option value="weekly">每周</option>
-                <option value="monthly">每月</option>
-                <option value="never">从不更新</option>
-            </select>
-
-            <div class="ui left labeled input" style="margin-left:1em">
-                <div class="ui basic label">0.</div>
-                <input type="number" min="0" max="10" name="catsPriority" id="catsPriority" />
-            </div>
-        </div>
     </div> <!-- end .ui.form -->
 </div>
 
@@ -140,21 +123,17 @@ function pageInit(){
 
     $('.ui.form').addClass('loading');
     var pc = getChangefreq('postsChangefreq');
-    var cc = getChangefreq('catsChangefreq');
     var tc = getChangefreq('tagsChangefreq');
     var pp = getPriority('postsPriority');
-    var cp = getPriority('catsPriority');
     var tp = getPriority('tagsPriority');
-    $.when(pc, cc, tc, pp, cp, tp).always(function(){
+    $.when(pc, tc, pp, tp).always(function(){
         $('.ui.form').removeClass('loading');
         $('.ui.dropdown').dropdown();
     });
 
     patchChangefreq('postsChangefreq');
-    patchChangefreq('catsChangefreq');
     patchChangefreq('tagsChangefreq');
     patchPriority('postsPriority');
-    patchPriority('catsPriority');
     patchPriority('tagsPriority');
 } // end pageInit
 </script>

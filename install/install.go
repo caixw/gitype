@@ -71,7 +71,7 @@ func FillDB(db *orm.DB) error {
 	err = tx.MultCreate(
 		&models.Option{},
 		&models.Comment{},
-		&models.Meta{},
+		&models.Tag{},
 		&models.Post{},
 		&models.Relationship{},
 	)
@@ -89,8 +89,8 @@ func FillDB(db *orm.DB) error {
 		return err
 	}
 
-	// meta
-	if err = fillMetas(db); err != nil {
+	// tags
+	if err = fillTags(db); err != nil {
 		return err
 	}
 
@@ -118,38 +118,27 @@ func FillDB(db *orm.DB) error {
 	}
 
 	// relationship
-	if _, err := db.Insert(&models.Relationship{MetaID: 1, PostID: 1}); err != nil {
+	if _, err := db.Insert(&models.Relationship{TagID: 1, PostID: 1}); err != nil {
 		return err
 	}
-	if _, err := db.Insert(&models.Relationship{MetaID: 2, PostID: 1}); err != nil {
+	if _, err := db.Insert(&models.Relationship{TagID: 2, PostID: 1}); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func fillMetas(db *orm.DB) error {
-	metas := []*models.Meta{
-		// cats
-		{
-			Name:        "default",
-			Title:       "默认分类",
-			Type:        models.MetaTypeCat,
-			Order:       10,
-			Parent:      models.MetaNoParent,
-			Description: "所有添加的文章，默认添加此分类下。",
-		},
-
-		// tags
-		{Name: "tag1", Title: "标签一", Type: models.MetaTypeTag, Description: "<h5>tag1</h5>"},
-		{Name: "tag2", Title: "标签二", Type: models.MetaTypeTag, Description: "<h5>tag2</h5>"},
-		{Name: "tag3", Title: "标签三", Type: models.MetaTypeTag, Description: "<h5>tag3</h5>"},
+func fillTags(db *orm.DB) error {
+	tags := []*models.Tag{
+		{Name: "tag1", Title: "标签一", Description: "<h5>tag1</h5>"},
+		{Name: "tag2", Title: "标签二", Description: "<h5>tag2</h5>"},
+		{Name: "tag3", Title: "标签三", Description: "<h5>tag3</h5>"},
 	}
 	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
-	if err := tx.InsertMany(metas); err != nil {
+	if err := tx.InsertMany(tags); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -177,10 +166,8 @@ func fillOptions(db *orm.DB) error {
 		CommentOrder: core.CommentOrderDesc,
 
 		PostsChangefreq: "never",
-		CatsChangefreq:  "daily",
 		TagsChangefreq:  "daily",
 		PostsPriority:   0.9,
-		CatsPriority:    0.6,
 		TagsPriority:    0.4,
 
 		Theme: "default",

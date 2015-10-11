@@ -211,13 +211,8 @@ func PostURL(opt *Options, p *models.Post) string {
 	return opt.SiteURL + "/posts/" + strconv.FormatInt(p.ID, 64) + opt.Suffix
 }
 
-func MetaURL(opt *Options, m *models.Meta) string {
-	var url string
-	if m.Type == models.MetaTypeCat {
-		url = opt.SiteURL + "/cats/"
-	} else {
-		url = opt.SiteURL + "/tags/"
-	}
+func TagURL(opt *Options, m *models.Tag) string {
+	url := opt.SiteURL + "/tags/"
 
 	if len(m.Name) > 0 {
 		return url + m.Name

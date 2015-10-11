@@ -89,19 +89,7 @@ func addMetasToBuffer(buf *bytes.Buffer, db *orm.DB, opt *Options) error {
 	}
 
 	for _, v := range maps {
-		typ, err := strconv.Atoi(v["type"])
-		if err != nil {
-			return err
-		}
-
-		loc := opt.SiteURL + "/cats/"
-		priority := opt.CatsPriority
-		changefreq := opt.CatsChangefreq
-		if typ == models.MetaTypeTag {
-			loc = opt.SiteURL + "/tags/"
-			priority = opt.TagsPriority
-			changefreq = opt.CatsChangefreq
-		}
+		loc := opt.SiteURL + "/tags/"
 
 		if len(v["name"]) > 0 {
 			loc += v["name"]
@@ -109,7 +97,7 @@ func addMetasToBuffer(buf *bytes.Buffer, db *orm.DB, opt *Options) error {
 			loc += v["id"]
 		}
 
-		addItemToBuffer(buf, loc, changefreq, time.Now().Unix(), priority)
+		addItemToBuffer(buf, loc, opt.TagsChangefreq, time.Now().Unix(), opt.TagsPriority)
 	}
 	return nil
 }

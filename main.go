@@ -158,14 +158,6 @@ func initAdminAPIRoutes(admin *mux.Prefix) {
 	admin.Get("/options/{key}", loginHandlerFunc(adminGetOption)).
 		Patch("/options/{key}", loginHandlerFunc(adminPatchOption))
 
-	// cats
-	admin.Put("/cats/{id:\\d+}", loginHandlerFunc(adminPutCat)).
-		Delete("/cats/{id:\\d+}", loginHandlerFunc(adminDeleteCat)).
-		Get("/cats/{id:\\d+}", loginHandlerFunc(adminGetCat)).
-		Post("/cats", loginHandlerFunc(adminPostCat)).
-		Patch("/cats/{id}/order", loginHandlerFunc(adminPatchCatOrder)).
-		Get("/cats", loginHandlerFunc(adminGetCats))
-
 	// tags
 	admin.Put("/tags/{id:\\d+}", loginHandlerFunc(adminPutTag)).
 		Delete("/tags/{id:\\d+}", loginHandlerFunc(adminDeleteTag)).

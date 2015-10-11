@@ -6,7 +6,7 @@ package models
 
 type Relationship struct {
 	PostID int64 `orm:"name(postID);pk"`
-	MetaID int64 `orm:"name(metaID);pk"`
+	TagID  int64 `orm:"name(tagID);pk"`
 }
 
 func (r *Relationship) Meta() string {
