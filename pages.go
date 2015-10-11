@@ -30,7 +30,6 @@ type page struct {
 	PostSize    int      // 文章数量
 	CommentSize int      // 评论数量
 	Tags        []anchor // 标签列表
-	Cats        []anchor // 分类列表
 	Topics      []anchor // 最新评论的10条内容
 }
 
@@ -61,11 +60,7 @@ func getPage() (*page, error) {
 		return nil, err
 	}
 
-	if p.Tags, err = getMetas(models.MetaTypeTag); err != nil {
-		return nil, err
-	}
-
-	if p.Cats, err = getMetas(models.MetaTypeCat); err != nil {
+	if p.Tags, err = getTags(); err != nil {
 		return nil, err
 	}
 
@@ -102,9 +97,9 @@ func getPage() (*page, error) {
 	return p, nil
 }
 
-func getMetas(typ int) ([]anchor, error) {
-	sql := "SELECT {id}, {title}, {name}, {description} FROM #metas WHERE {type}=?"
-	rows, err := db.Query(true, sql, typ)
+func getTags() ([]anchor, error) {
+	sql := "SELECT {id}, {title}, {name}, {description} FROM #tags"
+	rows, err := db.Query(true, sql)
 	if err != nil {
 		return nil, err
 	}
@@ -114,12 +109,7 @@ func getMetas(typ int) ([]anchor, error) {
 		return nil, err
 	}
 
-	var link string
-	if typ == models.MetaTypeCat {
-		link = "/cats/"
-	} else {
-		link = "/tags/"
-	}
+	link := "/tags/"
 
 	ret := make([]anchor, 0, len(maps))
 	for _, v := range maps {

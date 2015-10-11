@@ -96,7 +96,7 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exists, err := tagNameIsExists(m, typ)
+	exists, err := tagNameIsExists(m)
 	if err != nil {
 		logs.Error("adminPutTag:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -153,18 +153,18 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 //     ]
 // }
 func adminPostTag(w http.ResponseWriter, r *http.Request) {
-	m := &models.Tag{}
-	if !core.ReadJSON(w, r, m) {
+	t := &models.Tag{}
+	if !core.ReadJSON(w, r, t) {
 		return
 	}
 
 	errs := &core.ErrorResult{Message: "格式错误"}
-	if m.ID > 0 {
+	if t.ID > 0 {
 		errs.Detail["id"] = "不允许的字段"
 	}
-	m.ID = 0
+	t.ID = 0
 
-	exists, err := tagNameIsExists(m, typ)
+	exists, err := tagNameIsExists(t)
 	if err != nil {
 		logs.Error("adminPostTag:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -175,7 +175,7 @@ func adminPostTag(w http.ResponseWriter, r *http.Request) {
 		errs.Detail["name"] = "已有同名字体段"
 	}
 
-	if len(m.Title) == 0 {
+	if len(t.Title) == 0 {
 		errs.Detail["title"] = "标题不能为空"
 	}
 
@@ -183,9 +183,8 @@ func adminPostTag(w http.ResponseWriter, r *http.Request) {
 		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
 		return
 	}
-	m.Type = typ
 
-	if _, err := db.Insert(m); err != nil {
+	if _, err := db.Insert(t); err != nil {
 		logs.Error("adminPostTag:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
@@ -239,8 +238,8 @@ func adminDeleteTag(w http.ResponseWriter, r *http.Request) {
 }
 
 // 是否存在相同name的tag
-func tagNameIsExists(m *models.Meta, typ int) (bool, error) {
-	sql := db.Where("{name}=?", m.Name).And("{type}=?", typ).Table("#tags")
+func tagNameIsExists(t *models.Tag) (bool, error) {
+	sql := db.Where("{name}=?", t.Name).Table("#tags")
 	maps, err := sql.SelectMapString(true, "id")
 	if err != nil {
 		return false, err
@@ -258,7 +257,7 @@ func tagNameIsExists(m *models.Meta, typ int) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return id != m.ID, nil
+	return id != t.ID, nil
 }
 
 // @api get /admin/api/tags/{id} 获取指定id的标签内容
@@ -276,8 +275,8 @@ func adminGetTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	m := &models.Meta{ID: id}
-	if err := db.Select(m); err != nil {
+	t := &models.Tag{ID: id}
+	if err := db.Select(t); err != nil {
 		logs.Error("adminGetTag:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
@@ -289,20 +288,20 @@ func adminGetTag(w http.ResponseWriter, r *http.Request) {
 		Title       string `json:"title"`
 		Description string `json:"description"`
 	}{
-		ID:          m.ID,
-		Name:        m.Name,
-		Title:       m.Title,
-		Description: m.Description,
+		ID:          t.ID,
+		Name:        t.Name,
+		Title:       t.Title,
+		Description: t.Description,
 	}
 	core.RenderJSON(w, http.StatusOK, data, nil)
 }
 
 // 获取与某post相关联的标签或是分类
-func getPostMetas(postID int64, mtype int) ([]int64, error) {
+func getPostTags(postID int64) ([]int64, error) {
 	sql := `SELECT rs.{tagID} FROM #relationships AS rs
 	LEFT JOIN #tags AS m ON m.{id}=rs.{tagID}
-	WHERE rs.{postID}=? AND m.{type}=?`
-	rows, err := db.Query(true, sql, postID, mtype)
+	WHERE rs.{postID}=?`
+	rows, err := db.Query(true, sql, postID)
 	if err != nil {
 		return nil, err
 	}

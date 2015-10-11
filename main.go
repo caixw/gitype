@@ -21,7 +21,7 @@ import (
 
 // 以下为一些源码级别的配置项。
 const (
-	version = "0.1.1.150914" // 版本号
+	version = "0.2.1.151011" // 版本号
 
 	// 两个配置文件路径
 	configPath    = "./config/app.json"

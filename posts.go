@@ -131,7 +131,6 @@ func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
 // @apiParam allowPing bool 允许ping
 // @apiParam allowComment bool 允许评论
 // @apiParam tags array 关联的标签
-// @apiParam cats array 关联的分类
 //
 // @apiSuccess 201 created
 func adminPostPost(w http.ResponseWriter, r *http.Request) {
@@ -148,7 +147,6 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		AllowPing    bool    `json:"allowPing"`
 		AllowComment bool    `json:"allowComment"`
 		Tags         []int64 `json:"tags"`
-		Cats         []int64 `json:"cats"`
 	}{}
 
 	if !core.ReadJSON(w, r, p) {
@@ -194,12 +192,9 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 插入relationship
-	rs := make([]*models.Relationship, 0, len(p.Tags)+len(p.Cats))
+	rs := make([]*models.Relationship, 0, len(p.Tags))
 	for _, v := range p.Tags {
-		rs = append(rs, &models.Relationship{PostID: postID, MetaID: v})
-	}
-	for _, v := range p.Cats {
-		rs = append(rs, &models.Relationship{PostID: postID, MetaID: v})
+		rs = append(rs, &models.Relationship{PostID: postID, TagID: v})
 	}
 	if err := tx.InsertMany(rs); err != nil {
 		logs.Error("adminPostPost:", err)
@@ -305,10 +300,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	// 添加新的关联
 	rs := make([]*models.Relationship, 0, len(p.Tags)+len(p.Cats))
 	for _, v := range p.Tags {
-		rs = append(rs, &models.Relationship{MetaID: v, PostID: pp.ID})
-	}
-	for _, v := range p.Cats {
-		rs = append(rs, &models.Relationship{MetaID: v, PostID: pp.ID})
+		rs = append(rs, &models.Relationship{TagID: v, PostID: pp.ID})
 	}
 	if err := tx.InsertMany(rs); err != nil {
 		logs.Error("putPost:", err)
@@ -469,14 +461,7 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tags, err := getPostMetas(id, models.MetaTypeTag)
-	if err != nil {
-		logs.Error("adminGetPost:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}
-
-	cats, err := getPostMetas(id, models.MetaTypeCat)
+	tags, err := getPostTags(id)
 	if err != nil {
 		logs.Error("adminGetPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -499,7 +484,6 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		AllowPing    bool    `json:"AllowPing"`
 		AllowComment bool    `json:"AllowComment"`
 		Tags         []int64 `json:"tags"`
-		Cats         []int64 `json:"cats"`
 	}{
 		ID:           p.ID,
 		Name:         p.Name,
@@ -516,7 +500,6 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		AllowPing:    p.AllowPing,
 		AllowComment: p.AllowComment,
 		Tags:         tags,
-		Cats:         cats,
 	}
 	core.RenderJSON(w, http.StatusOK, obj, nil)
 }
@@ -555,14 +538,7 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tags, err := getPostMetas(id, models.MetaTypeTag)
-	if err != nil {
-		logs.Error("getPost:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}
-
-	cats, err := getPostMetas(id, models.MetaTypeCat)
+	tags, err := getPostTags(id)
 	if err != nil {
 		logs.Error("getPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -581,7 +557,6 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 		AllowPing    bool    `json:"AllowPing"`
 		AllowComment bool    `json:"AllowComment"`
 		Tags         []int64 `json:"tags"`
-		Cats         []int64 `json:"cats"`
 	}{
 		ID:           p.ID,
 		Type:         p.Type,
@@ -594,7 +569,6 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 		AllowPing:    p.AllowPing,
 		AllowComment: p.AllowComment,
 		Tags:         tags,
-		Cats:         cats,
 	}
 	core.RenderJSON(w, http.StatusOK, obj, nil)
 }
