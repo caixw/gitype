@@ -1,77 +1,73 @@
 <div style="text-align:left">
-    <h1 class="header">添加/编辑文章</h1>
-    <form class="ui form grid">
-        <div class="row">
-            <div class="twelve wide column">
-                <div class="field">
-                    <input name="title" type="text" placeholder="标题" />
-                </div>
-                <div class="field">
-                    <textarea name="content" rows="8" cols="40"></textarea>
-                </div>
-            </div>
-
-            <div class="four wide column">
-                <div class="field">
-                    <input type="text" name="name" value="" />
-                </div>
-
-                <!-- cats -->
-                <div class="ui horizontal divider header">分类</div>
-                <div id="cats"></div>
-                <!-- end cats -->
-
-                <!-- 属性 -->
-                <div class="ui horizontal divider header">属性</div>
-                <div class="field">
-                    <div class="ui checkbox">
-                        <input id="allowComment" type="checkbox" name="allowComment" />
-                        <label for="allowComment">允许评论</label>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <div class="ui checkbox">
-                        <input type="checkbox" name="allowPing" id="allowPing" />
-                        <label for="allowPing">允许Ping</label>
-                    </div>
-                </div>
-                <!-- end 属性 -->
-
-                <div class="ui horizontal divider header">保存为</div>
-                <div class="field">
-                    <button class="ui green button fluid">发布</button>
-                    <br />
-                    <button class="ui red button fluid">发布为草稿</button>
-                </div>
-            </div>
-        </div> <!-- end .row -->
-    </form>
+    <h1 class="header">编辑文章</h1>
+    <form class="ui form" id="post"></form>
 </div>
 
 <script>
 function pageInit(id) {
     if (id>0) {
         app.setTitle('编辑文章');
+        $('h1.header').html('编辑文章');
     }else{
         app.setTitle('添加文章');
+        $('h1.header').html('添加文章');
     }
 
-    app.get({
-        'url': app.adminAPI('/cats')
-    }).done(function(data, textStatus, jqXHR){
-        app.loadTemplate('#cats', '#cats-templates', data.cats)
-    });
+    if (id>0) {
+        // TODO
+        app.loadTemplate("#post", "#post-template");
+    }else{
+        app.loadTemplate("#post", "#post-template");
+    }
 
     $('.ui.checkobx').checkbox();
+    $('.ui.accordion').accordion();
 } // end pageInit
 </script>
 
-<script id="cats-templates" type="x-template-handlebars">
-{{#cats}}
-<div class="ui checkbox">
-    <input type="checkbox" name="cats[]" value="{{id}}" />
-    <label>{{title}}</label>
-</div>
-{{/cats}}
+<script id="post-template" type="x-handlebars-template">
+    <div class="field">
+        <input name="title" type="text" placeholder="标题" value="{{title}}" />
+    </div>
+
+    <div class="field">
+        <input name="tags" type="text" placeholder="标签" value="{{tags}}" />
+    </div>
+
+    <div class="ui accordion field" style="margin-bottom:1em">
+        <div class="title"><i class="dropdown icon"></i>高级</div>
+        <div class="content">
+            <div class="field">
+                <input name="name" type="text" style="width:60%" placeholder="唯一名称" value="{{name}}" />
+                <input name="password" type="text" style="width:39%;float:right !important" placeholder="访问密码" value="{{password}}" />
+            </div>
+
+            <div class="field">
+                <textarea name="summary" rows="10" cols="40" placeholder="文章摘要">{{summary}}</textarea>
+            </div>
+
+            <div class="field">
+                <div class="ui checkbox" style="margin-right:2em">
+                    <input id="allowComment" type="checkbox" name="allowComment" />
+                    <label for="allowComment" style="cursor:pointer">允许评论</label>
+                </div>
+                <div class="ui checkbox">
+                    <input type="checkbox" name="allowPing" id="allowPing" />
+                    <label for="allowPing" style="cursor:pointer">允许Ping</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
+        <textarea name="content" rows="20" cols="40" placeholder="文章正文">{{content}}</textarea>
+    </div>
+
+    <div class="ui divider"></div>
+    <div class="field">
+        <div class="ui right floated buttons">
+            <button class="ui red button">保存为草稿</button>
+            <button class="ui green submit button" type="submit">发表</button>
+        </div>
+    </div>
 </script>
