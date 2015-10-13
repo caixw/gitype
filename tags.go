@@ -62,8 +62,8 @@ func adminGetTags(w http.ResponseWriter, r *http.Request) {
 //
 // @apiRequest json
 // @apiHeader Authorization xxx
-// @apiParam name string 唯一名称
-// @apiParam title string 显示的标题
+// @apiParam name        string 唯一名称
+// @apiParam title       string 显示的标题
 // @apiParam description string 描述信息，可以是html
 // @apiExample json
 // {
@@ -73,9 +73,10 @@ func adminGetTags(w http.ResponseWriter, r *http.Request) {
 // }
 //
 // @apiSuccess 204 no content
+//
 // @apiError 400 bad request
 // @apiParam message string 错误信息
-// @apiParam detail array 说细的错误信息，用于描述哪个字段有错
+// @apiParam detail  array  说细的错误信息，用于描述哪个字段有错
 // @apiExample json
 // {
 //     "message": "格式错误",
@@ -90,26 +91,32 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	errs := &core.ErrorResult{Message: "格式错误", Detail: map[string]string{}}
+	if len(m.Name) == 0 {
+		errs.Detail["name"] = "不能为空"
+	}
+	if len(m.Title) == 0 {
+		errs.Detail["title"] = "不能为空"
+	}
+	if errs.HasErrors() {
+		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
+		return
+	}
+
 	var ok bool
 	m.ID, ok = core.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
 
-	exists, err := tagNameIsExists(m)
+	exists, err := tagIsExists(m)
 	if err != nil {
 		logs.Error("adminPutTag:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-
-	errs := &core.ErrorResult{Message: "格式错误"}
 	if exists {
-		errs.Detail["name"] = "已有同名字体段"
-	}
-
-	if len(m.Title) == 0 {
-		errs.Detail["title"] = "标题不能为空"
+		errs.Message = "已存在同名标签"
 	}
 
 	if len(errs.Detail) > 0 {
@@ -164,7 +171,7 @@ func adminPostTag(w http.ResponseWriter, r *http.Request) {
 	}
 	t.ID = 0
 
-	exists, err := tagNameIsExists(t)
+	exists, err := tagIsExists(t)
 	if err != nil {
 		logs.Error("adminPostTag:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -238,8 +245,11 @@ func adminDeleteTag(w http.ResponseWriter, r *http.Request) {
 }
 
 // 是否存在相同name的tag
-func tagNameIsExists(t *models.Tag) (bool, error) {
-	sql := db.Where("{name}=?", t.Name).Table("#tags")
+func tagIsExists(t *models.Tag) (bool, error) {
+	sql := db.Where("{name}=?", t.Name).
+		Or("{title}=?", t.Title).
+		Table("#tags")
+
 	maps, err := sql.SelectMapString(true, "id")
 	if err != nil {
 		return false, err
@@ -253,7 +263,6 @@ func tagNameIsExists(t *models.Tag) (bool, error) {
 	}
 
 	id, err := strconv.ParseInt(maps[0]["id"], 10, 64)
-	println(maps[0]["id"])
 	if err != nil {
 		return false, err
 	}
@@ -265,9 +274,9 @@ func tagNameIsExists(t *models.Tag) (bool, error) {
 // @apiGroup admin
 //
 // @apiSuccess 200 OK
-// @apiParam id int 标签的id
-// @apiParam name string 标签的唯一名称，可能为空
-// @apiParam title string 标签名称
+// @apiParam id          int 	标签的id
+// @apiParam name        string 标签的唯一名称，可能为空
+// @apiParam title       string 标签名称
 // @apiParam description string 对标签的详细描述
 func adminGetTag(w http.ResponseWriter, r *http.Request) {
 	id, ok := core.ParamID(w, r, "id")
@@ -282,18 +291,7 @@ func adminGetTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &struct {
-		ID          int64  `json:"id"`
-		Name        string `json:"name"`
-		Title       string `json:"title"`
-		Description string `json:"description"`
-	}{
-		ID:          t.ID,
-		Name:        t.Name,
-		Title:       t.Title,
-		Description: t.Description,
-	}
-	core.RenderJSON(w, http.StatusOK, data, nil)
+	core.RenderJSON(w, http.StatusOK, t, nil)
 }
 
 // 获取与某post相关联的标签或是分类
