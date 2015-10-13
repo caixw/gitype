@@ -86,17 +86,18 @@ func adminGetTags(w http.ResponseWriter, r *http.Request) {
 //     ]
 // }
 func adminPutTag(w http.ResponseWriter, r *http.Request) {
-	m := &models.Tag{}
-	if !core.ReadJSON(w, r, m) {
+	t := &models.Tag{}
+	if !core.ReadJSON(w, r, t) {
 		return
 	}
 
+	// 检测是否为空
 	errs := &core.ErrorResult{Message: "格式错误", Detail: map[string]string{}}
-	if len(m.Name) == 0 {
-		errs.Detail["name"] = "不能为空"
+	if len(t.Name) == 0 {
+		errs.Add("name", "不能为空")
 	}
-	if len(m.Title) == 0 {
-		errs.Detail["title"] = "不能为空"
+	if len(t.Title) == 0 {
+		errs.Add("title", "不能为空")
 	}
 	if errs.HasErrors() {
 		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
@@ -104,27 +105,30 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var ok bool
-	m.ID, ok = core.ParamID(w, r, "id")
+	t.ID, ok = core.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
 
-	exists, err := tagIsExists(m)
+	// 检测是否存在同名
+	titleExists, nameExists, err := tagIsExists(t)
 	if err != nil {
 		logs.Error("adminPutTag:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	if exists {
-		errs.Message = "已存在同名标签"
+	if titleExists {
+		errs.Add("title", "与已有标签同名")
 	}
-
-	if len(errs.Detail) > 0 {
+	if nameExists {
+		errs.Add("name", "与已有标签同名")
+	}
+	if errs.HasErrors() {
 		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
 		return
 	}
 
-	if _, err := db.Update(m); err != nil {
+	if _, err := db.Update(t); err != nil {
 		logs.Error("adminPutTag:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
@@ -137,8 +141,8 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 //
 // @apiRequest json
 // @apiHeader Authorization xxx
-// @apiParam name string 唯一名称
-// @apiParam title string 显示的标题
+// @apiParam name        string 唯一名称
+// @apiParam title       string 显示的标题
 // @apiParam description string 描述信息，可以是html
 // @apiExample json
 // {
@@ -150,7 +154,7 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 // @apiSuccess 201 created
 // @apiError 400 bad request
 // @apiParam message string 错误信息
-// @apiParam detail array 说细的错误信息，用于描述哪个字段有错
+// @apiParam detail  array  说细的错误信息，用于描述哪个字段有错
 // @apiExample json
 // {
 //     "message": "格式错误",
@@ -166,27 +170,34 @@ func adminPostTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	errs := &core.ErrorResult{Message: "格式错误"}
-	if t.ID > 0 {
-		errs.Detail["id"] = "不允许的字段"
+	if t.ID != 0 {
+		errs.Add("id", "不允许的字段")
 	}
-	t.ID = 0
+	if len(t.Title) == 0 {
+		errs.Add("title", "不能为空")
+	}
+	if len(t.Name) == 0 {
+		errs.Add("name", "不能为空")
+	}
+	if errs.HasErrors() {
+		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
+		return
+	}
 
-	exists, err := tagIsExists(t)
+	t.ID = 0
+	titleExists, nameExists, err := tagIsExists(t)
 	if err != nil {
 		logs.Error("adminPostTag:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-
-	if exists {
-		errs.Detail["name"] = "已有同名字体段"
+	if titleExists {
+		errs.Add("title", "已有同名字体段")
 	}
-
-	if len(t.Title) == 0 {
-		errs.Detail["title"] = "标题不能为空"
+	if nameExists {
+		errs.Add("name", "已有同名字体段")
 	}
-
-	if len(errs.Detail) > 0 {
+	if errs.HasErrors() {
 		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
 		return
 	}
@@ -244,29 +255,31 @@ func adminDeleteTag(w http.ResponseWriter, r *http.Request) {
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
-// 是否存在相同name的tag
-func tagIsExists(t *models.Tag) (bool, error) {
-	sql := db.Where("{name}=?", t.Name).
-		Or("{title}=?", t.Title).
+// 是否存在相同name或是title的标签
+// title返回参数表示是否有title字段相同，name返回参数表示是否有name字段相同。
+func tagIsExists(t *models.Tag) (title bool, name bool, err error) {
+	sql := db.Where("({name}=? OR {title}=?) AND {id}<>?", t.Name, t.Title, t.ID).
 		Table("#tags")
 
-	maps, err := sql.SelectMapString(true, "id")
+	maps, err := sql.SelectMapString(true, "name", "title")
 	if err != nil {
-		return false, err
+		return false, false, err
 	}
 
 	if len(maps) == 0 {
-		return false, nil
-	}
-	if len(maps) > 1 {
-		return true, nil
+		return false, false, nil
 	}
 
-	id, err := strconv.ParseInt(maps[0]["id"], 10, 64)
-	if err != nil {
-		return false, err
+	for _, record := range maps {
+		if record["name"] == t.Name {
+			name = true
+		}
+		if record["title"] == t.Title {
+			title = true
+		}
 	}
-	return id != t.ID, nil
+
+	return title, name, nil
 }
 
 // @api get /admin/api/tags/{id} 获取指定id的标签内容
