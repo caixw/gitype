@@ -120,17 +120,17 @@ func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
 //
 // @apiRequest json
 // @apiHeader Authorization xxx
-// @apiParam name string 唯一名称，可以为空
-// @apiParam title string 标题
-// @apiParam summary string 文章摘要
-// @apiParam content string 文章内容
-// @apiParam state int 状态
-// @apiParam order int 排序
-// @apiParam template string 所使用的模板
-// @apiParam password string 访问密码
-// @apiParam allowPing bool 允许ping
-// @apiParam allowComment bool 允许评论
-// @apiParam tags array 关联的标签
+// @apiParam name         string 唯一名称，可以为空
+// @apiParam title        string 标题
+// @apiParam summary      string 文章摘要
+// @apiParam content      string 文章内容
+// @apiParam state        int    状态
+// @apiParam order        int    排序
+// @apiParam template     string 所使用的模板
+// @apiParam password     string 访问密码
+// @apiParam allowPing    bool   允许ping
+// @apiParam allowComment bool   允许评论
+// @apiParam tags         array  关联的标签
 //
 // @apiSuccess 201 created
 func adminPostPost(w http.ResponseWriter, r *http.Request) {
@@ -217,18 +217,18 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 //
 // @apiRequest json
 // @apiHeader Authorization xxx
-// @apiParam name string 唯一名称，可以为空
-// @apiParam title string 标题
-// @apiParam summary string 文章摘要
-// @apiParam content string 文章内容
-// @apiParam state int 状态
-// @apiParam order int 排序
-// @apiParam template string 所使用的模板
-// @apiParam password string 访问密码
-// @apiParam allowPing bool 允许ping
-// @apiParam allowComment bool 允许评论
-// @apiParam tags array 关联的标签
-// @apiParam cats array 关联的分类
+// @apiParam name         string 唯一名称，可以为空
+// @apiParam title        string 标题
+// @apiParam summary      string 文章摘要
+// @apiParam content      string 文章内容
+// @apiParam state        int    状态
+// @apiParam order        int    排序
+// @apiParam template     string 所使用的模板
+// @apiParam password     string 访问密码
+// @apiParam allowPing    bool   允许ping
+// @apiParam allowComment bool   允许评论
+// @apiParam tags         array  关联的标签
+// @apiParam cats         array  关联的分类
 //
 // @apiSuccess 200 no content
 func adminPutPost(w http.ResponseWriter, r *http.Request) {
@@ -376,14 +376,14 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 }
 
 // @api get /admin/api/posts 获取文章列表
-// @apiQuery page int 页码，从0开始
-// @apiQuery size int 显示尺寸
+// @apiQuery page  int 页码，从0开始
+// @apiQuery size  int 显示尺寸
 // @apiQuery state int 状态
-// @apiQuery type int 类型
+// @apiQuery type  int 类型
 // @apiGroup admin
 //
 // @apiSuccess ok 200
-// @apiParam count int 符合条件的所有记录数量，不包含page和size条件
+// @apiParam count int   符合条件的所有记录数量，不包含page和size条件
 // @apiParam posts array 当前页的记录数量
 func adminGetPosts(w http.ResponseWriter, r *http.Request) {
 	var page, size, state, typ int
@@ -433,21 +433,21 @@ func adminGetPosts(w http.ResponseWriter, r *http.Request) {
 // @apiHeader Authorization xxx
 //
 // @apiSuccess 200 OK
-// @apiParam id int id值
-// @apiParam name string 唯一名称，可以为空
-// @apiParam title string 标题
-// @apiParam summary string 文章摘要
-// @apiParam content string 文章内容
-// @apiParam state int 状态
-// @apiParam order int 排序
-// @apiParam created int 创建时间
-// @apiParam modified int 修改时间
-// @apiParam template string 所使用的模板
-// @apiParam password string 访问密码
-// @apiParam allowPing bool 允许ping
-// @apiParam allowComment bool 允许评论
-// @apiParam tags array 关联的标签
-// @apiParam cats array 关联的分类
+// @apiParam id           int    id值
+// @apiParam name         string 唯一名称，可以为空
+// @apiParam title        string 标题
+// @apiParam summary      string 文章摘要
+// @apiParam content      string 文章内容
+// @apiParam state        int    状态
+// @apiParam order        int    排序
+// @apiParam created      int    创建时间
+// @apiParam modified     int    修改时间
+// @apiParam template     string 所使用的模板
+// @apiParam password     string 访问密码
+// @apiParam allowPing    bool   允许ping
+// @apiParam allowComment bool   允许评论
+// @apiParam tags         array  关联的标签
+// @apiParam cats         array  关联的分类
 func adminGetPost(w http.ResponseWriter, r *http.Request) {
 	id, ok := core.ParamID(w, r, "id")
 	if !ok {
@@ -508,18 +508,18 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 // @apiGroup front
 //
 // @apiSuccess 200 ok
-// @apiParam id int id值
-// @apiParam type int 文章类型
-// @apiParam name string 唯一名称，可以为空
-// @apiParam title string 标题
-// @apiParam content string 文章内容
-// @apiParam created int 创建时间
-// @apiParam modified int 修改时间
-// @apiParam template string 所使用的模板
-// @apiParam allowPing bool 允许ping
-// @apiParam allowComment bool 允许评论
-// @apiParam tags array 文章关联的标签
-// @apiParam cats array 文章关联的类别
+// @apiParam id           int    id值
+// @apiParam type         int    文章类型
+// @apiParam name         string 唯一名称，可以为空
+// @apiParam title        string 标题
+// @apiParam content      string 文章内容
+// @apiParam created      int    创建时间
+// @apiParam modified     int    修改时间
+// @apiParam template     string 所使用的模板
+// @apiParam allowPing    bool   允许ping
+// @apiParam allowComment bool   允许评论
+// @apiParam tags         array  文章关联的标签
+// @apiParam cats         array  文章关联的类别
 func frontGetPost(w http.ResponseWriter, r *http.Request) {
 	id, ok := core.ParamID(w, r, "id")
 	if !ok {
@@ -614,7 +614,7 @@ func frontGetPosts(w http.ResponseWriter, r *http.Request) {
 // @apiGroup front
 //
 // @apiSuccess 200 OK
-// @apiParam count int 当前文章的所有评论数量
+// @apiParam count    int   当前文章的所有评论数量
 // @apiParam comments array 当前页的评论
 func frontGetPostComments(w http.ResponseWriter, r *http.Request) {
 	id, ok := core.ParamID(w, r, "id")
@@ -682,11 +682,11 @@ func frontGetPostComments(w http.ResponseWriter, r *http.Request) {
 // @apiGroup front
 //
 // @apiRequest json
-// @apiParam parent int 评论的父级内容
-// @apiParam postID int 评论的文章
-// @apiParam content string 评论的内容
-// @apiParam authorName string 评论的作者
-// @apiParam authorURL string 评论作者的网站地址，可为空
+// @apiParam parent      int    评论的父级内容
+// @apiParam postID      int    评论的文章
+// @apiParam content     string 评论的内容
+// @apiParam authorName  string 评论的作者
+// @apiParam authorURL   string 评论作者的网站地址，可为空
 // @apiParam authorEmail string 评论作者的邮箱
 //
 // @apiSuccess 201 created
