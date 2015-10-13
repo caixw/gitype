@@ -22,6 +22,7 @@ function pageInit(id) {
 
     $('.ui.checkobx').checkbox();
     $('.ui.accordion').accordion();
+    $('.ui.dropdown').dropdown({allowAdditions:true});
 } // end pageInit
 </script>
 
@@ -30,8 +31,14 @@ function pageInit(id) {
         <input name="title" type="text" placeholder="标题" value="{{title}}" />
     </div>
 
-    <div class="field">
-        <input name="tags" type="text" placeholder="标签" value="{{tags}}" />
+    <div class="ui fluid multiple search selection dropdown field">
+        <input type="hidden" name="tags" value="{{tag}}" />
+        <i class="dropdown icon"></i>
+        <div class="default text">标签</div>
+        <div class="menu">
+            <div class="item">abc</div>
+            <div class="item">def</div>
+        </div>
     </div>
 
     <div class="ui accordion field" style="margin-bottom:1em">
