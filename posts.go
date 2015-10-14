@@ -250,7 +250,6 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		AllowPing    bool    `json:"allowPing"`
 		AllowComment bool    `json:"allowComment"`
 		Tags         []int64 `json:"tags"`
-		Cats         []int64 `json:"cats"`
 	}{}
 	if !core.ReadJSON(w, r, p) {
 		return
@@ -298,7 +297,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 添加新的关联
-	rs := make([]*models.Relationship, 0, len(p.Tags)+len(p.Cats))
+	rs := make([]*models.Relationship, 0, len(p.Tags))
 	for _, v := range p.Tags {
 		rs = append(rs, &models.Relationship{TagID: v, PostID: pp.ID})
 	}
