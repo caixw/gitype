@@ -130,7 +130,7 @@ func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
 // @apiParam password     string 访问密码
 // @apiParam allowPing    bool   允许ping
 // @apiParam allowComment bool   允许评论
-// @apiParam tags         array  关联的标签
+// @apiParam tags         array  关联的标签title
 //
 // @apiSuccess 201 created
 func adminPostPost(w http.ResponseWriter, r *http.Request) {
@@ -153,13 +153,6 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tx, err := db.Begin()
-	if err != nil {
-		logs.Error("adminPostPost:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}
-
 	t := time.Now().Unix()
 	pp := &models.Post{
 		Name:         p.Name,
@@ -175,6 +168,13 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		AllowComment: p.AllowComment,
 		Created:      t,
 		Modified:     t,
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		logs.Error("adminPostPost:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
 	}
 
 	// 插入文章
@@ -228,7 +228,6 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 // @apiParam allowPing    bool   允许ping
 // @apiParam allowComment bool   允许评论
 // @apiParam tags         array  关联的标签
-// @apiParam cats         array  关联的分类
 //
 // @apiSuccess 200 no content
 func adminPutPost(w http.ResponseWriter, r *http.Request) {
@@ -446,7 +445,6 @@ func adminGetPosts(w http.ResponseWriter, r *http.Request) {
 // @apiParam allowPing    bool   允许ping
 // @apiParam allowComment bool   允许评论
 // @apiParam tags         array  关联的标签
-// @apiParam cats         array  关联的分类
 func adminGetPost(w http.ResponseWriter, r *http.Request) {
 	id, ok := core.ParamID(w, r, "id")
 	if !ok {
@@ -518,7 +516,6 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 // @apiParam allowPing    bool   允许ping
 // @apiParam allowComment bool   允许评论
 // @apiParam tags         array  文章关联的标签
-// @apiParam cats         array  文章关联的类别
 func frontGetPost(w http.ResponseWriter, r *http.Request) {
 	id, ok := core.ParamID(w, r, "id")
 	if !ok {
