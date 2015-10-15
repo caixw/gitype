@@ -7,6 +7,7 @@ package main
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/models"
@@ -21,6 +22,8 @@ import (
 // @apiParam tags array 所有需要合并的标签ID列表。
 // @apiExample json
 // {"tags": [1,2,3] }
+//
+// @apiSuccess 204 修改完成
 func adminPutTagMerge(w http.ResponseWriter, r *http.Request) {
 	// TODO
 }
@@ -305,6 +308,43 @@ func adminGetTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	core.RenderJSON(w, http.StatusOK, t, nil)
+}
+
+// 将一串标签名转换成id
+// names为一种由标签名组成的字符串，名称之间由逗号分隔。
+func getTagsID(names string) ([]int64, error) {
+	name := strings.Split(names, ",")
+	if len(name) == 0 {
+		return nil, nil
+	}
+
+	cond := strings.Repeat("?,", len(name))
+	sql := "SELECT {id} FROM #tags WHERE {name} IN(" + cond[:len(cond)-1] + ")"
+	args := make([]interface{}, 0, len(name))
+	for _, v := range name {
+		args = append(args, v)
+	}
+	rows, err := db.Query(true, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	maps, err := fetch.ColumnString(false, "id", rows)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make([]int64, 0, len(maps))
+	for _, str := range maps {
+		num, err := strconv.ParseInt(str, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, num)
+	}
+
+	return ret, nil
 }
 
 // 获取与某post相关联的标签或是分类

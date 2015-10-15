@@ -130,23 +130,23 @@ func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
 // @apiParam password     string 访问密码
 // @apiParam allowPing    bool   允许ping
 // @apiParam allowComment bool   允许评论
-// @apiParam tags         array  关联的标签title
+// @apiParam tags         string 关联的标签，多个标签名称以逗号分隔
 //
 // @apiSuccess 201 created
 func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	p := &struct {
-		Name         string  `json:"name"`
-		Title        string  `json:"title"`
-		Summary      string  `json:"summary"`
-		Content      string  `json:"content"`
-		State        int     `json:"state"`
-		Type         int     `json:"type"`
-		Order        int     `json:"order"`
-		Template     string  `json:"template"`
-		Password     string  `json:"password"`
-		AllowPing    bool    `json:"allowPing"`
-		AllowComment bool    `json:"allowComment"`
-		Tags         []int64 `json:"tags"`
+		Name         string `json:"name"`
+		Title        string `json:"title"`
+		Summary      string `json:"summary"`
+		Content      string `json:"content"`
+		State        int    `json:"state"`
+		Type         int    `json:"type"`
+		Order        int    `json:"order"`
+		Template     string `json:"template"`
+		Password     string `json:"password"`
+		AllowPing    bool   `json:"allowPing"`
+		AllowComment bool   `json:"allowComment"`
+		Tags         string `json:"tags"`
 	}{}
 
 	if !core.ReadJSON(w, r, p) {
@@ -170,6 +170,13 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		Modified:     t,
 	}
 
+	tags, err := getTagsID(p.Tags)
+	if err != nil {
+		logs.Error("adminPostPost:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
 	tx, err := db.Begin()
 	if err != nil {
 		logs.Error("adminPostPost:", err)
@@ -180,23 +187,26 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	// 插入文章
 	result, err := tx.Insert(pp)
 	if err != nil {
+		tx.Rollback()
 		logs.Error("adminPostPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	postID, err := result.LastInsertId()
 	if err != nil {
+		tx.Rollback()
 		logs.Error("adminPostPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	// 插入relationship
-	rs := make([]*models.Relationship, 0, len(p.Tags))
-	for _, v := range p.Tags {
-		rs = append(rs, &models.Relationship{PostID: postID, TagID: v})
+	rs := make([]*models.Relationship, 0, len(tags))
+	for _, tag := range tags {
+		rs = append(rs, &models.Relationship{PostID: postID, TagID: tag})
 	}
 	if err := tx.InsertMany(rs); err != nil {
+		tx.Rollback()
 		logs.Error("adminPostPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
@@ -227,7 +237,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 // @apiParam password     string 访问密码
 // @apiParam allowPing    bool   允许ping
 // @apiParam allowComment bool   允许评论
-// @apiParam tags         array  关联的标签
+// @apiParam tags         string 关联的标签，多个标签名称以逗号分隔
 //
 // @apiSuccess 200 no content
 func adminPutPost(w http.ResponseWriter, r *http.Request) {
@@ -237,18 +247,18 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p := &struct {
-		Name         string  `json:"name"`
-		Title        string  `json:"title"`
-		Summary      string  `json:"summary"`
-		Content      string  `json:"content"`
-		State        int     `json:"state"`
-		Type         int     `json:"type"`
-		Order        int     `json:"order"`
-		Template     string  `json:"template"`
-		Password     string  `json:"password"`
-		AllowPing    bool    `json:"allowPing"`
-		AllowComment bool    `json:"allowComment"`
-		Tags         []int64 `json:"tags"`
+		Name         string `json:"name"`
+		Title        string `json:"title"`
+		Summary      string `json:"summary"`
+		Content      string `json:"content"`
+		State        int    `json:"state"`
+		Type         int    `json:"type"`
+		Order        int    `json:"order"`
+		Template     string `json:"template"`
+		Password     string `json:"password"`
+		AllowPing    bool   `json:"allowPing"`
+		AllowComment bool   `json:"allowComment"`
+		Tags         string `json:"tags"`
 	}{}
 	if !core.ReadJSON(w, r, p) {
 		return
@@ -268,6 +278,12 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		AllowPing:    p.AllowPing,
 		AllowComment: p.AllowComment,
 		Modified:     time.Now().Unix(),
+	}
+	tags, err := getTagsID(p.Tags)
+	if err != nil {
+		logs.Error("adminPostPost:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
 	}
 
 	tx, err := db.Begin()
@@ -297,8 +313,8 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 
 	// 添加新的关联
 	rs := make([]*models.Relationship, 0, len(p.Tags))
-	for _, v := range p.Tags {
-		rs = append(rs, &models.Relationship{TagID: v, PostID: pp.ID})
+	for _, tag := range tags {
+		rs = append(rs, &models.Relationship{TagID: tag, PostID: pp.ID})
 	}
 	if err := tx.InsertMany(rs); err != nil {
 		logs.Error("putPost:", err)
