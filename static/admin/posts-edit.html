@@ -1,6 +1,6 @@
 <div style="text-align:left">
     <h1 class="header">编辑文章</h1>
-    <form class="ui form" id="post"></form>
+    <div class="ui form" id="post"></div>
 </div>
 
 <script>
@@ -13,33 +13,76 @@ function pageInit(id) {
         $('h1.header').html('添加文章');
     }
 
+    var load = true
     if (id>0) {
-        // TODO
-        app.loadTemplate("#post", "#post-template");
+        load = app.get({
+            'url': app.adminAPI('/posts/'+id)
+        }).done(function(data, textStatus, jqXHR){
+            app.loadTemplate("#post", "#post-template", data);
+        });
     }else{
         app.loadTemplate("#post", "#post-template");
     }
+    $.when(load).then(function(){
+        app.get({
+            'url': app.adminAPI('/tags')
+        }).done(function(data, textStatus, jqXHR){
+            app.loadTemplate("#tags", "#tags-template", data);
+        });
+    }).then(function(){
+        $('.ui.checkobx').checkbox();
+        $('.ui.accordion').accordion();
+        $('.ui.dropdown').dropdown(/*{allowAdditions:true}*/);
 
-    $('.ui.checkobx').checkbox();
-    $('.ui.accordion').accordion();
-    $('.ui.dropdown').dropdown(/*{allowAdditions:true}*/);
+        // 初始按钮动作
+        $('#draft').on('click', function(){
+            $('#state').val(2);
+            submit();
+        });
+        $('#published').on('click', function(){
+            $('#state').val(1);
+            submit();
+        });
+
+        // 提交数据
+        function submit(){
+            if (id>0){
+                app.put({
+                    'url': app.adminAPI('/posts/')+id,
+                    'data':app.buildJSON($('.ui.form'))
+                });
+            }else{
+                app.post({
+                    'url': app.adminAPI('/posts'),
+                    'data':app.buildJSON($('.ui.form'))
+                });
+            }
+        }
+    });
 } // end pageInit
 </script>
 
+<script id="tags-template" type="x-handlebars-template">
+{{#each tags}}
+    <div class="item">{{title}}</div>
+{{/each}}
+</script>
+
 <script id="post-template" type="x-handlebars-template">
+    <input id="state" name="state" value="" type="hidden" />
     <div class="field">
         <input name="title" type="text" placeholder="标题" value="{{title}}" />
     </div>
 
+    <!-- tags -->
     <div class="ui fluid multiple search selection dropdown field">
         <input type="hidden" name="tags" value="{{tag}}" />
         <i class="dropdown icon"></i>
         <div class="default text">选择标签</div>
-        <div class="menu">
-            <div class="item">abc</div>
-            <div class="item">def</div>
+        <div class="menu" id="tags">
         </div>
     </div>
+    <!-- end tags -->
 
     <div class="ui accordion field" style="margin-bottom:1em">
         <div class="title"><i class="dropdown icon"></i>高级</div>
@@ -54,11 +97,11 @@ function pageInit(id) {
 
             <div class="field">
                 <div class="ui checkbox" style="margin-right:2em">
-                    <input id="allowComment" type="checkbox" name="allowComment" />
+                    <input id="allowComment" type="checkbox" name="allowComment" value="1" {{#if allowComment}}checked="checked"{{/if}} />
                     <label for="allowComment" style="cursor:pointer">允许评论</label>
                 </div>
                 <div class="ui checkbox">
-                    <input type="checkbox" name="allowPing" id="allowPing" />
+                    <input id="allowPing" type="checkbox" name="allowPing" value="1" {{#if allowPing}}checked="checked"{{/if}} />
                     <label for="allowPing" style="cursor:pointer">允许Ping</label>
                 </div>
             </div>
@@ -70,10 +113,8 @@ function pageInit(id) {
     </div>
 
     <div class="ui divider"></div>
-    <div class="field">
-        <div class="ui right floated buttons">
-            <button class="ui red button">保存为草稿</button>
-            <button class="ui green submit button" type="submit">发表</button>
-        </div>
+    <div class="ui buttons field right floated">
+        <button class="ui red submit button" id="draft">保存为草稿</button>
+        <button class="ui green submit button" id="published">发布</button>
     </div>
 </script>
