@@ -28,7 +28,6 @@ type Post struct {
 	Type     int    `orm:"name(type)"`                                   // 类型
 	Order    int    `orm:"name(order)"`                                  // 排序
 	Template string `orm:"name(template)"`                               // 使用的模板
-	Password string `orm:"name(password)"`                               // 访问密码
 
 	Created  int64 `orm:"name(created)"`  // 创建时间
 	Modified int64 `orm:"name(modified)"` // 最后次修改时间

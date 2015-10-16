@@ -127,7 +127,6 @@ func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
 // @apiParam state        int    状态
 // @apiParam order        int    排序
 // @apiParam template     string 所使用的模板
-// @apiParam password     string 访问密码
 // @apiParam allowPing    bool   允许ping
 // @apiParam allowComment bool   允许评论
 // @apiParam tags         string 关联的标签，多个标签名称以逗号分隔
@@ -143,7 +142,6 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		Type         int    `json:"type"`
 		Order        int    `json:"order"`
 		Template     string `json:"template"`
-		Password     string `json:"password"`
 		AllowPing    bool   `json:"allowPing"`
 		AllowComment bool   `json:"allowComment"`
 		Tags         string `json:"tags"`
@@ -163,7 +161,6 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		Type:         p.Type,
 		Order:        p.Order,
 		Template:     p.Template,
-		Password:     p.Password,
 		AllowPing:    p.AllowPing,
 		AllowComment: p.AllowComment,
 		Created:      t,
@@ -234,7 +231,6 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 // @apiParam state        int    状态
 // @apiParam order        int    排序
 // @apiParam template     string 所使用的模板
-// @apiParam password     string 访问密码
 // @apiParam allowPing    bool   允许ping
 // @apiParam allowComment bool   允许评论
 // @apiParam tags         string 关联的标签，多个标签名称以逗号分隔
@@ -255,7 +251,6 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		Type         int    `json:"type"`
 		Order        int    `json:"order"`
 		Template     string `json:"template"`
-		Password     string `json:"password"`
 		AllowPing    bool   `json:"allowPing"`
 		AllowComment bool   `json:"allowComment"`
 		Tags         string `json:"tags"`
@@ -274,7 +269,6 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		Type:         p.Type,
 		Order:        p.Order,
 		Template:     p.Template,
-		Password:     p.Password,
 		AllowPing:    p.AllowPing,
 		AllowComment: p.AllowComment,
 		Modified:     time.Now().Unix(),
@@ -457,7 +451,6 @@ func adminGetPosts(w http.ResponseWriter, r *http.Request) {
 // @apiParam created      int    创建时间
 // @apiParam modified     int    修改时间
 // @apiParam template     string 所使用的模板
-// @apiParam password     string 访问密码
 // @apiParam allowPing    bool   允许ping
 // @apiParam allowComment bool   允许评论
 // @apiParam tags         array  关联的标签
@@ -493,7 +486,6 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		Created      int64   `json:"created"`
 		Modified     int64   `json:"modified"`
 		Template     string  `json:"template"`
-		Password     string  `json:"password"`
 		AllowPing    bool    `json:"AllowPing"`
 		AllowComment bool    `json:"AllowComment"`
 		Tags         []int64 `json:"tags"`
@@ -509,7 +501,6 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		Created:      p.Created,
 		Modified:     p.Modified,
 		Template:     p.Template,
-		Password:     p.Password,
 		AllowPing:    p.AllowPing,
 		AllowComment: p.AllowComment,
 		Tags:         tags,
