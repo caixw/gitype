@@ -35,7 +35,7 @@ func adminPutTagMerge(w http.ResponseWriter, r *http.Request) {
 // @apiheader Authorization xxx
 //
 // @apiSuccess 200 OK
-// @apiParam tags array 所有分类的列表
+// @apiParam tags array 所有标签的列表
 func adminGetTags(w http.ResponseWriter, r *http.Request) {
 	sql := `SELECT m.{name},m.{title},m.{description},m.{id},count(r.{tagID}) AS {count}
 			FROM #tags AS m
@@ -347,7 +347,7 @@ func getTagsID(names string) ([]int64, error) {
 	return ret, nil
 }
 
-// 获取与某post相关联的标签或是分类
+// 获取与某post相关联的标签
 func getPostTags(postID int64) ([]int64, error) {
 	sql := `SELECT rs.{tagID} FROM #relationships AS rs
 	LEFT JOIN #tags AS m ON m.{id}=rs.{tagID}

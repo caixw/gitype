@@ -1,12 +1,8 @@
 <div class="config-div">
     <h1 class="header">Sitemap</h1>
     <div class="ui form">
-        <div class="field">
-            <button id="rebuild" class="ui primary fluid button">重新生成Sitemap</button>
-        </div>
 
-        <div class="ui horizontal divider header">changefreq/priority</div>
-
+        <div class="ui horizontal divider header">sitemap参数设置</div>
         <div class="inline field">
             <label for="postsChangefreq">文章</label>
             <select name="postsChangefreq" id="postsChangefreq" class="ui dropdown">
@@ -40,6 +36,10 @@
                 <div class="ui basic label">0.</div>
                 <input type="number" min="0" max="10" name="tagsPriority" id="tagsPriority" />
             </div>
+        </div>
+
+        <div class="field">
+            <button id="rebuild" class="ui primary fluid button">重新生成Sitemap</button>
         </div>
     </div> <!-- end .ui.form -->
 </div>
