@@ -18,13 +18,14 @@ function pageInit(id) {
         load = app.get({
             'url': app.adminAPI('/posts/'+id)
         }).done(function(data, textStatus, jqXHR){
+            console.log(data)
             app.loadTemplate("#post", "#post-template", data);
         });
     }else{
         app.loadTemplate("#post", "#post-template");
     }
     $.when(load).then(function(){
-        app.get({
+        return app.get({
             'url': app.adminAPI('/tags')
         }).done(function(data, textStatus, jqXHR){
             app.loadTemplate("#tags", "#tags-template", data);
@@ -47,6 +48,7 @@ function pageInit(id) {
         // 提交数据
         function submit(){
             if (id>0){
+            console.log(app.buildJSON($('.ui.form')))
                 app.put({
                     'url': app.adminAPI('/posts/')+id,
                     'data':app.buildJSON($('.ui.form'))
@@ -69,14 +71,14 @@ function pageInit(id) {
 </script>
 
 <script id="post-template" type="x-handlebars-template">
-    <input id="state" name="state" value="" type="hidden" />
+    <input id="state" name="state" value="" type="hidden" data-type="int" />
     <div class="field">
         <input name="title" type="text" placeholder="标题" value="{{title}}" />
     </div>
 
     <!-- tags -->
     <div class="ui fluid multiple search selection dropdown field">
-        <input type="hidden" name="tags" value="{{tag}}" />
+        <input type="hidden" name="tags" value="{{tags}}" />
         <i class="dropdown icon"></i>
         <div class="default text">选择标签</div>
         <div class="menu" id="tags">
@@ -97,11 +99,11 @@ function pageInit(id) {
 
             <div class="field">
                 <div class="ui checkbox" style="margin-right:2em">
-                    <input id="allowComment" type="checkbox" name="allowComment" value="1" {{#if allowComment}}checked="checked"{{/if}} />
+                    <input data-type="bool" id="allowComment" type="checkbox" name="allowComment" value="1" {{#if allowComment}}checked="checked"{{/if}} />
                     <label for="allowComment" style="cursor:pointer">允许评论</label>
                 </div>
                 <div class="ui checkbox">
-                    <input id="allowPing" type="checkbox" name="allowPing" value="1" {{#if allowPing}}checked="checked"{{/if}} />
+                    <input data-type="bool" id="allowPing" type="checkbox" name="allowPing" value="1" {{#if allowPing}}checked="checked"{{/if}} />
                     <label for="allowPing" style="cursor:pointer">允许Ping</label>
                 </div>
             </div>

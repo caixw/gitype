@@ -275,14 +275,14 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	}
 	tags, err := getTagsID(p.Tags)
 	if err != nil {
-		logs.Error("adminPostPost:", err)
+		logs.Error("adminPostPost-0:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	tx, err := db.Begin()
 	if err != nil {
-		logs.Error("putPost:", err)
+		logs.Error("adminPutPost-1:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		tx.Rollback()
 		return
@@ -290,7 +290,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 
 	// 更新文档内容
 	if _, err := tx.Update(pp); err != nil {
-		logs.Error("putPost:", err)
+		logs.Error("adminPutPost-2:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		tx.Rollback()
 		return
@@ -299,30 +299,69 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	// 删除旧的关联内容
 	sql := "DELETE FROM #relationships WHERE {postID}=?"
 	if _, err := tx.Exec(true, sql, pp.ID); err != nil {
-		logs.Error("putPost:", err)
+		logs.Error("adminPutPost-3:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		tx.Rollback()
 		return
 	}
 
 	// 添加新的关联
-	rs := make([]*models.Relationship, 0, len(p.Tags))
-	for _, tag := range tags {
-		rs = append(rs, &models.Relationship{TagID: tag, PostID: pp.ID})
-	}
-	if err := tx.InsertMany(rs); err != nil {
-		logs.Error("putPost:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		tx.Rollback()
-		return
+	if len(p.Tags) > 0 {
+		rs := make([]interface{}, 0, len(p.Tags))
+		for _, tag := range tags {
+			rs = append(rs, &models.Relationship{TagID: tag, PostID: pp.ID})
+		}
+		if err := tx.MultInsert(rs...); err != nil {
+			logs.Error("adminPutPost-4:", err)
+			core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+			tx.Rollback()
+			return
+		}
 	}
 
 	if err := tx.Commit(); err != nil {
-		logs.Error("putPost:", err)
+		logs.Error("adminPutPost-5:", err)
 		tx.Rollback()
 		return
 	}
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
+}
+
+// 将一串标签名转换成id
+// names为一种由标签名组成的字符串，名称之间由逗号分隔。
+func getTagsID(names string) ([]int64, error) {
+	name := strings.Split(names, ",")
+	if len(name) == 0 {
+		return nil, nil
+	}
+
+	cond := strings.Repeat("?,", len(name))
+	sql := "SELECT {id} FROM #tags WHERE {title} IN(" + cond[:len(cond)-1] + ")"
+	args := make([]interface{}, 0, len(name))
+	for _, v := range name {
+		args = append(args, v)
+	}
+	rows, err := db.Query(true, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	maps, err := fetch.ColumnString(false, "id", rows)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make([]int64, 0, len(maps))
+	for _, str := range maps {
+		num, err := strconv.ParseInt(str, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, num)
+	}
+
+	return ret, nil
 }
 
 // @api delete /admin/api/posts/{id} 删除文章
@@ -453,7 +492,7 @@ func adminGetPosts(w http.ResponseWriter, r *http.Request) {
 // @apiParam template     string 所使用的模板
 // @apiParam allowPing    bool   允许ping
 // @apiParam allowComment bool   允许评论
-// @apiParam tags         array  关联的标签
+// @apiParam tags         string 关联的标签，多个标签以逗号分隔。
 func adminGetPost(w http.ResponseWriter, r *http.Request) {
 	id, ok := core.ParamID(w, r, "id")
 	if !ok {
@@ -467,7 +506,7 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tags, err := getPostTags(id)
+	tags, err := getPostTagsName(id)
 	if err != nil {
 		logs.Error("adminGetPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -475,20 +514,20 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	obj := &struct {
-		ID           int64   `json:"id"`
-		Name         string  `json:"name"`
-		Title        string  `json:"title"`
-		Summary      string  `json:"summary"`
-		Content      string  `json:"content"`
-		State        int     `json:"state"`
-		Type         int     `json:"type"`
-		Order        int     `json:"order"`
-		Created      int64   `json:"created"`
-		Modified     int64   `json:"modified"`
-		Template     string  `json:"template"`
-		AllowPing    bool    `json:"AllowPing"`
-		AllowComment bool    `json:"AllowComment"`
-		Tags         []int64 `json:"tags"`
+		ID           int64  `json:"id"`
+		Name         string `json:"name"`
+		Title        string `json:"title"`
+		Summary      string `json:"summary"`
+		Content      string `json:"content"`
+		State        int    `json:"state"`
+		Type         int    `json:"type"`
+		Order        int    `json:"order"`
+		Created      int64  `json:"created"`
+		Modified     int64  `json:"modified"`
+		Template     string `json:"template"`
+		AllowPing    bool   `json:"allowPing"`
+		AllowComment bool   `json:"allowComment"`
+		Tags         string `json:"tags"`
 	}{
 		ID:           p.ID,
 		Name:         p.Name,
@@ -506,6 +545,25 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		Tags:         tags,
 	}
 	core.RenderJSON(w, http.StatusOK, obj, nil)
+}
+
+// 获取与某post相关联的标签
+func getPostTagsName(postID int64) (string, error) {
+	sql := `SELECT t.{title} FROM #relationships AS rs
+	LEFT JOIN #tags AS t ON t.{id}=rs.{tagID}
+	WHERE rs.{postID}=?`
+	rows, err := db.Query(true, sql, postID)
+	if err != nil {
+		return "", err
+	}
+	defer rows.Close()
+
+	maps, err := fetch.ColumnString(false, "title", rows)
+	if err != nil {
+		return "", err
+	}
+
+	return strings.Join(maps, ","), nil
 }
 
 // @api get /api/posts/{id} 获取某一文章的详细内容
@@ -576,6 +634,33 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 	core.RenderJSON(w, http.StatusOK, obj, nil)
 }
 
+// 获取与某post相关联的标签
+func getPostTags(postID int64) ([]int64, error) {
+	sql := `SELECT rs.{tagID} FROM #relationships AS rs
+	LEFT JOIN #tags AS t ON t.{id}=rs.{tagID}
+	WHERE rs.{postID}=?`
+	rows, err := db.Query(true, sql, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	maps, err := fetch.ColumnString(false, "tagID", rows)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make([]int64, 0, len(maps))
+	for _, v := range maps {
+		num, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, num)
+	}
+	return ret, nil
+}
+
 // @api get /api/posts 获取前端可访问的文章列表
 // @apiQuery page int
 // @apiQuery size int
@@ -586,7 +671,7 @@ func frontGetPosts(w http.ResponseWriter, r *http.Request) {
 	sql := db.Where("{state}=?", models.PostStatePublished).Table("#posts")
 	count, err := sql.Count(true)
 	if err != nil {
-		logs.Error("adminGetPosts:", err)
+		logs.Error("frontGetPosts:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
@@ -602,7 +687,7 @@ func frontGetPosts(w http.ResponseWriter, r *http.Request) {
 	sql.Limit(size, page*size)
 	maps, err := sql.SelectMap(true, "*")
 	if err != nil {
-		logs.Error("adminGetPosts:", err)
+		logs.Error("frontGetPosts:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}

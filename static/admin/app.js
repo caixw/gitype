@@ -172,9 +172,17 @@ function App(options) {
         var ret = {};
         form.find('*[name]').each(function(index, elem){
             var v = $(elem).val();
-            // TODO 考虑其它类型的情况
-            if ($(elem).attr('type') == 'number'){
+            var type = $(elem).attr('data-type');
+            switch(type){
+            case 'int':
                 v = parseInt(v);
+                break;
+            case 'float':
+                v = parseFloat(v);
+                break;
+            case 'bool':
+                v = $(elem).prop('checked');
+                break;
             }
             ret[$(elem).attr('name')] = v;
         });
