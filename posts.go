@@ -61,7 +61,7 @@ func adminSetPostState(w http.ResponseWriter, r *http.Request, state int) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	core.RenderJSON(w, http.StatusCreated, nil, nil)
+	core.RenderJSON(w, http.StatusCreated, "{}", nil)
 }
 
 // @api get /admin/api/posts/count 获取各种状态下的文章数量
@@ -198,11 +198,11 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 插入relationship
-	rs := make([]*models.Relationship, 0, len(tags))
+	rs := make([]interface{}, 0, len(tags))
 	for _, tag := range tags {
 		rs = append(rs, &models.Relationship{PostID: postID, TagID: tag})
 	}
-	if err := tx.InsertMany(rs); err != nil {
+	if err := tx.MultInsert(rs...); err != nil {
 		tx.Rollback()
 		logs.Error("adminPostPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -216,7 +216,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	core.RenderJSON(w, http.StatusCreated, nil, nil)
+	core.RenderJSON(w, http.StatusCreated, "{}", nil)
 }
 
 // @api put /admin/api/posts/{id} 修改文章
