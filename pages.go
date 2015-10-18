@@ -50,7 +50,7 @@ func getPage() (*page, error) {
 	}
 
 	var err error
-	sql := "SELECT COUNT(*) as cnt FROM #posts WHERE {state}=? AND ({password} IS NOT NULL OR {password} <> '')"
+	sql := "SELECT COUNT(*) as cnt FROM #posts WHERE {state}=?"
 	if p.PostSize, err = getSize(sql, models.PostStatePublished); err != nil {
 		return nil, err
 	}
