@@ -2,14 +2,17 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package core
+package sitemap
 
 import (
 	"bytes"
+	"errors"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/models"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
@@ -22,8 +25,24 @@ const (
 	footer = `</urlset>`
 )
 
-// BuildSitemap 构建一个sitemap.xml文件到path文件中，若该文件已经存在，则覆盖。
-func BuildSitemap(path string, db *orm.DB, opt *Options) error {
+var path string
+
+// 初始化sitemap包，path为sitemap.xml文件的保存路径
+func Init(path string) error {
+	if len(path) == 0 {
+		return errors.New("参数path的值不能为nil")
+	}
+
+	path = path
+	return nil
+}
+
+func ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, path)
+}
+
+// Build 构建一个sitemap.xml文件到path文件中，若该文件已经存在，则覆盖。
+func Build(db *orm.DB, opt *core.Options) error {
 	buf := bytes.NewBufferString(header)
 	buf.Grow(10000)
 
@@ -31,7 +50,7 @@ func BuildSitemap(path string, db *orm.DB, opt *Options) error {
 		return err
 	}
 
-	if err := addMetasToBuffer(buf, db, opt); err != nil {
+	if err := addTagsToBuffer(buf, db, opt); err != nil {
 		return err
 	}
 
@@ -47,7 +66,7 @@ func BuildSitemap(path string, db *orm.DB, opt *Options) error {
 	return err
 }
 
-func addPostsToBuffer(buf *bytes.Buffer, db *orm.DB, opt *Options) error {
+func addPostsToBuffer(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
 	sql := "SELECT {id}, {name}, {title}, {summary}, {content}, {created}, {modified} FROM #posts WHERE {state}=?"
 	rows, err := db.Query(true, sql, models.PostStatePublished)
 	if err != nil {
@@ -76,8 +95,8 @@ func addPostsToBuffer(buf *bytes.Buffer, db *orm.DB, opt *Options) error {
 	return nil
 }
 
-func addMetasToBuffer(buf *bytes.Buffer, db *orm.DB, opt *Options) error {
-	sql := "SELECT {id}, {name}, {title}, {description}, {type} FROM #metas"
+func addTagsToBuffer(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
+	sql := "SELECT {id}, {name}, {title}, {description} FROM #tags"
 	rows, err := db.Query(true, sql)
 	if err != nil {
 		return err

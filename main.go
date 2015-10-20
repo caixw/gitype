@@ -7,6 +7,7 @@ package main
 import (
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/install"
+	"github.com/caixw/typing/sitemap"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 	"github.com/issue9/orm"
@@ -31,8 +32,6 @@ var (
 	db     *orm.DB // 数据库实例
 	opt    *core.Options
 	themes *core.Themes
-
-	sitemapPath string
 )
 
 func main() {
@@ -63,7 +62,8 @@ func main() {
 		panic(err)
 	}
 
-	sitemapPath = cfg.TempDir + "sitemap.xml"
+	// 初始化sitemap
+	sitemap.Init(cfg.TempDir + "sitemap.xml")
 
 	if err := initModule(cfg); err != nil {
 		panic(err)
@@ -109,7 +109,7 @@ func initFrontPageRoutes(m *web.Module) {
 	//m.GetFunc("/rss", getRSS).
 	//GetFunc("/rss/posts/{id}", getPostRSS)
 
-	m.GetFunc("/sitemap.xml", pageSitemap)
+	m.GetFunc("/sitemap.xml", sitemap.ServeHTTP)
 }
 
 func initFrontAPIRoutes(front *mux.Prefix) {
