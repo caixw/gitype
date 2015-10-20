@@ -1,16 +1,18 @@
 {{define "list"}}
 {{template "header" .page}}
-    <div id="main">
-        {{range .posts}}
-        <article>
-            <header>
-                <h2>{{.Title}}</h2>
-                <span>{{.Author}}</span><time>{{.Created}}</time>
-            </header>
-            {{.Content}}
-        </article>
-        {{end}}
-    </div>
+
+<div id="list">
+    {{range .posts}}
+    <article>
+        <header>
+            <h2>{{.Title}}</h2>
+            <span>{{.Author}}</span><time>{{.Created}}</time>
+        </header>
+        {{.Content}}
+    </article>
+    {{end}}
+</div>
+
 {{template "sidebar" .page}}
 {{template "footer" .page}}
 {{end}}

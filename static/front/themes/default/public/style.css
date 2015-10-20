@@ -1,22 +1,36 @@
+@charset="utf-8";
+
 body{
+    margin:0 auto;
     max-width:1024px;
 }
 
-/********************** header */
-#header{
+/********************** list */
+#list{
 
 }
 
-/********************** main */
-#main{
+/********************** tag */
+#tag{
+
+}
+
+/********************** tags */
+#tags{
 
 }
 
 /********************** sidebar */
+#list, #tag, #tags{
+    width:67%;
+    float:right;
+}
 #sidebar{
+    width:33%;
+    float:left;
 }
 
 /********************** footer */
 #footer{
-
+    clear:both;
 }

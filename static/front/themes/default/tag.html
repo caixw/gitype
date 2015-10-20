@@ -1,13 +1,15 @@
-{{define "meta"}}
+{{define "tag"}}
 {{template "header" .page}}
-<div id="main">
+
+<div id="tag">
     <article>
         <header>
-            <h2>{{.meta.Title}}</h2>
+            <h2>{{.tag.Title}}</h2>
         </header>
-        {{.meta.Description}}
+        {{.tag.Description}}
     </article>
 </div>
+
 {{template "sidebar" .page}}
 {{template "footer" .page}}
 {{end}}
