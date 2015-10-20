@@ -8,6 +8,7 @@ import (
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/install"
 	"github.com/caixw/typing/sitemap"
+	"github.com/caixw/typing/themes"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 	"github.com/issue9/orm"
@@ -29,9 +30,8 @@ const (
 
 // 一些全局变量
 var (
-	db     *orm.DB // 数据库实例
-	opt    *core.Options
-	themes *core.Themes
+	db  *orm.DB // 数据库实例
+	opt *core.Options
 )
 
 func main() {
@@ -57,8 +57,7 @@ func main() {
 		panic(err)
 	}
 
-	themes, err = core.LoadThemes(cfg, opt.Theme)
-	if err != nil {
+	if err = themes.Init(cfg, opt.Theme); err != nil {
 		panic(err)
 	}
 

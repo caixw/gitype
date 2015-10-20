@@ -17,16 +17,19 @@ import (
 type Config struct {
 	Core *web.Config `json:"core"`
 
-	DBDSN    string `json:"dbDSN"`
-	DBPrefix string `json:"dbPrefix"`
-	DBDriver string `json:"dbDriver"`
+	Debug bool `json:"debug"` // 是否处于调试模式
+
+	DBDSN    string `json:"dbDSN"`    // 数据库dsn
+	DBPrefix string `json:"dbPrefix"` // 数据表名前缀
+	DBDriver string `json:"dbDriver"` // 数据库类型，可以是mysql, sqlite3, postgresql
 
 	FrontAPIPrefix string `json:"frontAPIPrefix"` // 前端api地址前缀
 	AdminAPIPrefix string `json:"adminAPIPrefix"` // 后台api地址前经
-	ThemeURLPrefix string `json:"themeURLPrefix"` // 各主题公开文件的根URL
 
-	ThemeDir string `json:"themeDir"` // 主题文件所在的目录
-	TempDir  string `json:"tempDir"`  // 临时文件所在的目录，该目录下的文件被删除不会影响程序整体运行。
+	ThemeURLPrefix string `json:"themeURLPrefix"` // 各主题公开文件的根URL
+	ThemeDir       string `json:"themeDir"`       // 主题文件所在的目录
+
+	TempDir string `json:"tempDir"` // 临时文件所在的目录，该目录下的文件被删除不会影响程序整体运行。
 }
 
 // LoadConfig 用于加载path的内容，并尝试将其转换成Config实例。

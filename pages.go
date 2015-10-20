@@ -11,6 +11,7 @@ import (
 
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/models"
+	"github.com/caixw/typing/themes"
 	"github.com/issue9/conv"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
