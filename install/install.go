@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// 用于执行typing的安装。
+// 用于执行typing的安装。包含执行以下几个步骤的内容：
 // 输出默认的配置文件；
 // 输出默认的日志配置文件；
 // 填充默认的数据到数据库；
@@ -11,6 +11,7 @@ package install
 import (
 	"encoding/json"
 	"errors"
+	"flag"
 	"io/ioutil"
 	"os"
 	"time"
@@ -21,9 +22,39 @@ import (
 	"github.com/issue9/web"
 )
 
-// OutputConfigFile 用于输出配置文件到指定的位置。
+// Install 执行安装过程。
+func Install(logConfigPath, configPath string) bool {
+	action := flag.String("init", "", "指定需要初始化的内容，可取的值可以为：config和db。")
+	flag.Parse()
+	switch *action {
+	case "config":
+		if err := outputConfigFile(logConfigPath, configPath); err != nil {
+			panic(err)
+		}
+		return true
+	case "db":
+		cfg, err := core.LoadConfig(configPath)
+		if err != nil {
+			panic(err)
+		}
+
+		db, err := core.InitDB(cfg)
+		defer db.Close()
+		if err != nil {
+			panic(err)
+		}
+		if err := fillDB(db); err != nil {
+			panic(err)
+		}
+		return true
+	} // end switch
+
+	return false
+}
+
+// 用于输出配置文件到指定的位置。
 // 目前包含了日志配置文件和程序本身的配置文件。
-func OutputConfigFile(logsConfigPath, configPath string) error {
+func outputConfigFile(logsConfigPath, configPath string) error {
 	if err := ioutil.WriteFile(logsConfigPath, logFile, os.ModePerm); err != nil {
 		return err
 	}
@@ -57,8 +88,8 @@ func OutputConfigFile(logsConfigPath, configPath string) error {
 	return ioutil.WriteFile(configPath, data, os.ModePerm)
 }
 
-// FillDB 向数据库写入初始内容。
-func FillDB(db *orm.DB) error {
+// 向数据库写入初始内容。
+func fillDB(db *orm.DB) error {
 	if db == nil {
 		return errors.New("db==nil")
 	}

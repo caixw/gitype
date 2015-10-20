@@ -5,8 +5,6 @@
 package main
 
 import (
-	"flag"
-
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/install"
 	"github.com/issue9/logs"
@@ -38,30 +36,9 @@ var (
 )
 
 func main() {
-	action := flag.String("init", "", "指定需要初始化的内容，可取的值可以为：config和db。")
-	flag.Parse()
-	switch *action {
-	case "config":
-		if err := install.OutputConfigFile(logConfigPath, configPath); err != nil {
-			panic(err)
-		}
+	if install.Install(logConfigPath, configPath) {
 		return
-	case "db":
-		cfg, err := core.LoadConfig(configPath)
-		if err != nil {
-			panic(err)
-		}
-
-		db, err := core.InitDB(cfg)
-		defer db.Close()
-		if err != nil {
-			panic(err)
-		}
-		if err := install.FillDB(db); err != nil {
-			panic(err)
-		}
-		return
-	} // end switch
+	}
 
 	cfg, err := core.LoadConfig(configPath)
 	if err != nil {
