@@ -53,6 +53,11 @@ func adminPutCurrentTheme(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(v.Value) == 0 {
+		core.RenderJSON(w, http.StatusBadRequest, &core.ErrorResult{Message: "必须指定一个值！"}, nil)
+		return
+	}
+
 	o := &models.Option{Key: "theme", Value: v.Value}
 	if err := patchOption(o); err != nil {
 		logs.Error("adminPutTheme:", err)

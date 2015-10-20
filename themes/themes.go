@@ -24,11 +24,12 @@ var (
 
 // Theme 用于描述主题的相关信息，一般从主题目录下的theme.json获取。
 type Theme struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Version     string  `json:"version"`
-	Screenshot  string  `json:"screenshot"`
-	Author      *Author `json:"author"`
+	ID          string  `json:"id"`                    // 主题的唯一id，即其文件夹名称
+	Name        string  `json:"name"`                  // 主题名称
+	Description string  `json:"description,omitempty"` // 详细描述
+	Version     string  `json:"version,omitempty"`     // 版本
+	Screenshot  string  `json:"screenshot"`            // 截图地址，相对于当前目录下的public
+	Author      *Author `json:"author"`                // 作者相关信息
 }
 
 type Author struct {
@@ -57,22 +58,24 @@ func Init(config *core.Config, defaultTheme string) error {
 			continue
 		}
 
-		name := file.Name()
-		themePath := cfg.ThemeDir + name + string(os.PathSeparator)
+		id := file.Name()
+		themePath := cfg.ThemeDir + id + string(os.PathSeparator)
 
 		theme, err := loadThemeFile(themePath + "theme.json")
 		if err != nil {
 			return err
 		}
+		theme.ID = id
 
-		theme.Screenshot = p + name + "/" + theme.Screenshot
-		themesMap[name] = theme
-		cfg.Core.Static[p+name] = themePath + "public/"
+		theme.Screenshot = p + id + "/" + theme.Screenshot
+		themesMap[id] = theme
+		cfg.Core.Static[p+id] = themePath + "public/"
 	}
 
 	return Switch(defaultTheme)
 }
 
+// 加theme.json文件
 func loadThemeFile(path string) (*Theme, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -88,8 +91,12 @@ func loadThemeFile(path string) (*Theme, error) {
 }
 
 // 返回所有的主题列表
-func Themes() map[string]*Theme {
-	return themesMap
+func Themes() []*Theme {
+	ret := make([]*Theme, 0, len(themesMap))
+	for _, theme := range themesMap {
+		ret = append(ret, theme)
+	}
+	return ret
 }
 
 // 切换主题
@@ -102,7 +109,7 @@ func Switch(id string) (err error) {
 func Render(w http.ResponseWriter, name string, data interface{}) {
 	err := tpl.ExecuteTemplate(w, name, data)
 	if err != nil {
-		logs.Error("core.Render:", err)
+		logs.Error("themes.Render:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
