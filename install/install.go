@@ -77,10 +77,11 @@ func outputConfigFile(logsConfigPath, configPath string) error {
 
 		FrontAPIPrefix: "/api",
 		AdminAPIPrefix: "/admin/api",
-
-		ThemeDir: "./static/front/",
+		ThemeURLPrefix: "/themes",
+		ThemeDir:       "./static/front/",
+		TempDir:        "./output/temp/",
 	}
-	data, err := json.Marshal(cfg)
+	data, err := json.MarshalIndent(cfg, "", "    ")
 	if err != nil {
 		return err
 	}
