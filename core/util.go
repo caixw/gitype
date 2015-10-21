@@ -212,10 +212,5 @@ func PostURL(opt *Options, p *models.Post) string {
 }
 
 func TagURL(opt *Options, m *models.Tag) string {
-	url := opt.SiteURL + "/tags/"
-
-	if len(m.Name) > 0 {
-		return url + m.Name
-	}
-	return url + strconv.FormatInt(m.ID, 10)
+	return opt.SiteURL + "/tags/" + m.Name
 }
