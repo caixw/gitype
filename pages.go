@@ -196,21 +196,6 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func pageCats(w http.ResponseWriter, r *http.Request) {
-	p, err := getPage()
-	if err != nil {
-		logs.Error("pageTags:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}
-
-	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"page": p}, nil)
-}
-
-func pageCat(w http.ResponseWriter, r *http.Request) {
-
-}
-
 func pagePosts(w http.ResponseWriter, r *http.Request) {
 
 }

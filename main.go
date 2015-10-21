@@ -100,10 +100,8 @@ func initModule(cfg *core.Config) error {
 func initFrontPageRoutes(m *web.Module) {
 	m.GetFunc("/", pageIndex).
 		GetFunc("", pageIndex).
-		GetFunc("/cats", pageCats).
 		GetFunc("/tags", pageTags).
 		GetFunc("/tags/{id}", pageTag).
-		GetFunc("/cats/{id}", pageCat).
 		GetFunc("/posts", pagePosts).
 		GetFunc("/posts/{id}", pagePost)
 
