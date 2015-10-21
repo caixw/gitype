@@ -20,6 +20,7 @@ var (
 	cfg       *core.Config
 	tpl       *template.Template // 当前使用的模板
 	themesMap map[string]*Theme  // 所有的主题列表
+	current   string             // 当前使用的主题
 )
 
 // Theme 用于描述主题的相关信息，一般从主题目录下的theme.json获取。
@@ -99,14 +100,20 @@ func Themes() []*Theme {
 	return ret
 }
 
-// 切换主题
-func Switch(id string) (err error) {
-	tpl, err = template.ParseGlob(cfg.ThemeDir + id + "/*.html")
+// 切换主题，若themeID与当前主题相同，则为重新加载其模板。
+func Switch(themeID string) (err error) {
+	logs.Info("切换当前主题为：", themeID)
+	tpl, err = template.ParseGlob(cfg.ThemeDir + themeID + "/*.html")
+	current = themeID
 	return
 }
 
 // 输出指定模板
 func Render(w http.ResponseWriter, name string, data interface{}) {
+	if cfg.Debug { // 调试状态下，实现加载模板
+		Switch(current)
+	}
+
 	err := tpl.ExecuteTemplate(w, name, data)
 	if err != nil {
 		logs.Error("themes.Render:", err)

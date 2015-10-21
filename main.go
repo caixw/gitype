@@ -62,7 +62,9 @@ func main() {
 	}
 
 	// 初始化sitemap
-	sitemap.Init(cfg.TempDir + "sitemap.xml")
+	if err = sitemap.Init(cfg.TempDir + "sitemap.xml"); err != nil {
+		panic(err)
+	}
 
 	if err := initModule(cfg); err != nil {
 		panic(err)
