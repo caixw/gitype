@@ -5,6 +5,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"runtime"
 	"strconv"
@@ -51,7 +52,7 @@ func getPage() (*page, error) {
 	}
 
 	var err error
-	sql := "SELECT COUNT(*) as cnt FROM #posts WHERE {state}=?"
+	sql := "SELECT COUNT(*) as cnt FROM #posts WHERE {state}=?" // TODO 预编译成stmt
 	if p.PostSize, err = getSize(sql, models.PostStatePublished); err != nil {
 		return nil, err
 	}
@@ -88,9 +89,9 @@ func getPage() (*page, error) {
 			Ext:   v["title"],
 		}
 		if len(v["name"]) > 0 {
-			a.Link = "/posts/" + v["name"]
+			a.Link = "/posts/" + v["name"] + opt.Suffix
 		} else {
-			a.Link = "/posts/" + v["id"]
+			a.Link = "/posts/" + v["id"] + opt.Suffix
 		}
 		p.Topics = append(p.Topics, a)
 	}
@@ -110,20 +111,13 @@ func getTags() ([]anchor, error) {
 		return nil, err
 	}
 
-	link := "/tags/"
-
 	ret := make([]anchor, 0, len(maps))
 	for _, v := range maps {
 		a := anchor{
 			Title: v["title"],
 			Ext:   v["description"],
+			Link:  "/tags/" + v["name"],
 		}
-		if len(v["name"]) > 0 {
-			a.Link = link + v["name"]
-		} else {
-			a.Link = link + v["id"]
-		}
-
 		ret = append(ret, a)
 	}
 
@@ -148,29 +142,38 @@ func getPosts(page int) ([]*models.Post, error) {
 	sql := `SELECT {id}, {title}, {name}, {content}, {summary}, {created}, {modified}, {allowComment}
 	FROM #posts
 	WHERE {state}=?
-	ORDER BY {order}
-	LIMIT ?, ?`
+	ORDER BY {order} DESC
+	LIMIT ? OFFSET ?`
 	rows, err := db.Query(true, sql, models.PostStatePublished, opt.PageSize, opt.PageSize*page)
 	if err != nil {
 		return nil, err
 	}
-	_, err = fetch.Obj(posts, rows)
+	_, err = fetch.Obj(&posts, rows)
+	maps, _ := fetch.MapString(false, rows)
 	rows.Close()
+
+	fmt.Println(maps)
+
 	return posts, err
 }
 
-func pageIndex(w http.ResponseWriter, r *http.Request) {
+// 首页或是列表页
+func pagePosts(w http.ResponseWriter, r *http.Request) {
 	p, err := getPage()
 	if err != nil {
-		logs.Error("pageIndex:", err)
+		logs.Error("pagePosts:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	page := conv.MustInt(r.FormValue("page"), 1)
+	if page < 1 { // 不能小于1
+		page = 1
+	}
 	posts, err := getPosts(page - 1)
 	if err != nil {
-		logs.Error("pageIndex:", err)
+		logs.Error("pagePosts:", err)
+		// TODO 显示一个正常的500页面，而不是json格式的
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
@@ -182,21 +185,9 @@ func pageIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func pageTags(w http.ResponseWriter, r *http.Request) {
-	p, err := getPage()
-	if err != nil {
-		logs.Error("pageTags:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}
-
-	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"page": p}, nil)
 }
 
 func pageTag(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func pagePosts(w http.ResponseWriter, r *http.Request) {
 
 }
 

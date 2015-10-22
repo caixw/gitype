@@ -24,7 +24,6 @@ import (
 //
 // @apiSuccess 200 ok
 // @apiParam id           int    id值
-// @apiParam type         int    文章类型
 // @apiParam name         string 唯一名称，可以为空
 // @apiParam title        string 标题
 // @apiParam content      string 文章内容
@@ -61,7 +60,6 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 
 	obj := &struct {
 		ID           int64   `json:"id"`
-		Type         int     `json:"type"`
 		Name         string  `json:"name"`
 		Title        string  `json:"title"`
 		Content      string  `json:"content"`
@@ -73,7 +71,6 @@ func frontGetPost(w http.ResponseWriter, r *http.Request) {
 		Tags         []int64 `json:"tags"`
 	}{
 		ID:           p.ID,
-		Type:         p.Type,
 		Name:         p.Name,
 		Title:        p.Title,
 		Content:      p.Content,

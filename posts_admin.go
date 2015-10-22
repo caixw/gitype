@@ -136,7 +136,6 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		Summary      string `json:"summary"`
 		Content      string `json:"content"`
 		State        int    `json:"state"`
-		Type         int    `json:"type"`
 		Order        int    `json:"order"`
 		Template     string `json:"template"`
 		AllowPing    bool   `json:"allowPing"`
@@ -155,7 +154,6 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		Summary:      p.Summary,
 		Content:      p.Content,
 		State:        p.State,
-		Type:         p.Type,
 		Order:        p.Order,
 		Template:     p.Template,
 		AllowPing:    p.AllowPing,
@@ -245,7 +243,6 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		Summary      string `json:"summary"`
 		Content      string `json:"content"`
 		State        int    `json:"state"`
-		Type         int    `json:"type"`
 		Order        int    `json:"order"`
 		Template     string `json:"template"`
 		AllowPing    bool   `json:"allowPing"`
@@ -263,7 +260,6 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		Summary:      p.Summary,
 		Content:      p.Content,
 		State:        p.State,
-		Type:         p.Type,
 		Order:        p.Order,
 		Template:     p.Template,
 		AllowPing:    p.AllowPing,
@@ -423,28 +419,21 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 // @apiQuery page  int 页码，从0开始
 // @apiQuery size  int 显示尺寸
 // @apiQuery state int 状态
-// @apiQuery type  int 类型
 // @apiGroup admin
 //
 // @apiSuccess ok 200
 // @apiParam count int   符合条件的所有记录数量，不包含page和size条件
 // @apiParam posts array 当前页的记录数量
 func adminGetPosts(w http.ResponseWriter, r *http.Request) {
-	var page, size, state, typ int
+	var page, size, state int
 	var ok bool
 	if state, ok = core.QueryInt(w, r, "state", models.CommentStateAll); !ok {
-		return
-	}
-	if typ, ok = core.QueryInt(w, r, "type", models.PostTypeAll); !ok {
 		return
 	}
 
 	sql := db.SQL().Table("#posts")
 	if state != models.PostStateAll {
 		sql.And("{state}=?", state)
-	}
-	if typ != models.PostTypeAll {
-		sql.And("{type}=?", typ)
 	}
 	count, err := sql.Count(true)
 	if err != nil {
@@ -517,7 +506,6 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		Summary      string `json:"summary"`
 		Content      string `json:"content"`
 		State        int    `json:"state"`
-		Type         int    `json:"type"`
 		Order        int    `json:"order"`
 		Created      int64  `json:"created"`
 		Modified     int64  `json:"modified"`
@@ -532,7 +520,6 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		Summary:      p.Summary,
 		Content:      p.Content,
 		State:        p.State,
-		Type:         p.Type,
 		Order:        p.Order,
 		Created:      p.Created,
 		Modified:     p.Modified,
