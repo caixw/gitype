@@ -28,3 +28,16 @@ type Anchor struct {
 	Title string // 地址的字面文字
 	Ext   string // 扩展内容，比如title,alt等，根据链接来确定
 }
+
+// 文章的详细内容
+type Post struct {
+	Title        string
+	Content      string
+	Author       string
+	Tags         []Anchor
+	Comments     int    // 评论数量
+	Created      int64  // 创建时间
+	Modified     int64  // 修改时间
+	AllowComment bool   // 是否允许评论
+	Permalink    string // 文章的链接
+}

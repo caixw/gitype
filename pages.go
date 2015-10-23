@@ -5,7 +5,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"runtime"
 	"strconv"
@@ -114,9 +113,9 @@ func getSize(sql string, args ...interface{}) (int, error) {
 	return strconv.Atoi(cnts[0])
 }
 
-func getPosts(page int) ([]*models.Post, error) {
-	posts := make([]*models.Post, 0, opt.PageSize)
-	sql := `SELECT {id}, {title}, {name}, {content}, {summary}, {created}, {modified}, {allowComment}
+func getPosts(page int) ([]*themes.Post, error) {
+	posts := make([]*themes.Post, 0, opt.PageSize)
+	sql := `SELECT {title} AS Title, {summary} AS Summary, {created} AS Created, {allowComment} AS AllowComment
 	FROM #posts
 	WHERE {state}=?
 	ORDER BY {order} DESC
@@ -126,10 +125,7 @@ func getPosts(page int) ([]*models.Post, error) {
 		return nil, err
 	}
 	_, err = fetch.Obj(&posts, rows)
-	maps, _ := fetch.MapString(false, rows)
 	rows.Close()
-
-	fmt.Println(maps)
 
 	return posts, err
 }
