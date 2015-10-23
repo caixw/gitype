@@ -1,7 +1,6 @@
 {{define "tags"}}
 {{template "header" .page}}
 
-<div id="content">
 <div class="container tags">
 
     {{range .tags}}
@@ -9,8 +8,6 @@
     {{end}}
 
 </div>
-</div>
 
-{{template "sidebar" .page}}
 {{template "footer" .page}}
 {{end}}

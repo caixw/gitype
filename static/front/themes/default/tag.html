@@ -1,7 +1,6 @@
 {{define "tag"}}
 {{template "header" .page}}
 
-<div id="content">
 <div class="container tag">
 
     <article>
@@ -10,10 +9,8 @@
         </header>
         {{.tag.Description}}
     </article>
-    
-</div>
+
 </div>
 
-{{template "sidebar" .page}}
 {{template "footer" .page}}
 {{end}}

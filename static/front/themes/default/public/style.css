@@ -4,6 +4,14 @@ body{
     margin: 0 auto;
 }
 
+a{
+    text-decoration: none;
+    color:black;
+}
+a:hover{
+    color:#4183c4;
+}
+
 /********************** content */
 #content{
     background: #eee;
@@ -22,7 +30,10 @@ body{
     margin-bottom:1.5em;
     border-bottom:1px solid #ddd;
 }
-#content .list article h2{
+#content .list article header{
+    padding:0.3em 0em;
+}
+#content .list article header h2{
     margin:0em;
 }
 

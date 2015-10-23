@@ -1,22 +1,17 @@
 {{define "list"}}
 {{template "header" .page}}
 
-<div id="content">
 <div class="container list">
-
     {{range .posts}}
     <article>
         <header>
-            <h2>{{.Title}}</h2>
+            <h2><a href="{{.Permalink}}">{{.Title}}</a></h2>
             <span>{{.Author}}</span><time>{{.Created}}</time>
         </header>
         {{.Content}}
     </article>
     {{end}}
-
-</div>
 </div>
 
-{{template "sidebar" .page}}
 {{template "footer" .page}}
 {{end}}
