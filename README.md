@@ -3,6 +3,7 @@
 简单的博客系统，具有以下特性：
 
 1. 单用户；
+1. 无分类，只能通过标签来归类；
 
 
 
@@ -25,9 +26,26 @@
 
 
 ### 配置文件
-提供了三种类型的配置：
-- 源码级别：在main.go的顶部，可以修改配置文件名称等内容，修改这些内容需要重新编译程序；
-- 程序级别：在config/app.json中，修改这些内容需要重新启动程序；
+
+#### logs.xml
+logs.xml为日志的配置文件，可以定义日志的输入形式和输出日的地，
+具体配置可参考[logs](https://github.com/issue9/logs)的相关文档。
+文件位于程序当前目录的config子目录下。
+
+#### app.json
+app.json位于程序当前目录的config子目录下，包含了以下可配置字段，修改后需要重启程序才能启作用。
+
+名称  | 描述
+:---- |:----
+debug | 是否处于调试模式
+dbDSN | 数据库dsn
+dbPrefix | 数据表名前缀
+dbDriver | 数据库类型，可以是mysql, sqlite3, postgresql
+frontAPIPrefix | 前端api地址前缀
+adminAPIPrefix | 后台api地址前经
+themeURLPrefix | 各主题公开文件的根URL
+themeDir | 主题文件所在的目录
+tempDir | 临时目录
 
 ### 更改配置
 - 修改AdminAPIPrefix之后，记得同时修改static/admin/app.js中的apiPrefix变量
