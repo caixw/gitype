@@ -1,7 +1,9 @@
 {{define "list"}}
 {{template "header" .page}}
 
-<div id="list">
+<div id="content">
+<div class="container list">
+
     {{range .posts}}
     <article>
         <header>
@@ -11,6 +13,8 @@
         {{.Content}}
     </article>
     {{end}}
+
+</div>
 </div>
 
 {{template "sidebar" .page}}

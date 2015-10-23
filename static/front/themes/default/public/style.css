@@ -1,36 +1,39 @@
 @charset="utf-8";
 
 body{
-    margin:0 auto;
-    max-width:1024px;
+    margin: 0 auto;
 }
 
-/********************** list */
-#list{
-
+/********************** content */
+#content{
+    background: #eee;
+    left: 0;
+    right: 0;
+    position: absolute;
+    min-height: 100%;
+    margin-left: 17em;
 }
 
-/********************** tag */
-#tag{
-
+#content .container{
+    padding:1em 1.5em;
 }
 
-/********************** tags */
-#tags{
-
+#content .list article{
+    margin-bottom:1.5em;
+    border-bottom:1px solid #ddd;
+}
+#content .list article h2{
+    margin:0em;
 }
 
 /********************** sidebar */
-#list, #tag, #tags{
-    width:67%;
-    float:right;
-}
 #sidebar{
-    width:33%;
-    float:left;
+    width: 17em;
+    height: 100%;
+    background: #ccc;
+    position: fixed;
 }
 
-/********************** footer */
-#footer{
-    clear:both;
+#sidebar .container{
+    padding:1em;
 }

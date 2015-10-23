@@ -1,10 +1,14 @@
 {{define "tags"}}
 {{template "header" .page}}
 
-<div id="tags">
+<div id="content">
+<div class="container tags">
+
     {{range .tags}}
         <a href="{{.Link}}">{{.Title}}</a>
     {{end}}
+
+</div>
 </div>
 
 {{template "sidebar" .page}}
