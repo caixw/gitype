@@ -282,7 +282,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 更新文档内容
-	if _, err := tx.Update(pp); err != nil {
+	if _, err := tx.UpdateZero(pp); err != nil {
 		logs.Error("adminPutPost-2:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		tx.Rollback()

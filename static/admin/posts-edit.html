@@ -18,7 +18,6 @@ function pageInit(id) {
         load = app.get({
             'url': app.adminAPI('/posts/'+id)
         }).done(function(data, textStatus, jqXHR){
-            console.log(data)
             app.loadTemplate("#post", "#post-template", data);
         });
     }else{
@@ -48,7 +47,6 @@ function pageInit(id) {
         // 提交数据
         function submit(){
             if (id>0){
-            console.log(app.buildJSON($('.ui.form')))
                 app.put({
                     'url': app.adminAPI('/posts/')+id,
                     'data':app.buildJSON($('.ui.form'))

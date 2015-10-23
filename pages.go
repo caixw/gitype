@@ -18,31 +18,8 @@ import (
 	"github.com/issue9/orm/fetch"
 )
 
-// 页面的基本信息
-type page struct {
-	Title       string
-	SiteName    string
-	SecondTitle string
-	Canonical   string // 当前页的链接
-	Keywords    string
-	Description string
-	AppVersion  string
-	GoVersion   string
-
-	PostSize    int      // 文章数量
-	CommentSize int      // 评论数量
-	Tags        []anchor // 标签列表
-	Topics      []anchor // 最新评论的10条内容
-}
-
-type anchor struct {
-	Link  string // 链接地址
-	Title string // 地址的字面文字
-	Ext   string // 扩展内容，比如title,alt等，根据链接来确定
-}
-
-func getPage() (*page, error) {
-	p := &page{
+func getPageInfo() (*themes.PageInfo, error) {
+	p := &themes.PageInfo{
 		SiteName:    opt.SiteName,
 		SecondTitle: opt.SecondTitle,
 		Keywords:    opt.Keywords,
@@ -82,9 +59,9 @@ func getPage() (*page, error) {
 		return nil, err
 	}
 
-	p.Topics = make([]anchor, 0, opt.SidebarSize)
+	p.Topics = make([]themes.Anchor, 0, opt.SidebarSize)
 	for _, v := range maps {
-		a := anchor{
+		a := themes.Anchor{
 			Title: v["content"],
 			Ext:   v["title"],
 		}
@@ -99,7 +76,7 @@ func getPage() (*page, error) {
 	return p, nil
 }
 
-func getTags() ([]anchor, error) {
+func getTags() ([]themes.Anchor, error) {
 	sql := "SELECT {id}, {title}, {name}, {description} FROM #tags"
 	rows, err := db.Query(true, sql)
 	if err != nil {
@@ -111,12 +88,12 @@ func getTags() ([]anchor, error) {
 		return nil, err
 	}
 
-	ret := make([]anchor, 0, len(maps))
+	ret := make([]themes.Anchor, 0, len(maps))
 	for _, v := range maps {
-		a := anchor{
+		a := themes.Anchor{
 			Title: v["title"],
 			Ext:   v["description"],
-			Link:  "/tags/" + v["name"],
+			Link:  core.TagURL(opt, v["name"]),
 		}
 		ret = append(ret, a)
 	}
@@ -159,7 +136,7 @@ func getPosts(page int) ([]*models.Post, error) {
 
 // 首页或是列表页
 func pagePosts(w http.ResponseWriter, r *http.Request) {
-	p, err := getPage()
+	p, err := getPageInfo()
 	if err != nil {
 		logs.Error("pagePosts:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)

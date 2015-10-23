@@ -211,6 +211,6 @@ func PostURL(opt *Options, p *models.Post) string {
 	return opt.SiteURL + "/posts/" + strconv.FormatInt(p.ID, 64) + opt.Suffix
 }
 
-func TagURL(opt *Options, m *models.Tag) string {
-	return opt.SiteURL + "/tags/" + m.Name
+func TagURL(opt *Options, name string) string {
+	return opt.SiteURL + "/tags/" + name
 }
