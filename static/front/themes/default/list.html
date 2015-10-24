@@ -4,11 +4,14 @@
 <div class="container list">
     {{range .posts}}
     <article>
-        <header>
-            <h2><a href="{{.Permalink}}">{{.Title}}</a></h2>
-            <span>{{.Author}}</span><time>{{.Created}}</time>
-        </header>
-        {{.Content}}
+        <h2 class="title"><a href="{{.Permalink}}">{{.Title}}</a></h2>
+        <div class="meta">
+            <a class="comments" href="{{.Permalink}}#comments">{{.Comments}}</a>
+            <time>{{.Created}}</time>
+        </div>
+        <div class="entry">
+            {{.Content}}
+        </div>
     </article>
     {{end}}
 </div>

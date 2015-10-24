@@ -1,25 +1,40 @@
 @charset="utf-8";
 
+/*
+ * 主要用到以下颜色：
+ *
+ * #1976d2  dark primary color
+ * #2196f3  primary color
+ * #bbdefb  light primary color
+ * #ffffff  text/icons
+ *
+ * #00bcd4  accent color
+ * #212121  primary text
+ * #727272  secondary text
+ * #b6b6b6  divider color
+ */
+
 body{
-    margin: 0 auto;
+    margin:0 auto;
 }
 
 a{
     text-decoration: none;
-    color:black;
+    color:#212121;
 }
 a:hover{
-    color:#4183c4;
+    color:#00bcd4;
 }
 
 /********************** content */
 #content{
-    background: #eee;
-    left: 0;
-    right: 0;
-    position: absolute;
-    min-height: 100%;
-    margin-left: 17em;
+    background:#fff;
+    color:#212121;
+    left:0;
+    right:0;
+    position:absolute;
+    min-height:100%;
+    margin-left:17em;
 }
 
 #content .container{
@@ -28,21 +43,35 @@ a:hover{
 
 #content .list article{
     margin-bottom:1.5em;
-    border-bottom:1px solid #ddd;
+    border-bottom:1px solid #b6b6b6;
 }
-#content .list article header{
-    padding:0.3em 0em;
+#content .list article .title{
+    margin:0.6em 0em;
+    float:left;
+    font-size:1.8em;
 }
-#content .list article header h2{
-    margin:0em;
+#content .list article .meta{
+    color:#727272;
+    float:right;
+    text-align:right;
+    top:0;
+    position:relative;;
+}
+#content .list article .meta *{
+    display:block;
+    margin:0.7em 0em;
+}
+#content .list article .entry{
+    clear:both;
 }
 
 /********************** sidebar */
 #sidebar{
-    width: 17em;
-    height: 100%;
-    background: #ccc;
-    position: fixed;
+    width:17em;
+    height:100%;
+    position:fixed;
+    background:#2196f3;
+    color:#bbdefb
 }
 
 #sidebar .container{

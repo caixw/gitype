@@ -14,7 +14,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/caixw/typing/models"
 	"github.com/issue9/context"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm"
@@ -200,17 +199,4 @@ func InitDB(cfg *Config) (*orm.DB, error) {
 	}
 
 	return orm.NewDB(cfg.DBDriver, cfg.DBDSN, cfg.DBPrefix, d)
-}
-
-// 为post生成一条唯一URL
-func PostURL(opt *Options, p *models.Post) string {
-	if len(p.Name) > 0 {
-		return opt.SiteURL + "/posts/" + p.Name + opt.Suffix
-	}
-
-	return opt.SiteURL + "/posts/" + strconv.FormatInt(p.ID, 64) + opt.Suffix
-}
-
-func TagURL(opt *Options, name string) string {
-	return opt.SiteURL + "/tags/" + name
 }

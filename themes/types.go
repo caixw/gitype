@@ -31,6 +31,8 @@ type Anchor struct {
 
 // 文章的详细内容
 type Post struct {
+	ID           int64
+	Name         string
 	Title        string
 	Content      string
 	Author       string

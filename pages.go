@@ -92,7 +92,7 @@ func getTags() ([]themes.Anchor, error) {
 		a := themes.Anchor{
 			Title: v["title"],
 			Ext:   v["description"],
-			Link:  core.TagURL(opt, v["name"]),
+			Link:  themes.TagURL(opt, v["name"]),
 		}
 		ret = append(ret, a)
 	}
@@ -115,7 +115,7 @@ func getSize(sql string, args ...interface{}) (int, error) {
 
 func getPosts(page int) ([]*themes.Post, error) {
 	posts := make([]*themes.Post, 0, opt.PageSize)
-	sql := `SELECT {title} AS Title, {summary} AS Summary, {created} AS Created, {allowComment} AS AllowComment
+	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary, {created} AS Created, {allowComment} AS AllowComment
 	FROM #posts
 	WHERE {state}=?
 	ORDER BY {order} DESC
@@ -126,6 +126,10 @@ func getPosts(page int) ([]*themes.Post, error) {
 	}
 	_, err = fetch.Obj(&posts, rows)
 	rows.Close()
+
+	for _, post := range posts {
+		post.Permalink = themes.PostURL(opt, post)
+	}
 
 	return posts, err
 }
@@ -165,5 +169,15 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 }
 
 func pagePost(w http.ResponseWriter, r *http.Request) {
+	p, err := getPageInfo()
+	if err != nil {
+		logs.Error("pagePost:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
 
+	id, ok := core.ParamString(w, r, "id")
+	if !ok {
+		return
+	}
 }
