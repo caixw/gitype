@@ -45,10 +45,10 @@ type Author struct {
 
 // 从主题根目录加载所有的主题内容，并初始所有的主题下静态文件的路由。
 // defaultTheme 为默认的主题。
-func Init(config *core.Config, options *core.Options, db *orm.DB) error {
+func Init(config *core.Config, options *core.Options, dbInst *orm.DB) error {
 	cfg = config
 	opt = options
-	db = db
+	db = dbInst
 
 	fs, err := ioutil.ReadDir(cfg.ThemeDir)
 	if err != nil {

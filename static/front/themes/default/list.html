@@ -1,12 +1,12 @@
 {{define "list"}}
-{{template "header" .page}}
+{{template "header" .info}}
 
 <div class="container list">
     {{range .posts}}
     <article>
         <h2 class="title"><a href="{{.Permalink}}">{{.Title}}</a></h2>
         <div class="meta">
-            <a class="comments" href="{{.Permalink}}#comments">{{.Comments}}</a>
+            <a class="comments" href="{{.Permalink}}#comments">{{.CommentsSize}}</a>
             <time>{{.Created}}</time>
         </div>
         <div class="entry">
@@ -16,5 +16,5 @@
     {{end}}
 </div>
 
-{{template "footer" .page}}
+{{template "footer" .info}}
 {{end}}
