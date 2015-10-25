@@ -113,9 +113,7 @@ func initFrontPageRoutes(m *web.Module) {
 func initFrontAPIRoutes(front *mux.Prefix) {
 	// post
 	front.PostFunc("/posts/{id:\\d+}/comments", frontPostPostComment).
-		GetFunc("/posts/{id:\\d+}", frontGetPost).
-		GetFunc("/posts/{id:\\d+}/comments", frontGetPostComments).
-		GetFunc("/posts", frontGetPosts)
+		GetFunc("/posts/{id:\\d+}/comments", frontGetPostComments)
 }
 
 func initAdminAPIRoutes(admin *mux.Prefix) {
