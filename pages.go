@@ -6,6 +6,8 @@ package main
 
 import (
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/models"
@@ -129,5 +131,60 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 }
 
 func pagePost(w http.ResponseWriter, r *http.Request) {
+	idStr, ok := core.ParamString(w, r, "id")
+	idStr = strings.TrimSuffix(idStr, opt.Suffix)
+	if !ok {
+		return
+	}
 
+	var mp *models.Post
+	postID, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		mp = &models.Post{Name: idStr}
+	} else {
+		mp = &models.Post{ID: postID}
+	}
+	if err := db.Select(mp); err != nil {
+		logs.Error("pagePost:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+	if mp.State != models.PostStatePublished {
+		core.RenderJSON(w, http.StatusNotFound, nil, nil)
+		return
+	}
+
+	// commentsSize
+	rs := &models.Relationship{PostID: mp.ID}
+	commentsSize, err := db.Count(rs)
+	if err != nil {
+		logs.Error("pagePost:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	post := &themes.Post{
+		ID:           mp.ID,
+		Name:         mp.Name,
+		Title:        mp.Title,
+		Summary:      mp.Summary,
+		Content:      mp.Content,
+		Author:       opt.ScreenName,
+		CommentsSize: commentsSize,
+		Created:      mp.Created,
+		Modified:     mp.Modified,
+		AllowComment: mp.AllowComment,
+	}
+
+	info, err := themes.GetInfo()
+	if err != nil {
+		logs.Error("pagePost:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+	data := map[string]interface{}{
+		"info": info,
+		"post": post,
+	}
+	themes.Render(w, "post", data)
 }
