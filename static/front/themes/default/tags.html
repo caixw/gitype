@@ -1,13 +1,13 @@
 {{define "tags"}}
-{{template "header" .page}}
+{{template "header" .}}
 
 <div class="container tags">
 
-    {{range .tags}}
-        <a href="{{.Link}}">{{.Title}}</a>
+    {{range .Tags}}
+        <a href="{{.Permalink}}">{{.Title}}</a>
     {{end}}
 
 </div>
 
-{{template "footer" .page}}
+{{template "footer" .}}
 {{end}}

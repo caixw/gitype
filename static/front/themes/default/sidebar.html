@@ -6,7 +6,7 @@
         <div class="header">标签</div>
         <ol class="content">
         {{range .Tags}}
-            <li><a href="{{.Link}}" title="{{.Ext}}">{{.Title}}</a></li>
+            <li><a href="{{.Permalink}}">{{.Title}}</a></li>
         {{end}}
         </ol>
     </div>
@@ -15,7 +15,7 @@
         <div class="header">最新评论</div>
         <ol class="content">
         {{range .Topics}}
-            <li><a href="{{.Link}}" title="{{.Ext}}">{{.Title}}</a></li>
+            <li><a href="{{.Permalink}}">{{.Title}}</a></li>
         {{end}}
         </ol>
     </div>

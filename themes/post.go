@@ -6,6 +6,7 @@ package themes
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
@@ -16,7 +17,8 @@ type Post struct {
 	ID           int64
 	Name         string
 	Title        string
-	Content      string // 具体内容，若是列表即为接要，否则为文章具体内容
+	Summary      string
+	Content      string
 	Author       string // 作者名称
 	CommentsSize int    // 评论数量
 	Created      int64  // 创建时间
@@ -24,11 +26,18 @@ type Post struct {
 	AllowComment bool   // 是否允许评论
 }
 
-func (p *Post) Text() string {
-	return p.Title
+func (p *Post) CreatedFormat() string {
+	return time.Unix(p.Created, 0).Format(opt.DateFormat)
 }
 
-func (p *Post) Ext() string {
+func (p *Post) ModifiedFormat() string {
+	return time.Unix(p.Modified, 0).Format(opt.DateFormat)
+}
+
+func (p *Post) Entry() string {
+	if len(p.Summary) > 0 {
+		return p.Summary
+	}
 	return p.Content
 }
 

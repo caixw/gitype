@@ -6,11 +6,11 @@
     <article>
         <h2 class="title"><a href="{{.Permalink}}">{{.Title}}</a></h2>
         <div class="meta">
-            <a class="comments" href="{{.Permalink}}#comments">{{.CommentsSize}}</a>
-            <time>{{.Created}}</time>
+            <time>{{.CreatedFormat}}</time>
+            <a class="comments" href="{{.Permalink}}#comments">{{.CommentsSize}}条评论</a>
         </div>
         <div class="entry">
-            {{.Content}}
+            {{.Entry}}
         </div>
     </article>
     {{end}}
