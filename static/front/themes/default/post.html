@@ -14,7 +14,7 @@
     </article>
 
     <div id="comments">
-        {{range .post.Comments}}
+        {{range .post.Comments 1}}
             <article id="comments-{{.ID}}">
                 <header>
                     <div>{{.AuthorName}}</div>
