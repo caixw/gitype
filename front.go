@@ -62,7 +62,7 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 	info, err := themes.GetInfo()
 	if err != nil {
 		logs.Error("pagePosts:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -73,8 +73,7 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 	posts, err := getPosts(page - 1)
 	if err != nil {
 		logs.Error("pagePosts:", err)
-		// TODO 显示一个正常的500页面，而不是json格式的
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	data := map[string]interface{}{
@@ -88,7 +87,7 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 	info, err := themes.GetInfo()
 	if err != nil {
 		logs.Error("pageTags:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	info.Canonical = opt.SiteURL + "tags"
@@ -101,7 +100,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	info, err := themes.GetInfo()
 	if err != nil {
 		logs.Error("pageTags:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -112,7 +111,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	tag := &models.Tag{Name: tagName}
 	if err := db.Select(tag); err != nil {
 		logs.Error("pageTags:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -123,7 +122,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	posts, err := getTagPosts(page-1, tag.ID)
 	if err != nil {
 		logs.Error("pageTags:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	data := map[string]interface{}{
@@ -150,11 +149,11 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := db.Select(mp); err != nil {
 		logs.Error("pagePost:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	if mp.State != models.PostStatePublished {
-		core.RenderJSON(w, http.StatusNotFound, nil, nil)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
@@ -163,7 +162,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 	commentsSize, err := db.Count(rs)
 	if err != nil {
 		logs.Error("pagePost:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -183,7 +182,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 	info, err := themes.GetInfo()
 	if err != nil {
 		logs.Error("pagePost:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	data := map[string]interface{}{
@@ -228,7 +227,7 @@ func frontGetPostComments(w http.ResponseWriter, r *http.Request) {
 	sql.Limit(opt.PageSize, page*opt.PageSize)
 	maps, err := sql.SelectMap(true, "*")
 	if err != nil {
-		logs.Error("getComments:", err)
+		logs.Error("frontGetComments:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
@@ -306,7 +305,7 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 	// url只提取其host部分，其余的都去掉
 	u, err := url.Parse(c.AuthorURL)
 	if err != nil {
-		logs.Error("postComment:", err)
+		logs.Error("frontPostComment:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
@@ -329,7 +328,7 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 		IsAdmin:     false,
 	}
 	if _, err := db.Insert(comm); err != nil {
-		logs.Error("postComment:", err)
+		logs.Error("frontPostComment:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}

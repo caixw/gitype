@@ -50,6 +50,14 @@ func Init(config *core.Config, options *core.Options, dbInst *orm.DB) error {
 	opt = options
 	db = dbInst
 
+	if err := loadThemes(); err != nil {
+		return err
+	}
+
+	return Switch(opt.Theme)
+}
+
+func loadThemes() error {
 	fs, err := ioutil.ReadDir(cfg.ThemeDir)
 	if err != nil {
 		return err
@@ -78,8 +86,7 @@ func Init(config *core.Config, options *core.Options, dbInst *orm.DB) error {
 		themesMap[id] = theme
 		cfg.Core.Static[p+id] = themePath + "public/"
 	}
-
-	return Switch(opt.Theme)
+	return nil
 }
 
 // 加theme.json文件
@@ -116,14 +123,14 @@ func Switch(themeID string) (err error) {
 
 // 输出指定模板
 func Render(w http.ResponseWriter, name string, data interface{}) {
-	if cfg.Debug { // 调试状态下，实现加载模板
+	if cfg.Debug { // 调试状态下，实时加载模板
 		Switch(current)
 	}
 
 	err := tpl.ExecuteTemplate(w, name, data)
 	if err != nil {
 		logs.Error("themes.Render:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }
