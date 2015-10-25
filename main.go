@@ -57,7 +57,7 @@ func main() {
 		panic(err)
 	}
 
-	if err = themes.Init(cfg, opt.Theme); err != nil {
+	if err = themes.Init(cfg, opt); err != nil {
 		panic(err)
 	}
 
