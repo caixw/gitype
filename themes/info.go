@@ -51,12 +51,10 @@ func GetInfo() (*Info, error) {
 		return nil, err
 	}
 
-	// Tags
 	if p.Tags, err = getTags(); err != nil {
 		return nil, err
 	}
 
-	// Topics
 	if p.Topics, err = getTopics(); err != nil {
 		return nil, err
 	}

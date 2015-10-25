@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
 )
@@ -34,6 +36,7 @@ func (p *Post) ModifiedFormat() string {
 	return time.Unix(p.Modified, 0).Format(opt.DateFormat)
 }
 
+// 返回文章的摘要或是具体内容。
 func (p *Post) Entry() string {
 	if len(p.Summary) > 0 {
 		return p.Summary
@@ -41,6 +44,7 @@ func (p *Post) Entry() string {
 	return p.Content
 }
 
+// 返回文章的链接
 func (p *Post) Permalink() string {
 	if len(p.Name) > 0 {
 		return opt.SiteURL + "/posts/" + p.Name + opt.Suffix
@@ -49,10 +53,11 @@ func (p *Post) Permalink() string {
 	return opt.SiteURL + "/posts/" + strconv.FormatInt(p.ID, 10) + opt.Suffix
 }
 
+// 获取与当前文章相关的标签。
 func (p *Post) Tags() []*Tag {
 	sql := `SELECT t.{name} AS Name, t.{title} AS Text FROM #relationships AS r
-	 LEFT JOIN #tags AS t on t.{id}=r.{tagID}
-	 WHERE r.{postID}=?`
+	LEFT JOIN #tags AS t on t.{id}=r.{tagID}
+	WHERE r.{postID}=?`
 
 	rows, err := db.Query(true, sql, p.ID)
 	if err != nil {
@@ -67,4 +72,38 @@ func (p *Post) Tags() []*Tag {
 		return nil
 	}
 	return tags
+}
+
+// 返回文章的评论信息。
+func (p *Post) Comments(page int) []*Comment {
+	if page < 1 {
+		page = 1
+	}
+
+	sql := `SELECT {id} AS ID, {created} AS Created, {agent} AS Agent, {content} AS Content,
+	{isAdmin} AS IsAdmin, {authorName} AS AuthorName,{authorURL} AS AuthorURL
+	FROM #comments
+	WHERE {postID}=? AND {state}=?
+	ORDER BY {created} `
+	if opt.CommentOrder == core.CommentOrderDesc {
+		sql += `DESC `
+	}
+	sql += `LIMIT ? OFFSET ?`
+
+	rows, err := db.Query(true, sql, p.ID, models.CommentStateApproved, opt.PageSize, opt.PageSize*page)
+	if err != nil {
+		logs.Error("themes.Post.Comment:", err)
+		return nil
+	}
+	defer rows.Close()
+
+	comments := make([]*Comment, 0, opt.PageSize)
+	if _, err := fetch.Obj(&comments, rows); err != nil {
+		logs.Error("themes.Post.Comment:", err)
+		return nil
+	}
+	for _, c := range comments {
+		c.post = p
+	}
+	return comments
 }
