@@ -8,6 +8,7 @@
 
 
 ### 支持的数据库
+
 1. mysql
 1. sqlite3
 1. postgresql
@@ -42,10 +43,19 @@ dbDSN | 数据库dsn
 dbPrefix | 数据表名前缀
 dbDriver | 数据库类型，可以是mysql, sqlite3, postgresql
 frontAPIPrefix | 前端api地址前缀
-adminAPIPrefix | 后台api地址前经
+adminAPIPrefix | 后台api地址前经，需要同时修改static/admin/app.js中有关api地址的内容。
 themeURLPrefix | 各主题公开文件的根URL
 themeDir | 主题文件所在的目录
 tempDir | 临时目录
 
-### 更改配置
-- 修改AdminAPIPrefix之后，记得同时修改static/admin/app.js中的apiPrefix变量
+### 开发
+
+typing以自用为主，暂时*不支持新功能的PR*。
+bug可在[此处](https://github.com/caixw/typing/issues)提交或是直接PR。
+
+开发相关文档可以[DEV](DEV.md)中找到。
+
+
+### 版权
+
+本项目采用[MIT](http://opensource.org/licenses/MIT)开源授权许可证，完整的授权说明可在[LICENSE](LICENSE)文件中找到。
