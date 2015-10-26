@@ -5,6 +5,7 @@
 package main
 
 import (
+	"github.com/caixw/typing/admin"
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/install"
 	"github.com/caixw/typing/sitemap"
@@ -66,6 +67,9 @@ func main() {
 		panic(err)
 	}
 
+	// admin
+	admin.Init(opt, db)
+
 	if err := initModule(cfg); err != nil {
 		panic(err)
 	}
@@ -77,12 +81,12 @@ func main() {
 
 // 初始化模块，及与模块相对应的路由。
 func initModule(cfg *core.Config) error {
-	// 初始化后的api
+	// admin
 	m, err := web.NewModule("admin")
 	if err != nil {
 		return err
 	}
-	initAdminAPIRoutes(m.Prefix(cfg.AdminAPIPrefix))
+	admin.InitRoute(m.Prefix(cfg.AdminAPIPrefix))
 
 	// 初始化前台使用的api
 	m, err = web.NewModule("front")
@@ -93,50 +97,6 @@ func initModule(cfg *core.Config) error {
 
 	//m.GetFunc("/rss", getRSS).
 	//GetFunc("/rss/posts/{id}", getPostRSS)
-
 	m.GetFunc("/sitemap.xml", sitemap.ServeHTTP)
 	return nil
-}
-
-func initAdminAPIRoutes(admin *mux.Prefix) {
-	admin.PostFunc("/login", adminPostLogin).
-		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
-		Put("/password", loginHandlerFunc(adminChangePassword)).
-		Get("/state", loginHandlerFunc(adminGetState)).
-		Put("/sitemap", loginHandlerFunc(adminPutSitemap))
-
-	admin.Get("/themes", loginHandlerFunc(adminGetThemes)).
-		Get("/themes/current", loginHandlerFunc(adminGetCurrentTheme)).
-		Put("/themes/current", loginHandlerFunc(adminPutCurrentTheme))
-
-	// options
-	admin.Get("/options/{key}", loginHandlerFunc(adminGetOption)).
-		Patch("/options/{key}", loginHandlerFunc(adminPatchOption))
-
-	// tags
-	admin.Put("/tags/{id:\\d+}", loginHandlerFunc(adminPutTag)).
-		Delete("/tags/{id:\\d+}", loginHandlerFunc(adminDeleteTag)).
-		Get("/tags/{id:\\d+}", loginHandlerFunc(adminGetTag)).
-		Post("/tags", loginHandlerFunc(adminPostTag)).
-		Get("/tags", loginHandlerFunc(adminGetTags))
-
-	// comments
-	admin.Get("/comments", loginHandlerFunc(adminGetComments)).
-		Get("/comments/count", loginHandlerFunc(adminGetCommentsCount)).
-		Post("/comments", loginHandlerFunc(adminPostComment)).
-		Put("/comments/{id:\\d+}", loginHandlerFunc(adminPutComment)).
-		Delete("comments/{id:\\d+}", loginHandlerFunc(adminDeleteComment)).
-		Post("/comments/{id:\\d+}/waiting", loginHandlerFunc(adminSetCommentWaiting)).
-		Post("/comments/{id:\\d+}/spam", loginHandlerFunc(adminSetCommentSpam)).
-		Post("/comments/{id:\\d+}/approved", loginHandlerFunc(adminSetCommentApproved))
-
-	// posts
-	admin.Get("/posts", loginHandlerFunc(adminGetPosts)).
-		Get("/posts/count", loginHandlerFunc(adminGetPostsCount)).
-		Post("/posts", loginHandlerFunc(adminPostPost)).
-		Get("/posts/{id:\\d+}", loginHandlerFunc(adminGetPost)).
-		Delete("/posts/{id:\\d+}", loginHandlerFunc(adminDeletePost)).
-		Put("/posts/{id:\\d+}", loginHandlerFunc(adminPutPost)).
-		Post("/posts/{id:\\d+}/draft", loginHandlerFunc(adminSetPostDraft)).
-		Post("/posts/{id:\\d+}/published", loginHandlerFunc(adminSetPostPublished))
 }

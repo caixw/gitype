@@ -14,7 +14,6 @@ import (
 
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/models"
-	"github.com/caixw/typing/themes"
 	"github.com/issue9/conv"
 	"github.com/issue9/is"
 	"github.com/issue9/logs"
@@ -34,8 +33,8 @@ func InitRoute(m *web.Module) {
 		GetFunc("/posts/{id:\\d+}/comments", frontGetPostComments)
 }
 
-func getTagPosts(page int, tagID int64) ([]*themes.Post, error) {
-	posts := make([]*themes.Post, 0, opt.PageSize)
+func getTagPosts(page int, tagID int64) ([]*Post, error) {
+	posts := make([]*Post, 0, opt.PageSize)
 	sql := `SELECT p.{id} AS ID, p.{name} AS Name,
 		p.{title} AS Title, p.{summary} AS Summary, p.{created} AS Created, p.{allowComment} AS AllowComment
 		FROM #relationships AS r
@@ -53,8 +52,8 @@ func getTagPosts(page int, tagID int64) ([]*themes.Post, error) {
 	return posts, err
 }
 
-func getPosts(page int) ([]*themes.Post, error) {
-	posts := make([]*themes.Post, 0, opt.PageSize)
+func getPosts(page int) ([]*Post, error) {
+	posts := make([]*Post, 0, opt.PageSize)
 	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary, {created} AS Created, {allowComment} AS AllowComment
 	FROM #posts
 	WHERE {state}=?
@@ -72,7 +71,7 @@ func getPosts(page int) ([]*themes.Post, error) {
 
 // 首页或是列表页
 func pagePosts(w http.ResponseWriter, r *http.Request) {
-	info, err := themes.GetInfo()
+	info, err := GetInfo()
 	if err != nil {
 		logs.Error("pagePosts:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -93,11 +92,11 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 		"info":  info,
 		"posts": posts,
 	}
-	themes.Render(w, "list", data)
+	Render(w, "list", data)
 }
 
 func pageTags(w http.ResponseWriter, r *http.Request) {
-	info, err := themes.GetInfo()
+	info, err := GetInfo()
 	if err != nil {
 		logs.Error("pageTags:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -106,11 +105,11 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 	info.Canonical = opt.SiteURL + "tags"
 	info.Title = "标签"
 
-	themes.Render(w, "tags", info)
+	Render(w, "tags", info)
 }
 
 func pageTag(w http.ResponseWriter, r *http.Request) {
-	info, err := themes.GetInfo()
+	info, err := GetInfo()
 	if err != nil {
 		logs.Error("pageTags:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -143,7 +142,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 		"tag":   tag,
 		"posts": posts,
 	}
-	themes.Render(w, "tag", data)
+	Render(w, "tag", data)
 }
 
 func pagePost(w http.ResponseWriter, r *http.Request) {
@@ -179,7 +178,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post := &themes.Post{
+	post := &Post{
 		ID:           mp.ID,
 		Name:         mp.Name,
 		Title:        mp.Title,
@@ -192,7 +191,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		AllowComment: mp.AllowComment,
 	}
 
-	info, err := themes.GetInfo()
+	info, err := GetInfo()
 	if err != nil {
 		logs.Error("pagePost:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -202,7 +201,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		"info": info,
 		"post": post,
 	}
-	themes.Render(w, "post", data)
+	Render(w, "post", data)
 }
 
 // @api get /api/posts/{id}/comments
