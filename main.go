@@ -12,7 +12,6 @@ import (
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
-	"github.com/issue9/orm"
 	"github.com/issue9/web"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -29,12 +28,6 @@ const (
 	logConfigPath = "./config/logs.xml"
 )
 
-// 一些全局变量
-var (
-	db  *orm.DB // 数据库实例
-	opt *core.Options
-)
-
 func main() {
 	if install.Install(logConfigPath, configPath) {
 		return
@@ -45,7 +38,7 @@ func main() {
 		panic(err)
 	}
 
-	db, err = core.InitDB(cfg)
+	db, err := core.InitDB(cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -54,7 +47,8 @@ func main() {
 		panic(err)
 	}
 
-	if opt, err = core.LoadOptions(db); err != nil {
+	opt, err := core.LoadOptions(db)
+	if err != nil {
 		panic(err)
 	}
 
