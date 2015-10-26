@@ -1,4 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+// 该文件由make.go自动生成，请勿手动修改！
+
+package feed
+
+var files=[]byte(`<?xml version="1.0" encoding="utf-8"?>
 <!--
 为sitemap.xml产生一个比较美观的人机界面。
 
@@ -91,3 +95,4 @@ tbody tr:hover{background:#ddd}
 </xsl:template>
 
 </xsl:stylesheet>
+`)

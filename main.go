@@ -33,7 +33,9 @@ func main() {
 	}
 
 	// 初始化feed
-	feed.Init(cfg.TempDir, db, opt)
+	if err = feed.Init(cfg.TempDir, db, opt); err != nil {
+		panic(err)
+	}
 
 	// admin
 	admin.Init(opt, db)
