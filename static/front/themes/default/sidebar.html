@@ -3,6 +3,15 @@
 <div class="container">
 
     <div class="block">
+        <p class="title"><a href="/">{{.SiteName}}</a></p>
+        <p>{{.SecondTitle}}</p>
+
+        <p><a href="/">首页</a></p>
+        <p><a href="/about.html">关于</a></p>
+        <p><a href="/tags">标签</a></p>
+    </div>
+
+    <div class="block">
         <div class="header">标签</div>
         <ol class="content">
         {{range .Tags}}

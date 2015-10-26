@@ -65,6 +65,22 @@ a:hover{
     clear:both;
 }
 
+
+
+#content .tags .tag{
+    margin:0.5em;
+}
+
+/********************** footer */
+#content #footer{
+    padding:1em 1.5em;
+}
+
+#content #footer p{
+    margin:0em;
+    padding:0em;
+}
+
 /********************** sidebar */
 #sidebar{
     width:17em;
@@ -73,7 +89,14 @@ a:hover{
     background:#2196f3;
     color:#bbdefb
 }
+#sidebar a{
+    color:#bbdefb;
+}
 
 #sidebar .container{
-    padding:1em;
+    padding:1em 1em 1em 2em;
+}
+
+#sidebar .title{
+    font-size:1.2em;
 }

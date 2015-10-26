@@ -2,9 +2,10 @@
 {{template "header" .}}
 
 <div class="container tags">
+    <h1>标签</h1>
 
     {{range .Tags}}
-        <a href="{{.Permalink}}">{{.Title}}</a>
+        <a class="tag" href="{{.Permalink}}">{{.Title}}</a>
     {{end}}
 
 </div>
