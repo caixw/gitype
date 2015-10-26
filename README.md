@@ -53,7 +53,7 @@ tempDir | 临时目录
 typing以自用为主，暂时*不支持新功能的PR*。
 bug可在[此处](https://github.com/caixw/typing/issues)提交或是直接PR。
 
-开发相关文档可以[DEV](DEV.md)中找到。
+详细的开发文档声明在[DEV](DEV.md)中。
 
 
 ### 版权
