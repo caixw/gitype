@@ -92,7 +92,7 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 		"info":  info,
 		"posts": posts,
 	}
-	Render(w, "list", data)
+	render(w, "list", data)
 }
 
 func pageTags(w http.ResponseWriter, r *http.Request) {
@@ -105,7 +105,7 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 	info.Canonical = opt.SiteURL + "tags"
 	info.Title = "标签"
 
-	Render(w, "tags", info)
+	render(w, "tags", info)
 }
 
 func pageTag(w http.ResponseWriter, r *http.Request) {
@@ -142,7 +142,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 		"tag":   tag,
 		"posts": posts,
 	}
-	Render(w, "tag", data)
+	render(w, "tag", data)
 }
 
 func pagePost(w http.ResponseWriter, r *http.Request) {
@@ -201,7 +201,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		"info": info,
 		"post": post,
 	}
-	Render(w, "post", data)
+	render(w, "post", data)
 }
 
 // @api get /api/posts/{id}/comments

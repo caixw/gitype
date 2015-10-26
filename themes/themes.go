@@ -122,7 +122,7 @@ func Switch(themeID string) (err error) {
 }
 
 // 输出指定模板
-func Render(w http.ResponseWriter, name string, data interface{}) {
+func render(w http.ResponseWriter, name string, data interface{}) {
 	if cfg.Debug { // 调试状态下，实时加载模板
 		Switch(current)
 	}
