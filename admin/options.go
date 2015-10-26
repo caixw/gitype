@@ -103,7 +103,7 @@ func adminGetOption(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 200 Ok
 func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
-	err := feed.Build(db, opt)
+	err := feed.BuildSitemap()
 	if err != nil {
 		logs.Error(err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)

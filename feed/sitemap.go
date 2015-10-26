@@ -6,8 +6,6 @@ package feed
 
 import (
 	"bytes"
-	"errors"
-	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -25,24 +23,8 @@ const (
 	footer = `</urlset>`
 )
 
-var sitemapPath string
-
-// 初始化sitemap包，path为sitemap.xml文件的保存路径
-func Init(path string) error {
-	if len(path) == 0 {
-		return errors.New("参数path的值不能为nil")
-	}
-
-	sitemapPath = path
-	return nil
-}
-
-func ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, sitemapPath)
-}
-
 // Build 构建一个sitemap.xml文件到sitemapPath文件中，若该文件已经存在，则覆盖。
-func Build(db *orm.DB, opt *core.Options) error {
+func BuildSitemap() error {
 	buf := bytes.NewBufferString(header)
 	buf.Grow(10000)
 

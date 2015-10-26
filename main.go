@@ -33,9 +33,7 @@ func main() {
 	}
 
 	// 初始化feed
-	if err = feed.Init(cfg.TempDir + "sitemap.xml"); err != nil {
-		panic(err)
-	}
+	feed.Init(cfg.TempDir, db, opt)
 
 	// admin
 	admin.Init(opt, db)
@@ -65,8 +63,6 @@ func initModule(cfg *core.Config) error {
 	}
 	themes.InitRoute(m)
 
-	//m.GetFunc("/rss", getRSS).
-	//GetFunc("/rss/posts/{id}", getPostRSS)
-	m.GetFunc("/sitemap.xml", feed.ServeHTTP)
+	feed.InitRoute(m)
 	return nil
 }
