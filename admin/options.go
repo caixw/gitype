@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/feed"
 	"github.com/caixw/typing/models"
-	"github.com/caixw/typing/sitemap"
 	"github.com/issue9/logs"
 )
 
@@ -103,7 +103,7 @@ func adminGetOption(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 200 Ok
 func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
-	err := sitemap.Build(db, opt)
+	err := feed.Build(db, opt)
 	if err != nil {
 		logs.Error(err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
