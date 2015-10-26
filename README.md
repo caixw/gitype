@@ -26,6 +26,7 @@
 1. 登录后台，作一些自定义设置，默认登录密码为`123`；
 
 
+
 ### 配置文件
 
 #### logs.xml
@@ -48,12 +49,15 @@ themeURLPrefix | 各主题公开文件的根URL
 themeDir | 主题文件所在的目录
 tempDir | 临时目录
 
+
+
 ### 开发
 
 typing以自用为主，暂时*不支持新功能的PR*。
 bug可在[此处](https://github.com/caixw/typing/issues)提交或是直接PR。
 
 详细的开发文档声明在[DEV](DEV.md)中。
+
 
 
 ### 版权
