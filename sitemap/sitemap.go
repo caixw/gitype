@@ -25,7 +25,7 @@ const (
 	footer = `</urlset>`
 )
 
-var path string
+var sitemapPath string
 
 // 初始化sitemap包，path为sitemap.xml文件的保存路径
 func Init(path string) error {
@@ -33,15 +33,15 @@ func Init(path string) error {
 		return errors.New("参数path的值不能为nil")
 	}
 
-	path = path
+	sitemapPath = path
 	return nil
 }
 
 func ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, path)
+	http.ServeFile(w, r, sitemapPath)
 }
 
-// Build 构建一个sitemap.xml文件到path文件中，若该文件已经存在，则覆盖。
+// Build 构建一个sitemap.xml文件到sitemapPath文件中，若该文件已经存在，则覆盖。
 func Build(db *orm.DB, opt *core.Options) error {
 	buf := bytes.NewBufferString(header)
 	buf.Grow(10000)
@@ -56,7 +56,7 @@ func Build(db *orm.DB, opt *core.Options) error {
 
 	buf.WriteString(footer)
 
-	file, err := os.Create(path)
+	file, err := os.Create(sitemapPath)
 	if err != nil {
 		return err
 	}
@@ -108,13 +108,7 @@ func addTagsToBuffer(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
 	}
 
 	for _, v := range maps {
-		loc := opt.SiteURL + "/tags/"
-
-		if len(v["name"]) > 0 {
-			loc += v["name"]
-		} else {
-			loc += v["id"]
-		}
+		loc := opt.SiteURL + "/tags/" + v["name"]
 
 		addItemToBuffer(buf, loc, opt.TagsChangefreq, time.Now().Unix(), opt.TagsPriority)
 	}
