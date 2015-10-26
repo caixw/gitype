@@ -21,6 +21,33 @@ import (
 	"github.com/issue9/orm/forward"
 )
 
+const (
+	Version = "0.3.11.151026" // 程序版本号
+
+	// 两个配置文件路径
+	ConfigPath    = "./config/app.json"
+	LogConfigPath = "./config/logs.xml"
+)
+
+func Init() (cfg *Config, db *orm.DB, opt *Options, err error) {
+	cfg, err = LoadConfig(ConfigPath)
+	if err != nil {
+		return
+	}
+
+	db, err = InitDB(cfg)
+	if err != nil {
+		return
+	}
+
+	if err = logs.InitFromXMLFile(LogConfigPath); err != nil {
+		return
+	}
+
+	opt, err = loadOptions(db)
+	return
+}
+
 // RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
 // 若v的值是string,[]byte,[]rune则直接转换成字符串写入w。
 // 当v为nil时，不输出任何内容，若需要输出一个空对象，请使用"{}"字符串。

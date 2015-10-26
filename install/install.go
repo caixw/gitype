@@ -23,17 +23,17 @@ import (
 )
 
 // Install 执行安装过程。
-func Install(logConfigPath, configPath string) bool {
+func Install() bool {
 	action := flag.String("init", "", "指定需要初始化的内容，可取的值可以为：config和db。")
 	flag.Parse()
 	switch *action {
 	case "config":
-		if err := outputConfigFile(logConfigPath, configPath); err != nil {
+		if err := outputConfigFile(core.LogConfigPath, core.ConfigPath); err != nil {
 			panic(err)
 		}
 		return true
 	case "db":
-		cfg, err := core.LoadConfig(configPath)
+		cfg, err := core.LoadConfig(core.ConfigPath)
 		if err != nil {
 			panic(err)
 		}

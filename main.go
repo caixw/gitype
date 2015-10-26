@@ -10,7 +10,6 @@ import (
 	"github.com/caixw/typing/install"
 	"github.com/caixw/typing/sitemap"
 	"github.com/caixw/typing/themes"
-	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 	"github.com/issue9/web"
 
@@ -19,35 +18,12 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// 以下为一些源码级别的配置项。
-const (
-	version = "0.2.1.151011" // 版本号
-
-	// 两个配置文件路径
-	configPath    = "./config/app.json"
-	logConfigPath = "./config/logs.xml"
-)
-
 func main() {
-	if install.Install(logConfigPath, configPath) {
+	if install.Install() {
 		return
 	}
 
-	cfg, err := core.LoadConfig(configPath)
-	if err != nil {
-		panic(err)
-	}
-
-	db, err := core.InitDB(cfg)
-	if err != nil {
-		panic(err)
-	}
-
-	if err := logs.InitFromXMLFile(logConfigPath); err != nil {
-		panic(err)
-	}
-
-	opt, err := core.LoadOptions(db)
+	cfg, db, opt, err := core.Init()
 	if err != nil {
 		panic(err)
 	}

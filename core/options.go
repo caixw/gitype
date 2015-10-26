@@ -52,7 +52,7 @@ type Options struct {
 }
 
 // LoadOptions 从options表中加载数据，并将其转换成Options实例。
-func LoadOptions(db *orm.DB) (*Options, error) {
+func loadOptions(db *orm.DB) (*Options, error) {
 	sql := "SELECT * FROM #options"
 	rows, err := db.Query(true, sql)
 	if err != nil {
