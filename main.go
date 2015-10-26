@@ -89,31 +89,13 @@ func initModule(cfg *core.Config) error {
 	if err != nil {
 		return err
 	}
-	initFrontAPIRoutes(m.Prefix(cfg.FrontAPIPrefix))
-
-	// 初始化前端页面路由
-	initFrontPageRoutes(m)
-
-	return nil
-}
-
-func initFrontPageRoutes(m *web.Module) {
-	m.GetFunc("/", pagePosts).
-		GetFunc("/tags", pageTags).
-		GetFunc("/tags/{id}", pageTag).
-		GetFunc("/posts", pagePosts).
-		GetFunc("/posts/{id}", pagePost)
+	themes.InitRoute(m)
 
 	//m.GetFunc("/rss", getRSS).
 	//GetFunc("/rss/posts/{id}", getPostRSS)
 
 	m.GetFunc("/sitemap.xml", sitemap.ServeHTTP)
-}
-
-func initFrontAPIRoutes(front *mux.Prefix) {
-	// post
-	front.PostFunc("/posts/{id:\\d+}/comments", frontPostPostComment).
-		GetFunc("/posts/{id:\\d+}/comments", frontGetPostComments)
+	return nil
 }
 
 func initAdminAPIRoutes(admin *mux.Prefix) {

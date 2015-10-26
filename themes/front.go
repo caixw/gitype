@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package main
+package themes
 
 import (
 	"html"
@@ -19,7 +19,20 @@ import (
 	"github.com/issue9/is"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
+	"github.com/issue9/web"
 )
+
+func InitRoute(m *web.Module) {
+	m.GetFunc("/", pagePosts).
+		GetFunc("/tags", pageTags).
+		GetFunc("/tags/{id}", pageTag).
+		GetFunc("/posts", pagePosts).
+		GetFunc("/posts/{id}", pagePost)
+
+	m.Prefix(cfg.FrontAPIPrefix).
+		PostFunc("/posts/{id:\\d+}/comments", frontPostPostComment).
+		GetFunc("/posts/{id:\\d+}/comments", frontGetPostComments)
+}
 
 func getTagPosts(page int, tagID int64) ([]*themes.Post, error) {
 	posts := make([]*themes.Post, 0, opt.PageSize)
