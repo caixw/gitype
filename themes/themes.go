@@ -117,7 +117,9 @@ func Themes() []*Theme {
 func Switch(themeID string) (err error) {
 	logs.Info("切换当前主题为：", themeID)
 	tpl, err = template.ParseGlob(cfg.ThemeDir + themeID + "/*.html")
+	tpl = tpl.Funcs(funcs)
 	current = themeID
+
 	return
 }
 

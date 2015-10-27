@@ -17,7 +17,7 @@
         <div class="header">最新评论</div>
         <ol class="content">
         {{range .Tops}}
-            <li><a href="{{.Permalink}}">{{.Entry}}</a></li>
+            <li><a href="{{.Permalink}}">{{.Entry|html}}</a></li>
         {{end}}
         </ol>
     </div>

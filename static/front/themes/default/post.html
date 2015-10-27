@@ -9,7 +9,7 @@
             <a class="comments" href="{{.post.Permalink}}#comments">{{.post.CommentsSize}}条评论</a>
         </div>
         <div class="entry">
-            {{.post.Entry}}
+            {{.post.Entry|html}}
         </div>
     </article>
 
@@ -19,7 +19,7 @@
                 <header>
                     <div>{{.AuthorName}}</div>
                 </header>
-                {{.Content}}
+                {{.Content|html}}
             </article>
         {{end}}
     </div>
