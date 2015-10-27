@@ -17,27 +17,27 @@ import (
 )
 
 const (
-	header = `<?xml version="1.0" encoding="utf-8"?>
+	sitemapHeader = `<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`
 
-	footer = `</urlset>`
+	sitemapFooter = `</urlset>`
 )
 
 // Build 构建一个sitemap.xml文件到sitemapPath文件中，若该文件已经存在，则覆盖。
 func BuildSitemap() error {
-	buf := bytes.NewBufferString(header)
+	buf := bytes.NewBufferString(sitemapHeader)
 	buf.Grow(10000)
 
-	if err := addPostsToBuffer(buf, db, opt); err != nil {
+	if err := addPostsToSitemap(buf, db, opt); err != nil {
 		return err
 	}
 
-	if err := addTagsToBuffer(buf, db, opt); err != nil {
+	if err := addTagsToSitemap(buf, db, opt); err != nil {
 		return err
 	}
 
-	buf.WriteString(footer)
+	buf.WriteString(sitemapFooter)
 
 	file, err := os.Create(sitemapPath)
 	if err != nil {
@@ -49,7 +49,7 @@ func BuildSitemap() error {
 	return err
 }
 
-func addPostsToBuffer(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
+func addPostsToSitemap(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
 	sql := "SELECT {id}, {name}, {title}, {summary}, {content}, {created}, {modified} FROM #posts WHERE {state}=?"
 	rows, err := db.Query(true, sql, models.PostStatePublished)
 	if err != nil {
@@ -73,12 +73,12 @@ func addPostsToBuffer(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
 		if err != nil {
 			return err
 		}
-		addItemToBuffer(buf, loc, opt.PostsChangefreq, modified, opt.PostsPriority)
+		addItemToSitemap(buf, loc, opt.PostsChangefreq, modified, opt.PostsPriority)
 	}
 	return nil
 }
 
-func addTagsToBuffer(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
+func addTagsToSitemap(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
 	sql := "SELECT {id}, {name}, {title}, {description} FROM #tags"
 	rows, err := db.Query(true, sql)
 	if err != nil {
@@ -93,12 +93,12 @@ func addTagsToBuffer(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
 	for _, v := range maps {
 		loc := opt.SiteURL + "/tags/" + v["name"]
 
-		addItemToBuffer(buf, loc, opt.TagsChangefreq, time.Now().Unix(), opt.TagsPriority)
+		addItemToSitemap(buf, loc, opt.TagsChangefreq, time.Now().Unix(), opt.TagsPriority)
 	}
 	return nil
 }
 
-func addItemToBuffer(buf *bytes.Buffer, loc, changefreq string, lastmod int64, priority float64) {
+func addItemToSitemap(buf *bytes.Buffer, loc, changefreq string, lastmod int64, priority float64) {
 	buf.WriteString("<url>\n")
 
 	buf.WriteString("<loc>")
