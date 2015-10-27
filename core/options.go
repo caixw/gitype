@@ -39,10 +39,11 @@ type Options struct {
 	DateFormat   string `options:"reading,dateFormat"`   // 前端日期格式
 	CommentOrder int    `options:"reading,commentOrder"` // 评论显示的顺序
 
-	PostsChangefreq string  `options:"sitemap,postsChangefreq"`
-	TagsChangefreq  string  `options:"sitemap,tagsChangefreq"`
-	PostsPriority   float64 `options:"sitemap,postsPriority"`
-	TagsPriority    float64 `options:"sitemap,tagsPriority"`
+	PostsChangefreq string  `options:"feed,postsChangefreq"`
+	TagsChangefreq  string  `options:"feed,tagsChangefreq"`
+	PostsPriority   float64 `options:"feed,postsPriority"`
+	TagsPriority    float64 `options:"feed,tagsPriority"`
+	RssSize         int     `options:"feed,rssSize"` // rss和atom的数量
 
 	Theme string `options:"themes,theme"` // 主题
 

@@ -47,8 +47,11 @@ func BuildRss() error {
 }
 
 func addPostsToRss(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
-	sql := "SELECT {id}, {name}, {title}, {summary}, {content}, {created}, {modified} FROM #posts WHERE {state}=?"
-	rows, err := db.Query(true, sql, models.PostStatePublished)
+	sql := `SELECT {id}, {name}, {title}, {summary}, {content}, {created}, {modified}
+	FROM #posts
+	WHERE {state}=?
+	LIMIT ?`
+	rows, err := db.Query(true, sql, models.PostStatePublished, opt.RssSize)
 	if err != nil {
 		return err
 	}

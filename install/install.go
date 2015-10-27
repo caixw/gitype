@@ -201,6 +201,7 @@ func fillOptions(db *orm.DB) error {
 		TagsChangefreq:  "daily",
 		PostsPriority:   0.9,
 		TagsPriority:    0.4,
+		RssSize:         20,
 
 		Theme: "default",
 	}
