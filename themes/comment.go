@@ -4,10 +4,7 @@
 
 package themes
 
-import (
-	"strconv"
-	"time"
-)
+import "strconv"
 
 type Comment struct {
 	post *Post
@@ -20,10 +17,6 @@ type Comment struct {
 	IsAdmin    bool
 	AuthorName string
 	AuthorURL  string
-}
-
-func (c *Comment) CreatedFormat() string {
-	return time.Unix(c.Created, 0).Format(opt.DateFormat)
 }
 
 func (c *Comment) Permalink() string {

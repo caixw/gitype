@@ -116,17 +116,20 @@ func Themes() []*Theme {
 // 切换主题，若themeID与当前主题相同，则为重新加载其模板。
 func Switch(themeID string) (err error) {
 	logs.Info("切换当前主题为：", themeID)
-	tpl, err = template.ParseGlob(cfg.ThemeDir + themeID + "/*.html")
-	tpl = tpl.Funcs(funcs)
 	current = themeID
+	tpl, err = template.New("").
+		Funcs(funcMap).
+		ParseGlob(cfg.ThemeDir + themeID + "/*.html")
 
-	return
+	return err
 }
 
 // 输出指定模板
 func render(w http.ResponseWriter, name string, data interface{}) {
 	if cfg.Debug { // 调试状态下，实时加载模板
-		Switch(current)
+		if err := Switch(current); err != nil {
+			logs.Error("themes.render:", err)
+		}
 	}
 
 	err := tpl.ExecuteTemplate(w, name, data)

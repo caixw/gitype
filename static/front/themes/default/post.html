@@ -5,7 +5,7 @@
     <article>
         <h1 class="title"><a href="{{.post.Permalink}}">{{.post.Title}}</a></h1>
         <div class="meta">
-            <time>{{.post.CreatedFormat}}</time>
+            <time>{{.post.Created|date}}</time>
             <a class="comments" href="{{.post.Permalink}}#comments">{{.post.CommentsSize}}条评论</a>
         </div>
         <div class="entry">

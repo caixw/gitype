@@ -6,7 +6,6 @@ package themes
 
 import (
 	"strconv"
-	"time"
 
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/models"
@@ -26,14 +25,6 @@ type Post struct {
 	Created      int64  // 创建时间
 	Modified     int64  // 修改时间
 	AllowComment bool   // 是否允许评论
-}
-
-func (p *Post) CreatedFormat() string {
-	return time.Unix(p.Created, 0).Format(opt.DateFormat)
-}
-
-func (p *Post) ModifiedFormat() string {
-	return time.Unix(p.Modified, 0).Format(opt.DateFormat)
 }
 
 // 返回文章的摘要或是具体内容。

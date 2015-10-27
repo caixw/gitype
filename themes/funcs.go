@@ -4,8 +4,20 @@
 
 package themes
 
-import "html/template"
+import (
+	"html/template"
+	"time"
+)
 
-func htmlEscaped(x string) interface{} { return template.HTML(x) }
+func dateFormat(t int64) interface{} {
+	return time.Unix(t, 0).Format(opt.DateFormat)
+}
 
-var funcs = template.FuncMap{"html": htmlEscaped}
+func htmlEscaped(html string) interface{} {
+	return template.HTML(html)
+}
+
+var funcMap = template.FuncMap{
+	"html": htmlEscaped,
+	"date": dateFormat,
+}
