@@ -1,14 +1,14 @@
 {{define "tags"}}
-{{template "header" .}}
+{{template "header" .info}}
 
 <div class="container tags">
     <h1>标签</h1>
 
-    {{range .Tags}}
-        <a class="tag" href="{{.Permalink}}">{{.Title}}</a>
+    {{range .tags}}
+        <a data-count="{{.Count}}" class="tag" href="{{.Permalink}}">{{.Title}}</a>
     {{end}}
 
 </div>
 
-{{template "footer" .}}
+{{template "footer" .info}}
 {{end}}

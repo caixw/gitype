@@ -12,18 +12,18 @@
     </div>
 
     <div class="block">
-        <div class="header">标签</div>
+        <div class="header">最新评论</div>
         <ol class="content">
-        {{range .Tags}}
+        {{range .Tops}}
             <li><a href="{{.Permalink}}">{{.Title}}</a></li>
         {{end}}
         </ol>
     </div>
 
     <div class="block">
-        <div class="header">最新评论</div>
+        <div class="header">最热门文章</div>
         <ol class="content">
-        {{range .Topics}}
+        {{range .Hots}}
             <li><a href="{{.Permalink}}">{{.Title}}</a></li>
         {{end}}
         </ol>

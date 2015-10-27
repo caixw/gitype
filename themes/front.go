@@ -71,7 +71,7 @@ func getPosts(page int) ([]*Post, error) {
 
 // 首页或是列表页
 func pagePosts(w http.ResponseWriter, r *http.Request) {
-	info, err := GetInfo()
+	info, err := getInfo()
 	if err != nil {
 		logs.Error("pagePosts:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -95,8 +95,9 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 	render(w, "list", data)
 }
 
+// /tags
 func pageTags(w http.ResponseWriter, r *http.Request) {
-	info, err := GetInfo()
+	info, err := getInfo()
 	if err != nil {
 		logs.Error("pageTags:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -105,11 +106,37 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 	info.Canonical = opt.SiteURL + "tags"
 	info.Title = "标签"
 
-	render(w, "tags", info)
+	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title FROM #tags`
+	rows, err := db.Query(true, sql)
+	if err != nil {
+		logs.Error("pageTags:", err)
+		w.WriteHeader(500)
+		return
+	}
+	defer rows.Close()
+
+	tags := make([]*Tag, 0, 100)
+	if _, err = fetch.Obj(&tags, rows); err != nil {
+		logs.Error("pageTags:", err)
+		w.WriteHeader(500)
+		return
+	}
+
+	for _, tag := range tags {
+		sql := db.Where("tagID=?", tag.ID).Table("#relationships")
+		tag.Count, err = sql.Count(true)
+		if err != nil {
+			logs.Error("pageTags:", err)
+			w.WriteHeader(500)
+			return
+		}
+	}
+	render(w, "tags", map[string]interface{}{"info": info, "tags": tags})
 }
 
+// /tags/1
 func pageTag(w http.ResponseWriter, r *http.Request) {
-	info, err := GetInfo()
+	info, err := getInfo()
 	if err != nil {
 		logs.Error("pageTags:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -145,6 +172,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	render(w, "tag", data)
 }
 
+// /posts/1.html
 func pagePost(w http.ResponseWriter, r *http.Request) {
 	idStr, ok := core.ParamString(w, r, "id")
 	idStr = strings.TrimSuffix(idStr, opt.Suffix)
@@ -191,7 +219,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		AllowComment: mp.AllowComment,
 	}
 
-	info, err := GetInfo()
+	info, err := getInfo()
 	if err != nil {
 		logs.Error("pagePost:", err)
 		w.WriteHeader(http.StatusInternalServerError)

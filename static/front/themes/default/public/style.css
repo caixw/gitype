@@ -93,6 +93,10 @@ a:hover{
     color:#bbdefb;
 }
 
+#sidebar .block{
+    margin-bottom:2em;    
+}
+
 #sidebar .container{
     padding:1em 1em 1em 2em;
 }

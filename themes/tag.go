@@ -5,9 +5,11 @@
 package themes
 
 type Tag struct {
+	ID          int64
 	Name        string
 	Title       string
 	Description string
+	Count       int // 关联的文章数量
 }
 
 func (t *Tag) Permalink() string {

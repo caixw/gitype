@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strconv"
 
+	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/models"
 	"github.com/issue9/orm/fetch"
 )
@@ -27,16 +28,17 @@ type Info struct {
 	PostSize    int     // 文章数量
 	CommentSize int     // 评论数量
 	Tags        []*Tag  // 标签列表
-	Topics      []*Post // 最新评论的10条内容
+	Tops        []*Post // 最新评论的10条内容
 	Hots        []*Post // 评论最多的10条内容
 }
 
-func GetInfo() (*Info, error) {
+func getInfo() (*Info, error) {
 	p := &Info{
 		SiteName:    opt.SiteName,
 		SecondTitle: opt.SecondTitle,
 		Keywords:    opt.Keywords,
 		Description: opt.Description,
+		AppVersion:  core.Version,
 		GoVersion:   runtime.Version(),
 	}
 
@@ -55,7 +57,7 @@ func GetInfo() (*Info, error) {
 		return nil, err
 	}
 
-	if p.Topics, err = getTopics(); err != nil {
+	if p.Tops, err = getTops(); err != nil {
 		return nil, err
 	}
 
@@ -75,7 +77,7 @@ func getSize(sql string, args ...interface{}) (int, error) {
 	return strconv.Atoi(cnts[0])
 }
 
-func getTopics() ([]*Post, error) {
+func getTops() ([]*Post, error) {
 	sql := `SELECT c.{content} AS Content, p.{title} AS Tilte, p.{name} AS Name, p.{id} AS ID
 	FROM #comments AS c
 	LEFT JOIN #posts AS p ON c.{postID}=p.{id}
