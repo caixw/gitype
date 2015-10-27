@@ -25,7 +25,7 @@ const (
 </rss>`
 )
 
-// Build 构建一个sitemap.xml文件到sitemapPath文件中，若该文件已经存在，则覆盖。
+// Build 构建一个rss.xml文件到rssPath文件中，若该文件已经存在，则覆盖。
 func BuildRss() error {
 	buf := bytes.NewBufferString(rssHeader)
 	buf.Grow(10000)
@@ -36,7 +36,7 @@ func BuildRss() error {
 
 	buf.WriteString(rssFooter)
 
-	file, err := os.Create(sitemapPath)
+	file, err := os.Create(rssPath)
 	if err != nil {
 		return err
 	}
