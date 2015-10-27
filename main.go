@@ -7,8 +7,8 @@ package main
 import (
 	"github.com/caixw/typing/admin"
 	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/feed"
 	"github.com/caixw/typing/install"
-	"github.com/caixw/typing/sitemap"
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/mux"
 	"github.com/issue9/web"
@@ -32,8 +32,8 @@ func main() {
 		panic(err)
 	}
 
-	// 初始化sitemap
-	if err = sitemap.Init(cfg.TempDir + "sitemap.xml"); err != nil {
+	// 初始化feed
+	if err = feed.Init(cfg.TempDir, db, opt); err != nil {
 		panic(err)
 	}
 
@@ -65,8 +65,6 @@ func initModule(cfg *core.Config) error {
 	}
 	themes.InitRoute(m)
 
-	//m.GetFunc("/rss", getRSS).
-	//GetFunc("/rss/posts/{id}", getPostRSS)
-	m.GetFunc("/sitemap.xml", sitemap.ServeHTTP)
+	feed.InitRoute(m)
 	return nil
 }

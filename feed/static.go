@@ -1,4 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+// 该文件由make.go自动生成，请勿手动修改！
+
+package feed
+
+var files=[]byte(`<?xml version="1.0" encoding="utf-8"?>
 <!--
 为sitemap.xml产生一个比较美观的人机界面。
 
@@ -16,7 +20,7 @@
 <head>
 <title>XML Sitemap</title>
 <meta charset="utf-8" />
-<meta name="generator" content="http://www.830725.com" />
+<meta name="generator" content="http://caixw.io" />
 <style type="text/css">
 a{text-decoration:none;color:#123}
 a:hover{text-decoration:underline;color:#c96}
@@ -91,3 +95,4 @@ tbody tr:hover{background:#ddd}
 </xsl:template>
 
 </xsl:stylesheet>
+`)
