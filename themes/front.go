@@ -192,7 +192,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if mp.State != models.PostStatePublished {
+	if len(mp.Title) == 0 || mp.State != models.PostStatePublished {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
