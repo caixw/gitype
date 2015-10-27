@@ -153,6 +153,10 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	if len(tag.Title) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
 
 	page := conv.MustInt(r.FormValue("page"), 1)
 	if page < 1 { // 不能小于1
