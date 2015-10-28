@@ -18,7 +18,7 @@ import (
 
 const (
 	atomHeader = `<?xml version="1.0" encoding="utf-8"?>
-feed xmlns="http://www.w3.org/2005/Atom"`
+<feed xmlns="http://www.w3.org/2005/Atom>"`
 
 	atomFooter = `</feed>`
 )
