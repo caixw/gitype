@@ -162,9 +162,9 @@ func fillDB(db *orm.DB) error {
 
 func fillTags(db *orm.DB) error {
 	tags := []*models.Tag{
-		{Name: "tag1", Title: "标签一", Description: "<h5>tag1</h5>"},
-		{Name: "tag2", Title: "标签二", Description: "<h5>tag2</h5>"},
-		{Name: "tag3", Title: "标签三", Description: "<h5>tag3</h5>"},
+		{Name: "default", Title: "默认标签", Description: "这是系统产生的默认标签"},
+		{Name: "tag1", Title: "标签一", Description: "tag1"},
+		{Name: "tag2", Title: "标签二", Description: "tag2"},
 	}
 	tx, err := db.Begin()
 	if err != nil {
