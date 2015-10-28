@@ -24,7 +24,7 @@ type Config struct {
 	DBDriver string `json:"dbDriver"` // 数据库类型，可以是mysql, sqlite3, postgresql
 
 	FrontAPIPrefix string `json:"frontAPIPrefix"` // 前端api地址前缀
-	AdminAPIPrefix string `json:"adminAPIPrefix"` // 后台api地址前经
+	AdminAPIPrefix string `json:"adminAPIPrefix"` // 后台api地址前缀
 
 	ThemeURLPrefix string `json:"themeURLPrefix"` // 各主题公开文件的根URL
 	ThemeDir       string `json:"themeDir"`       // 主题文件所在的目录
