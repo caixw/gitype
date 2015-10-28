@@ -3,9 +3,11 @@
 /*
  * 主要用到以下颜色：
  *
- * #1976d2  dark primary color
- * #2196f3  primary color
- * #bbdefb  light primary color
+ * 从以下调色板取色： http://www.materialpalette.com/
+ *
+ * #00796b  dark primary color
+ * #009688  primary color
+ * #b2dfdb  light primary color
  * #ffffff  text/icons
  *
  * #00bcd4  accent color
@@ -86,15 +88,15 @@ a:hover{
     width:17em;
     height:100%;
     position:fixed;
-    background:#2196f3;
-    color:#bbdefb
+    background:#009688;
+    color:#b2dfdb
 }
 #sidebar a{
-    color:#bbdefb;
+    color:#b2dfdb;
 }
 
 #sidebar .block{
-    margin-bottom:2em;    
+    margin-bottom:2em;
 }
 
 #sidebar .container{
