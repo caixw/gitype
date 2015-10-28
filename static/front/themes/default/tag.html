@@ -7,7 +7,7 @@
         <header>
             <h2>{{.tag.Title}}</h2>
         </header>
-        {{.tag.Description}}
+        {{.tag.Description|html}}
     </article>
 
     <div class="list">
@@ -19,13 +19,18 @@
                 <a class="comments" href="{{.Permalink}}#comments">{{.CommentsSize}}条评论</a>
             </div>
             <div class="entry">
-                {{.Entry}}
+                {{.Entry|html}}
             </div>
         </article>
         {{end}}
     </div>
 
+    <div class="pages">
+        <a href="">下一页</a>
+    </div>
+
 </div>
+
 
 {{template "footer" .info}}
 {{end}}

@@ -16,16 +16,18 @@
  * #b6b6b6  divider color
  */
 
+/*********************** reset */
 body{
     margin:0 auto;
+    background:#000;
 }
 
 a{
-    text-decoration: none;
-    color:#212121;
+    text-decoration:none;
+    color:#00bcd4;
 }
 a:hover{
-    color:#00bcd4;
+    text-decoration:underline;
 }
 
 /********************** content */
@@ -51,6 +53,13 @@ a:hover{
     margin:0.6em 0em;
     float:left;
     font-size:1.8em;
+}
+#content .list article .title a{
+    color:#212121;
+}
+#content .list article .title a:hover{
+    text-decoration:none;
+    color:#00bcd4;
 }
 #content .list article .meta{
     color:#727272;

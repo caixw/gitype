@@ -20,6 +20,8 @@ type Info struct {
 	SiteName    string // 网站名称
 	SecondTitle string // 副标题
 	Canonical   string // 当前页的唯一链接
+	RSS         string // RSS
+	Atom        string // Atom
 	Keywords    string // meta.keywords的值
 	Description string // meta.description的值
 	AppVersion  string // 当前程序的版本号
