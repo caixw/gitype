@@ -16,6 +16,7 @@ import (
 // 页面的基本信息
 type Info struct {
 	Title       string // 网页的title值
+	SiteURL     string // 网站地址
 	SiteName    string // 网站名称
 	SecondTitle string // 副标题
 	Canonical   string // 当前页的唯一链接
@@ -34,6 +35,7 @@ type Info struct {
 
 func getInfo() (*Info, error) {
 	p := &Info{
+		SiteURL:     opt.SiteURL,
 		SiteName:    opt.SiteName,
 		SecondTitle: opt.SecondTitle,
 		Keywords:    opt.Keywords,

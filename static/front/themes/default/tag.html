@@ -1,7 +1,7 @@
 {{define "tag"}}
 {{template "header" .info}}
 
-<div class="container tag">
+<div class="tag">
 
     <article>
         <header>
@@ -15,7 +15,7 @@
         <article>
             <h2 class="title"><a href="{{.Permalink}}">{{.Title}}</a></h2>
             <div class="meta">
-                <time>{{.CreatedFormat}}</time>
+                <time>{{.Created|date}}</time>
                 <a class="comments" href="{{.Permalink}}#comments">{{.CommentsSize}}条评论</a>
             </div>
             <div class="entry">

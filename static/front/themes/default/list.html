@@ -1,7 +1,7 @@
 {{define "list"}}
 {{template "header" .info}}
 
-<div class="container list">
+<div class="list">
     {{range .posts}}
     <article>
         <h2 class="title"><a href="{{.Permalink}}">{{.Title}}</a></h2>
