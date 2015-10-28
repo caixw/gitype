@@ -35,8 +35,8 @@ func InitRoute(m *web.Module) {
 
 func getTagPosts(page int, tagID int64) ([]*Post, error) {
 	posts := make([]*Post, 0, opt.PageSize)
-	sql := `SELECT p.{id} AS ID, p.{name} AS Name,
-		p.{title} AS Title, p.{summary} AS Summary, p.{created} AS Created, p.{allowComment} AS AllowComment
+	sql := `SELECT p.{id} AS ID, p.{name} AS Name, p.{title} AS Title, p.{summary} AS Summary,
+		p.{content} as Content, p.{created} AS Created, p.{allowComment} AS AllowComment
 		FROM #relationships AS r
 		LEFT JOIN #posts AS p ON p.{id}=r.{postID}
 		WHERE p.{state}=? AND r.{tagID}=?
@@ -54,7 +54,8 @@ func getTagPosts(page int, tagID int64) ([]*Post, error) {
 
 func getPosts(page int) ([]*Post, error) {
 	posts := make([]*Post, 0, opt.PageSize)
-	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary, {created} AS Created, {allowComment} AS AllowComment
+	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary,
+	p.{content} AS Content, {created} AS Created, {allowComment} AS AllowComment
 	FROM #posts
 	WHERE {state}=?
 	ORDER BY {order} DESC
@@ -136,27 +137,35 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 
 // /tags/1
 func pageTag(w http.ResponseWriter, r *http.Request) {
-	info, err := getInfo()
-	if err != nil {
-		logs.Error("pageTags:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
 	tagName, ok := core.ParamString(w, r, "id")
 	if !ok {
 		return
 	}
-	tag := &models.Tag{Name: tagName}
-	if err := db.Select(tag); err != nil {
-		logs.Error("pageTags:", err)
+	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {description} AS Description FROM #tags WHERE {name}=?`
+	rows, err := db.Query(true, sql, tagName)
+	if err != nil {
+		logs.Error("pageTag:", err)
+		w.WriteHeader(500)
+		return
+	}
+	defer rows.Close()
+
+	tag := &Tag{}
+	if _, err = fetch.Obj(tag, rows); err != nil {
+		logs.Error("pageTag:", err)
+		w.WriteHeader(500)
+		return
+	}
+
+	info, err := getInfo()
+	if err != nil {
+		logs.Error("pageTag:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if len(tag.Title) == 0 {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
+
+	info.Canonical = tag.Permalink()
+	info.Title = tag.Title
 
 	page := conv.MustInt(r.FormValue("page"), 1)
 	if page < 1 { // 不能小于1
@@ -164,10 +173,11 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	}
 	posts, err := getTagPosts(page-1, tag.ID)
 	if err != nil {
-		logs.Error("pageTags:", err)
+		logs.Error("pageTag:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
 	data := map[string]interface{}{
 		"info":  info,
 		"tag":   tag,
@@ -229,6 +239,9 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	info.Canonical = post.Permalink()
+	info.Title = post.Title
+
 	data := map[string]interface{}{
 		"info": info,
 		"post": post,
