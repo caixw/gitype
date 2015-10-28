@@ -55,7 +55,7 @@ func getTagPosts(page int, tagID int64) ([]*Post, error) {
 func getPosts(page int) ([]*Post, error) {
 	posts := make([]*Post, 0, opt.PageSize)
 	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary,
-	p.{content} AS Content, {created} AS Created, {allowComment} AS AllowComment
+	{content} AS Content, {created} AS Created, {allowComment} AS AllowComment
 	FROM #posts
 	WHERE {state}=?
 	ORDER BY {order} DESC
