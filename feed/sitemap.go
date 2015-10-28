@@ -12,6 +12,7 @@ import (
 
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/models"
+	"github.com/caixw/typing/themes"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
 )
@@ -50,50 +51,42 @@ func BuildSitemap() error {
 }
 
 func addPostsToSitemap(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
-	sql := "SELECT {id}, {name}, {title}, {summary}, {content}, {created}, {modified} FROM #posts WHERE {state}=?"
+	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary,
+		{content} AS Content, {created} AS Created, {modified} AS Modified
+		FROM #posts WHERE {state}=?`
 	rows, err := db.Query(true, sql, models.PostStatePublished)
 	if err != nil {
 		return err
 	}
-	maps, err := fetch.MapString(false, rows)
-	rows.Close()
-	if err != nil {
+	defer rows.Close()
+
+	posts := make([]*themes.Post, 0, 100)
+	if _, err := fetch.Obj(&posts, rows); err != nil {
 		return err
 	}
 
-	for _, v := range maps {
-		loc := opt.SiteURL + "/posts/"
-		if len(v["name"]) > 0 {
-			loc += v["name"]
-		} else {
-			loc += v["id"]
-		}
-
-		modified, err := strconv.ParseInt(v["modified"], 10, 64)
-		if err != nil {
-			return err
-		}
-		addItemToSitemap(buf, loc, opt.PostsChangefreq, modified, opt.PostsPriority)
+	for _, p := range posts {
+		addItemToSitemap(buf, p.Permalink(), opt.PostsChangefreq, p.Modified, opt.PostsPriority)
 	}
 	return nil
 }
 
 func addTagsToSitemap(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
-	sql := "SELECT {id}, {name}, {title}, {description} FROM #tags"
+	sql := "SELECT {id} AS ID, {name} AS Name, {title} AS Title, {description} AS Description FROM #tags"
 	rows, err := db.Query(true, sql)
 	if err != nil {
 		return err
 	}
-	maps, err := fetch.MapString(false, rows)
-	rows.Close()
-	if err != nil {
+	defer rows.Close()
+
+	tags := make([]*themes.Tag, 0, 100)
+	if _, err := fetch.Obj(&tags, rows); err != nil {
 		return err
 	}
 
-	for _, v := range maps {
-		loc := opt.SiteURL + "/tags/" + v["name"]
-
-		addItemToSitemap(buf, loc, opt.TagsChangefreq, time.Now().Unix(), opt.TagsPriority)
+	now := time.Now().Unix()
+	for _, tag := range tags {
+		addItemToSitemap(buf, tag.Permalink(), opt.TagsChangefreq, now, opt.TagsPriority)
 	}
 	return nil
 }

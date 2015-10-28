@@ -7,11 +7,11 @@ package feed
 import (
 	"bytes"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/models"
+	"github.com/caixw/typing/themes"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
 )
@@ -47,33 +47,22 @@ func BuildRss() error {
 }
 
 func addPostsToRss(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
-	sql := `SELECT {id}, {name}, {title}, {summary}, {content}, {created}, {modified}
-	FROM #posts
-	WHERE {state}=?
-	LIMIT ?`
+	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary,
+		{content} AS Content, {created} AS Created, {modified} AS Modified
+		FROM #posts WHERE {state}=? LIMIT ?`
 	rows, err := db.Query(true, sql, models.PostStatePublished, opt.RssSize)
 	if err != nil {
 		return err
 	}
-	maps, err := fetch.MapString(false, rows)
-	rows.Close()
-	if err != nil {
+	defer rows.Close()
+
+	posts := make([]*themes.Post, 0, 100)
+	if _, err := fetch.Obj(&posts, rows); err != nil {
 		return err
 	}
 
-	for _, v := range maps {
-		link := opt.SiteURL + "/posts/"
-		if len(v["name"]) > 0 {
-			link += v["name"]
-		} else {
-			link += v["id"]
-		}
-
-		modified, err := strconv.ParseInt(v["modified"], 10, 64)
-		if err != nil {
-			return err
-		}
-		addItemToRss(buf, link, v["title"], v["summary"], modified)
+	for _, p := range posts {
+		addItemToRss(buf, p.Permalink(), p.Title, p.Entry(), p.Modified)
 	}
 	return nil
 }
