@@ -212,7 +212,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// commentsSize
-	rs := &models.Relationship{PostID: mp.ID}
+	rs := &models.Comment{PostID: mp.ID}
 	commentsSize, err := db.Count(rs)
 	if err != nil {
 		logs.Error("pagePost:", err)
