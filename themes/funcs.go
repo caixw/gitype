@@ -6,8 +6,16 @@ package themes
 
 import (
 	"html/template"
+	"regexp"
 	"time"
 )
+
+// 去掉所有的标签信息
+var stripExpr = regexp.MustCompile("</?[^</>]+/?>")
+
+func stripTags(html string) string {
+	return stripExpr.ReplaceAllString(html, "")
+}
 
 func dateFormat(t int64) interface{} {
 	return time.Unix(t, 0).Format(opt.DateFormat)
@@ -18,6 +26,7 @@ func htmlEscaped(html string) interface{} {
 }
 
 var funcMap = template.FuncMap{
-	"html": htmlEscaped,
-	"date": dateFormat,
+	"html":  htmlEscaped,
+	"date":  dateFormat,
+	"strip": stripTags,
 }
