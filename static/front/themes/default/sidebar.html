@@ -15,11 +15,11 @@
     {{if gt $len 0}}
     <div class="block">
         <div class="header">最新评论</div>
-        <ol class="content">
+        <ul class="content">
         {{range .Tops}}
             <li><a href="{{.Permalink}}">{{.Entry|html}}</a></li>
         {{end}}
-        </ol>
+        </ul>
     </div>
     {{end}}
 
@@ -27,16 +27,16 @@
     {{if gt $len 0}}
     <div class="block">
         <div class="header">最热门文章</div>
-        <ol class="content">
+        <ul class="content">
         {{range .Hots}}
             <li><a href="{{.Permalink}}">{{.Title}}</a></li>
         {{end}}
-        </ol>
+        </ul>
     </div>
     {{end}}
 
     <div class="block">
-        <div class="hader">数据</div>
+        <div class="hader">站点数据</div>
         <div class="content">
             <p>文章数量:{{.PostSize}}</p>
             <p>评论数量:{{.CommentSize}}</p>

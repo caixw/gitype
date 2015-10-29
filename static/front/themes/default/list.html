@@ -10,7 +10,7 @@
             <a class="comments" href="{{.Permalink}}#comments">{{.CommentsSize}}条评论</a>
         </div>
         <div class="entry">
-            {{.Entry}}
+            {{.Entry|html}}
         </div>
     </article>
     {{end}}

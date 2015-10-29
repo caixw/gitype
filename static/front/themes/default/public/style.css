@@ -30,6 +30,13 @@ a:hover{
     text-decoration:underline;
 }
 
+ol,ul{
+    padding-left:0.5em;
+}
+li{
+    list-style:none outside;
+}
+
 /********************** content */
 #content{
     background:#fff;
