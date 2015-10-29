@@ -15,19 +15,18 @@ import (
 
 // 页面的基本信息
 type Info struct {
-	Title       string // 网页的title值
-	SiteURL     string // 网站地址
-	SiteName    string // 网站名称
-	SecondTitle string // 副标题
-	Canonical   string // 当前页的唯一链接
-	RSS         string // RSS
-	Atom        string // Atom
-	Keywords    string // meta.keywords的值
-	Description string // meta.description的值
-	AppVersion  string // 当前程序的版本号
-	GoVersion   string // 编译的go版本号
-	Author      string // 作者名称
-
+	Title       string  // 网页的title值
+	SiteURL     string  // 网站地址
+	SiteName    string  // 网站名称
+	SecondTitle string  // 副标题
+	Canonical   string  // 当前页的唯一链接
+	RSSURL      string  // RSS
+	AtomURL     string  // Atom
+	Keywords    string  // meta.keywords的值
+	Description string  // meta.description的值
+	AppVersion  string  // 当前程序的版本号
+	GoVersion   string  // 编译的go版本号
+	Page        int     // 页码
 	PostSize    int     // 文章数量
 	CommentSize int     // 评论数量
 	Tags        []*Tag  // 标签列表

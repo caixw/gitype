@@ -26,7 +26,7 @@
     {{$len := len .Hots}}
     {{if gt $len 0}}
     <div class="block">
-        <div class="header">最热门文章</div>
+        <div class="header">热门文章</div>
         <ul class="content">
         {{range .Hots}}
             <li><a href="{{.Permalink}}">{{.Title}}</a></li>
@@ -36,11 +36,11 @@
     {{end}}
 
     <div class="block">
-        <div class="hader">站点数据</div>
-        <div class="content">
-            <p>文章数量:{{.PostSize}}</p>
-            <p>评论数量:{{.CommentSize}}</p>
-        </div>
+        <div class="header">站点数据</div>
+        <ul class="content">
+            <li>文章数量:{{.PostSize}}</li>
+            <li>评论数量:{{.CommentSize}}</li>
+        </ul>
     </div>
 
 </div>

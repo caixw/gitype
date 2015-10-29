@@ -35,6 +35,7 @@ ol,ul{
 }
 li{
     list-style:none outside;
+    margin:0.5em 0;
 }
 
 /********************** content */
