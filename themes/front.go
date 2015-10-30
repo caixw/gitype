@@ -93,7 +93,7 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 		"info":  info,
 		"posts": posts,
 	}
-	render(w, "list", data)
+	render(w, "posts", data)
 }
 
 // /tags

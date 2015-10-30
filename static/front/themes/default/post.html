@@ -13,8 +13,11 @@
         </div>
     </article>
 
+    {{$len := len .post.Comments}}
+    {{if gt $len 0}}
     <div id="comments">
-        {{range .post.Comments 1}}
+        <h2 class="title">评论</h2>
+        {{range .post.Comments}}
             <article id="comments-{{.ID}}">
                 <header>
                     <div>{{.AuthorName}}</div>
@@ -23,6 +26,7 @@
             </article>
         {{end}}
     </div>
+    {{end}}
 </div>
 
 {{template "footer" .info}}

@@ -90,14 +90,20 @@ li{
     margin:0.5em;
 }
 
+#comments .title{
+    margin-top:1em;
+    border-bottom:1px solid #b6b6b6;
+    padding-bottom:0.2em;
+}
+
 /********************** footer */
-#content #footer{
+#footer{
     margin-top:1.5em;
     border-top:1px solid #b6b6b6;
     padding:1em 0em;
 }
 
-#content #footer p{
+#footer p{
     margin-top:0em;
 }
 

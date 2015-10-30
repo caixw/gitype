@@ -66,11 +66,7 @@ func (p *Post) Tags() []*Tag {
 }
 
 // 返回文章的评论信息。
-func (p *Post) Comments(page int) []*Comment {
-	if page < 1 {
-		page = 1
-	}
-
+func (p *Post) Comments() []*Comment {
 	sql := `SELECT {id} AS ID, {created} AS Created, {agent} AS Agent, {content} AS Content,
 	{isAdmin} AS IsAdmin, {authorName} AS AuthorName,{authorURL} AS AuthorURL
 	FROM #comments
@@ -79,9 +75,8 @@ func (p *Post) Comments(page int) []*Comment {
 	if opt.CommentOrder == core.CommentOrderDesc {
 		sql += `DESC `
 	}
-	sql += `LIMIT ? OFFSET ?`
 
-	rows, err := db.Query(true, sql, p.ID, models.CommentStateApproved, opt.PageSize, opt.PageSize*page)
+	rows, err := db.Query(true, sql, p.ID, models.CommentStateApproved)
 	if err != nil {
 		logs.Error("themes.Post.Comment:", err)
 		return nil
