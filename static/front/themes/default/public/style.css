@@ -79,7 +79,7 @@ li{
     float:right;
     text-align:right;
     top:0;
-    position:relative;;
+    position:relative;
 }
 #content .list article .meta *{
     display:block;
@@ -102,33 +102,71 @@ li{
     padding-bottom:0.2em;
 }
 
-#comments input, #comments textarea{
-    border:1px solid #b6b6b6;
-    padding:0.5em;
-}
-
 #comments form{
     margin-bottom:1.5em;
 }
 
 #comments .meta{
     margin-bottom:1em;
+    display:flex;
 }
 
-#comments input{
-    width:33%;
+#comments .meta input{
+    border:1px solid #b6b6b6;
+    padding:0.5em;
+    outline:none;
+    margin:0em 0.2em;
+    width:33.33%;
     display:-webkit-inline-box;
-    display:-moz--inline-box;
+    display:-moz-inline-box;
     display:inline-box;
     box-sizing:border-box;
 }
 
+#comments .meta input:first-child{
+    margin-left:0;
+}
+
+#comments .meta input:last-child{
+    margin-right:0;
+}
+
+#comments input:focus{
+    border:1px solid #009688;
+}
+
 #comments textarea{
+    border:1px solid #b6b6b6;
+    padding:0.5em;
+    outline:none;
     width:100%;
+    resize:vertical;
     display:-webkit-box;
-    display:-moz--box;
+    display:-moz-box;
     display:box;
     box-sizing:border-box;
+}
+#comments textarea:focus{
+    border:1px solid #009688;
+}
+
+#comments .buttons{
+    text-align:right;
+    padding:1em 0em;
+}
+
+#comments .buttons button{
+    outline:none;
+    font-size:1.1em;
+    background:#009688;
+    color:#fff;
+    text-align:center;
+    padding:.4em 1em;
+    border:none;
+    cursor:pointer;
+}
+#comments .buttons button:hover{
+    background:#00796b;
 }
 
 /********************** footer */
