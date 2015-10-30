@@ -33,9 +33,14 @@ a:hover{
 ol,ul{
     padding-left:0.5em;
 }
+
 li{
     list-style:none outside;
     margin:0.5em 0;
+}
+
+.clearfix{
+    clear:both;
 }
 
 /********************** content */
@@ -84,16 +89,46 @@ li{
     clear:both;
 }
 
-
-
 #content .tags .tag{
     margin:0.5em;
 }
 
+/********************** #comment */
+
 #comments .title{
-    margin-top:1em;
+    font-size:1.2em;
+    margin-top:1.5em;
     border-bottom:1px solid #b6b6b6;
     padding-bottom:0.2em;
+}
+
+#comments input, #comments textarea{
+    border:1px solid #b6b6b6;
+    padding:0.5em;
+}
+
+#comments form{
+    margin-bottom:1.5em;
+}
+
+#comments .meta{
+    margin-bottom:1em;
+}
+
+#comments input{
+    width:33%;
+    display:-webkit-inline-box;
+    display:-moz--inline-box;
+    display:inline-box;
+    box-sizing:border-box;
+}
+
+#comments textarea{
+    width:100%;
+    display:-webkit-box;
+    display:-moz--box;
+    display:box;
+    box-sizing:border-box;
 }
 
 /********************** footer */

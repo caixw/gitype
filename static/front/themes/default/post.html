@@ -13,20 +13,28 @@
         </div>
     </article>
 
-    {{$len := len .post.Comments}}
-    {{if gt $len 0}}
     <div id="comments">
         <h2 class="title">评论</h2>
-        {{range .post.Comments}}
-            <article id="comments-{{.ID}}">
-                <header>
-                    <div>{{.AuthorName}}</div>
-                </header>
-                {{.Content|html}}
-            </article>
+        {{if .post.AllowComment}}
+        <form id="comments-reply">
+            <div class="meta">
+                <input type="text" required="required" name="name" placeholder="昵称" />
+                <input type="url" name="url" placeholder="URL" />
+                <input type="email" required="required" name="email" placeholder="邮箱，不会公开" />
+            </div>
+
+            <textarea name="content" id="reply-content" cols="30" rows="10"></textarea>
+        </form>
         {{end}}
-    </div>
-    {{end}}
+        {{range .post.Comments}}
+        <article id="comments-{{.ID}}">
+            <header>
+                <div>{{.AuthorName}}</div>
+            </header>
+            {{.Content}}
+        </article>
+        {{end}}
+    </div><!-- end #comments -->
 </div>
 
 {{template "footer" .info}}
