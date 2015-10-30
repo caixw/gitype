@@ -21,10 +21,19 @@ type Post struct {
 	Summary      string
 	Content      string
 	Author       string // 作者名称
-	CommentsSize int    // 评论数量
 	Created      int64  // 创建时间
 	Modified     int64  // 修改时间
 	AllowComment bool   // 是否允许评论
+}
+
+func (p *Post) CommentsSize() int {
+	c := &models.Comment{PostID: p.ID}
+	size, err := db.Count(c)
+	if err != nil {
+		logs.Error("themes.Post.CommentsSize:", err)
+		return 0
+	}
+	return size
 }
 
 // 返回文章的摘要或是具体内容。

@@ -211,15 +211,6 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// commentsSize
-	rs := &models.Comment{PostID: mp.ID}
-	commentsSize, err := db.Count(rs)
-	if err != nil {
-		logs.Error("pagePost:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
 	post := &Post{
 		ID:           mp.ID,
 		Name:         mp.Name,
@@ -227,7 +218,6 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		Summary:      mp.Summary,
 		Content:      mp.Content,
 		Author:       opt.ScreenName,
-		CommentsSize: commentsSize,
 		Created:      mp.Created,
 		Modified:     mp.Modified,
 		AllowComment: mp.AllowComment,
