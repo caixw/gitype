@@ -193,4 +193,9 @@ function App(options) {
     this.listen = function(routes) {
         var router = Router(routes).init();
     };
+
+    // 执行上传操作
+    this.upload = function(formSelector){
+
+    }
 } // end App

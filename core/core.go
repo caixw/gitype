@@ -29,6 +29,7 @@ const (
 	LogConfigPath = "./config/logs.xml"
 )
 
+// 初始化core包。返回程序必要的变量。
 func Init() (cfg *Config, db *orm.DB, opt *Options, err error) {
 	cfg, err = LoadConfig(ConfigPath)
 	if err != nil {

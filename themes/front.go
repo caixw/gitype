@@ -26,7 +26,8 @@ func InitRoute(m *web.Module) {
 		GetFunc("/tags", pageTags).
 		GetFunc("/tags/{id}", pageTag).
 		GetFunc("/posts", pagePosts).
-		GetFunc("/posts/{id}", pagePost)
+		GetFunc("/posts/{id}", pagePost).
+		Get(cfg.ThemeURLPrefix, http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.ThemeDir))))
 
 	m.Prefix(cfg.FrontAPIPrefix).
 		PostFunc("/posts/{id:\\d+}/comments", frontPostPostComment).

@@ -22,8 +22,7 @@ const (
 	CommentOrderAsc
 )
 
-// Options 用于表示程序内的一些可更改配置项。
-// 对应着从options表中加载而来的数据，
+// Options 对应着从options表中加载而来的数据，
 // 通过struct tag来确定其对应数据库中的那条记录。
 type Options struct {
 	SiteName    string `options:"system,siteName"`    // 重置的默认密码

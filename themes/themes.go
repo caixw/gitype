@@ -81,10 +81,8 @@ func loadThemes() error {
 			return err
 		}
 		theme.ID = id
-
 		theme.Screenshot = p + id + "/" + theme.Screenshot
 		themesMap[id] = theme
-		cfg.Core.Static[p+id] = themePath + "public/"
 	}
 	return nil
 }
