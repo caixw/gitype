@@ -47,10 +47,9 @@ func (p *Post) Entry() string {
 // 返回文章的链接
 func (p *Post) Permalink() string {
 	if len(p.Name) > 0 {
-		return opt.SiteURL + "/posts/" + p.Name + opt.Suffix
+		return core.PostURL(opt, p.Name)
 	}
-
-	return opt.SiteURL + "/posts/" + strconv.FormatInt(p.ID, 10) + opt.Suffix
+	return core.PostURL(opt, strconv.FormatInt(p.ID, 10))
 }
 
 // 获取与当前文章相关的标签。

@@ -50,9 +50,9 @@ func getInfo() (*Info, error) {
 		AppVersion:  core.Version,
 		GoVersion:   runtime.Version(),
 		Menus: []Anchor{ // TODO 添加到options配置中
-			{Link: "/", Title: "首页"},
-			{Link: "/posts/about.html", Title: "关于"},
-			{Link: "/tags", Title: "标签"},
+			{Link: opt.SiteURL, Title: "首页"},
+			{Link: core.PostURL(opt, "about"), Title: "关于"},
+			{Link: core.TagsURL(opt), Title: "标签"},
 		},
 	}
 

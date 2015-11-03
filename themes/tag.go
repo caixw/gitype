@@ -4,6 +4,8 @@
 
 package themes
 
+import "github.com/caixw/typing/core"
+
 type Tag struct {
 	ID          int64
 	Name        string
@@ -13,5 +15,5 @@ type Tag struct {
 }
 
 func (t *Tag) Permalink() string {
-	return opt.SiteURL + "/tags/" + t.Name
+	return core.TagURL(opt, t.Name, 1)
 }
