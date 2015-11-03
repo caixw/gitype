@@ -9,14 +9,15 @@ import "strconv"
 type Comment struct {
 	post *Post
 
-	ID         int64
-	Created    int64
-	IP         string
-	Agent      string
-	Content    string
-	IsAdmin    bool
-	AuthorName string
-	AuthorURL  string
+	ID          int64
+	Created     int64
+	IP          string
+	Agent       string
+	Content     string
+	IsAdmin     bool
+	AuthorName  string
+	AuthorURL   string
+	AuthorEmail string
 }
 
 func (c *Comment) Permalink() string {

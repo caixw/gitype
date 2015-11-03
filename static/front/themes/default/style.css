@@ -169,6 +169,10 @@ li{
     background:#00796b;
 }
 
+#comments article{
+    margin:0.2em 0;
+}
+
 /********************** footer */
 #footer{
     margin-top:1.5em;

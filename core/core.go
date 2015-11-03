@@ -212,6 +212,13 @@ func HashPassword(password string) string {
 	return hex.EncodeToString(m.Sum(nil))
 }
 
+// 将一段字符串转换成md5编码
+func MD5(str string) string {
+	m := md5.New()
+	m.Write([]byte(str))
+	return hex.EncodeToString(m.Sum(nil))
+}
+
 // 从一个Config实例中初始一个orm.DB实例。
 func InitDB(cfg *Config) (*orm.DB, error) {
 	var d forward.Dialect

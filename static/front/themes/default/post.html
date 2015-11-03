@@ -18,12 +18,13 @@
         {{if .post.AllowComment}}
         <form id="comments-reply">
             <div class="meta">
+                <input type="hidden" name="parent" />
                 <input type="text" required="required" name="name" placeholder="昵称" />
-                <input type="url" name="url" placeholder="URL" />
                 <input type="email" required="required" name="email" placeholder="邮箱，不会公开" />
+                <input type="url" name="url" placeholder="个人网站" />
             </div>
 
-            <textarea name="content" id="reply-content" cols="30" rows="10"></textarea>
+            <textarea name="content" id="reply-content" cols="30" rows="10" required="required"></textarea>
 
             <div class="buttons">
                 <button type="submit">提交</button>
@@ -33,6 +34,7 @@
         {{range .post.Comments}}
         <article id="comments-{{.ID}}">
             <header>
+                <img src="{{.AuthorEmail|avatar}}" alt="avatar" />
                 <div>{{.AuthorName}}</div>
             </header>
             {{.Content}}

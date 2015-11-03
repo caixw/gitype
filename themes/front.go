@@ -80,11 +80,11 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	info.Page = conv.MustInt(r.FormValue("page"), 1)
-	if info.Page < 1 { // 不能小于1
-		info.Page = 1
+	info.CurrentPage = conv.MustInt(r.FormValue("page"), 1)
+	if info.CurrentPage < 1 { // 不能小于1
+		info.CurrentPage = 1
 	}
-	posts, err := getPosts(info.Page - 1)
+	posts, err := getPosts(info.CurrentPage - 1)
 	if err != nil {
 		logs.Error("pagePosts:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -168,11 +168,11 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	info.Canonical = tag.Permalink()
 	info.Title = tag.Title
 
-	info.Page = conv.MustInt(r.FormValue("page"), 1)
-	if info.Page < 1 { // 不能小于1
-		info.Page = 1
+	info.CurrentPage = conv.MustInt(r.FormValue("page"), 1)
+	if info.CurrentPage < 1 { // 不能小于1
+		info.CurrentPage = 1
 	}
-	posts, err := getTagPosts(info.Page-1, tag.ID)
+	posts, err := getTagPosts(info.CurrentPage-1, tag.ID)
 	if err != nil {
 		logs.Error("pageTag:", err)
 		w.WriteHeader(http.StatusInternalServerError)
