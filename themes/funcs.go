@@ -7,7 +7,10 @@ package themes
 import (
 	"html/template"
 	"regexp"
+	"strings"
 	"time"
+
+	"github.com/caixw/typing/core"
 )
 
 // 去掉所有的标签信息
@@ -25,8 +28,15 @@ func htmlEscaped(html string) interface{} {
 	return template.HTML(html)
 }
 
+func avatarImage(email string) interface{} {
+	url := "http://www.gravatar.com/avatar/" + core.MD5(strings.ToLower(email))
+	// TODO 将选项添加到options中
+	return url + "?s=96&d=mm&r=g"
+}
+
 var funcMap = template.FuncMap{
-	"html":  htmlEscaped,
-	"date":  dateFormat,
-	"strip": stripTags,
+	"html":   htmlEscaped,
+	"date":   dateFormat,
+	"strip":  stripTags,
+	"avatar": avatarImage,
 }
