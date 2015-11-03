@@ -194,8 +194,20 @@ function App(options) {
         var router = Router(routes).init();
     };
 
-    // 执行上传操作
+    // 执行单个文件上传操作
     this.upload = function(formSelector){
+        var formdata = new FormData();
+        var files = $(formSelector).files;
+        formdata.append(files[0]);
 
+        $.ajax({
+            'type':        'POST',
+            'data':        formdata,
+            'url':         adminAPI('/upload'),
+            'contentType': false,
+            'processData': false
+        }).then(function(){
+            showMessage('green', '上传文件成功');
+        });
     }
 } // end App
