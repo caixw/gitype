@@ -173,6 +173,20 @@ li{
     margin:0.2em 0;
 }
 
+#comments article header .avatar{
+    width:3em;
+    height:3em;
+}
+
+#comments article header .author{
+    vertical-align:top;
+    display:inline;
+}
+
+#comments article .content{
+    margin:-1.2em 0em 0em 3.25em;
+}
+
 /********************** footer */
 #footer{
     margin-top:1.5em;
