@@ -16,9 +16,10 @@
     <div id="comments">
         <h2 class="title">评论</h2>
         {{if .post.AllowComment}}
-        <form id="comments-reply">
+        <form id="comments-reply" action="{{.post.Permalink}}" method="POST" enctype="application/x-www-form-urlencoded">
             <div class="meta">
                 <input type="hidden" name="parent" />
+                <input type="hidden" name="id" value="{{.post.ID}}" />
                 <input type="text" required="required" name="name" placeholder="昵称" />
                 <input type="email" required="required" name="email" placeholder="邮箱，不会公开" />
                 <input type="url" name="url" placeholder="个人网站" />

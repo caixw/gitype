@@ -26,7 +26,8 @@ func InitRoute(m *web.Module) {
 		GetFunc("/tags"+opt.Suffix, pageTags).
 		GetFunc("/tags/{id}"+opt.Suffix, pageTag).
 		GetFunc("/posts"+opt.Suffix, pagePosts).
-		GetFunc("/posts/{id}"+opt.Suffix, pagePost).
+		GetFunc("/posts/{id}"+opt.Suffix, pagePost).  // 获取文章详细内容
+		PostFunc("/posts/{id}"+opt.Suffix, pagePost). // 提交评论
 		Get(cfg.ThemeURLPrefix, http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.ThemeDir))))
 
 	m.Prefix(cfg.FrontAPIPrefix).
@@ -214,6 +215,12 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Method == "POST" {
+		if err := insertComment(mp.ID, r); err != nil {
+			logs.Error("pagePost:", err)
+		}
+	}
+
 	post := &Post{
 		ID:           mp.ID,
 		Name:         mp.Name,
@@ -240,6 +247,24 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		"post": post,
 	}
 	render(w, "post", data)
+}
+
+func insertComment(postID int64, r *http.Request) error {
+	c := &models.Comment{
+		//Parent  int64  `orm:"name(parent)"`          // 子评论的话，这此为其上一级评论的id
+		Created:     time.Now().Unix(),
+		PostID:      postID,
+		State:       models.CommentStateWaiting,
+		IP:          r.RemoteAddr,
+		Agent:       r.UserAgent(),
+		IsAdmin:     false,
+		Content:     r.FormValue("content"),
+		AuthorName:  r.FormValue("name"),
+		AuthorEmail: r.FormValue("email"),
+		AuthorURL:   r.FormValue("url"),
+	}
+	_, err := db.Insert(c)
+	return err
 }
 
 // @api get /api/posts/{id}/comments
