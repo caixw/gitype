@@ -27,7 +27,7 @@ type Post struct {
 }
 
 func (p *Post) CommentsSize() int {
-	c := &models.Comment{PostID: p.ID}
+	c := &models.Comment{PostID: p.ID, State: models.CommentStateApproved}
 	size, err := db.Count(c)
 	if err != nil {
 		logs.Error("themes.Post.CommentsSize:", err)

@@ -95,9 +95,10 @@ func getTops() ([]*Post, error) {
 	sql := `SELECT c.{content} AS Content, p.{title} AS Tilte, p.{name} AS Name, p.{id} AS ID
 	FROM #comments AS c
 	LEFT JOIN #posts AS p ON c.{postID}=p.{id}
+	WHERE c.{state}=?
 	ORDER BY c.{id} DESC
 	LIMIT ? `
-	rows, err := db.Query(true, sql, opt.SidebarSize)
+	rows, err := db.Query(true, sql, models.CommentStateApproved, opt.SidebarSize)
 	if err != nil {
 		return nil, err
 	}
