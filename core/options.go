@@ -25,7 +25,7 @@ const (
 // Options 对应着从options表中加载而来的数据，
 // 通过struct tag来确定其对应数据库中的那条记录。
 type Options struct {
-	SiteName    string `options:"system,siteName"`    // 重置的默认密码
+	SiteName    string `options:"system,siteName"`    // 站点名称
 	SecondTitle string `options:"system,secondTitle"` // 副标题
 	SiteURL     string `options:"system,siteURL"`     // 网站的url
 	Keywords    string `options:"system,keywords"`    // 默认页面的keywords内容

@@ -23,10 +23,10 @@ import (
 
 func InitRoute(m *web.Module) {
 	m.GetFunc("/", pagePosts).
-		GetFunc("/tags", pageTags).
-		GetFunc("/tags/{id}", pageTag).
-		GetFunc("/posts", pagePosts).
-		GetFunc("/posts/{id}", pagePost).
+		GetFunc("/tags"+opt.Suffix, pageTags).
+		GetFunc("/tags/{id}"+opt.Suffix, pageTag).
+		GetFunc("/posts"+opt.Suffix, pagePosts).
+		GetFunc("/posts/{id}"+opt.Suffix, pagePost).
 		Get(cfg.ThemeURLPrefix, http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.ThemeDir))))
 
 	m.Prefix(cfg.FrontAPIPrefix).
@@ -136,12 +136,14 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 	render(w, "tags", map[string]interface{}{"info": info, "tags": tags})
 }
 
-// /tags/1
+// /tags/1.html
 func pageTag(w http.ResponseWriter, r *http.Request) {
 	tagName, ok := core.ParamString(w, r, "id")
 	if !ok {
 		return
 	}
+	tagName = strings.TrimSuffix(tagName, opt.Suffix)
+
 	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {description} AS Description FROM #tags WHERE {name}=?`
 	rows, err := db.Query(true, sql, tagName)
 	if err != nil {
@@ -190,10 +192,10 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 // /posts/1.html
 func pagePost(w http.ResponseWriter, r *http.Request) {
 	idStr, ok := core.ParamString(w, r, "id")
-	idStr = strings.TrimSuffix(idStr, opt.Suffix)
 	if !ok {
 		return
 	}
+	idStr = strings.TrimSuffix(idStr, opt.Suffix)
 
 	var mp *models.Post
 	postID, err := strconv.ParseInt(idStr, 10, 64)

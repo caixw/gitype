@@ -184,6 +184,7 @@ func fillTags(db *orm.DB) error {
 
 func fillOptions(db *orm.DB) error {
 	opt := &core.Options{
+		SiteURL:     "localhost:8081/",
 		SiteName:    "typing blog",
 		SecondTitle: "副标题",
 		ScreenName:  "typing",
