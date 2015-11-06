@@ -187,6 +187,16 @@ li{
     margin:-1.2em 0em 0em 3.25em;
 }
 
+/********************** #pages-nav */
+#pages-nav .prev{
+    float:left
+}
+
+
+#pages-nav .next{
+    float:right
+}
+
 /********************** footer */
 #footer{
     margin-top:1.5em;

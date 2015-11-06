@@ -25,8 +25,10 @@
         {{end}}
     </div>
 
-    <div class="pages">
-        <a href="">下一页</a>
+    <div id="pages-nav">
+        <a class="prev" href="{{.info.PrevPage.Link}}">{{.info.NextPage.Title}}</a>
+        <a class="next" href="{{.info.PrevPage.Link}}">{{.info.NextPage.Title}}</a>
+        <div class="clearfix"></div>
     </div>
 
 </div>

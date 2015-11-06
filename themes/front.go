@@ -81,11 +81,17 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	info.CurrentPage = conv.MustInt(r.FormValue("page"), 1)
-	if info.CurrentPage < 1 { // 不能小于1
-		info.CurrentPage = 1
+	page := conv.MustInt(r.FormValue("page"), 1)
+	if page < 1 { // 不能小于1
+		page = 1
+	} else {
+		info.PrevPage = Anchor{Title: "上一页", Link: core.PostsURL(opt, page)}
 	}
-	posts, err := getPosts(info.CurrentPage - 1)
+	if page*opt.SidebarSize < info.PostSize {
+		info.PrevPage = Anchor{Title: "下一页", Link: core.PostsURL(opt, page)}
+	}
+
+	posts, err := getPosts(page - 1)
 	if err != nil {
 		logs.Error("pagePosts:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -171,11 +177,16 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	info.Canonical = tag.Permalink()
 	info.Title = tag.Title
 
-	info.CurrentPage = conv.MustInt(r.FormValue("page"), 1)
-	if info.CurrentPage < 1 { // 不能小于1
-		info.CurrentPage = 1
+	page := conv.MustInt(r.FormValue("page"), 1)
+	if page < 1 { // 不能小于1
+		page = 1
+	} else {
+		info.PrevPage = Anchor{Title: "上一页", Link: core.PostsURL(opt, page)}
 	}
-	posts, err := getTagPosts(info.CurrentPage-1, tag.ID)
+	if page*opt.SidebarSize < info.PostSize {
+		info.PrevPage = Anchor{Title: "下一页", Link: core.PostsURL(opt, page)}
+	}
+	posts, err := getTagPosts(page-1, tag.ID)
 	if err != nil {
 		logs.Error("pageTag:", err)
 		w.WriteHeader(http.StatusInternalServerError)

@@ -31,9 +31,10 @@ type Info struct {
 	Description string   // meta.description的值
 	AppVersion  string   // 当前程序的版本号
 	GoVersion   string   // 编译的go版本号
-	CurrentPage int      // 当前页码
 	PostSize    int      // 总文章数量
 	CommentSize int      // 总评论数量
+	PrevPage    Anchor   // 前一页
+	NextPage    Anchor   // 下一页
 	Tags        []*Tag   // 标签列表
 	Tops        []*Post  // 最新评论的10条内容
 	Hots        []*Post  // 评论最多的10条内容
