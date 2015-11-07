@@ -4,7 +4,7 @@
 <div>
     <article class="post">
         <header>
-            <h2 class="title"><a href="{{.post.Permalink}}">{{.post.Title}}</a></h2>
+            <h2 class="title">{{.post.Title}}</h2>
             <div class="meta">
                 <span>发布时间:<time>{{.post.Created|date}}</time></span>
                 <span>标签:{{range .post.Tags}}
