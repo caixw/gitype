@@ -17,7 +17,7 @@
         <div class="header">最新评论</div>
         <ul class="content">
         {{range .Tops}}
-            <li><a href="{{.Permalink}}">{{.Entry|strip}}</a></li>
+            <li><a href="{{.Permalink}}">{{.Content|strip}}</a></li>
         {{end}}
         </ul>
     </div>

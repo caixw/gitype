@@ -6,10 +6,15 @@ package core
 
 import "strconv"
 
-// 生成文章的url，postID为文章的唯一标记表示，一般为Name或是id字段。
+// 生成文章的url，postSlug为文章的唯一标记表示，一般为Name或是id字段。
 //  /posts/about.html
-func PostURL(opt *Options, postID string) string {
-	return opt.SiteURL + "posts/" + postID + opt.Suffix
+func PostURL(opt *Options, postSlug string) string {
+	return opt.SiteURL + "posts/" + postSlug + opt.Suffix
+}
+
+// 生成文章评论URL，postSlug为文章的唯一标记表示，一般为Name或是id字段，id为评语的id
+func CommentURL(opt *Options, postSlug string, id int64) string {
+	return PostURL(opt, postSlug) + "#comments-" + strconv.FormatInt(id, 10)
 }
 
 // 生成标签的url，tagID为文章的唯一标记表示，一般为Name或是id字段，page为文章的页码。

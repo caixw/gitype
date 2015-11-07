@@ -4,10 +4,15 @@
 
 package themes
 
-import "strconv"
+import (
+	"strconv"
+
+	"github.com/caixw/typing/core"
+)
 
 type Comment struct {
-	post *Post
+	PostID   int64
+	PostName string
 
 	ID          int64
 	Created     int64
@@ -21,5 +26,8 @@ type Comment struct {
 }
 
 func (c *Comment) Permalink() string {
-	return c.post.Permalink() + "#comments-" + strconv.FormatInt(c.ID, 10)
+	if len(c.PostName) > 0 {
+		return core.CommentURL(opt, c.PostName, c.ID)
+	}
+	return core.CommentURL(opt, strconv.FormatInt(c.PostID, 10), c.ID)
 }

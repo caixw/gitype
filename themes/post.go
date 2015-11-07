@@ -76,7 +76,7 @@ func (p *Post) Tags() []*Tag {
 // 返回文章的评论信息。
 func (p *Post) Comments() []*Comment {
 	sql := `SELECT {id} AS ID, {created} AS Created, {agent} AS Agent, {content} AS Content,
-	{isAdmin} AS IsAdmin, {authorName} AS AuthorName,{authorURL} AS AuthorURL
+	{isAdmin} AS IsAdmin, {authorName} AS AuthorName,{authorURL} AS AuthorURL, {postID} AS PostID
 	FROM #comments
 	WHERE {postID}=? AND {state}=?
 	ORDER BY {created} `
@@ -95,9 +95,6 @@ func (p *Post) Comments() []*Comment {
 	if _, err := fetch.Obj(&comments, rows); err != nil {
 		logs.Error("themes.Post.Comment:", err)
 		return nil
-	}
-	for _, c := range comments {
-		c.post = p
 	}
 	return comments
 }
