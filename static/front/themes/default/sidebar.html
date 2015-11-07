@@ -5,7 +5,9 @@
     <div class="block">
         <p class="title"><a href="{{.SiteURL}}">{{.SiteName}}</a></p>
         <p>{{.SecondTitle}}</p>
+    </div>
 
+    <div class="block">
         {{range .Menus}}
         <p><a href="{{.Link}}">{{.Title}}</a></p>
         {{end}}
