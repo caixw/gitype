@@ -20,8 +20,12 @@ func stripTags(html string) string {
 	return stripExpr.ReplaceAllString(html, "")
 }
 
-func dateFormat(t int64) interface{} {
-	return time.Unix(t, 0).Format(opt.DateFormat)
+func longDateFormat(t int64) interface{} {
+	return time.Unix(t, 0).Format(opt.LongDateFormat)
+}
+
+func shortDateFormat(t int64) interface{} {
+	return time.Unix(t, 0).Format(opt.ShortDateFormat)
 }
 
 func htmlEscaped(html string) interface{} {
@@ -36,7 +40,8 @@ func avatarImage(email string) interface{} {
 
 var funcMap = template.FuncMap{
 	"html":   htmlEscaped,
-	"date":   dateFormat,
+	"ldate":  longDateFormat,
+	"sdate":  shortDateFormat,
 	"strip":  stripTags,
 	"avatar": avatarImage,
 }

@@ -15,7 +15,7 @@
             <header>
                 <h2 class="title"><a href="{{.Permalink}}">{{.Title}}</a></h2>
                 <div class="meta">
-                    <span>发布时间:<time>{{.Created|date}}</time></span>
+                    <span>发布时间:<time>{{.Created|sdate}}</time></span>
                     <span>标签:{{range .Tags}}
                         <a href="{{.Permalink}}">{{.Title}}</a>
                     {{end}}

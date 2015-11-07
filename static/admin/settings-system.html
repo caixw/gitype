@@ -69,9 +69,15 @@
         </div>
 
         <div class="inline field">
-            <label for="dateFormat">日期格式</label>
-            <input type="text" id="dateFormat" />
-            <div class="description">所有时间的显示格式，具体参数可参考<a href="http://godoc.org/time">http://godoc.org/time</a></div>
+            <label for="longDateFormat">长日期格式</label>
+            <input type="text" id="longDateFormat" />
+            <div class="description">时间的显示格式，具体参数可参考<a href="http://godoc.org/time">http://godoc.org/time</a></div>
+        </div>
+
+        <div class="inline field">
+            <label for="shortDateFormat">短日期格式</label>
+            <input type="text" id="shortDateFormat" />
+            <div class="description">时间的显示格式，具体参数可参考<a href="http://godoc.org/time">http://godoc.org/time</a></div>
         </div>
 
     </form>
@@ -84,18 +90,20 @@ function pageInit(){
     /* BEGIN -- 加载数据 */
     $('form').addClass('loading');
 
-    var siteName    = getData('siteName');
-    var secondTitle = getData('secondTitle');
-    var siteURL     = getData('siteURL');
-    var keywords    = getData('keywords');
-    var description = getData('description');
-    var suffix      = getData('suffix');
-    var pageSize    = getData('pageSize');
-    var sidebarSize = getData('sidebarSize');
-    var commentOrder= getData('commentOrder');
-    var dateFormat  = getData('dateFormat');
+    var siteName        = getData('siteName');
+    var secondTitle     = getData('secondTitle');
+    var siteURL         = getData('siteURL');
+    var keywords        = getData('keywords');
+    var description     = getData('description');
+    var suffix          = getData('suffix');
+    var pageSize        = getData('pageSize');
+    var sidebarSize     = getData('sidebarSize');
+    var commentOrder    = getData('commentOrder');
+    var longDateFormat  = getData('longDateFormat');
+    var shortDateFormat = getData('shortDateFormat');
 
-    $.when(siteName, secondTitle, siteURL, keywords, description, suffix, pageSize, sidebarSize, commentOrder, dateFormat).always(function(){
+    $.when(siteName, secondTitle, siteURL, keywords, description,
+        suffix, pageSize, sidebarSize, commentOrder, longDateFormat, shortDateFormat).always(function(){
         $('.ui.dropdown').dropdown();
         $('form').removeClass('loading');
     });
@@ -110,7 +118,8 @@ function pageInit(){
     patchData('blur', 'suffix');
     patchData('blur', 'pageSize');
     patchData('blur', 'sidebarSize');
-    patchData('blur', 'dateFormat');
+    patchData('blur', 'longDateFormat');
+    patchData('blur', 'shortDateFormat');
     patchData('change', 'commentOrder');
     /* END -- patch */
 

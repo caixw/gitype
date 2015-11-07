@@ -33,10 +33,11 @@ type Options struct {
 	Suffix      string `options:"system,suffix"`      // URL地址的后缀名，仅对文章有效
 	//Language    string `options:"system,language"`      // 界面语言
 
-	PageSize     int    `options:"reading,pageSize"`     // 默认每页显示的数量
-	SidebarSize  int    `options:"reading,sidebarSize"`  // 侧边栏每个列表项内显示的数量
-	DateFormat   string `options:"reading,dateFormat"`   // 前端日期格式
-	CommentOrder int    `options:"reading,commentOrder"` // 评论显示的顺序
+	PageSize        int    `options:"reading,pageSize"`        // 默认每页显示的数量
+	SidebarSize     int    `options:"reading,sidebarSize"`     // 侧边栏每个列表项内显示的数量
+	LongDateFormat  string `options:"reading,longDateFormat"`  // 前端长日期格式
+	ShortDateFormat string `options:"reading,shortDateFormat"` // 前端短日期格式
+	CommentOrder    int    `options:"reading,commentOrder"`    // 评论显示的顺序
 
 	PostsChangefreq string  `options:"feed,postsChangefreq"`
 	TagsChangefreq  string  `options:"feed,tagsChangefreq"`

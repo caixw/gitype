@@ -193,10 +193,11 @@ func fillOptions(db *orm.DB) error {
 		Description: "typing-极简的博客系统",
 		Suffix:      ".html",
 
-		PageSize:     20,
-		DateFormat:   "2006-01-02 15:04:05",
-		SidebarSize:  10,
-		CommentOrder: core.CommentOrderDesc,
+		PageSize:        20,
+		LongDateFormat:  "2006-01-02 15:04:05",
+		ShortDateFormat: "2006-01-02",
+		SidebarSize:     10,
+		CommentOrder:    core.CommentOrderDesc,
 
 		PostsChangefreq: "never",
 		TagsChangefreq:  "daily",
