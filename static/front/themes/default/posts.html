@@ -1,15 +1,19 @@
 {{define "posts"}}
 {{template "header" .info}}
 
-<div class="list">
+<div>
     {{range .posts}}
     <article class="post">
         <header>
-            <div class="meta">
-                <time>{{.Created|date}}</time>
-                <a class="comments" href="{{.Permalink}}#comments">{{.CommentsSize}}条评论</a>
-            </div>
             <h2 class="title"><a href="{{.Permalink}}">{{.Title}}</a></h2>
+            <div class="meta">
+                <span>发布时间:<time>{{.Created|date}}</time></span>
+                <span>标签:{{range .Tags}}
+                    <a href="{{.Permalink}}">{{.Title}}</a>
+                {{end}}
+                </span>
+                <span><a href="{{.Permalink}}#comments">{{.CommentsSize}}条评论</a></span>
+            </div>
         </header>
         <section>
             {{.Entry|html}}

@@ -14,6 +14,9 @@
  * #212121  primary text
  * #727272  secondary text
  * #b6b6b6  divider color
+ *
+ * #eee     border
+ * #fafafa  background
  */
 
 /*********************** reset */
@@ -65,36 +68,56 @@ li{
     border-bottom:1px solid #b6b6b6;
     padding-bottom:1em;
 }
+.post header{
+    /*border-bottom:1px solid #eee;*/
+    padding-bottom:.5em;
+    margin-bottom:.5em;
+}
+
 .post .title{
-    margin:0em 0em 1.2em 0em;
+    margin:0em 0em .5em 0em;
     font-size:1.8em;
 }
+
 .post .title a{
     color:#212121;
 }
+
 .post .title a:hover{
     text-decoration:none;
     color:#00bcd4;
 }
+
 .post .meta{
     color:#727272;
-    float:right;
-    text-align:right;
-    top:0;
-}
-.post .meta time{
-    display:block;
-    margin:0em 0em 0.7em 0em;
 }
 
-.post .meta .comments{
-    display:block;
-    margin:0.7em 0em 0em 0em;
+.post .meta span{
+    border-right:1px solid #eee;
+    padding:0em 0.5em;
+}
+
+.post .meta span:last-child{
+    border-right:none;
+    padding-right:0em;
+}
+.post .meta span:first-child{
+    padding-left:0em;
+}
+
+/**************************** .tag */
+
+.tag{
+    margin-bottom:2em;
+}
+
+.tag .title{
+    font-size:1.8em;
 }
 
 /**************************** .tags */
 
-#content .tags .tag{
+#content .tags .item{
     margin:0.5em;
 }
 
@@ -175,12 +198,16 @@ li{
 }
 
 #comments .comment{
-    margin:1.5em 0em;
+    border:1px solid #eee;
+    background:#fafafa;
+    margin:.7em 0em;
+    padding:.7em;
 }
 
 #comments .comment header .avatar{
     width:3em;
     height:3em;
+    border:1px solid #eee;
 }
 
 #comments .comment header .author{

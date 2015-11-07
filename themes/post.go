@@ -54,7 +54,7 @@ func (p *Post) Permalink() string {
 
 // 获取与当前文章相关的标签。
 func (p *Post) Tags() []*Tag {
-	sql := `SELECT t.{name} AS Name, t.{title} AS Text FROM #relationships AS r
+	sql := `SELECT t.{name} AS Name, t.{title} AS Title FROM #relationships AS r
 	LEFT JOIN #tags AS t on t.{id}=r.{tagID}
 	WHERE r.{postID}=?`
 

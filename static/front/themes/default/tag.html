@@ -1,26 +1,31 @@
 {{define "tag"}}
 {{template "header" .info}}
 
-<div class="tag">
-
-    <article>
+<div>
+    <article class="tag">
         <header>
-            <h2>{{.tag.Title}}</h2>
+            <h1 class="title">{{.tag.Title}}</h1>
         </header>
         {{.tag.Description|html}}
     </article>
 
-    <div class="list">
+    <div class="posts">
         {{range .posts}}
-        <article>
-            <h2 class="title"><a href="{{.Permalink}}">{{.Title}}</a></h2>
-            <div class="meta">
-                <time>{{.Created|date}}</time>
-                <a class="comments" href="{{.Permalink}}#comments">{{.CommentsSize}}条评论</a>
-            </div>
-            <div class="entry">
+        <article class="post">
+            <header>
+                <h2 class="title"><a href="{{.Permalink}}">{{.Title}}</a></h2>
+                <div class="meta">
+                    <span>发布时间:<time>{{.Created|date}}</time></span>
+                    <span>标签:{{range .Tags}}
+                        <a href="{{.Permalink}}">{{.Title}}</a>
+                    {{end}}
+                    </span>
+                    <span><a href="{{.Permalink}}#comments">{{.CommentsSize}}条评论</a></span>
+                </div>
+            </header>
+            <section>
                 {{.Entry|html}}
-            </div>
+            </section>
         </article>
         {{end}}
     </div>
