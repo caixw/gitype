@@ -262,7 +262,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 
 func insertComment(postID int64, r *http.Request) error {
 	c := &models.Comment{
-		//Parent  int64  `orm:"name(parent)"`          // 子评论的话，这此为其上一级评论的id
+		//Parent  int64  `orm:"name(parent)"`          // 子评论的话，此为其上一级评论的id
 		Created:     time.Now().Unix(),
 		PostID:      postID,
 		State:       models.CommentStateWaiting,
