@@ -58,35 +58,35 @@ li{
     padding:1em 1.5em;
 }
 
-#content .list article{
+#content article{
     margin-bottom:1.5em;
     border-bottom:1px solid #b6b6b6;
     padding-bottom:1em;
 }
-#content .list article .title{
+#content article .title{
     margin:0.6em 0em;
     float:left;
     font-size:1.8em;
 }
-#content .list article .title a{
+#content article .title a{
     color:#212121;
 }
-#content .list article .title a:hover{
+#content article .title a:hover{
     text-decoration:none;
     color:#00bcd4;
 }
-#content .list article .meta{
+#content article .meta{
     color:#727272;
     float:right;
     text-align:right;
     top:0;
     position:relative;
 }
-#content .list article .meta *{
+#content article .meta *{
     display:block;
     margin:0.7em 0em;
 }
-#content .list article .entry{
+#content article .entry{
     clear:both;
 }
 
