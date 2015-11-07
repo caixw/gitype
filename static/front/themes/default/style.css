@@ -236,3 +236,10 @@ li{
 #sidebar .title{
     font-size:1.2em;
 }
+
+/**************************** #return-top */
+#return-top{
+    position:fixed;
+    bottom:2em;
+    right:2em;
+}
