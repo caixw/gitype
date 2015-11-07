@@ -5,6 +5,7 @@
 package themes
 
 import (
+	"database/sql"
 	"html"
 	"net/http"
 	"net/url"
@@ -206,6 +207,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 }
 
 // /posts/1.html
+// /posts/about.html
 func pagePost(w http.ResponseWriter, r *http.Request) {
 	idStr, ok := core.ParamString(w, r, "id")
 	if !ok {
@@ -213,18 +215,30 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 	}
 	idStr = strings.TrimSuffix(idStr, opt.Suffix)
 
-	var mp *models.Post
+	var rows *sql.Rows
+	var err error
 	postID, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		mp = &models.Post{Name: idStr}
+		sql := `SELECT * FROM #posts WHERE {name}=?`
+		rows, err = db.Query(true, sql, idStr)
 	} else {
-		mp = &models.Post{ID: postID}
+		sql := `SELECT * FROM #posts WHERE {id}=?`
+		rows, err = db.Query(true, sql, postID)
 	}
-	if err := db.Select(mp); err != nil {
+	if err != nil {
 		logs.Error("pagePost:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	defer rows.Close()
+
+	mp := &models.Post{}
+	if _, err = fetch.Obj(mp, rows); err != nil {
+		logs.Error("pagePost:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	if len(mp.Title) == 0 || mp.State != models.PostStatePublished {
 		w.WriteHeader(http.StatusNotFound)
 		return
