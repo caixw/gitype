@@ -1,13 +1,15 @@
 {{define "post"}}
 {{template "header" .info}}
 
-<div class="post">
-    <article>
-        <h1 class="title"><a href="{{.post.Permalink}}">{{.post.Title}}</a></h1>
-        <div class="meta">
-            <time>{{.post.Created|date}}</time>
-            <a class="comments" href="{{.post.Permalink}}#comments">{{.post.CommentsSize}}条评论</a>
-        </div>
+<div>
+    <article class="post">
+        <header>
+            <div class="meta">
+                <time>{{.post.Created|date}}</time>
+                <a class="comments" href="{{.post.Permalink}}#comments">{{.post.CommentsSize}}条评论</a>
+            </div>
+            <h1 class="title">{{.post.Title}}</h1>
+        </header>
         <div class="entry">
             {{.post.Entry|html}}
         </div>
@@ -33,12 +35,12 @@
         </form>
         {{end}}
         {{range .post.Comments}}
-        <article id="comments-{{.ID}}">
+        <article id="comments-{{.ID}}" class="comment">
             <header>
                 <img class="avatar" src="{{.AuthorEmail|avatar}}" alt="头像" />
                 <div class="author">{{.AuthorName}}</div>
             </header>
-            <div class="content">{{.Content}}</div>
+            <section class="content">{{.Content}}</section>
         </article>
         {{end}}
     </div><!-- end #comments -->
