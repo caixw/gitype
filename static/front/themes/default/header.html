@@ -6,6 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{if .Title}}{{.Title}} &#8250; {{end}}{{.SiteName}}</title>
         {{if .Canonical}}<link rel="canonical" href="{{.Canonical}}" />{{end}}
+        {{if .RSS}}<link rel="alternate" type="application/rss+xml" Title="{{.RSS.Title}}" href="{{.RSS.Link}}" />{{end}}
+        {{if .Atom}}<link rel="alternate" type="application/atom+xml" Title="{{.Atom.Title}}" href="{{.Atom.Link}}" />{{end}}
         {{if .Keywords}}<meta name="keywords" content="{{.Keywords}}" />{{end}}
         {{if .Description}}<meta name="description" content="{{.Description}}" />{{end}}
         <link rel="stylesheet" href="/themes/default/style.css" />

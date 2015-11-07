@@ -25,16 +25,16 @@ type Info struct {
 	SiteName    string   // 网站名称
 	SecondTitle string   // 副标题
 	Canonical   string   // 当前页的唯一链接
-	RSSURL      string   // RSS
-	AtomURL     string   // Atom
 	Keywords    string   // meta.keywords的值
 	Description string   // meta.description的值
 	AppVersion  string   // 当前程序的版本号
 	GoVersion   string   // 编译的go版本号
 	PostSize    int      // 总文章数量
 	CommentSize int      // 总评论数量
-	PrevPage    Anchor   // 前一页
-	NextPage    Anchor   // 下一页
+	RSS         *Anchor  // RSS，NOTICE:指针方便模板判断其值是否为空
+	Atom        *Anchor  // Atom
+	PrevPage    *Anchor  // 前一页
+	NextPage    *Anchor  // 下一页
 	Tags        []*Tag   // 标签列表
 	Tops        []*Post  // 最新评论的10条内容
 	Hots        []*Post  // 评论最多的10条内容

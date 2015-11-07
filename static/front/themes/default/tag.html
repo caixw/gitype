@@ -25,11 +25,13 @@
         {{end}}
     </div>
 
+    {{if or .info.PrevPage .info.NextPage}}
     <div id="pages-nav">
-        <a class="prev" href="{{.info.PrevPage.Link}}">{{.info.PrevPage.Title}}</a>
-        <a class="next" href="{{.info.NextPage.Link}}">{{.info.NextPage.Title}}</a>
+        {{if .info.PrevPage}}<a class="prev" href="{{.info.PrevPage.Link}}">{{.info.PrevPage.Title}}</a>{{end}}
+        {{if .info.NextPage}}<a class="next" href="{{.info.NextPage.Link}}">{{.info.NextPage.Title}}</a>{{end}}
         <div class="clearfix"></div>
     </div>
+    {{end}}
 
 </div>
 
