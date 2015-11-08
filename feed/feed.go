@@ -31,13 +31,13 @@ var (
 )
 
 // 初始化sitemap包，path为sitemap.xml文件的保存路径
-func Init(tempDir string, database *orm.DB, options *core.Options) error {
-	sitemapPath = tempDir + sitemap
-	sitemapXslPath = tempDir + sitemapXsl
-	rssPath = tempDir + rss
-	atomPath = tempDir + atom
-	db = database
-	opt = options
+func Init() error {
+	sitemapPath = core.Cfg.TempDir + sitemap
+	sitemapXslPath = core.Cfg.TempDir + sitemapXsl
+	rssPath = core.Cfg.TempDir + rss
+	atomPath = core.Cfg.TempDir + atom
+	db = core.DB
+	opt = core.Opt
 
 	file, err := os.Create(sitemapXslPath)
 	if err != nil {

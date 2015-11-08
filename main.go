@@ -23,43 +23,42 @@ func main() {
 		return
 	}
 
-	cfg, db, opt, err := core.Init()
+	err := core.Init()
 	if err != nil {
 		panic(err)
 	}
 
-	if err = themes.Init(cfg, opt, db); err != nil {
-		panic(err)
-	}
-
-	// 初始化feed
-	if err = feed.Init(cfg.TempDir, db, opt); err != nil {
+	// themes
+	if err = themes.Init(); err != nil {
 		panic(err)
 	}
 
 	// admin
-	admin.Init(opt, db)
+	admin.Init()
 
-	if err := initModule(cfg); err != nil {
+	// 初始化feed
+	if err = feed.Init(); err != nil {
 		panic(err)
 	}
 
-	cfg.Core.ErrHandler = mux.PrintDebug
-	web.Run(cfg.Core)
-	db.Close()
+	if err := initModule(); err != nil {
+		panic(err)
+	}
+
+	core.Cfg.Core.ErrHandler = mux.PrintDebug
+	web.Run(core.Cfg.Core)
+	core.DB.Close()
 }
 
 // 初始化模块，及与模块相对应的路由。
-func initModule(cfg *core.Config) error {
+func initModule() error {
 	// admin
-	m, err := web.NewModule("admin")
-	if err != nil {
+	if err := admin.InitRoute(); err != nil {
 		return err
 	}
-	admin.InitRoute(m.Prefix(cfg.AdminAPIPrefix))
 
 	// 初始化前台使用的api
-	m, err = web.NewModule("front")
+	m, err := web.NewModule("front")
 	if err != nil {
 		return err
 	}

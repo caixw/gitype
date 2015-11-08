@@ -22,21 +22,27 @@ import (
 )
 
 const (
-	Version = "0.3.14.151108" // 程序版本号
+	Version = "0.4.15.151108" // 程序版本号
 
 	// 两个配置文件路径
 	ConfigPath    = "./config/app.json"
 	LogConfigPath = "./config/logs.xml"
 )
 
+var (
+	Cfg *Config
+	Opt *Options
+	DB  *orm.DB
+)
+
 // 初始化core包。返回程序必要的变量。
-func Init() (cfg *Config, db *orm.DB, opt *Options, err error) {
-	cfg, err = LoadConfig(ConfigPath)
+func Init() (err error) {
+	Cfg, err = LoadConfig(ConfigPath)
 	if err != nil {
 		return
 	}
 
-	db, err = InitDB(cfg)
+	DB, err = InitDB(Cfg)
 	if err != nil {
 		return
 	}
@@ -45,7 +51,7 @@ func Init() (cfg *Config, db *orm.DB, opt *Options, err error) {
 		return
 	}
 
-	opt, err = loadOptions(db)
+	Opt, err = loadOptions(DB)
 	return
 }
 

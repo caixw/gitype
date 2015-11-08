@@ -6,8 +6,8 @@ package admin
 
 import (
 	"github.com/caixw/typing/core"
-	"github.com/issue9/mux"
 	"github.com/issue9/orm"
+	"github.com/issue9/web"
 )
 
 var (
@@ -15,35 +15,42 @@ var (
 	opt *core.Options
 )
 
-func Init(options *core.Options, database *orm.DB) {
-	opt = options
-	db = database
+func Init() {
+	opt = core.Opt
+	db = core.DB
 }
 
-func InitRoute(admin *mux.Prefix) {
-	admin.PostFunc("/login", adminPostLogin).
+func InitRoute() error {
+	m, err := web.NewModule("admin")
+	if err != nil {
+		return err
+	}
+	p := m.Prefix(core.Cfg.AdminAPIPrefix)
+
+	p.PostFunc("/login", adminPostLogin).
 		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
 		Put("/password", loginHandlerFunc(adminChangePassword)).
 		Get("/state", loginHandlerFunc(adminGetState)).
 		Put("/sitemap", loginHandlerFunc(adminPutSitemap))
 
-	admin.Get("/themes", loginHandlerFunc(adminGetThemes)).
+	// themes
+	p.Get("/themes", loginHandlerFunc(adminGetThemes)).
 		Get("/themes/current", loginHandlerFunc(adminGetCurrentTheme)).
 		Put("/themes/current", loginHandlerFunc(adminPutCurrentTheme))
 
 	// options
-	admin.Get("/options/{key}", loginHandlerFunc(adminGetOption)).
+	p.Get("/options/{key}", loginHandlerFunc(adminGetOption)).
 		Patch("/options/{key}", loginHandlerFunc(adminPatchOption))
 
 	// tags
-	admin.Put("/tags/{id:\\d+}", loginHandlerFunc(adminPutTag)).
+	p.Put("/tags/{id:\\d+}", loginHandlerFunc(adminPutTag)).
 		Delete("/tags/{id:\\d+}", loginHandlerFunc(adminDeleteTag)).
 		Get("/tags/{id:\\d+}", loginHandlerFunc(adminGetTag)).
 		Post("/tags", loginHandlerFunc(adminPostTag)).
 		Get("/tags", loginHandlerFunc(adminGetTags))
 
 	// comments
-	admin.Get("/comments", loginHandlerFunc(adminGetComments)).
+	p.Get("/comments", loginHandlerFunc(adminGetComments)).
 		Get("/comments/count", loginHandlerFunc(adminGetCommentsCount)).
 		Post("/comments", loginHandlerFunc(adminPostComment)).
 		Put("/comments/{id:\\d+}", loginHandlerFunc(adminPutComment)).
@@ -53,7 +60,7 @@ func InitRoute(admin *mux.Prefix) {
 		Post("/comments/{id:\\d+}/approved", loginHandlerFunc(adminSetCommentApproved))
 
 	// posts
-	admin.Get("/posts", loginHandlerFunc(adminGetPosts)).
+	p.Get("/posts", loginHandlerFunc(adminGetPosts)).
 		Get("/posts/count", loginHandlerFunc(adminGetPostsCount)).
 		Post("/posts", loginHandlerFunc(adminPostPost)).
 		Get("/posts/{id:\\d+}", loginHandlerFunc(adminGetPost)).
@@ -61,4 +68,6 @@ func InitRoute(admin *mux.Prefix) {
 		Put("/posts/{id:\\d+}", loginHandlerFunc(adminPutPost)).
 		Post("/posts/{id:\\d+}/draft", loginHandlerFunc(adminSetPostDraft)).
 		Post("/posts/{id:\\d+}/published", loginHandlerFunc(adminSetPostPublished))
+
+	return nil
 }
