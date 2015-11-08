@@ -33,7 +33,7 @@ func htmlEscaped(html string) interface{} {
 }
 
 func avatarImage(email string) interface{} {
-	url := "http://www.gravatar.com/avatar/" + core.MD5(strings.ToLower(email))
+	url := "https://secure.gravatar.com/avatar/" + core.MD5(strings.ToLower(email))
 	// TODO 将选项添加到options中
 	return url + "?s=96&d=mm&r=g"
 }
