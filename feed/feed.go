@@ -45,25 +45,32 @@ func Init() error {
 	}
 	defer file.Close()
 
-	_, err = file.Write(files)
-	return err
+	if _, err = file.Write(files); err != nil {
+		return err
+	}
+
+	return initRoute()
 }
 
 // 初始化路由项
-func InitRoute(w *web.Module) {
-	w.GetFunc("/"+sitemap, func(w http.ResponseWriter, r *http.Request) {
+func initRoute() error {
+	m, err := web.NewModule("feed")
+	if err != nil {
+		return err
+	}
+
+	m.GetFunc("/"+sitemap, func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, sitemapPath)
 	})
-
-	w.GetFunc("/"+sitemapXsl, func(w http.ResponseWriter, r *http.Request) {
+	m.GetFunc("/"+sitemapXsl, func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, sitemapXslPath)
 	})
-
-	w.GetFunc("/"+rss, func(w http.ResponseWriter, r *http.Request) {
+	m.GetFunc("/"+rss, func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, rssPath)
 	})
-
-	w.GetFunc("/"+atom, func(w http.ResponseWriter, r *http.Request) {
+	m.GetFunc("/"+atom, func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, atomPath)
 	})
+
+	return nil
 }

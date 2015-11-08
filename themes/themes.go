@@ -54,7 +54,11 @@ func Init() error {
 		return err
 	}
 
-	return Switch(opt.Theme)
+	if err := Switch(opt.Theme); err != nil {
+		return err
+	}
+
+	return initRoute()
 }
 
 func loadThemes() error {

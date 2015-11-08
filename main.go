@@ -34,36 +34,16 @@ func main() {
 	}
 
 	// admin
-	admin.Init()
+	if err := admin.Init(); err != nil {
+		panic(err)
+	}
 
 	// 初始化feed
 	if err = feed.Init(); err != nil {
 		panic(err)
 	}
 
-	if err := initModule(); err != nil {
-		panic(err)
-	}
-
 	core.Cfg.Core.ErrHandler = mux.PrintDebug
 	web.Run(core.Cfg.Core)
 	core.DB.Close()
-}
-
-// 初始化模块，及与模块相对应的路由。
-func initModule() error {
-	// admin
-	if err := admin.InitRoute(); err != nil {
-		return err
-	}
-
-	// 初始化前台使用的api
-	m, err := web.NewModule("front")
-	if err != nil {
-		return err
-	}
-	themes.InitRoute(m)
-
-	feed.InitRoute(m)
-	return nil
 }

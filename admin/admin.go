@@ -15,12 +15,14 @@ var (
 	opt *core.Options
 )
 
-func Init() {
+func Init() error {
 	opt = core.Opt
 	db = core.DB
+
+	return initRoute()
 }
 
-func InitRoute() error {
+func initRoute() error {
 	m, err := web.NewModule("admin")
 	if err != nil {
 		return err

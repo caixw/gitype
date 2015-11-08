@@ -22,7 +22,12 @@ import (
 	"github.com/issue9/web"
 )
 
-func InitRoute(m *web.Module) {
+func initRoute() error {
+	m, err := web.NewModule("front")
+	if err != nil {
+		return err
+	}
+
 	m.GetFunc("/", pagePosts).
 		GetFunc("/tags"+opt.Suffix, pageTags).
 		GetFunc("/tags/{id}"+opt.Suffix, pageTag).
@@ -34,6 +39,8 @@ func InitRoute(m *web.Module) {
 	m.Prefix(cfg.FrontAPIPrefix).
 		PostFunc("/posts/{id:\\d+}/comments", frontPostPostComment).
 		GetFunc("/posts/{id:\\d+}/comments", frontGetPostComments)
+
+	return nil
 }
 
 func getTagPosts(page int, tagID int64) ([]*Post, error) {
