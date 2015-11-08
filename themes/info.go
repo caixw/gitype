@@ -31,6 +31,7 @@ type Info struct {
 	GoVersion   string     // 编译的go版本号
 	PostSize    int        // 总文章数量
 	CommentSize int        // 总评论数量
+	Uptime      int64      // 上线时间
 	RSS         *Anchor    // RSS，NOTICE:指针方便模板判断其值是否为空
 	Atom        *Anchor    // Atom
 	PrevPage    *Anchor    // 前一页
@@ -50,6 +51,7 @@ func getInfo() (*Info, error) {
 		Description: opt.Description,
 		AppVersion:  core.Version,
 		GoVersion:   runtime.Version(),
+		Uptime:      opt.Uptime,
 		Menus: []Anchor{ // TODO 添加到options配置中
 			{Link: opt.SiteURL, Title: "首页"},
 			{Link: core.PostURL(opt, "about"), Title: "关于"},

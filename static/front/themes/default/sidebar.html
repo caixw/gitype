@@ -40,8 +40,9 @@
     <div class="block">
         <div class="header">站点数据</div>
         <ul class="content">
-            <li>文章数量:{{.PostSize}}</li>
-            <li>评论数量:{{.CommentSize}}</li>
+            <li>上线时间: <time>{{.Uptime|sdate}}</time></li>
+            <li>文章数量: {{.PostSize}}</li>
+            <li>评论数量: {{.CommentSize}}</li>
         </ul>
     </div>
 
