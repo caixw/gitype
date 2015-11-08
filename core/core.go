@@ -60,6 +60,10 @@ func Run() {
 	web.Run(Cfg.Core)
 }
 
+func Close() {
+	DB.Close()
+}
+
 // RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
 // 若v的值是string,[]byte,[]rune则直接转换成字符串写入w。
 // 当v为nil时，不输出任何内容，若需要输出一个空对象，请使用"{}"字符串。

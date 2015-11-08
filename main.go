@@ -42,5 +42,5 @@ func main() {
 	}
 
 	core.Run()
-	core.DB.Close()
+	core.Close()
 }
