@@ -25,6 +25,11 @@ typing的配置文件仅提供了一些基本配置，若要达到完全的自�
 在main.go中删除与feed包相关的代码即可。
 
 
+##### 自定义模板
+
+所有的模板都在static目录下，其中static/admin对应后的模板；static/front/themes下对应的是前台的各个主题。
+
+
 
 
 ### 模板制作
