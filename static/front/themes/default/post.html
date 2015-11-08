@@ -37,7 +37,7 @@
         </form>
         {{end}}
         {{range .post.Comments}}
-        <article id="comments-{{.ID}}" class="comment">
+        <article id="{{.Fragment}}" class="comment">
             <header>
                 <img class="avatar" src="{{.AuthorEmail|avatar}}" alt="头像" />
                 <div class="author">{{.AuthorName}}</div>

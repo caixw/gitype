@@ -31,3 +31,7 @@ func (c *Comment) Permalink() string {
 	}
 	return core.CommentURL(opt, strconv.FormatInt(c.PostID, 10), c.ID)
 }
+
+func (c *Comment) Fragment() string {
+	return core.CommentFragment(c.ID)
+}

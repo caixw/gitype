@@ -69,7 +69,7 @@ func patchOption(o *models.Option) error {
 	return opt.UpdateFromOption(o)
 }
 
-// @api get /admin/api/options/{key} 更新设置项的值，不能更新password字段。
+// @api get /admin/api/options/{key} 获取设置项的值，不能获取password字段。
 // @apiParam key string 名称
 // @apiRequest json
 // @apiHeader Authorization xxx
