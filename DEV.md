@@ -20,6 +20,11 @@ typing的配置文件仅提供了一些基本配置，若要达到完全的自�
 配置文件路径包括app.json和logs.xml两个文件，分别对应core包的LogConfigPath和ConfigPath两个常量。
 
 
+##### 禁用feed相关内容
+
+在main.go中删除与feed包相关的代码即可。
+
+
 
 
 ### 模板制作

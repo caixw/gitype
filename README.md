@@ -29,6 +29,9 @@
 
 ### 配置文件
 
+以下列出了两个常见的配置项说明，你也可以在[DEV](DEV.md)可找到一些代码级别(比如加密码算法等)的配置。
+
+
 #### logs.xml
 logs.xml为日志的配置文件，可以定义日志的输入形式和输出日的地，
 具体配置可参考[logs](https://github.com/issue9/logs)的相关文档。
@@ -56,7 +59,7 @@ tempDir | 临时目录
 typing以自用为主，暂时*不支持新功能的PR*。
 bug可在[此处](https://github.com/caixw/typing/issues)提交或是直接PR。
 
-详细的开发文档声明在[DEV](DEV.md)中。
+详细的开发文档可在[DEV](DEV.md)中找到。
 
 
 
