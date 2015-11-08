@@ -192,6 +192,7 @@ func fillOptions(db *orm.DB) error {
 		Keywords:    "typing",
 		Description: "typing-极简的博客系统",
 		Suffix:      ".html",
+		Uptime:      time.Now().Unix(),
 
 		PageSize:        20,
 		LongDateFormat:  "2006-01-02 15:04:05",
