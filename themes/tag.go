@@ -15,5 +15,5 @@ type Tag struct {
 }
 
 func (t *Tag) Permalink() string {
-	return core.TagURL(opt, t.Name, 1)
+	return core.TagURL(t.Name, 1)
 }

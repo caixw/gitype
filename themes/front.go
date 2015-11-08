@@ -93,10 +93,10 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 	if page < 1 { // 不能小于1
 		page = 1
 	} else if page > 1 { // 为1的时候，不需要prev
-		info.PrevPage = &Anchor{Title: "上一页", Link: core.PostsURL(opt, page-1)}
+		info.PrevPage = &Anchor{Title: "上一页", Link: core.PostsURL(page - 1)}
 	}
 	if page*opt.SidebarSize < info.PostSize {
-		info.NextPage = &Anchor{Title: "下一页", Link: core.PostsURL(opt, page+1)}
+		info.NextPage = &Anchor{Title: "下一页", Link: core.PostsURL(page + 1)}
 	}
 
 	posts, err := getPosts(page - 1)
@@ -193,10 +193,10 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	if page < 1 { // 不能小于1
 		page = 1
 	} else if page > 1 { // 为1的时候，不需要prev
-		info.PrevPage = &Anchor{Title: "上一页", Link: core.TagURL(opt, tagName, page-1)}
+		info.PrevPage = &Anchor{Title: "上一页", Link: core.TagURL(tagName, page-1)}
 	}
 	if page*opt.SidebarSize < tag.Count {
-		info.NextPage = &Anchor{Title: "下一页", Link: core.TagURL(opt, tagName, page+1)}
+		info.NextPage = &Anchor{Title: "下一页", Link: core.TagURL(tagName, page+1)}
 	}
 	posts, err := getTagPosts(page-1, tag.ID)
 	if err != nil {

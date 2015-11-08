@@ -8,8 +8,8 @@ import "strconv"
 
 // 生成文章的url，postSlug为文章的唯一标记表示，一般为Name或是id字段。
 //  /posts/about.html
-func PostURL(opt *Options, postSlug string) string {
-	return opt.SiteURL + "posts/" + postSlug + opt.Suffix
+func PostURL(postSlug string) string {
+	return Opt.SiteURL + "posts/" + postSlug + Opt.Suffix
 }
 
 // 为一个评论生成唯一id值
@@ -18,15 +18,15 @@ func CommentFragment(id int64) string {
 }
 
 // 生成文章评论URL，postSlug为文章的唯一标记表示，一般为Name或是id字段，id为评语的id
-func CommentURL(opt *Options, postSlug string, id int64) string {
-	return PostURL(opt, postSlug) + "#" + CommentFragment(id)
+func CommentURL(postSlug string, id int64) string {
+	return PostURL(postSlug) + "#" + CommentFragment(id)
 }
 
 // 生成标签的url，tagID为文章的唯一标记表示，一般为Name或是id字段，page为文章的页码。
 //  /tags/tag1.html  // 首页
 //  /tags/tag1.html?page=2 // 其它页面
-func TagURL(opt *Options, tagID string, page int) string {
-	url := opt.SiteURL + "tags/" + tagID + opt.Suffix
+func TagURL(tagID string, page int) string {
+	url := Opt.SiteURL + "tags/" + tagID + Opt.Suffix
 	if page > 1 {
 		url += "?page=" + strconv.Itoa(page)
 	}
@@ -36,21 +36,21 @@ func TagURL(opt *Options, tagID string, page int) string {
 // 生成文章列表url，首页不显示页码。
 //  / 首页
 //  /posts.html?page=2 // 其它页面
-func PostsURL(opt *Options, page int) string {
+func PostsURL(page int) string {
 	if page <= 1 {
-		return opt.SiteURL
+		return Opt.SiteURL
 	}
 
-	return opt.SiteURL + "posts" + opt.Suffix + "?page=" + strconv.Itoa(page)
+	return Opt.SiteURL + "posts" + Opt.Suffix + "?page=" + strconv.Itoa(page)
 }
 
 // 生成标签列表url，所有标签在一个页面显示，不分页。
 //  /tags.html
-func TagsURL(opt *Options) string {
-	return opt.SiteURL + "tags" + opt.Suffix
+func TagsURL() string {
+	return Opt.SiteURL + "tags" + Opt.Suffix
 }
 
 // 自定义其它类型的url
-func URL(opt *Options, path string) string {
-	return opt.SiteURL + path
+func URL(path string) string {
+	return Opt.SiteURL + path
 }
