@@ -10,8 +10,6 @@ import (
 	"github.com/caixw/typing/feed"
 	"github.com/caixw/typing/install"
 	"github.com/caixw/typing/themes"
-	"github.com/issue9/mux"
-	"github.com/issue9/web"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -38,12 +36,11 @@ func main() {
 		panic(err)
 	}
 
-	// 初始化feed
+	// feed
 	if err = feed.Init(); err != nil {
 		panic(err)
 	}
 
-	core.Cfg.Core.ErrHandler = mux.PrintDebug
-	web.Run(core.Cfg.Core)
+	core.Run()
 	core.DB.Close()
 }

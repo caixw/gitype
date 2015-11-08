@@ -9,6 +9,7 @@ import (
 	"errors"
 	"io/ioutil"
 
+	"github.com/issue9/mux"
 	"github.com/issue9/web"
 )
 
@@ -89,6 +90,10 @@ func LoadConfig(path string) (*Config, error) {
 
 	if len(cfg.DBDriver) == 0 {
 		return nil, errors.New("app.json中未指定dbDriver")
+	}
+
+	if cfg.Debug { // 调试状态，输出详细信息
+		cfg.Core.ErrHandler = mux.PrintDebug
 	}
 
 	return cfg, nil

@@ -19,10 +19,11 @@ import (
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/dialect"
 	"github.com/issue9/orm/forward"
+	"github.com/issue9/web"
 )
 
 const (
-	Version = "0.4.17.151108" // 程序版本号
+	Version = "0.4.18.151108" // 程序版本号
 
 	// 两个配置文件路径
 	ConfigPath    = "./config/app.json"
@@ -53,6 +54,10 @@ func Init() (err error) {
 
 	Opt, err = loadOptions(DB)
 	return
+}
+
+func Run() {
+	web.Run(Cfg.Core)
 }
 
 // RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
