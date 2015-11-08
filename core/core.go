@@ -218,9 +218,7 @@ func QueryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int,
 // HashPassword 是一个简单的密码加密函数。
 // 若需要更换密码加密算法，理发此函数即可。
 func HashPassword(password string) string {
-	m := md5.New()
-	m.Write([]byte(password))
-	return hex.EncodeToString(m.Sum(nil))
+	return MD5(password)
 }
 
 // 将一段字符串转换成md5编码
