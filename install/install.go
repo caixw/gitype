@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/install/static"
 	"github.com/caixw/typing/models"
 	"github.com/issue9/orm"
 	"github.com/issue9/web"
@@ -55,7 +56,7 @@ func Install() bool {
 // 用于输出配置文件到指定的位置。
 // 目前包含了日志配置文件和程序本身的配置文件。
 func outputConfigFile(logsConfigPath, configPath string) error {
-	if err := ioutil.WriteFile(logsConfigPath, logFile, os.ModePerm); err != nil {
+	if err := ioutil.WriteFile(logsConfigPath, static.LogConfig, os.ModePerm); err != nil {
 		return err
 	}
 

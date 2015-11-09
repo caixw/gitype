@@ -13,7 +13,7 @@ import (
 
 const (
 	fileName    = "static.go" // 指定产生的文件名。
-	packageName = "install"   // 指定包名。
+	packageName = "static"    // 指定包名。
 
 	// 文件头部的警告内容
 	warning = "// 该文件由make.go自动生成，请勿手动修改！\n\n"
@@ -35,7 +35,7 @@ func main() {
 	w.WriteString(packageName)
 	w.WriteString("\n\n")
 
-	w.WriteString("var logFile=[]byte(`")
+	w.WriteString("var LogConfig=[]byte(`")
 	data, err := ioutil.ReadFile(logFile)
 	if err != nil {
 		panic(err)

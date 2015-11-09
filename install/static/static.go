@@ -1,8 +1,8 @@
 // 该文件由make.go自动生成，请勿手动修改！
 
-package install
+package static
 
-var logFile=[]byte(`<?xml version="1.0" encoding="utf-8" ?>
+var LogConfig=[]byte(`<?xml version="1.0" encoding="utf-8" ?>
 <logs>
     <info prefix="[INFO]" flag="">
         <console output="stderr" foreground="green" background="black" />
