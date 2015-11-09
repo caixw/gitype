@@ -8,6 +8,8 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"os"
+	"strings"
 
 	"github.com/issue9/mux"
 	"github.com/issue9/web"
@@ -18,19 +20,27 @@ import (
 type Config struct {
 	Core *web.Config `json:"core"`
 
-	Debug bool `json:"debug"` // 是否处于调试模式
+	Debug   bool   `json:"debug"`   // 是否处于调试模式
+	TempDir string `json:"tempDir"` // 临时文件所在的目录，该目录下的文件被删除不会影响程序整体运行。
 
+	// 数据库相关配置
 	DBDSN    string `json:"dbDSN"`    // 数据库dsn
 	DBPrefix string `json:"dbPrefix"` // 数据表名前缀
 	DBDriver string `json:"dbDriver"` // 数据库类型，可以是mysql, sqlite3, postgresql
 
+	// 接口相关配置
 	FrontAPIPrefix string `json:"frontAPIPrefix"` // 前端api地址前缀
 	AdminAPIPrefix string `json:"adminAPIPrefix"` // 后台api地址前缀
 
+	// 主题相关配置
 	ThemeURLPrefix string `json:"themeURLPrefix"` // 各主题公开文件的根URL
 	ThemeDir       string `json:"themeDir"`       // 主题文件所在的目录
 
-	TempDir string `json:"tempDir"` // 临时文件所在的目录，该目录下的文件被删除不会影响程序整体运行。
+	// 上传文件相关配置
+	UploadDir       string `json:"uploadDir"`       // 上传文件所在的目录
+	UploadSize      int64  `json:"uploadSize"`      // 上传文件的最大尺寸
+	UploadExts      string `json:"uploadExts"`      // 允许的上传文件扩展名，eg: .txt;.png,;.pdf
+	UploadURLPrefix string `json:"uploadURLPrefix"` // 上传文件的地址前缀
 }
 
 // LoadConfig 用于加载path的内容，并尝试将其转换成Config实例。
@@ -83,13 +93,31 @@ func LoadConfig(path string) (*Config, error) {
 	if cfg.TempDir[len(cfg.TempDir)-1] != '/' {
 		return nil, errors.New("tempDir只能以/结尾")
 	}
-
 	if len(cfg.DBDSN) == 0 {
 		return nil, errors.New("app.json中未指定dbDSN")
 	}
-
 	if len(cfg.DBDriver) == 0 {
 		return nil, errors.New("app.json中未指定dbDriver")
+	}
+
+	// upload
+	if len(cfg.UploadDir) == 0 {
+		return nil, errors.New("uploadDir未指定")
+	}
+	if cfg.UploadDir[len(cfg.UploadDir)-1] != '/' {
+		return nil, errors.New("uploadDir只能以/结尾")
+	}
+	if cfg.UploadSize < 0 {
+		return nil, errors.New("uploadSize必须大于等于0")
+	}
+	if strings.IndexByte(cfg.UploadExts, '/') >= 0 || strings.IndexByte(cfg.UploadExts, os.PathSeparator) >= 0 {
+		return nil, errors.New("uploadExts包含非法的字符")
+	}
+	if len(cfg.UploadURLPrefix) == 0 {
+		return nil, errors.New("必须指定uploadURLPrefix值")
+	}
+	if cfg.UploadURLPrefix[len(cfg.UploadURLPrefix)-1] == '/' {
+		return nil, errors.New("uploadURLPrefix不能以/符号结尾")
 	}
 
 	if cfg.Debug { // 调试状态，输出详细信息
