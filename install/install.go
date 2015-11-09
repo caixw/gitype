@@ -112,12 +112,13 @@ func fillDB(db *orm.DB) error {
 	}
 
 	// post
+	now := time.Now().Unix()
 	post := &models.Post{
 		Title:    "第一篇日志",
 		Content:  "<p>这是你的第一篇日志</p>",
 		State:    models.PostStatePublished,
-		Created:  time.Now().Unix(),
-		Modified: time.Now().Unix(),
+		Created:  now,
+		Modified: now,
 	}
 	if _, err := db.Insert(post); err != nil {
 		return err
@@ -145,6 +146,7 @@ func fillDB(db *orm.DB) error {
 	return nil
 }
 
+// 创建所有表结构
 func createTables(db *orm.DB) error {
 	// 创建表
 	tx, err := db.Begin()
@@ -164,23 +166,26 @@ func createTables(db *orm.DB) error {
 		return err
 	}
 
-	if err = tx.Commit(); err != nil {
+	err = tx.Commit()
+	if err != nil {
 		tx.Rollback()
-		return err
 	}
-	return nil
+	return err
 }
 
+// 填充标签
 func fillTags(db *orm.DB) error {
 	tags := []*models.Tag{
 		{Name: "default", Title: "默认标签", Description: "这是系统产生的默认标签"},
 		{Name: "tag1", Title: "标签一", Description: "tag1"},
 		{Name: "tag2", Title: "标签二", Description: "tag2"},
 	}
+
 	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
+
 	if err := tx.InsertMany(tags); err != nil {
 		tx.Rollback()
 		return err
