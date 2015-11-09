@@ -5,19 +5,31 @@
 package admin
 
 import (
+	"strings"
+
 	"github.com/caixw/typing/core"
 	"github.com/issue9/orm"
+	"github.com/issue9/upload"
 	"github.com/issue9/web"
 )
 
 var (
 	db  *orm.DB
 	opt *core.Options
+	u   *upload.Upload
 )
 
 func Init() error {
 	opt = core.Opt
 	db = core.DB
+
+	// 上传相关配置
+	var err error
+	cfg := core.Cfg
+	u, err = upload.New(cfg.UploadDir, cfg.UploadSize, strings.Split(cfg.UploadExts, ";")...)
+	if err != nil {
+		return err
+	}
 
 	return initRoute()
 }
@@ -33,7 +45,9 @@ func initRoute() error {
 		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
 		Put("/password", loginHandlerFunc(adminChangePassword)).
 		Get("/state", loginHandlerFunc(adminGetState)).
-		Put("/sitemap", loginHandlerFunc(adminPutSitemap))
+		Put("/sitemap", loginHandlerFunc(adminPutSitemap)).
+		Post("/media", loginHandlerFunc(adminPostMedia)).
+		Get("/media", loginHandlerFunc(adminGetMedia))
 
 	// themes
 	p.Get("/themes", loginHandlerFunc(adminGetThemes)).
