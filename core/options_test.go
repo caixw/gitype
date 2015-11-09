@@ -32,22 +32,6 @@ func TestOptions_fromMaps(t *testing.T) {
 	a.Equal(opt.PageSize, 50)
 }
 
-func TestOptions_ToMaps(t *testing.T) {
-	a := assert.New(t)
-
-	opt := &Options{
-		PageSize: 30,
-	}
-
-	maps, err := opt.ToMaps()
-	a.NotError(err)
-	for _, item := range maps {
-		if item["group"] == "system" && item["key"] == "pageSize" {
-			a.Equal(item["value"], "30")
-		}
-	}
-}
-
 func TestOptions_UpdateFromOption(t *testing.T) {
 	a := assert.New(t)
 	opt := &Options{}

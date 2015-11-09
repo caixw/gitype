@@ -97,35 +97,6 @@ func (opt *Options) fromMaps(maps []map[string]string) error {
 	return nil
 }
 
-// ToMaps 可以将options中的每字段转换成一个map结构，方便其它工具将其转换成sql内容。
-//  options.PageSize=5 ==> {"group":"system", "key":"pageSize", "value":"5"}
-func (opt *Options) ToMaps() ([]map[string]string, error) {
-	v := reflect.ValueOf(opt)
-	v = v.Elem()
-	t := v.Type()
-	l := t.NumField()
-	maps := make([]map[string]string, 0, l)
-
-	for i := 0; i < l; i++ {
-		tags := strings.Split(t.Field(i).Tag.Get("options"), ",")
-		if len(tags) != 2 {
-			return nil, fmt.Errorf("len(tags)!=2 @ %v", t.Field(i).Name)
-		}
-
-		val, err := conv.String(v.Field(i).Interface())
-		if err != nil {
-			return nil, err
-		}
-		maps = append(maps, map[string]string{
-			"group": tags[0],
-			"key":   tags[1],
-			"value": val,
-		})
-	}
-
-	return maps, nil
-}
-
 // 根据option的实例，更新options中某个字段，若未找到与之相对应的字段，则返回error
 func (opt *Options) UpdateFromOption(o *models.Option) error {
 	v := reflect.ValueOf(opt)

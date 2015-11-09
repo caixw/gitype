@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	Version = "0.4.18.151108" // 程序版本号
+	Version = "0.4.19.151109" // 程序版本号
 
 	// 两个配置文件路径
 	ConfigPath    = "./config/app.json"
