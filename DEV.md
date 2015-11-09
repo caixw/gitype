@@ -20,6 +20,39 @@ typing的配置文件仅提供了一些基本配置，若要达到完全的自�
 配置文件路径包括app.json和logs.xml两个文件，分别对应core包的LogConfigPath和ConfigPath两个常量。
 
 
+##### 禁用feed相关内容
+
+在main.go中删除与feed包相关的代码即可。
+
+
+##### 自定义模板
+
+所有的模板都在static目录下，其中static/admin对应后的模板；static/front/themes下对应的是前台的各个主题。
+
+
+##### 默认的安装数据
+
+可在install包下找到相应的代码。
+
+
+
+### 目录结构
+
+```
+|--- admin 后台的逻辑处理代码
+|
+|--- core 被其它包引用的核心代码
+|
+|--- feed 与sitemap, rss, atom 相关的代码
+|
+|--- install 安装代码，包括配置文件的输出和数据库的安装及默认数据填充
+|
+|--- models 数据库模型定义
+|
+|--- static 静态文件，包括后台的模板和所有的主题
+|
+|--- themes 主题的逻辑处理代码
+```
 
 
 ### 模板制作
