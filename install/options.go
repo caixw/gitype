@@ -82,8 +82,14 @@ func fillOptions(db *orm.DB) error {
 		return err
 	}
 	sql := "INSERT INTO #options ({key},{group},{value}) VALUES(?,?,?)"
+	stmt, err := tx.Prepare(true, sql)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
 	for _, item := range maps {
-		_, err := tx.Exec(true, sql, item["key"], item["group"], item["value"])
+		_, err := stmt.Exec(item["key"], item["group"], item["value"])
 		if err != nil {
 			tx.Rollback()
 			return err

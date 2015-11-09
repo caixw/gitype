@@ -97,23 +97,7 @@ func fillDB(db *orm.DB) error {
 	}
 
 	// 创建表
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	err = tx.MultCreate(
-		&models.Option{},
-		&models.Comment{},
-		&models.Tag{},
-		&models.Post{},
-		&models.Relationship{},
-	)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	if err = tx.Commit(); err != nil {
-		tx.Rollback()
+	if err := createTables(db); err != nil {
 		return err
 	}
 
@@ -123,7 +107,7 @@ func fillDB(db *orm.DB) error {
 	}
 
 	// tags
-	if err = fillTags(db); err != nil {
+	if err := fillTags(db); err != nil {
 		return err
 	}
 
@@ -158,6 +142,32 @@ func fillDB(db *orm.DB) error {
 		return err
 	}
 
+	return nil
+}
+
+func createTables(db *orm.DB) error {
+	// 创建表
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	err = tx.MultCreate(
+		&models.Option{},
+		&models.Comment{},
+		&models.Tag{},
+		&models.Post{},
+		&models.Relationship{},
+	)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		tx.Rollback()
+		return err
+	}
 	return nil
 }
 
