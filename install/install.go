@@ -81,6 +81,11 @@ func outputConfigFile(logsConfigPath, configPath string) error {
 		ThemeURLPrefix: "/themes",
 		ThemeDir:       "./static/front/themes/",
 		TempDir:        "./output/temp/",
+
+		UploadDir:       "./output/uploads/",
+		UploadExts:      ".txt;.png;.jpg;.jpeg",
+		UploadSize:      1024 * 1024 * 5,
+		UploadURLPrefix: "/uploads",
 	}
 	data, err := json.MarshalIndent(cfg, "", "    ")
 	if err != nil {
