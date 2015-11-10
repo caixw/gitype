@@ -18,6 +18,11 @@
     "adminApiPrefix" : "/admin/api",
     "themeURLPrefix" : "/themes",
 
-    "themeDir":      "./static/front/themes/",
-    "tempDir":       "./output/temp/"
+    "themeDir": "./static/front/themes/",
+    "tempDir":  "./output/temp/",
+
+    "uploadDir":      "./output/uploads/",
+    "uploadExts":     ".png;.jpg",
+    "uploadURLPrefix":"/uploads",
+    "uploadSize":     1024
 }
