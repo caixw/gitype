@@ -60,7 +60,7 @@ func LoadConfig(path string) (*Config, error) {
 	if len(cfg.AdminAPIPrefix) == 0 {
 		return nil, errors.New("必须指定adminApiPrefix值")
 	}
-	if cfg.AdminAPIPrefix[len(cfg.AdminAPIPrefix)-1] == '/' {
+	if strings.HasSuffix(cfg.AdminAPIPrefix, "/") {
 		return nil, errors.New("adminAPIPrefix不能以/符号结尾")
 	}
 
@@ -68,7 +68,7 @@ func LoadConfig(path string) (*Config, error) {
 	if len(cfg.FrontAPIPrefix) == 0 {
 		return nil, errors.New("必须指定frontApiPrefix值")
 	}
-	if cfg.FrontAPIPrefix[len(cfg.FrontAPIPrefix)-1] == '/' {
+	if strings.HasSuffix(cfg.FrontAPIPrefix, "/") {
 		return nil, errors.New("frontAPIPrefix不能以/符号结尾")
 	}
 
@@ -76,21 +76,21 @@ func LoadConfig(path string) (*Config, error) {
 	if len(cfg.ThemeURLPrefix) == 0 {
 		return nil, errors.New("必须指定themeURLPrefix值")
 	}
-	if cfg.ThemeURLPrefix[len(cfg.ThemeURLPrefix)-1] == '/' {
+	if strings.HasSuffix(cfg.ThemeURLPrefix, "/") {
 		return nil, errors.New("themeURLPrefix不能以/符号结尾")
 	}
 
 	if len(cfg.ThemeDir) == 0 {
 		return nil, errors.New("themeDir未指定")
 	}
-	if cfg.ThemeDir[len(cfg.ThemeDir)-1] != '/' {
+	if !strings.HasSuffix(cfg.ThemeDir, "/") && !strings.HasSuffix(cfg.ThemeDir, string(os.PathSeparator)) {
 		return nil, errors.New("themeDir只能以/结尾")
 	}
 
 	if len(cfg.TempDir) == 0 {
 		return nil, errors.New("tempDir未指定")
 	}
-	if cfg.TempDir[len(cfg.TempDir)-1] != '/' {
+	if !strings.HasSuffix(cfg.TempDir, "/") && !strings.HasSuffix(cfg.TempDir, string(os.PathSeparator)) {
 		return nil, errors.New("tempDir只能以/结尾")
 	}
 	if len(cfg.DBDSN) == 0 {
@@ -104,7 +104,7 @@ func LoadConfig(path string) (*Config, error) {
 	if len(cfg.UploadDir) == 0 {
 		return nil, errors.New("uploadDir未指定")
 	}
-	if cfg.UploadDir[len(cfg.UploadDir)-1] != '/' {
+	if !strings.HasSuffix(cfg.UploadDir, "/") && !strings.HasSuffix(cfg.UploadDir, string(os.PathSeparator)) {
 		return nil, errors.New("uploadDir只能以/结尾")
 	}
 	if cfg.UploadSize < 0 {
@@ -116,7 +116,7 @@ func LoadConfig(path string) (*Config, error) {
 	if len(cfg.UploadURLPrefix) == 0 {
 		return nil, errors.New("必须指定uploadURLPrefix值")
 	}
-	if cfg.UploadURLPrefix[len(cfg.UploadURLPrefix)-1] == '/' {
+	if strings.HasSuffix(cfg.UploadURLPrefix, "/") {
 		return nil, errors.New("uploadURLPrefix不能以/符号结尾")
 	}
 
