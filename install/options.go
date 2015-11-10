@@ -47,7 +47,7 @@ func toMaps(opt *core.Options) ([]map[string]string, error) {
 // 将一个默认的options值填充到数据库中。
 func fillOptions(db *orm.DB) error {
 	opt := &core.Options{
-		SiteURL:     "localhost:8081/",
+		SiteURL:     "http://localhost:8081/",
 		SiteName:    "typing blog",
 		SecondTitle: "副标题",
 		ScreenName:  "typing",
