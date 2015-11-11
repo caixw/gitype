@@ -48,6 +48,8 @@ type Options struct {
 
 	Theme string `options:"themes,theme"` // 主题
 
+	Menus string `options:"menus,menus"` // 菜单
+
 	ScreenName string `options:"users,screenName"` // 用户昵称
 	Email      string `options:"users,email"`      // 用户邮箱，可能会被显示在前端
 	Password   string `options:"users,password"`   // 用户的登录密码

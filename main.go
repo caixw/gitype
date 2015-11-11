@@ -10,6 +10,7 @@ import (
 	"github.com/caixw/typing/feed"
 	"github.com/caixw/typing/install"
 	"github.com/caixw/typing/themes"
+	"github.com/issue9/logs"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -43,4 +44,5 @@ func main() {
 
 	core.Run()
 	core.Close()
+	logs.Flush()
 }
