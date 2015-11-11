@@ -66,7 +66,7 @@ func getTagPosts(page int, tagID int64) ([]*Post, error) {
 func getPosts(page int) ([]*Post, error) {
 	posts := make([]*Post, 0, opt.PageSize)
 	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary,
-	{content} AS Content, {created} AS Created, {allowComment} AS AllowComment
+	{content} AS Content, {created} AS Created, {modified} AS Mofified, {allowComment} AS AllowComment
 	FROM #posts
 	WHERE {state}=?
 	ORDER BY {order} DESC
@@ -141,7 +141,7 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, tag := range tags {
-		sql := db.Where("tagID=?", tag.ID).Table("#relationships")
+		sql := db.Where("{tagID}=?", tag.ID).Table("#relationships")
 		tag.Count, err = sql.Count(true)
 		if err != nil {
 			logs.Error("pageTags:", err)
