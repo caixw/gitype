@@ -19,7 +19,7 @@ type Post struct {
 	Content  string `orm:"name(content);len(-1)"`               // 实际内容
 	State    int    `orm:"name(state)"`                         // 状态
 	Order    int    `orm:"name(order)"`                         // 排序
-	Template string `orm:"name(template)"`                      // 使用的模板
+	Template string `orm:"name(template);len(50)"`              // 使用的模板
 
 	Created  int64 `orm:"name(created)"`  // 创建时间
 	Modified int64 `orm:"name(modified)"` // 最后次修改时间
