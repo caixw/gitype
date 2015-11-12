@@ -95,7 +95,7 @@ func getSize(sql string, args ...interface{}) (int, error) {
 }
 
 func getTops() ([]*Comment, error) {
-	sql := `SELECT c.{content} AS Content, c.{id} AS ID, p.{id} AS PostID, p.{name} AS PostName
+	sql := `SELECT c.{content} AS {Content}, c.{id} AS {ID}, p.{id} AS {PostID}, p.{name} AS {PostName}
 	FROM #comments AS c
 	LEFT JOIN #posts AS p ON c.{postID}=p.{id}
 	WHERE c.{state}=?
@@ -116,7 +116,7 @@ func getTops() ([]*Comment, error) {
 }
 
 func getTags() ([]*Tag, error) {
-	sql := "SELECT  {title} AS Title, {name} AS Name FROM #tags"
+	sql := "SELECT  {title} AS {Title}, {name} AS {Name} FROM #tags"
 	rows, err := db.Query(true, sql)
 	if err != nil {
 		return nil, err

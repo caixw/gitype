@@ -35,7 +35,7 @@ func adminPutTagMerge(w http.ResponseWriter, r *http.Request) {
 // @apiSuccess 200 OK
 // @apiParam tags array 所有标签的列表
 func adminGetTags(w http.ResponseWriter, r *http.Request) {
-	sql := `SELECT m.{name},m.{title},m.{description},m.{id},count(r.{tagID}) AS {count}
+	sql := `SELECT m.{name}, m.{title}, m.{description}, m.{id},count(r.{tagID}) AS {count}
 			FROM #tags AS m
 			LEFT JOIN #relationships AS r ON m.{id}=r.{tagID}
 			GROUP BY m.{id}`

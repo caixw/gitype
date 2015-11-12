@@ -54,7 +54,7 @@ func (p *Post) Permalink() string {
 
 // 获取与当前文章相关的标签。
 func (p *Post) Tags() []*Tag {
-	sql := `SELECT t.{name} AS Name, t.{title} AS Title FROM #relationships AS r
+	sql := `SELECT t.{name} AS {Name}, t.{title} AS {Title} FROM #relationships AS r
 	LEFT JOIN #tags AS t on t.{id}=r.{tagID}
 	WHERE r.{postID}=?`
 
@@ -75,8 +75,8 @@ func (p *Post) Tags() []*Tag {
 
 // 返回文章的评论信息。
 func (p *Post) Comments() []*Comment {
-	sql := `SELECT {id} AS ID, {created} AS Created, {agent} AS Agent, {content} AS Content,
-	{isAdmin} AS IsAdmin, {authorName} AS AuthorName,{authorURL} AS AuthorURL, {postID} AS PostID
+	sql := `SELECT {id} AS {ID}, {created} AS {Created}, {agent} AS {Agent}, {content} AS {Content},
+	{isAdmin} AS {IsAdmin}, {authorName} AS {AuthorName}, {authorURL} AS {AuthorURL}, {postID} AS {PostID}
 	FROM #comments
 	WHERE {postID}=? AND {state}=?
 	ORDER BY {created} `

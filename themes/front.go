@@ -46,8 +46,8 @@ func initRoute() error {
 
 func getTagPosts(page int, tagID int64) ([]*Post, error) {
 	posts := make([]*Post, 0, opt.PageSize)
-	sql := `SELECT p.{id} AS ID, p.{name} AS Name, p.{title} AS Title, p.{summary} AS Summary,
-		p.{content} as Content, p.{created} AS Created, p.{allowComment} AS AllowComment
+	sql := `SELECT p.{id} AS {ID}, p.{name} AS {Name}, p.{title} AS {Title}, p.{summary} AS {Summary},
+		p.{content} as {Content}, p.{created} AS {Created}, p.{allowComment} AS {AllowComment}
 		FROM #relationships AS r
 		LEFT JOIN #posts AS p ON p.{id}=r.{postID}
 		WHERE p.{state}=? AND r.{tagID}=?
@@ -65,8 +65,8 @@ func getTagPosts(page int, tagID int64) ([]*Post, error) {
 
 func getPosts(page int) ([]*Post, error) {
 	posts := make([]*Post, 0, opt.PageSize)
-	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary,
-	{content} AS Content, {created} AS Created, {modified} AS Mofified, {allowComment} AS AllowComment
+	sql := `SELECT {id} AS {ID}, {name} AS {Name}, {title} AS {Title}, {summary} AS {Summary},
+	{content} AS {Content}, {created} AS {Created}, {modified} AS {Mofified}, {allowComment} AS {AllowComment}
 	FROM #posts
 	WHERE {state}=?
 	ORDER BY {order} DESC
@@ -124,7 +124,7 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 	info.Canonical = opt.SiteURL + "tags"
 	info.Title = "标签"
 
-	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title FROM #tags`
+	sql := `SELECT {id} AS {ID}, {name} AS {Name}, {title} AS {Title} FROM #tags`
 	rows, err := db.Query(true, sql)
 	if err != nil {
 		logs.Error("pageTags:", err)
@@ -160,7 +160,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	}
 	tagName = strings.TrimSuffix(tagName, opt.Suffix)
 
-	sql := `SELECT t.{id} AS ID, t.{name} AS Name, t.{title} AS Title, t.{description} AS Description,
+	sql := `SELECT t.{id} AS {ID}, t.{name} AS {Name}, t.{title} AS {Title}, t.{description} AS {Description},
 	count(r.{tagID}) AS {Count}
 	FROM #tags AS t
 	LEFT JOIN #relationships AS r ON t.{id}=r.{tagID}
