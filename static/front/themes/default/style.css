@@ -106,6 +106,14 @@ li{
     padding-left:0em;
 }
 
+.post section{
+    margin-bottom:2em;
+}
+
+.post p{
+    text-indent:2em;
+}
+
 /**************************** .tag */
 
 .tag{
