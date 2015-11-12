@@ -51,6 +51,10 @@ adminAPIPrefix | 后台api地址前经，需要同时修改static/admin/app.js�
 themeURLPrefix | 各主题公开文件的根URL
 themeDir | 主题文件所在的目录
 tempDir | 临时目录
+uploadDir | 上传文件所在的目录
+uploadSize | 上传文件的最大尺寸
+uploadExts | 允许的上传文件扩展名，eg: .txt;.png,;.pdf
+uploadURLPrefix | 上传文件的地址前缀
 
 
 
