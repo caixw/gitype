@@ -9,9 +9,9 @@
 
 ### 支持的数据库
 
-1. mysql(未测试)
+1. mysql
 1. sqlite3
-1. postgresql(未测试)
+1. postgresql
 
 
 
