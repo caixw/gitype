@@ -67,6 +67,7 @@ li{
     margin:1em 0em;
     border-bottom:1px solid #b6b6b6;
     padding-bottom:1em;
+    line-height:1.8em;
 }
 .post header{
     /*border-bottom:1px solid #eee;*/
@@ -94,7 +95,7 @@ li{
 
 .post .meta span{
     border-right:1px solid #eee;
-    padding:0em 0.5em;
+    padding:0em .5em;
 }
 
 .post .meta span:last-child{
@@ -110,8 +111,13 @@ li{
     margin-bottom:2em;
 }
 
-.post p{
+.post section h3{
+    margin-bottom:.5em;
+}
+
+.post section p{
     text-indent:2em;
+    margin:.2em 0em;
 }
 
 /**************************** .tag */
@@ -128,6 +134,14 @@ li{
 
 #content .tags .item{
     margin:0.5em;
+}
+
+#content .tags .item:first-child{
+    margin-left:0em;
+}
+
+#content .tags .item:last-child{
+    margin-right:0em;
 }
 
 /********************** #comments */

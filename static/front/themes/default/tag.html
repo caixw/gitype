@@ -23,10 +23,8 @@
                     <span><a href="{{.Permalink}}#comments">{{.CommentsSize}}条评论</a></span>
                 </div>
             </header>
-            <section>
-                {{.Entry|html}}
-                <p><a href="{{.Permalink}}">继续阅读&#160;&raquo;</a></p>
-            </section>
+            {{.Entry|html}}
+            <p><a href="{{.Permalink}}">继续阅读&#160;&raquo;</a></p>
         </article>
         {{end}}
     </div>
