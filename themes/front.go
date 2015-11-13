@@ -164,8 +164,8 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	count(r.{tagID}) AS {Count}
 	FROM #tags AS t
 	LEFT JOIN #relationships AS r ON t.{id}=r.{tagID}
-	GROUY BY t.{id}
-	WHERE t.{name}=?`
+	WHERE t.{name}=?
+	GROUP BY t.{id}`
 	rows, err := db.Query(true, sql, tagName)
 	if err != nil {
 		logs.Error("pageTag:", err)
