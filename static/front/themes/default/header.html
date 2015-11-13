@@ -11,8 +11,9 @@
         {{if .Keywords}}<meta name="keywords" content="{{.Keywords}}" />{{end}}
         {{if .Description}}<meta name="description" content="{{.Description}}" />{{end}}
         <link rel="stylesheet" href="/themes/default/style.css" />
+        <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=css"></script>
     </head>
-    <body>
+    <body onload="prettyPrint()">
     <div id="content">
         <div class="container">
 {{end}}
