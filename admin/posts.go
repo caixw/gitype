@@ -252,6 +252,12 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	if !core.ReadJSON(w, r, p) {
 		return
 	}
+	op := &models.Post{ID: id}
+	if err := db.Select(op); err != nil {
+		logs.Error("adminPostPost-0:", err)
+		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
 
 	pp := &models.Post{
 		ID:           id,
@@ -265,6 +271,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		AllowPing:    p.AllowPing,
 		AllowComment: p.AllowComment,
 		Modified:     time.Now().Unix(),
+		Created:      op.Created,
 	}
 	tags, err := getTagsID(p.Tags)
 	if err != nil {
