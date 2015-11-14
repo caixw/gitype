@@ -98,19 +98,20 @@ func adminChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	errs := &core.ErrorResult{Message: "提交数据错误"}
+	errs := &core.ErrorResult{Message: "提交数据错误", Detail: map[string]string{}}
 	if len(l.New) == 0 {
-		errs.Detail["new"] = "新密码不能为空"
+		errs.Add("new", "新密码不能为空")
 	}
 	if opt.Password != core.HashPassword(l.Old) {
-		errs.Detail["old"] = "密码错误"
+		errs.Add("old", "密码错误")
 	}
 	if len(errs.Detail) > 0 {
 		core.RenderJSON(w, http.StatusUnauthorized, errs, nil)
 		return
 	}
 
-	o := &models.Option{Key: "passowrd", Value: core.HashPassword(l.New)}
+	println("3")
+	o := &models.Option{Key: "password", Value: core.HashPassword(l.New)}
 	if _, err := db.Update(o); err != nil {
 		logs.Error("changePassword:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
