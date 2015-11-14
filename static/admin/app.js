@@ -167,9 +167,9 @@ function App(options) {
         window.location.href = fregment;
     };
 
-    // form中所有包含name的任意元素将被构建成一个JSON
-    this.buildJSON = function(form) {
-        var ret = {};
+    // form中所有包含name的任意元素将被构建成一个Object
+    this.buildObject = function(form) {
+        var obj = {};
         form.find('*[name]').each(function(index, elem){
             var v = $(elem).val();
             var type = $(elem).attr('data-type');
@@ -184,9 +184,14 @@ function App(options) {
                 v = $(elem).prop('checked');
                 break;
             }
-            ret[$(elem).attr('name')] = v;
+            obj[$(elem).attr('name')] = v;
         });
-        return JSON.stringify(ret);
+        return obj
+    };
+
+    // form中所有包含name的任意元素将被构建成一个JSON
+    this.buildJSON = function(form) {
+        return JSON.stringify(this.buildObject(form));
     };
 
     // 开始监听路由。

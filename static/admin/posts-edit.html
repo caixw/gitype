@@ -14,19 +14,31 @@ function pageInit(id) {
     }
 
     var load = true
+    var selectedTags = {} // 用于保存当前文章的标签
     if (id>0) {
         load = app.get({
             'url': app.adminAPI('/posts/'+id)
         }).done(function(data, textStatus, jqXHR){
             app.loadTemplate("#post", "#post-template", data);
+            selectedTags = data.tags;
         });
     }else{
         app.loadTemplate("#post", "#post-template");
     }
+
     $.when(load).then(function(){
         return app.get({
             'url': app.adminAPI('/tags')
         }).done(function(data, textStatus, jqXHR){
+            // 比较标签，记录当前文章的标签值。
+            for (var i = 0; i < data.tags.length; i++) {
+                for (var j = 0; j < selectedTags.length; j++) {
+                    if (data.tags[i].id == selectedTags[j].id){
+                        data.tags[i].selected = true;
+                        break;
+                    }
+                }
+            }
             app.loadTemplate("#tags", "#tags-template", data);
         });
     }).then(function(){
@@ -46,17 +58,21 @@ function pageInit(id) {
 
         // 提交数据
         function submit(){
+            var data = app.buildObject($('.ui.form'));
+            for (var i = 0; i < data.tags.length; i++) {
+                data.tags[i] = parseInt(data.tags[i]);
+            }
             if (id>0){
                 app.put({
                     'url': app.adminAPI('/posts/')+id,
-                    'data':app.buildJSON($('.ui.form'))
+                    'data':JSON.stringify(data)
                 }).done(function(){
                     app.showMessage('green', "更新成功");
                 });
             }else{
                 app.post({
                     'url': app.adminAPI('/posts'),
-                    'data':app.buildJSON($('.ui.form'))
+                    'data':JSON.stringify(data)
                 }).done(function(){
                     app.showMessage('green', "添加成功");
                 });
@@ -68,7 +84,7 @@ function pageInit(id) {
 
 <script id="tags-template" type="x-handlebars-template">
 {{#each tags}}
-    <div class="item">{{title}}</div>
+    <option {{#if selected}}selected="selected"{{/if}} value="{{id}}">{{title}}</option>
 {{/each}}
 </script>
 
@@ -79,13 +95,8 @@ function pageInit(id) {
     </div>
 
     <!-- tags -->
-    <div class="ui fluid multiple search selection dropdown field">
-        <input type="hidden" name="tags" value="{{tags}}" />
-        <i class="dropdown icon"></i>
-        <div class="default text">选择标签</div>
-        <div class="menu" id="tags">
-        </div>
-    </div>
+    <select id="tags" class="ui fluid multiple search selection dropdown field" multiple="multiple" name="tags">
+    </select>
     <!-- end tags -->
 
     <div class="ui accordion field" style="margin-bottom:1em">
