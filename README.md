@@ -11,7 +11,6 @@
 
 1. mysql
 1. sqlite3
-1. postgresql
 
 
 
