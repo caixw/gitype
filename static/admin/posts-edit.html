@@ -50,11 +50,15 @@ function pageInit(id) {
                 app.put({
                     'url': app.adminAPI('/posts/')+id,
                     'data':app.buildJSON($('.ui.form'))
+                }).done(function(){
+                    app.showMessage('green', "更新成功");
                 });
             }else{
                 app.post({
                     'url': app.adminAPI('/posts'),
                     'data':app.buildJSON($('.ui.form'))
+                }).done(function(){
+                    app.showMessage('green', "添加成功");
                 });
             }
         }
