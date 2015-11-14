@@ -2,16 +2,18 @@
 {{template "header" .info}}
 
 <div>
-    <article class="post">
+    <article class="post" itemscope itemtype="http://schema.org/Blog">
         <header>
-            <h2 class="title">{{.post.Title}}</h2>
+            <h2 class="title" itemprop="name">{{.post.Title}}</h2>
             <div class="meta">
-                <span>发布时间:<time>{{.post.Created|ldate}}</time></span>
+                <span>发布时间:<time itemprop="dateCreated">{{.post.Created|ldate}}</time></span>
                 <span>标签:{{range .post.Tags}}
                     <a href="{{.Permalink}}">{{.Title}}</a>
                 {{end}}
                 </span>
-                <span><a href="{{.post.Permalink}}#comments">{{.post.CommentsSize}}条评论</a></span>
+                <span>
+                    <a href="{{.post.Permalink}}#comments" itemprop="discussionUrl"><span itemprop="commentCount">{{.post.CommentsSize}}</span>条评论</a>
+                </span>
             </div>
         </header>
         {{.post.Entry|html}}
@@ -37,7 +39,7 @@
         </form>
         {{end}}
         {{range .post.Comments}}
-        <article id="{{.Fragment}}" class="comment">
+        <article id="{{.Fragment}}" class="comment" itemprop="comment">
             <header>
                 <img class="avatar" src="{{.AuthorEmail|avatar}}" alt="头像" />
                 <div class="author">{{.AuthorName}}</div>

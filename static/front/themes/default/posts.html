@@ -3,16 +3,18 @@
 
 <div>
     {{range .posts}}
-    <article class="post">
+    <article class="post" itemscope itemtype="http://schema.org/Blog">
         <header>
-            <h2 class="title"><a href="{{.Permalink}}">{{.Title}}</a></h2>
+            <h2 class="title"><a href="{{.Permalink}}" itemprop="name">{{.Title}}</a></h2>
             <div class="meta">
-                <span>发布时间:<time>{{.Created|sdate}}</time></span>
+                <span>发布时间:<time itemprop="dateCreated">{{.Created|sdate}}</time></span>
                 <span>标签:{{range .Tags}}
                     <a href="{{.Permalink}}">{{.Title}}</a>
                 {{end}}
                 </span>
-                <span><a href="{{.Permalink}}#comments">{{.CommentsSize}}条评论</a></span>
+                <span>
+                    <a href="{{.Permalink}}#comments" itemprop="discussionUrl"><span itemprop="commentCount">{{.CommentsSize}}</span>条评论</a>
+                </span>
             </div>
         </header>
         {{.Entry|html}}
