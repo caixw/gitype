@@ -33,15 +33,6 @@ a:hover{
     text-decoration:underline;
 }
 
-ol,ul{
-    padding-left:0.5em;
-}
-
-li{
-    list-style:none outside;
-    margin:0.5em 0;
-}
-
 .clearfix{
     clear:both;
 }
@@ -288,9 +279,26 @@ li{
     margin-bottom:0em;
 }
 
+#sidebar ol, #sidebar ul{
+    padding-left:0.5em;
+}
+
+#sidebar li{
+    list-style:none outside;
+    margin:0.5em 0;
+}
+
 /**************************** #return-top */
 #return-top{
     position:fixed;
     bottom:2em;
     right:2em;
+}
+
+
+/************************** prettyprint */
+.prettyprint ol, .prettyprint ul{
+    line-height:1.4em;
+}
+.prettyprint li{
 }
