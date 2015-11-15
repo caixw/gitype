@@ -12,6 +12,20 @@
 
 </div>
 
+
+<!-- 删除确认框 -->
+<div class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">确认操作</div>
+    <div class="content">
+        <div class="description">确认要删除这些标签吗，该操作不可恢复。</div>
+    </div>
+    <div class="actions">
+        <div class="ui cancel green button">取消</div>
+        <div class="ui approve red button">确认</div>
+    </div>
+</div>
+
 <script>
 function pageInit() {
     app.setTitle('标签管理');
@@ -42,15 +56,22 @@ function pageInit() {
         });
 
         $('#delete').on('click', function(){
-            $('#tags .blue.label').each(function(index, elem){
-                var id = $(elem).attr('data-id');
-                app.delete({
-                    'url': app.adminAPI('/tags/'+id)
-                }).done(function(){
-                    $(elem).remove();
-                    updateActions();
-                });
-            });
+            $('.ui.modal').modal({
+                closable  : false,
+                onDeny    : function(){
+                },
+                onApprove : function() {
+                    $('#tags .blue.label').each(function(index, elem){
+                        var id = $(elem).attr('data-id');
+                        app.delete({
+                            'url': app.adminAPI('/tags/'+id)
+                        }).done(function(){
+                            $(elem).remove();
+                            updateActions();
+                        });
+                    });
+                } // end onApprove
+            }).modal('show');
         });
 
         $('#edit').on('click', function(){

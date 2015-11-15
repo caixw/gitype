@@ -211,7 +211,7 @@ func adminPostTag(w http.ResponseWriter, r *http.Request) {
 	core.RenderJSON(w, http.StatusCreated, "{}", nil)
 }
 
-// @api delete /admin/api/tags/{id} 删除该id的标签
+// @api delete /admin/api/tags/{id} 删除该id的标签，也将被从relationships表中删除。
 // @apiParam id int 需要删除的标签id
 // @apiGroup admin
 //

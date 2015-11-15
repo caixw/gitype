@@ -19,6 +19,19 @@
 
 </div>
 
+<!-- 删除确认框 -->
+<div class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">确认操作</div>
+    <div class="content">
+        <div class="description">确认要删除该文章吗，该操作不可恢复。</div>
+    </div>
+    <div class="actions">
+        <div class="ui cancel green button">取消</div>
+        <div class="ui approve red button">确认</div>
+    </div>
+</div>
+
 <script>
 function pageInit(){
     app.setTitle('文章列表');
@@ -34,14 +47,21 @@ function pageInit(){
         });
 
         $('#delete').on('click', function(){
-            $('#posts input:checked').each(function(index, elem){
-                var id = $(elem).val();
-                app.delete({
-                    'url': app.adminAPI('/posts/'+id)
-                }).done(function(){
-                    $(elem).parents('tr').remove();
-                });
-            });
+            $('.ui.modal').modal({
+                closable  : false,
+                onDeny    : function(){
+                },
+                onApprove : function() {
+                    $('#posts input:checked').each(function(index, elem){
+                        var id = $(elem).val();
+                        app.delete({
+                            'url': app.adminAPI('/posts/'+id)
+                        }).done(function(){
+                            $(elem).parents('tr').remove();
+                        });
+                    });
+                } // end onApprove
+            }).modal('show');
         });
 
         $('#edit').on('click', function(){

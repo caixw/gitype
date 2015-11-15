@@ -10,7 +10,7 @@
 <script>
 function pageInit() {
     app.setTitle('菜单');
-    
+
     loadMenus();
 
     function initActions() {
@@ -33,6 +33,10 @@ function pageInit() {
                 app.showMessage('green', '更新成功');
             });
         });
+
+        $('.delete').on('click', function(){
+            $(this).parents('tr').remove();
+        });
     } // end submit.click
 
     function loadMenus() {
@@ -53,6 +57,7 @@ function pageInit() {
     <tr>
         <th>标题</th>
         <th>链接</th>
+        <th>操作</th>
     </tr>
 </thead>
 <tbody>
@@ -60,11 +65,13 @@ function pageInit() {
     <tr>
         <td><input type="text" required="required" name="title" value="{{title}}" /></td>
         <td><input type="text" required="required" name="link" value="{{link}}" /></td>
+        <td><button class="ui red button delete">删除</button></td>
     </tr>
 {{/each}}
     <tr>
         <td><input type="text" required="required" name="title" value="{{title}}" /></td>
         <td><input type="text" required="required" name="link" value="{{link}}" /></td>
+        <td></td>
     </tr>
 </tbody>
 </script>

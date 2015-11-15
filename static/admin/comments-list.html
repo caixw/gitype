@@ -17,6 +17,21 @@
     </div>
 </div>
 
+<!-- 删除确认框 -->
+<div class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">确认操作</div>
+    <div class="content">
+        <div class="description">
+            确认要删除该评论吗，该操作不可恢复。<br />建议将无用评论转换成垃圾评论，而不是直接删除。
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui cancel green button">取消</div>
+        <div class="ui approve red button">确认</div>
+    </div>
+</div>
+
 <script>
 function pageInit(){
     loadCounts();
@@ -30,14 +45,21 @@ function pageInit(){
         });
 
         $('#delete').on('click', function(){
-            $('#comments input:checked').each(function(index, elem){
-                var id = $(elem).val();
-                app.delete({
-                    'url': app.adminAPI('/comments/'+id)
-                }).done(function(){
-                    $(elem).parents('tr').remove();
-                });
-            });
+            $('.ui.modal').modal({
+                closable  : false,
+                onDeny    : function(){
+                },
+                onApprove : function() {
+                    $('#comments input:checked').each(function(index, elem){
+                        var id = $(elem).val();
+                        app.delete({
+                            'url': app.adminAPI('/comments/'+id)
+                        }).done(function(){
+                            $(elem).parents('tr').remove();
+                        });
+                    });
+                } // end onApprove
+            }).modal('show');
         });
 
         $('#approved').on('click', function(){

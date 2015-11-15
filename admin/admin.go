@@ -70,7 +70,7 @@ func initRoute() error {
 		Get("/comments/count", loginHandlerFunc(adminGetCommentsCount)).
 		Post("/comments", loginHandlerFunc(adminPostComment)).
 		Put("/comments/{id:\\d+}", loginHandlerFunc(adminPutComment)).
-		Delete("comments/{id:\\d+}", loginHandlerFunc(adminDeleteComment)).
+		Delete("/comments/{id:\\d+}", loginHandlerFunc(adminDeleteComment)).
 		Post("/comments/{id:\\d+}/waiting", loginHandlerFunc(adminSetCommentWaiting)).
 		Post("/comments/{id:\\d+}/spam", loginHandlerFunc(adminSetCommentSpam)).
 		Post("/comments/{id:\\d+}/approved", loginHandlerFunc(adminSetCommentApproved))
