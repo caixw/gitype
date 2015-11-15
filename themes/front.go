@@ -69,7 +69,7 @@ func getPosts(page int) ([]*Post, error) {
 	{content} AS {Content}, {created} AS {Created}, {modified} AS {Mofified}, {allowComment} AS {AllowComment}
 	FROM #posts
 	WHERE {state}=?
-	ORDER BY {order} DESC
+	ORDER BY {order} ASC, {created} DESC
 	LIMIT ? OFFSET ?`
 	rows, err := db.Query(true, sql, models.PostStatePublished, opt.PageSize, opt.PageSize*page)
 	if err != nil {
