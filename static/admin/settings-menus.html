@@ -21,6 +21,9 @@ function pageInit() {
                 var obj = {}
                 obj.title = $(elem).find('input[name=title]').val();
                 obj.link = $(elem).find('input[name=link]').val();
+                if ((obj.title == '') || (obj.link == '')){
+                    return true;
+                }
                 menus.push(obj);
             });
 
