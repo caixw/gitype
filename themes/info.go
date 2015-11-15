@@ -5,6 +5,7 @@
 package themes
 
 import (
+	"encoding/json"
 	"runtime"
 	"strconv"
 
@@ -14,8 +15,8 @@ import (
 )
 
 type Anchor struct {
-	Link  string
-	Title string
+	Link  string `json:"link"`
+	Title string `json:"title"`
 }
 
 // 页面的基本信息
@@ -43,7 +44,7 @@ type Info struct {
 }
 
 func getInfo() (*Info, error) {
-	p := &Info{
+	info := &Info{
 		SiteURL:     opt.SiteURL,
 		SiteName:    opt.SiteName,
 		SecondTitle: opt.SecondTitle,
@@ -52,33 +53,34 @@ func getInfo() (*Info, error) {
 		AppVersion:  core.Version,
 		GoVersion:   runtime.Version(),
 		Uptime:      opt.Uptime,
-		Menus: []Anchor{ // TODO 添加到options配置中
-			{Link: opt.SiteURL, Title: "首页"},
-			{Link: core.PostURL("about"), Title: "关于"},
-			{Link: core.TagsURL(), Title: "标签"},
-		},
 	}
+
+	menus := make([]Anchor, 0, 10)
+	if err := json.Unmarshal([]byte(opt.Menus), &menus); err != nil {
+		return nil, err
+	}
+	info.Menus = menus
 
 	var err error
 	sql := "SELECT COUNT(*) as cnt FROM #posts WHERE {state}=?" // TODO 预编译成stmt
-	if p.PostSize, err = getSize(sql, models.PostStatePublished); err != nil {
+	if info.PostSize, err = getSize(sql, models.PostStatePublished); err != nil {
 		return nil, err
 	}
 
 	sql = "SELECT COUNT(*) as cnt FROM #comments WHERE {state}=?"
-	if p.CommentSize, err = getSize(sql, models.CommentStateApproved); err != nil {
+	if info.CommentSize, err = getSize(sql, models.CommentStateApproved); err != nil {
 		return nil, err
 	}
 
-	if p.Tags, err = getTags(); err != nil {
+	if info.Tags, err = getTags(); err != nil {
 		return nil, err
 	}
 
-	if p.Tops, err = getTops(); err != nil {
+	if info.Tops, err = getTops(); err != nil {
 		return nil, err
 	}
 
-	return p, nil
+	return info, nil
 }
 
 func getSize(sql string, args ...interface{}) (int, error) {

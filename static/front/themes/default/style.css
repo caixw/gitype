@@ -37,6 +37,10 @@ a:hover{
     clear:both;
 }
 
+code, pre{
+    font-family: monospace;
+}
+
 /********************** content */
 #content{
     background:#fff;
@@ -300,5 +304,7 @@ a:hover{
 .prettyprint ol, .prettyprint ul{
     line-height:1.4em;
 }
-.prettyprint li{
+
+pre{
+    padding:0.2em 0.5em;
 }

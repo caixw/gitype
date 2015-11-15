@@ -1,0 +1,68 @@
+<div style="text-align:left">
+    <h1 class="header">菜单</h1>
+
+    <div class="ui form">
+        <table id="menus" class="ui compact celled striped table"></table>
+        <button class="ui primary button" id="submit">提交</button>
+    </div>
+</div>
+
+<script>
+function pageInit() {
+    loadMenus();
+
+    function initActions() {
+        $('#submit').on('click', function(){
+            var menus = [];
+            var trs = $('.ui.form').find('tbody tr');
+            trs.each(function(index, elem){
+                var obj = {}
+                obj.title = $(elem).find('input[name=title]').val();
+                obj.link = $(elem).find('input[name=link]').val();
+                menus.push(obj);
+            });
+
+            var obj = {"value":JSON.stringify(menus)};
+            app.patch({
+                'url': app.adminAPI('/options/menus'),
+                'data':JSON.stringify(obj)
+            }).done(function(){
+                loadMenus();
+                app.showMessage('green', '更新成功');
+            });
+        });
+    } // end submit.click
+
+    function loadMenus() {
+        app.get({
+            'url': app.adminAPI('/options/menus')
+        }).done(function(data, textStatus, jqXHR){
+            var obj = JSON.parse(data.value);
+            $('#menus').html('');
+            app.loadTemplate('#menus', '#menus-template', obj);
+            initActions();
+        });
+    } // end loadMenus
+} // end pageInit
+</script>
+
+<script type="x-template-handlebars" id="menus-template">
+<thead>
+    <tr>
+        <th>标题</th>
+        <th>链接</th>
+    </tr>
+</thead>
+<tbody>
+{{#each this}}
+    <tr>
+        <td><input type="text" required="required" name="title" value="{{title}}" /></td>
+        <td><input type="text" required="required" name="link" value="{{link}}" /></td>
+    </tr>
+{{/each}}
+    <tr>
+        <td><input type="text" required="required" name="title" value="{{title}}" /></td>
+        <td><input type="text" required="required" name="link" value="{{link}}" /></td>
+    </tr>
+</tbody>
+</script>
