@@ -10,7 +10,7 @@
         {{if .Atom}}<link rel="alternate" type="application/atom+xml" Title="{{.Atom.Title}}" href="{{.Atom.Link}}" />{{end}}
         {{if .Keywords}}<meta name="keywords" content="{{.Keywords}}" />{{end}}
         {{if .Description}}<meta name="description" content="{{.Description}}" />{{end}}
-        <link rel="stylesheet" href="/themes/default/style.css" />
+        <link rel="stylesheet" href="{{"default/style.css"|themeURL}}" />
         <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=desert"></script>
     </head>
     <body>
