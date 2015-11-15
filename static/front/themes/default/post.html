@@ -1,8 +1,8 @@
 {{define "post"}}
 {{template "header" .info}}
 
-<div>
-    <article class="post" itemscope itemtype="http://schema.org/Blog">
+<div itemscope itemtype="http://schema.org/Blog">
+    <article class="post">
         <header>
             <h2 class="title" itemprop="name">{{.post.Title}}</h2>
             <div class="meta">
@@ -39,10 +39,10 @@
         </form>
         {{end}}
         {{range .post.Comments}}
-        <article id="{{.Fragment}}" class="comment" itemprop="comment">
-            <header>
+        <article id="{{.Fragment}}" class="comment" itemprop="comment" itemscope itemtype="http://schema.org/Comment">
+            <header itemscope itemtype="http://schema.org/Person">
                 <img class="avatar" src="{{.AuthorEmail|avatar}}" alt="头像" />
-                <div class="author">{{.AuthorName}}</div>
+                <div class="author" itemprop="name">{{.AuthorName}}</div>
             </header>
             <section class="content">{{.Content}}</section>
         </article>
