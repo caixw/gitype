@@ -51,7 +51,7 @@ func getTagPosts(page int, tagID int64) ([]*Post, error) {
 		FROM #relationships AS r
 		LEFT JOIN #posts AS p ON p.{id}=r.{postID}
 		WHERE p.{state}=? AND r.{tagID}=?
-		ORDER BY {order} DESC
+		ORDER BY {order} ASC, {created} DESC
 		LIMIT ? OFFSET ?`
 	rows, err := db.Query(true, sql, models.PostStatePublished, tagID, opt.PageSize, opt.PageSize*page)
 	if err != nil {
