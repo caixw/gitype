@@ -68,6 +68,7 @@ function pageInit(id) {
                     'data':JSON.stringify(data)
                 }).done(function(){
                     app.showMessage('green', "更新成功");
+                    app.redirect('#posts/list');
                 });
             }else{
                 app.post({
@@ -75,6 +76,7 @@ function pageInit(id) {
                     'data':JSON.stringify(data)
                 }).done(function(){
                     app.showMessage('green', "添加成功");
+                    app.redirect('#posts/list');
                 });
             }
         }
@@ -91,7 +93,7 @@ function pageInit(id) {
 <script id="post-template" type="x-handlebars-template">
     <input id="state" name="state" value="" type="hidden" data-type="int" />
     <div class="field">
-        <input name="title" type="text" placeholder="标题" value="{{title}}" />
+        <input name="title" type="text" required="required" placeholder="标题" value="{{title}}" />
     </div>
 
     <!-- tags -->
@@ -125,7 +127,7 @@ function pageInit(id) {
     </div>
 
     <div class="field">
-        <textarea name="content" rows="20" cols="40" placeholder="文章正文">{{content}}</textarea>
+        <textarea name="content" required="required" rows="20" cols="40" placeholder="文章正文">{{content}}</textarea>
     </div>
 
     <div class="ui divider"></div>
