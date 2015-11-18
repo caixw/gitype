@@ -34,7 +34,7 @@ func initRoute() error {
 		GetFunc("/posts"+opt.Suffix, pagePosts).
 		GetFunc("/posts/{id}"+opt.Suffix, pagePost).  // 获取文章详细内容
 		PostFunc("/posts/{id}"+opt.Suffix, pagePost). // 提交评论
-		Get(cfg.UploadURLPrefix, http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.UploadDir)))).
+		Get(cfg.UploadURLPrefix, http.StripPrefix(cfg.UploadURLPrefix, http.FileServer(http.Dir(cfg.UploadDir)))).
 		Get(cfg.ThemeURLPrefix, http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.ThemeDir))))
 
 	m.Prefix(cfg.FrontAPIPrefix).
