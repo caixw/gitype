@@ -17,6 +17,7 @@ function App(options) {
         titleSeparator: '-',
         adminAPIPrefix: '/admin/api',
         frontAPIPrefix: '/api',
+        uploadURLPrefix:'/uploads',
         messageTimeout: 5000
     };
     var opt = $.extend({}, defaults, options);
@@ -39,6 +40,10 @@ function App(options) {
     this.adminAPI = function(url) {
         return opt.adminAPIPrefix + url;
     };
+
+    this.uploadURL = function(url) {
+        return opt.uploadURLPrefix + url;
+    }
 
     // 执行一个ajax操作，提交和返回数据均为json
     function ajax(settings) {

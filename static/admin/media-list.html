@@ -15,7 +15,8 @@ function pageInit(){
             for (var i = 0; i < data.list.length; i++) { // 转换图标
                 switch (data.list[i].type) {
                     case 'image':
-                        data.list[i].icon = '<img style="width:4em;height:4em" src="/uploads' + path + "/" + data.list[i].name + '" />';
+                        var url = app.uploadURL(path + '/' + data.list[i].name)
+                        data.list[i].icon = '<img style="width:4em;height:4em" src="' + url + '" />';
                         break;
                     case 'dir':
                         data.list[i].icon = '<i class="folder icon"></i>';

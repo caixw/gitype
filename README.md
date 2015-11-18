@@ -47,7 +47,7 @@ dbDSN | 数据库dsn
 dbPrefix | 数据表名前缀
 dbDriver | 数据库类型，可以是mysql, sqlite3, postgresql
 frontAPIPrefix | 前端api地址前缀
-adminAPIPrefix | 后台api地址前经，需要同时修改static/admin/app.js中有关api地址的内容。
+adminAPIPrefix | 后台api地址前经
 themeURLPrefix | 各主题公开文件的根URL
 themeDir | 主题文件所在的目录
 tempDir | 临时目录
@@ -55,6 +55,8 @@ uploadDir | 上传文件所在的目录
 uploadSize | 上传文件的最大尺寸
 uploadExts | 允许的上传文件扩展名，eg: .txt;.png,;.pdf
 uploadURLPrefix | 上传文件的地址前缀
+
+**adminAPIPrefix和uploadURLPrefix的修改，需要同时在static/admin/index.html中设置app实例的相关值。**
 
 
 
