@@ -7,34 +7,55 @@ package admin
 import (
 	"io/ioutil"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/caixw/typing/core"
+	"github.com/issue9/logs"
 )
 
 // @api get /admin/api/media 获取所有的文件列表
-// @apiQuery parent string 上一级目录
+// @apiQuery parent string 上一级目录，相对于cfg.UploadDir设置项。
 // @apiGroup admin
 //
 // @apiSuccess 200 成功获取列表
 // @apiParam files array 文件列表
 func adminGetMedia(w http.ResponseWriter, r *http.Request) {
-	parent, ok := core.ParamString(w, r, "parent")
-	if !ok {
-		return
+	parent := r.FormValue("parent")
+	if len(parent) == 0 {
+		parent = "/"
 	}
 	if strings.Index(parent, "..") >= 0 {
 		core.RenderJSON(w, http.StatusBadRequest, &core.ErrorResult{Message: "格式错误"}, nil)
 		return
 	}
+
 	parent = core.Cfg.UploadDir + parent
 
-	list, err := ioutil.ReadDir(parent)
+	fs, err := ioutil.ReadDir(parent)
 	if err != nil {
+		logs.Error("admin.adminGetMeida:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"files": list}, nil)
+
+	type fileInfo struct {
+		Name string `json:"name"`
+		Type string `json:"type"`
+	}
+	list := make([]*fileInfo, 0, len(fs))
+	for _, file := range fs {
+		typ := "file"
+		if file.IsDir() {
+			typ = "dir"
+		}
+		suffix := strings.ToLower(filepath.Ext(file.Name()))
+		if suffix == ".jpeg" || suffix == ".jpg" || suffix == ".png" || suffix == ".svg" || suffix == ".gif" {
+			typ = "image"
+		}
+		list = append(list, &fileInfo{Name: file.Name(), Type: typ})
+	}
+	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"list": list}, nil)
 }
 
 // @api post /admin/api/media 上传媒体文件

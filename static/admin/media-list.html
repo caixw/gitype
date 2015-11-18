@@ -1,1 +1,54 @@
 <h1 class="header">媒体文件</h1>
+
+<div id="media-list">
+</div>
+
+<script>
+function pageInit(){
+    loadFiles('/');
+
+    function loadFiles(path){
+        app.get({
+            'url': app.adminAPI('/media?parent=')+path
+        }).done(function(data, textStatus, jqXHR){
+            $('#media-list').html('');
+            for (var i = 0; i < data.list.length; i++) { // 转换图标
+                switch (data.list[i].type) {
+                    case 'image':
+                        data.list[i].icon = '<img src="/uploads' + path + "/" + data.list[i].name + '" />';
+                        break;
+                    case 'dir':
+                        data.list[i].icon = '<i class="folder icon"></i>';
+                        break;
+                    case 'file':
+                        data.list[i].icon = '<i class="file icon"></i>';
+                        break;
+                    default:
+                        break;
+                }
+            }
+            app.loadTemplate('#media-list', '#media-template', data);
+            initActions(path);
+        }); // end app.get
+    } // end loadFiles
+
+    function initActions(parent){
+        $('#media-list .ui.list .item').on('click', function(){
+            var path = $(this).attr('data-path');
+            path = parent + '/' + path;
+            loadFiles(path);
+        });
+    }
+}
+</script>
+
+<script type="x-handler-template" id="media-template">
+    <div class="ui list">
+    {{#each list}}
+        <a class="item" data-path="{{name}}">
+            {{{icon}}}
+            <div class="content">{{name}}</div>
+        </a>
+    {{/each}}
+    </div>
+</script>
