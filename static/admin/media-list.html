@@ -15,7 +15,7 @@ function pageInit(){
             for (var i = 0; i < data.list.length; i++) { // 转换图标
                 switch (data.list[i].type) {
                     case 'image':
-                        data.list[i].icon = '<img src="/uploads' + path + "/" + data.list[i].name + '" />';
+                        data.list[i].icon = '<img style="width:4em;height:4em" src="/uploads' + path + "/" + data.list[i].name + '" />';
                         break;
                     case 'dir':
                         data.list[i].icon = '<i class="folder icon"></i>';
@@ -46,7 +46,7 @@ function pageInit(){
     <div class="ui list">
     {{#each list}}
         <a class="item" data-path="{{name}}">
-            {{{icon}}}
+            <span class="ui image">{{{icon}}}</span>
             <div class="content">{{name}}</div>
         </a>
     {{/each}}
