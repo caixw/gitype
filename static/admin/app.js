@@ -6,11 +6,12 @@
 
 // App 封装了后台的一些公共操作函数。
 // 通过options参数可更改以下内容，除非有特殊需求，否则无需更改这些内容：
-// - titleSuffix    标题后缀
-// - titleSeparator 标题分隔符
-// - messageTimeout 提示信息关闭时间
-// - adminAPIPrefix 后台操作api地址的前缀
-// - frontAPIPrefix 前端操作api地址的前缀
+// - titleSuffix     标题后缀
+// - titleSeparator  标题分隔符
+// - messageTimeout  提示信息关闭时间
+// - adminAPIPrefix  后台操作api地址的前缀
+// - frontAPIPrefix  前端操作api地址的前缀
+// - uploadURLPrefix 上传文件的根目录
 function App(options) {
     var defaults = {
         titleSuffix:    'typing',
