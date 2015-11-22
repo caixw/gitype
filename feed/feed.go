@@ -13,6 +13,7 @@ import (
 	"github.com/issue9/web"
 )
 
+// 定义了各文件名。
 const (
 	sitemap    = "sitemap.xml"
 	sitemapXsl = "sitemap.xsl"
