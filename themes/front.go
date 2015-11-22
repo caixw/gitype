@@ -106,6 +106,8 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	info.Canonical = core.PostsURL(page)
 	data := map[string]interface{}{
 		"info":  info,
 		"posts": posts,

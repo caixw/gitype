@@ -13,9 +13,10 @@ function pageInit(){
         }).done(function(data, textStatus, jqXHR){
             $('#media-list').html('');
             for (var i = 0; i < data.list.length; i++) { // 转换图标
+                data.list[i].path = path + '/' + data.list[i].name;
                 switch (data.list[i].type) {
                     case 'image':
-                        var url = app.uploadURL(path + '/' + data.list[i].name);
+                        var url = app.uploadURL(data.list[i].path);
                         data.list[i].image = '<img style="max-width:15em;max-height:20em" src="' + url + '" />';
                         data.list[i].icon = 'file image outline';
                         break;
@@ -29,14 +30,13 @@ function pageInit(){
             }
             app.loadTemplate('#media-list', '#media-template', data);
             $('#media-list a.item[data-html]').popup();
-            initActions(path);
+            initActions();
         }); // end app.get
     } // end loadFiles
 
     function initActions(parent){
         $('#media-list .ui.list .item').on('click', function(){
             var path = $(this).attr('data-path');
-            path = parent + '/' + path;
             loadFiles(path);
         });
     }
@@ -46,7 +46,7 @@ function pageInit(){
 <script type="x-handler-template" id="media-template">
     <div class="ui list">
     {{#each list}}
-        <a class="item" data-path="{{name}}" {{#if image}} data-html="{{image}}"{{/if}}>
+        <a class="item" data-path="{{path}}" {{#if image}} data-html="{{image}}"{{/if}}>
             <span class="ui image"><i class="{{icon}} icon"></i></span>
             <div class="content">{{name}}</div>
         </a>
