@@ -48,7 +48,7 @@ typing的配置文件仅提供了一些基本配置，若要达到完全的自�
 |
 |--- core 被其它包引用的核心代码
 |
-|--- feed 与sitemap, rss, atom 相关的代码
+|--- feed 与sitemap, rss, atom相关的代码
 |
 |--- install 安装代码，包括配置文件的输出和数据库的安装及默认数据填充
 |

@@ -38,6 +38,7 @@ type Config struct {
 
 	// 上传文件相关配置
 	UploadDir       string `json:"uploadDir"`       // 上传文件所在的目录
+	UploadDirFormat string `json:"uploadDirFormat"` // 上传文件子路径的格式，只能以时间为格式
 	UploadSize      int64  `json:"uploadSize"`      // 上传文件的最大尺寸
 	UploadExts      string `json:"uploadExts"`      // 允许的上传文件扩展名，eg: .txt;.png,;.pdf
 	UploadURLPrefix string `json:"uploadURLPrefix"` // 上传文件的地址前缀
@@ -103,6 +104,12 @@ func LoadConfig(path string) (*Config, error) {
 	// upload
 	if len(cfg.UploadDir) == 0 {
 		return nil, errors.New("uploadDir未指定")
+	}
+	if len(cfg.UploadDirFormat) == 0 {
+		cfg.UploadDirFormat = "2006/01/02/"
+	}
+	if strings.Index(cfg.UploadDirFormat, "..") >= 0 {
+		return nil, errors.New("uploadDirFormat不能包含..字符")
 	}
 	if !strings.HasSuffix(cfg.UploadDir, "/") && !strings.HasSuffix(cfg.UploadDir, string(os.PathSeparator)) {
 		return nil, errors.New("uploadDir只能以/结尾")

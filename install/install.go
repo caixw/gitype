@@ -83,6 +83,7 @@ func outputConfigFile(logsConfigPath, configPath string) error {
 		TempDir:        "./output/temp/",
 
 		UploadDir:       "./output/uploads/",
+		UploadDirFormat: "2006/01/",
 		UploadExts:      ".txt;.png;.jpg;.jpeg",
 		UploadSize:      1024 * 1024 * 5,
 		UploadURLPrefix: "/uploads",

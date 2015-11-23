@@ -52,6 +52,7 @@ themeURLPrefix | 各主题公开文件的根URL
 themeDir | 主题文件所在的目录
 tempDir | 临时目录
 uploadDir | 上传文件所在的目录
+uploadDirFormat | 上传文件子目录格式，以时间为格式，可以是2006/01/02/或是2006/01/等，根据自已需求使用。
 uploadSize | 上传文件的最大尺寸
 uploadExts | 允许的上传文件扩展名，eg: .txt;.png,;.pdf
 uploadURLPrefix | 上传文件的地址前缀
