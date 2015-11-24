@@ -1,6 +1,10 @@
-<h1 class="header">媒体文件</h1>
+<div style="text-align:left">
+    <h1 class="header">媒体文件</h1>
 
-<div id="media-list">
+    <div id="media-list"></div>
+
+    <div class="ui divider"></div>
+
 </div>
 
 <script>
@@ -28,14 +32,35 @@ function pageInit(){
                         break;
                 }
             }
+
+            console.log(path);
+            var dirs = path.split('/');
+            data.breadcrumb = [];
+            var bcpath = '';
+            for (var i = 0; i < dirs.length; i++) {
+                if (dirs[i].length == 0){
+                    dirs[i] = '/';
+                }
+                bcpath += dirs[i];
+                var obj = {
+                    name: dirs[i],
+                    path: bcpath
+                }
+                data.breadcrumb.push(obj);
+            } // end for
             app.loadTemplate('#media-list', '#media-template', data);
             $('#media-list a.item[data-html]').popup();
             initActions();
         }); // end app.get
     } // end loadFiles
 
-    function initActions(parent){
+    function initActions(){
         $('#media-list .ui.list .item').on('click', function(){
+            var path = $(this).attr('data-path');
+            loadFiles(path);
+        });
+
+        $('.breadcrumb .section').on('click', function(){
             var path = $(this).attr('data-path');
             loadFiles(path);
         });
@@ -44,6 +69,13 @@ function pageInit(){
 </script>
 
 <script type="x-handler-template" id="media-template">
+    <div class="ui small breadcrumb">
+        {{#each breadcrumb}}
+        <span class="section" data-path="{{path}}">{{name}}</span>
+        <i class="right chevron icon divider"></i>
+        {{/each}}
+    </div>
+
     <div class="ui list">
     {{#each list}}
         <a class="item" data-path="{{path}}" {{#if image}} data-html="{{image}}"{{/if}}>

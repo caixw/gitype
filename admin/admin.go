@@ -26,7 +26,7 @@ func Init() error {
 	// 上传相关配置
 	var err error
 	cfg := core.Cfg
-	u, err = upload.New(cfg.UploadDir, cfg.UploadSize, strings.Split(cfg.UploadExts, ";")...)
+	u, err = upload.New(cfg.UploadDir, cfg.UploadDirFormat, cfg.UploadSize, strings.Split(cfg.UploadExts, ";")...)
 	if err != nil {
 		return err
 	}
