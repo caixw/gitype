@@ -117,8 +117,8 @@ function App(options) {
     // 若未登录，是会自动跳转到登录页面。
     // template用于指定需要加载的模板，如果还有额外的其它参数，将会被传递给页面的pageInit函数。
     this.loadBodyPage = function(template) {
-        if (!this.isLogin()){
-            this.redirect('login')
+        if (!self.isLogin()){
+            self.redirect('login')
             return
         }
 
@@ -151,12 +151,12 @@ function App(options) {
 
     // 加载登录页面，若已经登录，则会跳转到dashboard页面。
     this.loadLoginPage = function() {
-        if (this.isLogin()){
-            this.redirect('dashboard');
+        if (self.isLogin()){
+            self.redirect('dashboard');
             return
         }
 
-        this.loadPage('login.html');
+        self.loadPage('login.html');
     };
 
 
@@ -211,14 +211,16 @@ function App(options) {
         var files = $(formSelector).files;
         formdata.append(files[0]);
 
-        $.ajax({
+        return $.ajax({
             'type':        'POST',
             'data':        formdata,
             'url':         adminAPI('/upload'),
             'contentType': false,
             'processData': false
-        }).then(function(){
-            showMessage('green', '上传文件成功');
+        }).done(function(){
+            self.showMessage('green', '上传文件成功');
+        }).fail(function(jqXHR, textStatus, errorThrown){
+            self.showMessage('red', '上传文件失败:'+errorThrown);
         });
     }
 } // end App
