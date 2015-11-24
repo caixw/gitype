@@ -5,10 +5,20 @@
 
     <div class="ui divider"></div>
 
+    <form enctype="multipart/form-data">
+        <input type="file" name="media" id="media" />
+        <!--buton class="ui submit button" type="submit">上传</button-->
+        <input class="ui submit button" type="submit" />
+    </form>
 </div>
 
 <script>
 function pageInit(){
+    $('form').on('submit', function(){
+        app.upload('#media');
+        return false;
+    });
+
     loadFiles('/');
 
     function loadFiles(path){
@@ -33,7 +43,6 @@ function pageInit(){
                 }
             }
 
-            console.log(path);
             var dirs = path.split('/');
             data.breadcrumb = [];
             var bcpath = '';

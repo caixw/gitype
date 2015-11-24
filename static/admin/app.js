@@ -206,21 +206,22 @@ function App(options) {
     };
 
     // 执行单个文件上传操作
-    this.upload = function(formSelector){
+    this.upload = function(mediaSelector){
+        var files = $(mediaSelector)[0].files;
         var formdata = new FormData();
-        var files = $(formSelector).files;
-        formdata.append(files[0]);
+        formdata.append('media', files[0]);
 
         return $.ajax({
             'type':        'POST',
             'data':        formdata,
-            'url':         adminAPI('/upload'),
+            'url':         self.adminAPI('/media'),
             'contentType': false,
-            'processData': false
+            'processData': false,
+            'headers':    {'Authorization': window.sessionStorage.token}
         }).done(function(){
             self.showMessage('green', '上传文件成功');
         }).fail(function(jqXHR, textStatus, errorThrown){
             self.showMessage('red', '上传文件失败:'+errorThrown);
         });
-    }
+    } // end upload
 } // end App
