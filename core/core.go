@@ -8,7 +8,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -17,52 +16,25 @@ import (
 	"github.com/issue9/context"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm"
-	"github.com/issue9/orm/dialect"
-	"github.com/issue9/orm/forward"
-	"github.com/issue9/web"
 )
 
 const (
-	Version = "0.4.30.151122" // 程序版本号
+	Version = "0.5.31.151125" // 程序版本号
 
-	// 两个配置文件路径
-	ConfigPath    = "./config/app.json"
-	LogConfigPath = "./config/logs.xml"
 )
 
 var (
-	Cfg *Config
-	Opt *Options
-	DB  *orm.DB
+	opt *Options
+	db  *orm.DB
 )
 
 // 初始化core包。返回程序必要的变量。
-func Init() (err error) {
-	Cfg, err = LoadConfig(ConfigPath)
-	if err != nil {
-		return
-	}
+func Init(database *orm.DB) (*Options, error) {
+	db = database
 
-	DB, err = InitDB(Cfg)
-	if err != nil {
-		return
-	}
-
-	if err = logs.InitFromXMLFile(LogConfigPath); err != nil {
-		return
-	}
-
-	Opt, err = loadOptions(DB)
-	return
-}
-
-func Run() {
-	web.Run(Cfg.Core)
-}
-
-func Close() {
-	DB.Close()
-	logs.Flush()
+	var err error
+	opt, err = loadOptions(db)
+	return opt, err
 }
 
 // RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
@@ -231,21 +203,4 @@ func MD5(str string) string {
 	m := md5.New()
 	m.Write([]byte(str))
 	return hex.EncodeToString(m.Sum(nil))
-}
-
-// 从一个Config实例中初始一个orm.DB实例。
-func InitDB(cfg *Config) (*orm.DB, error) {
-	var d forward.Dialect
-	switch cfg.DBDriver {
-	case "sqlite3":
-		d = dialect.Sqlite3()
-	case "mysql":
-		d = dialect.Mysql()
-	case "postgres":
-		d = dialect.Postgres()
-	default:
-		return nil, errors.New("不能理解的dbDriver值：" + cfg.DBDriver)
-	}
-
-	return orm.NewDB(cfg.DBDriver, cfg.DBDSN, cfg.DBPrefix, d)
 }

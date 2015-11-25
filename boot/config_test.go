@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package core
+package boot
 
 import (
 	"testing"
@@ -13,7 +13,7 @@ import (
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
-	cfg, err := LoadConfig("./testdata/app.json")
+	cfg, err := loadConfig("./testdata/app.json")
 	a.NotError(err).NotNil(cfg)
 
 	a.Equal(cfg.FrontAPIPrefix, "/api").

@@ -9,7 +9,7 @@ import "strconv"
 // 生成文章的url，postSlug为文章的唯一标记表示，一般为Name或是id字段。
 //  /posts/about.html
 func PostURL(postSlug string) string {
-	return Opt.SiteURL + "posts/" + postSlug + Opt.Suffix
+	return opt.SiteURL + "posts/" + postSlug + opt.Suffix
 }
 
 // 为一个评论生成唯一id值
@@ -26,7 +26,7 @@ func CommentURL(postSlug string, id int64) string {
 //  /tags/tag1.html  // 首页
 //  /tags/tag1.html?page=2 // 其它页面
 func TagURL(tagID string, page int) string {
-	url := Opt.SiteURL + "tags/" + tagID + Opt.Suffix
+	url := opt.SiteURL + "tags/" + tagID + opt.Suffix
 	if page > 1 {
 		url += "?page=" + strconv.Itoa(page)
 	}
@@ -38,19 +38,19 @@ func TagURL(tagID string, page int) string {
 //  /posts.html?page=2 // 其它页面
 func PostsURL(page int) string {
 	if page <= 1 {
-		return Opt.SiteURL
+		return opt.SiteURL
 	}
 
-	return Opt.SiteURL + "posts" + Opt.Suffix + "?page=" + strconv.Itoa(page)
+	return opt.SiteURL + "posts" + opt.Suffix + "?page=" + strconv.Itoa(page)
 }
 
 // 生成标签列表url，所有标签在一个页面显示，不分页。
 //  /tags.html
 func TagsURL() string {
-	return Opt.SiteURL + "tags" + Opt.Suffix
+	return opt.SiteURL + "tags" + opt.Suffix
 }
 
 // 自定义其它类型的url
 func URL(path string) string {
-	return Opt.SiteURL + path
+	return opt.SiteURL + path
 }

@@ -30,7 +30,7 @@ func adminGetMedia(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	parent = core.Cfg.UploadDir + parent
+	parent = cfg.UploadDir + parent
 
 	fs, err := ioutil.ReadDir(parent)
 	if err != nil {

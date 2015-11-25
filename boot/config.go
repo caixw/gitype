@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package core
+package boot
 
 import (
 	"encoding/json"
@@ -44,8 +44,8 @@ type Config struct {
 	UploadURLPrefix string `json:"uploadURLPrefix"` // 上传文件的地址前缀
 }
 
-// LoadConfig 用于加载path的内容，并尝试将其转换成Config实例。
-func LoadConfig(path string) (*Config, error) {
+// 加载path的内容，并尝试将其转换成Config实例。
+func loadConfig(path string) (*Config, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err

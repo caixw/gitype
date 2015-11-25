@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/caixw/typing/boot"
 	"github.com/caixw/typing/core"
 	"github.com/issue9/orm"
 	"github.com/issue9/web"
@@ -32,13 +33,13 @@ var (
 )
 
 // 初始化sitemap包，path为sitemap.xml文件的保存路径
-func Init() error {
-	sitemapPath = core.Cfg.TempDir + sitemap
-	sitemapXslPath = core.Cfg.TempDir + sitemapXsl
-	rssPath = core.Cfg.TempDir + rss
-	atomPath = core.Cfg.TempDir + atom
-	db = core.DB
-	opt = core.Opt
+func Init(cfg *boot.Config, database *orm.DB, options *core.Options) error {
+	sitemapPath = cfg.TempDir + sitemap
+	sitemapXslPath = cfg.TempDir + sitemapXsl
+	rssPath = cfg.TempDir + rss
+	atomPath = cfg.TempDir + atom
+	db = database
+	opt = options
 
 	file, err := os.Create(sitemapXslPath)
 	if err != nil {
