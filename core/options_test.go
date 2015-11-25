@@ -7,7 +7,6 @@ package core
 import (
 	"testing"
 
-	"github.com/caixw/typing/models"
 	"github.com/issue9/assert"
 )
 
@@ -36,11 +35,11 @@ func TestOptions_UpdateFromOption(t *testing.T) {
 	a := assert.New(t)
 	opt := &Options{}
 
-	o := &models.Option{Key: "pageSize", Group: "system", Value: "25"}
+	o := &Option{Key: "pageSize", Group: "system", Value: "25"}
 	a.NotError(opt.UpdateFromOption(o))
 	a.Equal(opt.PageSize, 25)
 
-	o = &models.Option{Key: "pageSize", Group: "system", Value: "45"}
+	o = &Option{Key: "pageSize", Group: "system", Value: "45"}
 	a.NotError(opt.UpdateFromOption(o))
 	a.Equal(opt.PageSize, 45)
 }

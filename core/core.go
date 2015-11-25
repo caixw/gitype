@@ -23,17 +23,15 @@ const (
 )
 
 var (
-	opt *Options
-	db  *orm.DB
+	db *orm.DB
 )
 
 // 初始化core包。返回程序必要的变量。
 func Init(database *orm.DB) (*Options, error) {
 	db = database
 
-	var err error
-	opt, err = loadOptions(db)
-	return opt, err
+	return loadOptions(db)
+	//return opt, err
 }
 
 // RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
