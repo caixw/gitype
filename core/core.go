@@ -22,16 +22,9 @@ const (
 	Version = "0.5.31.151125" // 程序版本号
 )
 
-var (
-	db *orm.DB
-)
-
 // 初始化core包。返回程序必要的变量。
 func Init(database *orm.DB) (*Options, error) {
-	db = database
-
-	return loadOptions(db)
-	//return opt, err
+	return loadOptions(database)
 }
 
 // RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
