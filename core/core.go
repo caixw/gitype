@@ -62,6 +62,7 @@ func Run() {
 
 func Close() {
 	DB.Close()
+	logs.Flush()
 }
 
 // RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
