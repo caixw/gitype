@@ -9,7 +9,6 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/caixw/typing/models"
 	"github.com/issue9/conv"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
@@ -100,7 +99,7 @@ func (opt *Options) fromMaps(maps []map[string]string) error {
 }
 
 // 根据option的实例，更新options中某个字段，若未找到与之相对应的字段，则返回error
-func (opt *Options) UpdateFromOption(o *models.Option) error {
+func (opt *Options) UpdateFromOption(o *Option) error {
 	v := reflect.ValueOf(opt)
 	v = v.Elem()
 	t := v.Type()

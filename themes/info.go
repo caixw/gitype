@@ -10,7 +10,6 @@ import (
 	"strconv"
 
 	"github.com/caixw/typing/core"
-	"github.com/caixw/typing/models"
 	"github.com/issue9/orm/fetch"
 )
 
@@ -63,12 +62,12 @@ func getInfo() (*Info, error) {
 
 	var err error
 	sql := "SELECT COUNT(*) as cnt FROM #posts WHERE {state}=?" // TODO 预编译成stmt
-	if info.PostSize, err = getSize(sql, models.PostStatePublished); err != nil {
+	if info.PostSize, err = getSize(sql, core.PostStatePublished); err != nil {
 		return nil, err
 	}
 
 	sql = "SELECT COUNT(*) as cnt FROM #comments WHERE {state}=?"
-	if info.CommentSize, err = getSize(sql, models.CommentStateApproved); err != nil {
+	if info.CommentSize, err = getSize(sql, core.CommentStateApproved); err != nil {
 		return nil, err
 	}
 
@@ -103,7 +102,7 @@ func getTops() ([]*Comment, error) {
 	WHERE c.{state}=?
 	ORDER BY c.{id} DESC
 	LIMIT ?`
-	rows, err := db.Query(true, sql, models.CommentStateApproved, opt.SidebarSize)
+	rows, err := db.Query(true, sql, core.CommentStateApproved, opt.SidebarSize)
 	if err != nil {
 		return nil, err
 	}

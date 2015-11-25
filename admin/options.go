@@ -9,7 +9,6 @@ import (
 
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/feed"
-	"github.com/caixw/typing/models"
 	"github.com/issue9/logs"
 )
 
@@ -29,7 +28,7 @@ func adminPatchOption(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	o := &models.Option{Key: key}
+	o := &core.Option{Key: key}
 	cnt, err := db.Count(o)
 	if err != nil {
 		logs.Error("patchOption:", err)
@@ -59,7 +58,7 @@ func adminPatchOption(w http.ResponseWriter, r *http.Request) {
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
-func patchOption(o *models.Option) error {
+func patchOption(o *core.Option) error {
 	// 更新数据库中的值
 	if _, err := db.Update(o); err != nil {
 		return err

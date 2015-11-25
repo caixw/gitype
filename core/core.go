@@ -20,7 +20,6 @@ import (
 
 const (
 	Version = "0.5.31.151125" // 程序版本号
-
 )
 
 var (

@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/caixw/typing/core"
-	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/logs"
 )
@@ -58,7 +57,7 @@ func adminPutCurrentTheme(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	o := &models.Option{Key: "theme", Value: v.Value}
+	o := &core.Option{Key: "theme", Value: v.Value}
 	if err := patchOption(o); err != nil {
 		logs.Error("adminPutTheme:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)

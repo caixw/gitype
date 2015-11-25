@@ -11,7 +11,6 @@ import (
 	"github.com/caixw/typing/boot"
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/feed"
-	i "github.com/caixw/typing/install"
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/logs"
 	"github.com/issue9/web"
@@ -77,7 +76,7 @@ func install() bool {
 		if err != nil {
 			panic(err)
 		}
-		if err := i.Install(db); err != nil {
+		if err := core.Install(db); err != nil {
 			panic(err)
 		}
 		return true

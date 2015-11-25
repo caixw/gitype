@@ -2,19 +2,18 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package install
+package core
 
 import (
 	"testing"
 
-	"github.com/caixw/typing/core"
 	"github.com/issue9/assert"
 )
 
 func TestToMaps(t *testing.T) {
 	a := assert.New(t)
 
-	opt := &core.Options{
+	opt := &Options{
 		PageSize: 30,
 	}
 
