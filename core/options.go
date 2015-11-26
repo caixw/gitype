@@ -98,24 +98,36 @@ func (opt *Options) fromMaps(maps []map[string]string) error {
 	return nil
 }
 
-// 根据option的实例，更新options中某个字段，若未找到与之相对应的字段，则返回error
-func (opt *Options) UpdateFromOption(o *Option) error {
+func (opt *Options) setValue(key string, val interface{}) error {
 	v := reflect.ValueOf(opt)
 	v = v.Elem()
 	t := v.Type()
 	for i := 0; i < t.NumField(); i++ {
 		tags := t.Field(i).Tag.Get("options")
 		index := strings.IndexByte(tags, ',')
-		if tags[index+1:] == o.Key {
-			return conv.Value(o.Value, v.Field(i))
+		if tags[index+1:] == key {
+			return conv.Value(val, v.Field(i))
 		}
 	}
-
-	return fmt.Errorf("在options实例中未找到与之[%v]相对应的字段", o.Key)
+	return nil
 }
 
-func (opt *Options) GetValueByKey(key string) (value interface{}, found bool) {
-	// TODO 提交缓存opt的reflect.Value变量
+// 设置options中的值，顺便更新数据中的值。
+func (opt *Options) Set(db *orm.DB, key string, val interface{}) error {
+	if err := opt.setValue(key, val); err != nil {
+		return err
+	}
+
+	o := &Option{Key: key, Value: conv.MustString(val, "")}
+	if _, err := db.Update(o); err != nil {
+		return err
+	}
+
+	return fmt.Errorf("在options实例中未找到与之[%v]相对应的字段", key)
+}
+
+// 获取指定名称的值。
+func (opt *Options) Get(key string) (value interface{}, found bool) {
 	v := reflect.ValueOf(opt)
 	v = v.Elem()
 	t := v.Type()

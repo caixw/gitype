@@ -17,7 +17,7 @@ func TestToMaps(t *testing.T) {
 		PageSize: 30,
 	}
 
-	maps, err := toMaps(opt)
+	maps, err := opt.toMaps()
 	a.NotError(err)
 	for _, item := range maps {
 		if item["group"] == "system" && item["key"] == "pageSize" {

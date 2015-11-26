@@ -125,7 +125,7 @@ func fillTags(db *orm.DB) error {
 
 // 将Options中的每字段转换成一个map结构，方便其它工具将其转换成sql内容。
 //  options.PageSize=5 ==> {"group":"system", "key":"pageSize", "value":"5"}
-func toMaps(opt *Options) ([]map[string]string, error) {
+func (opt *Options) toMaps() ([]map[string]string, error) {
 	v := reflect.ValueOf(opt)
 	v = v.Elem()
 	t := v.Type()
@@ -180,7 +180,7 @@ func fillOptions(db *orm.DB) error {
 		Theme: "default",
 	}
 
-	maps, err := toMaps(opt)
+	maps, err := opt.toMaps()
 	if err != nil {
 		return err
 	}

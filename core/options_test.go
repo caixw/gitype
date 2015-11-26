@@ -31,23 +31,21 @@ func TestOptions_fromMaps(t *testing.T) {
 	a.Equal(opt.PageSize, 50)
 }
 
-func TestOptions_UpdateFromOption(t *testing.T) {
+func TestOptions_SetValue(t *testing.T) {
 	a := assert.New(t)
 	opt := &Options{}
 
-	o := &Option{Key: "pageSize", Group: "system", Value: "25"}
-	a.NotError(opt.UpdateFromOption(o))
+	a.NotError(opt.setValue("pageSize", "25"))
 	a.Equal(opt.PageSize, 25)
 
-	o = &Option{Key: "pageSize", Group: "system", Value: "45"}
-	a.NotError(opt.UpdateFromOption(o))
+	a.NotError(opt.setValue("pageSize", "45"))
 	a.Equal(opt.PageSize, 45)
 }
 
-func TestOptions_GetValueByKey(t *testing.T) {
+func TestOptions_Get(t *testing.T) {
 	a := assert.New(t)
 	opt := &Options{PageSize: 22}
 
-	val, found := opt.GetValueByKey("pageSize")
+	val, found := opt.Get("pageSize")
 	a.True(found).Equal(val, 22)
 }
