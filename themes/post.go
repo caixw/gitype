@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/caixw/typing/core"
-	"github.com/caixw/typing/models"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
 )
@@ -27,7 +26,7 @@ type Post struct {
 }
 
 func (p *Post) CommentsSize() int {
-	c := &models.Comment{PostID: p.ID, State: models.CommentStateApproved}
+	c := &core.Comment{PostID: p.ID, State: core.CommentStateApproved}
 	size, err := db.Count(c)
 	if err != nil {
 		logs.Error("themes.Post.CommentsSize:", err)
@@ -47,9 +46,9 @@ func (p *Post) Entry() string {
 // 返回文章的链接
 func (p *Post) Permalink() string {
 	if len(p.Name) > 0 {
-		return core.PostURL(p.Name)
+		return opt.PostURL(p.Name)
 	}
-	return core.PostURL(strconv.FormatInt(p.ID, 10))
+	return opt.PostURL(strconv.FormatInt(p.ID, 10))
 }
 
 // 获取与当前文章相关的标签。
@@ -84,7 +83,7 @@ func (p *Post) Comments() []*Comment {
 		sql += `DESC `
 	}
 
-	rows, err := db.Query(true, sql, p.ID, models.CommentStateApproved)
+	rows, err := db.Query(true, sql, p.ID, core.CommentStateApproved)
 	if err != nil {
 		logs.Error("themes.Post.Comment:", err)
 		return nil

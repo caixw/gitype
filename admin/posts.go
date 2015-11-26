@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/caixw/typing/core"
-	"github.com/caixw/typing/models"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
 )
@@ -22,7 +21,7 @@ import (
 //
 // @apiSuccess 201 Created
 func adminSetPostPublished(w http.ResponseWriter, r *http.Request) {
-	adminSetPostState(w, r, models.PostStatePublished)
+	adminSetPostState(w, r, core.PostStatePublished)
 }
 
 // @api post /admin/api/posts/{id}/draft 将一篇文章的状态改为草稿
@@ -31,7 +30,7 @@ func adminSetPostPublished(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 201 Created
 func adminSetPostDraft(w http.ResponseWriter, r *http.Request) {
-	adminSetPostState(w, r, models.PostStateDraft)
+	adminSetPostState(w, r, core.PostStateDraft)
 }
 
 func adminSetPostState(w http.ResponseWriter, r *http.Request, state int) {
@@ -40,19 +39,19 @@ func adminSetPostState(w http.ResponseWriter, r *http.Request, state int) {
 		return
 	}
 
-	p := &models.Post{ID: id}
+	p := &core.Post{ID: id}
 	if err := db.Select(p); err != nil {
 		logs.Error("adminSetPostState:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	// 不可能存在状态值为0的文章，出现此值，表明数据库没有该条记录
-	if p.State == models.PostStateAll {
+	if p.State == core.PostStateAll {
 		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
-	p = &models.Post{ID: id, State: state}
+	p = &core.Post{ID: id, State: state}
 	if _, err := db.Update(p); err != nil {
 		logs.Error("adminSetPostState:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -148,7 +147,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := time.Now().Unix()
-	pp := &models.Post{
+	pp := &core.Post{
 		Name:         p.Name,
 		Title:        p.Title,
 		Summary:      p.Summary,
@@ -195,7 +194,7 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 	// 插入relationship
 	rs := make([]interface{}, 0, len(p.Tags))
 	for _, tag := range p.Tags {
-		rs = append(rs, &models.Relationship{PostID: postID, TagID: tag})
+		rs = append(rs, &core.Relationship{PostID: postID, TagID: tag})
 	}
 	if err := tx.MultInsert(rs...); err != nil {
 		tx.Rollback()
@@ -252,14 +251,14 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	if !core.ReadJSON(w, r, p) {
 		return
 	}
-	op := &models.Post{ID: id}
+	op := &core.Post{ID: id}
 	if err := db.Select(op); err != nil {
 		logs.Error("adminPutPost-0:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	pp := &models.Post{
+	pp := &core.Post{
 		ID:           id,
 		Name:         p.Name,
 		Title:        p.Title,
@@ -311,7 +310,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	if len(p.Tags) > 0 {
 		rs := make([]interface{}, 0, len(p.Tags))
 		for _, tag := range p.Tags {
-			rs = append(rs, &models.Relationship{TagID: tag, PostID: pp.ID})
+			rs = append(rs, &core.Relationship{TagID: tag, PostID: pp.ID})
 		}
 		if err := tx.MultInsert(rs...); err != nil {
 			logs.Error("adminPutPost-4:", err)
@@ -436,12 +435,12 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 func adminGetPosts(w http.ResponseWriter, r *http.Request) {
 	var page, size, state int
 	var ok bool
-	if state, ok = core.QueryInt(w, r, "state", models.CommentStateAll); !ok {
+	if state, ok = core.QueryInt(w, r, "state", core.CommentStateAll); !ok {
 		return
 	}
 
 	sql := db.SQL().Table("#posts")
-	if state != models.PostStateAll {
+	if state != core.PostStateAll {
 		sql.And("{state}=?", state)
 	}
 	count, err := sql.Count(true)
@@ -494,7 +493,7 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := &models.Post{ID: id}
+	p := &core.Post{ID: id}
 	if err := db.Select(p); err != nil {
 		logs.Error("adminGetPost:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -509,19 +508,19 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	obj := &struct {
-		ID           int64         `json:"id"`
-		Name         string        `json:"name"`
-		Title        string        `json:"title"`
-		Summary      string        `json:"summary"`
-		Content      string        `json:"content"`
-		State        int           `json:"state"`
-		Order        int           `json:"order"`
-		Created      int64         `json:"created"`
-		Modified     int64         `json:"modified"`
-		Template     string        `json:"template"`
-		AllowPing    bool          `json:"allowPing"`
-		AllowComment bool          `json:"allowComment"`
-		Tags         []*models.Tag `json:"tags"`
+		ID           int64       `json:"id"`
+		Name         string      `json:"name"`
+		Title        string      `json:"title"`
+		Summary      string      `json:"summary"`
+		Content      string      `json:"content"`
+		State        int         `json:"state"`
+		Order        int         `json:"order"`
+		Created      int64       `json:"created"`
+		Modified     int64       `json:"modified"`
+		Template     string      `json:"template"`
+		AllowPing    bool        `json:"allowPing"`
+		AllowComment bool        `json:"allowComment"`
+		Tags         []*core.Tag `json:"tags"`
 	}{
 		ID:           p.ID,
 		Name:         p.Name,
@@ -541,7 +540,7 @@ func adminGetPost(w http.ResponseWriter, r *http.Request) {
 }
 
 // 获取与某post相关联的标签
-func getPostTags(postID int64) ([]*models.Tag, error) {
+func getPostTags(postID int64) ([]*core.Tag, error) {
 	sql := `SELECT t.{title},t.{id} FROM #relationships AS rs
 	LEFT JOIN #tags AS t ON t.{id}=rs.{tagID}
 	WHERE rs.{postID}=?`
@@ -551,7 +550,7 @@ func getPostTags(postID int64) ([]*models.Tag, error) {
 	}
 	defer rows.Close()
 
-	tags := make([]*models.Tag, 0, 0)
+	tags := make([]*core.Tag, 0, 0)
 	num, err := fetch.Obj(&tags, rows)
 	if err != nil {
 		return nil, err

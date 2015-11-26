@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/caixw/typing/core"
-	"github.com/caixw/typing/models"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
 )
@@ -26,7 +25,7 @@ func adminDeleteComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := &models.Comment{ID: id}
+	c := &core.Comment{ID: id}
 	if _, err := db.Delete(c); err != nil {
 		logs.Error("adminDeleteComment:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -47,12 +46,12 @@ func adminDeleteComment(w http.ResponseWriter, r *http.Request) {
 func adminGetComments(w http.ResponseWriter, r *http.Request) {
 	var page, size, state int
 	var ok bool
-	if state, ok = core.QueryInt(w, r, "state", models.CommentStateAll); !ok {
+	if state, ok = core.QueryInt(w, r, "state", core.CommentStateAll); !ok {
 		return
 	}
 
 	sql := db.SQL().Table("#comments")
-	if state != models.CommentStateAll {
+	if state != core.CommentStateAll {
 		sql.And("{state}=?", state)
 	}
 	count, err := sql.Count(true)
@@ -150,7 +149,7 @@ func adminPutComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := &models.Comment{ID: id}
+	c := &core.Comment{ID: id}
 	cnt, err := db.Count(c)
 	if err != nil {
 		logs.Error("putComment:", err)
@@ -185,7 +184,7 @@ func adminPutComment(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 204 no content
 func adminSetCommentWaiting(w http.ResponseWriter, r *http.Request) {
-	setCommentState(w, r, models.CommentStateWaiting)
+	setCommentState(w, r, core.CommentStateWaiting)
 }
 
 // @api post /admin/api/comments/{id}/spam 将评论的状态改为spam
@@ -193,7 +192,7 @@ func adminSetCommentWaiting(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 204 no content
 func adminSetCommentSpam(w http.ResponseWriter, r *http.Request) {
-	setCommentState(w, r, models.CommentStateSpam)
+	setCommentState(w, r, core.CommentStateSpam)
 }
 
 // @api post /admin/api/comments/{id}/approved 将评论的状态改为approved
@@ -201,7 +200,7 @@ func adminSetCommentSpam(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 204 no content
 func adminSetCommentApproved(w http.ResponseWriter, r *http.Request) {
-	setCommentState(w, r, models.CommentStateApproved)
+	setCommentState(w, r, core.CommentStateApproved)
 }
 
 func setCommentState(w http.ResponseWriter, r *http.Request, state int) {
@@ -210,7 +209,7 @@ func setCommentState(w http.ResponseWriter, r *http.Request, state int) {
 		return
 	}
 
-	c := &models.Comment{ID: id, State: state}
+	c := &core.Comment{ID: id, State: state}
 	if _, err := db.Update(c); err != nil {
 		logs.Error("setCommentState:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
@@ -239,11 +238,11 @@ func adminPostComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	comm := &models.Comment{
+	comm := &core.Comment{
 		Parent:      c.Parent,
 		PostID:      c.PostID,
 		Content:     c.Content,
-		State:       models.CommentStateApproved,
+		State:       core.CommentStateApproved,
 		IP:          "",
 		Agent:       "",
 		Created:     time.Now().Unix(),

@@ -9,7 +9,6 @@ import (
 
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/feed"
-	"github.com/caixw/typing/models"
 	"github.com/issue9/logs"
 )
 
@@ -29,44 +28,25 @@ func adminPatchOption(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	o := &models.Option{Key: key}
-	cnt, err := db.Count(o)
-	if err != nil {
-		logs.Error("patchOption:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}
-	if cnt == 0 {
+	if _, found := opt.Get(key); !found {
 		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
-	if !core.ReadJSON(w, r, o) {
+	data := &struct {
+		Value string `json:"value"`
+	}{}
+	if !core.ReadJSON(w, r, data) {
 		return
 	}
 
-	if o.Key != key || len(o.Group) > 0 { // 提交了额外的数据内容
-		core.RenderJSON(w, http.StatusBadRequest, nil, nil)
-		return
-	}
-
-	if err := patchOption(o); err != nil {
-		logs.Error("patchOption:", err)
+	if err := opt.Set(db, key, data.Value); err != nil {
+		logs.Error("adminPatchOption:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
-}
-
-func patchOption(o *models.Option) error {
-	// 更新数据库中的值
-	if _, err := db.Update(o); err != nil {
-		return err
-	}
-
-	// 更新opt变量中的值
-	return opt.UpdateFromOption(o)
 }
 
 // @api get /admin/api/options/{key} 获取设置项的值，不能获取password字段。
@@ -89,7 +69,7 @@ func adminGetOption(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	val, found := opt.GetValueByKey(key)
+	val, found := opt.Get(key)
 	if !found {
 		core.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return

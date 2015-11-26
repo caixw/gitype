@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/caixw/typing/core"
-	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/logs"
 )
@@ -58,14 +57,13 @@ func adminPutCurrentTheme(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	o := &models.Option{Key: "theme", Value: v.Value}
-	if err := patchOption(o); err != nil {
+	if err := opt.Set(db, "theme", v.Value); err != nil {
 		logs.Error("adminPutTheme:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	if err := themes.Switch(o.Value); err != nil {
+	if err := themes.Switch(v.Value); err != nil {
 		logs.Error("adminPutTheme:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return

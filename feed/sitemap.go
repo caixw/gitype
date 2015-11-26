@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/caixw/typing/core"
-	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
@@ -54,7 +53,7 @@ func addPostsToSitemap(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
 	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary,
 		{content} AS Content, {created} AS Created, {modified} AS Modified
 		FROM #posts WHERE {state}=?`
-	rows, err := db.Query(true, sql, models.PostStatePublished)
+	rows, err := db.Query(true, sql, core.PostStatePublished)
 	if err != nil {
 		return err
 	}

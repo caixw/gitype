@@ -12,13 +12,14 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/caixw/typing/boot"
 	"github.com/caixw/typing/core"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm"
 )
 
 var (
-	cfg *core.Config
+	cfg *boot.Config
 	opt *core.Options
 	db  *orm.DB
 
@@ -45,10 +46,10 @@ type Author struct {
 
 // 从主题根目录加载所有的主题内容，并初始所有的主题下静态文件的路由。
 // defaultTheme 为默认的主题。
-func Init() error {
-	cfg = core.Cfg
-	opt = core.Opt
-	db = core.DB
+func Init(c *boot.Config, database *orm.DB, options *core.Options) error {
+	cfg = c
+	opt = options
+	db = database
 
 	if err := loadThemes(); err != nil {
 		return err

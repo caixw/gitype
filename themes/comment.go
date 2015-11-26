@@ -27,9 +27,9 @@ type Comment struct {
 
 func (c *Comment) Permalink() string {
 	if len(c.PostName) > 0 {
-		return core.CommentURL(c.PostName, c.ID)
+		return opt.CommentURL(c.PostName, c.ID)
 	}
-	return core.CommentURL(strconv.FormatInt(c.PostID, 10), c.ID)
+	return opt.CommentURL(strconv.FormatInt(c.PostID, 10), c.ID)
 }
 
 func (c *Comment) Fragment() string {

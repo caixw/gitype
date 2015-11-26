@@ -5,12 +5,15 @@
 package main
 
 import (
+	"flag"
+
 	"github.com/caixw/typing/admin"
+	"github.com/caixw/typing/boot"
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/feed"
-	"github.com/caixw/typing/install"
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/logs"
+	"github.com/issue9/web"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -18,31 +21,66 @@ import (
 )
 
 func main() {
-	if install.Install() {
+	if install() {
 		return
 	}
 
-	err := core.Init()
+	// boot
+	cfg, db, err := boot.Init()
+	if err != nil {
+		panic(err)
+	}
+
+	// core
+	opt, err := core.Init(db)
 	if err != nil {
 		panic(err)
 	}
 
 	// themes
-	if err = themes.Init(); err != nil {
+	if err = themes.Init(cfg, db, opt); err != nil {
 		panic(err)
 	}
 
 	// admin
-	if err := admin.Init(); err != nil {
+	if err := admin.Init(cfg, db, opt); err != nil {
 		panic(err)
 	}
 
 	// feed
-	if err = feed.Init(); err != nil {
+	if err = feed.Init(cfg, db, opt); err != nil {
 		panic(err)
 	}
 
-	core.Run()
-	core.Close()
+	web.Run(cfg.Core)
+	db.Close()
 	logs.Flush()
+}
+
+// 执行安装命令。
+//
+// 根据返回值来确定是否退出整个程序。
+// 若返回true则表示当前已经执行完安装命令，可以退出整个程序，
+// 否则表示当前程序没有从命令参数中获取安装指令，继续执行程序其它部分。
+func install() bool {
+	action := flag.String("init", "", "指定需要初始化的内容，可取的值可以为：config和db。")
+	flag.Parse()
+	switch *action {
+	case "config":
+		if err := boot.Install(); err != nil {
+			panic(err)
+		}
+		return true
+	case "db":
+		_, db, err := boot.Init()
+		if err != nil {
+			panic(err)
+		}
+		if err := core.Install(db); err != nil {
+			panic(err)
+		}
+		return true
+	} // end switch
+
+	return false
 }

@@ -7,6 +7,7 @@ package admin
 import (
 	"strings"
 
+	"github.com/caixw/typing/boot"
 	"github.com/caixw/typing/core"
 	"github.com/issue9/orm"
 	"github.com/issue9/upload"
@@ -14,18 +15,19 @@ import (
 )
 
 var (
+	cfg *boot.Config
 	db  *orm.DB
 	opt *core.Options
 	u   *upload.Upload
 )
 
-func Init() error {
-	opt = core.Opt
-	db = core.DB
+func Init(config *boot.Config, database *orm.DB, options *core.Options) error {
+	cfg = config
+	opt = options
+	db = database
 
 	// 上传相关配置
 	var err error
-	cfg := core.Cfg
 	u, err = upload.New(cfg.UploadDir, cfg.UploadDirFormat, cfg.UploadSize, strings.Split(cfg.UploadExts, ";")...)
 	if err != nil {
 		return err
@@ -39,7 +41,7 @@ func initRoute() error {
 	if err != nil {
 		return err
 	}
-	p := m.Prefix(core.Cfg.AdminAPIPrefix)
+	p := m.Prefix(cfg.AdminAPIPrefix)
 
 	p.PostFunc("/login", adminPostLogin).
 		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
