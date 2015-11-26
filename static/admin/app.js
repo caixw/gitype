@@ -159,6 +159,21 @@ function App(options) {
         self.loadPage('login.html');
     };
 
+    // 弹出一个确认对话框
+    // title 为提示框的标题，可以为html;
+    // description 为提示框的具体内容，可以为html;
+    // onApprove 为点击确认时的动作；
+    // onDeny 为点击取消时的动作；
+    this.confirm = function(title, description, onApprove, onDeny) {
+        $('#confirm header').html(title);
+        $('#confirm description').html(description);
+
+        $('#confirm').modal({
+            'closable'  : false,
+            'onDeny'    : onDeny,
+            'onApprove' : onApprove
+        }).modal('show');
+    }; // end confirm
 
     // 判断是否已经登录。
     this.isLogin = function() {

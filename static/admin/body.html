@@ -1,5 +1,6 @@
 <div class="ui grid">
 
+    <!-- 顶部菜单 -->
     <div class="ui row black" style="position:fixed;top:0em;left:0em;right:0em;z-index:100">
         <style>.ui.row.black a{color:white}</style>
         <div class="ui three wide column">
@@ -22,7 +23,7 @@
         </div>
     </div>
 
-
+    <!-- 左侧菜单 -->
     <div class="row" style="margin-top:4.5em;">
         <!-- 左侧菜单 -->
         <aside id="sidebar" class="ui three wide column" style="background:#333;position:fixed">
@@ -50,9 +51,22 @@
     </div><!-- end .row -->
 
 
+    <!-- 提示框容器 -->
     <div class="message-row"></div>
 
 </div><!-- end .ui.grid -->
+
+<div class="ui modal" id="confirm">
+    <i class="close icon"></i>
+    <div class="header">确认操作</div>
+    <div class="content">
+        <div class="description">确认要执行该操作吗。</div>
+    </div>
+    <div class="actions">
+        <div class="ui cancel green button">取消</div>
+        <div class="ui approve red button">确认</div>
+    </div>
+</div>
 
 <script>
     $(document).ready(function() {
