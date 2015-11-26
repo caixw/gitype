@@ -5,7 +5,6 @@
 package core
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
@@ -123,7 +122,7 @@ func (opt *Options) Set(db *orm.DB, key string, val interface{}) error {
 		return err
 	}
 
-	return fmt.Errorf("在options实例中未找到与之[%v]相对应的字段", key)
+	return nil
 }
 
 // 获取指定名称的值。
