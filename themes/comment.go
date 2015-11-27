@@ -25,6 +25,7 @@ type Comment struct {
 	AuthorEmail string
 }
 
+// 文章的固定链接，相对URL，若要绝对URL，请使用opt.URL()进行封装。
 func (c *Comment) Permalink() string {
 	if len(c.PostName) > 0 {
 		return opt.CommentURL(c.PostName, c.ID)

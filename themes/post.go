@@ -43,7 +43,7 @@ func (p *Post) Entry() string {
 	return p.Content
 }
 
-// 返回文章的链接
+// 返回文章的链接，相对URL
 func (p *Post) Permalink() string {
 	if len(p.Name) > 0 {
 		return opt.PostURL(p.Name)

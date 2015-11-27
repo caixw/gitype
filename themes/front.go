@@ -28,11 +28,11 @@ func initRoute() error {
 	}
 
 	m.GetFunc("/", pagePosts).
-		GetFunc("/tags"+opt.Suffix, pageTags).
-		GetFunc("/tags/{id}"+opt.Suffix, pageTag).
-		GetFunc("/posts"+opt.Suffix, pagePosts).
-		GetFunc("/posts/{id}"+opt.Suffix, pagePost).  // 获取文章详细内容
-		PostFunc("/posts/{id}"+opt.Suffix, pagePost). // 提交评论
+		GetFunc(opt.TagsURL(), pageTags).
+		GetFunc(opt.TagURL("{id}", 1), pageTag).
+		GetFunc(opt.PostsURL(1), pagePosts).
+		GetFunc(opt.PostURL("{id}"), pagePost).  // 获取文章详细内容
+		PostFunc(opt.PostURL("{id}"), pagePost). // 提交评论
 		Get(cfg.UploadURLPrefix, http.StripPrefix(cfg.UploadURLPrefix, http.FileServer(http.Dir(cfg.UploadDir)))).
 		Get(cfg.ThemeURLPrefix, http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.ThemeDir))))
 
@@ -90,11 +90,13 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	page := conv.MustInt(r.FormValue("page"), 1)
-	if page < 1 { // 不能小于1
-		page = 1
+	if page == 1 {
+		info.Canonical = opt.URL(opt.HomeURL())
 	} else if page > 1 { // 为1的时候，不需要prev
+		info.Canonical = opt.URL(opt.PostsURL(page))
 		info.PrevPage = &Anchor{Title: "上一页", Link: opt.PostsURL(page - 1)}
 	}
+
 	if page*opt.SidebarSize < info.PostSize {
 		info.NextPage = &Anchor{Title: "下一页", Link: opt.PostsURL(page + 1)}
 	}
@@ -106,7 +108,6 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	info.Canonical = opt.PostsURL(page)
 	data := map[string]interface{}{
 		"info":  info,
 		"posts": posts,
@@ -122,7 +123,7 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	info.Canonical = opt.TagsURL()
+	info.Canonical = opt.URL(opt.TagsURL())
 	info.Title = "标签"
 
 	sql := `SELECT {id} AS {ID}, {name} AS {Name}, {title} AS {Title} FROM #tags`
@@ -189,7 +190,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	info.Canonical = tag.Permalink()
+	info.Canonical = opt.URL(tag.Permalink())
 	info.Title = tag.Title
 
 	page := conv.MustInt(r.FormValue("page"), 1)
@@ -278,7 +279,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	info.Canonical = post.Permalink()
+	info.Canonical = opt.URL(post.Permalink())
 	info.Title = post.Title
 
 	data := map[string]interface{}{
