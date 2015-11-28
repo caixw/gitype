@@ -27,7 +27,7 @@ func initRoute() error {
 		return err
 	}
 
-	m.GetFunc("/", pagePosts).
+	m.GetFunc(opt.HomeURL(), pagePosts).
 		GetFunc(opt.TagsURL(), pageTags).
 		GetFunc(opt.TagURL("{id}", 1), pageTag).
 		GetFunc(opt.PostsURL(1), pagePosts).
