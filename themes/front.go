@@ -255,6 +255,12 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	etag := strconv.FormatInt(mp.Modified, 10)
+	if r.Header.Get("If-None-Match") == etag {
+		w.WriteHeader(http.StatusNotModified)
+		return
+	}
+
 	if r.Method == "POST" {
 		if err := insertComment(mp.ID, r); err != nil {
 			logs.Error("pagePost:", err)
@@ -286,6 +292,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		"info": info,
 		"post": post,
 	}
+	w.Header().Add("Etag", etag)
 	render(w, "post", data)
 }
 
