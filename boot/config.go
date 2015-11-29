@@ -11,7 +11,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/issue9/mux"
+	"github.com/issue9/handlers"
 	"github.com/issue9/web"
 )
 
@@ -128,7 +128,7 @@ func loadConfig(path string) (*Config, error) {
 	}
 
 	if cfg.Debug { // 调试状态，输出详细信息
-		cfg.Core.ErrHandler = mux.PrintDebug
+		cfg.Core.ErrHandler = handlers.PrintDebug
 	}
 
 	return cfg, nil
