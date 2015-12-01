@@ -15,6 +15,7 @@ import (
 
 	"github.com/caixw/typing/core"
 	"github.com/issue9/conv"
+	"github.com/issue9/handlers"
 	"github.com/issue9/is"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
@@ -31,8 +32,8 @@ func initRoute() error {
 		GetFunc(opt.TagsURL(), pageTags).
 		GetFunc(opt.TagURL("{id}", 1), pageTag).
 		GetFunc(opt.PostsURL(1), pagePosts).
-		GetFunc(opt.PostURL("{id}"), pagePost).  // 获取文章详细内容
-		PostFunc(opt.PostURL("{id}"), pagePost). // 提交评论
+		Get(opt.PostURL("{id}"), handlers.NewCompress(http.HandlerFunc(pagePost))). // 获取文章详细内容
+		PostFunc(opt.PostURL("{id}"), pagePost).                                    // 提交评论
 		Get(cfg.UploadURLPrefix, http.StripPrefix(cfg.UploadURLPrefix, http.FileServer(http.Dir(cfg.UploadDir)))).
 		Get(cfg.ThemeURLPrefix, http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.ThemeDir))))
 
@@ -112,7 +113,7 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 		"info":  info,
 		"posts": posts,
 	}
-	render(w, "posts", data)
+	render(w, "posts", data, nil)
 }
 
 // /tags
@@ -151,7 +152,7 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	render(w, "tags", map[string]interface{}{"info": info, "tags": tags})
+	render(w, "tags", map[string]interface{}{"info": info, "tags": tags}, nil)
 }
 
 // /tags/1.html
@@ -214,7 +215,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 		"tag":   tag,
 		"posts": posts,
 	}
-	render(w, "tag", data)
+	render(w, "tag", data, nil)
 }
 
 // /posts/1.html
@@ -292,8 +293,11 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		"info": info,
 		"post": post,
 	}
-	w.Header().Add("Etag", etag)
-	render(w, "post", data)
+	headers := map[string]string{
+		"Etag":         etag,
+		"Content-Type": "text/html",
+	}
+	render(w, "post", data, headers)
 }
 
 func insertComment(postID int64, r *http.Request) error {

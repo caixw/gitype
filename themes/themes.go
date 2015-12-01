@@ -128,11 +128,15 @@ func Switch(themeID string) (err error) {
 }
 
 // 输出指定模板
-func render(w http.ResponseWriter, name string, data interface{}) {
+func render(w http.ResponseWriter, name string, data interface{}, headers map[string]string) {
 	if cfg.Debug { // 调试状态下，实时加载模板
 		if err := Switch(current); err != nil {
 			logs.Error("themes.render:", err)
 		}
+	}
+
+	for key, val := range headers {
+		w.Header().Set(key, val)
 	}
 
 	err := tpl.ExecuteTemplate(w, name, data)
