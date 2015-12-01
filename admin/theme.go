@@ -68,5 +68,6 @@ func adminPutCurrentTheme(w http.ResponseWriter, r *http.Request) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
+	lastUpdated()
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }

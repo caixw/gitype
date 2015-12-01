@@ -73,5 +73,6 @@ func adminPostMedia(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	lastUpdated()
 	core.RenderJSON(w, http.StatusCreated, map[string]interface{}{"media": files[0]}, nil)
 }

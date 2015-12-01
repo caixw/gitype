@@ -57,6 +57,8 @@ func adminSetPostState(w http.ResponseWriter, r *http.Request, state int) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
+
+	lastUpdated()
 	core.RenderJSON(w, http.StatusCreated, "{}", nil)
 }
 
@@ -210,6 +212,8 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
+
+	lastUpdated()
 	core.RenderJSON(w, http.StatusCreated, "{}", nil)
 }
 
@@ -325,6 +329,8 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		tx.Rollback()
 		return
 	}
+
+	lastUpdated()
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
@@ -420,6 +426,7 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	lastUpdated()
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
@@ -559,5 +566,6 @@ func getPostTags(postID int64) ([]*core.Tag, error) {
 		return nil, nil
 	}
 
+	lastUpdated()
 	return tags, nil
 }

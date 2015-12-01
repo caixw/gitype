@@ -6,9 +6,12 @@ package core
 
 import (
 	"reflect"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/issue9/conv"
+	"github.com/issue9/logs"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
 )
@@ -29,8 +32,10 @@ type Options struct {
 	Keywords    string `options:"system,keywords"`    // 默认页面的keywords内容
 	Description string `options:"system,description"` // 默认页面的description内容
 	Suffix      string `options:"system,suffix"`      // URL地址的后缀名，仅对文章有效
-	Uptime      int64  `options:"system,uptime"`      // 系统的上线时间
 	//Language    string `options:"system,language"`      // 界面语言
+
+	Uptime      int64 `options:"system,uptime"`      // 上线时间
+	LastUpdated int64 `options:"system,lastUpdated"` // 最后更新时间
 
 	PageSize        int    `options:"reading,pageSize"`        // 默认每页显示的数量
 	SidebarSize     int    `options:"reading,sidebarSize"`     // 侧边栏每个列表项内显示的数量
@@ -95,6 +100,17 @@ func (opt *Options) fromMaps(maps []map[string]string) error {
 		}
 	}
 	return nil
+}
+
+// 更新系统的最后更新时间
+func (opt *Options) Update(db *orm.DB) {
+	now := time.Now().Unix()
+	opt.LastUpdated = now
+
+	o := &Option{Key: "lastUpdated", Value: strconv.FormatInt(now, 10)}
+	if _, err := db.Update(o); err != nil {
+		logs.Error("core.Options.Update:", err)
+	}
 }
 
 func (opt *Options) setValue(key string, val interface{}) error {

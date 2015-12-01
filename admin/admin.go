@@ -36,6 +36,10 @@ func Init(config *boot.Config, database *orm.DB, options *core.Options) error {
 	return initRoute()
 }
 
+func lastUpdated() {
+	opt.Update(db)
+}
+
 func initRoute() error {
 	m, err := web.NewModule("admin")
 	if err != nil {

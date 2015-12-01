@@ -133,6 +133,8 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
+
+	lastUpdated()
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
@@ -207,6 +209,8 @@ func adminPostTag(w http.ResponseWriter, r *http.Request) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
+
+	lastUpdated()
 	core.RenderJSON(w, http.StatusCreated, "{}", nil)
 }
 
@@ -252,6 +256,7 @@ func adminDeleteTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	lastUpdated()
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 

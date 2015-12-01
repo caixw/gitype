@@ -32,6 +32,6 @@ _testmain.go
 # 项目临时文件
 typing
 
-output/*
-config/*
-static/front/themes/test
+/output/*
+/config/*
+/static/front/themes/test

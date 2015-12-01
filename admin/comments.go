@@ -31,6 +31,8 @@ func adminDeleteComment(w http.ResponseWriter, r *http.Request) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
+
+	lastUpdated()
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
@@ -176,6 +178,8 @@ func adminPutComment(w http.ResponseWriter, r *http.Request) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
+
+	lastUpdated()
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
@@ -215,6 +219,8 @@ func setCommentState(w http.ResponseWriter, r *http.Request, state int) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
+
+	lastUpdated()
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
@@ -256,5 +262,7 @@ func adminPostComment(w http.ResponseWriter, r *http.Request) {
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
+
+	lastUpdated()
 	core.RenderJSON(w, http.StatusCreated, nil, nil)
 }

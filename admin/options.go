@@ -46,6 +46,7 @@ func adminPatchOption(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	lastUpdated()
 	core.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
@@ -90,6 +91,7 @@ func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	lastUpdated()
 	core.RenderJSON(w, http.StatusOK, "{}", nil)
 }
 
