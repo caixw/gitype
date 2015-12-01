@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/caixw/typing/boot"
 	"github.com/caixw/typing/core"
@@ -125,6 +126,22 @@ func Switch(themeID string) (err error) {
 		ParseGlob(cfg.ThemeDir + themeID + "/*.html")
 
 	return err
+}
+
+// etag包装
+func etagHandler(f func(http.ResponseWriter, *http.Request)) http.Handler {
+	h := func(w http.ResponseWriter, r *http.Request) {
+		etag := strconv.FormatInt(opt.LastUpdated, 10)
+		if r.Header.Get("If-None-Match") == etag {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+
+		w.Header().Set("Etag", etag)
+		f(w, r)
+	}
+
+	return http.HandlerFunc(h)
 }
 
 // 输出指定模板

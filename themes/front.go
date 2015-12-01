@@ -28,12 +28,12 @@ func initRoute() error {
 		return err
 	}
 
-	m.GetFunc(opt.HomeURL(), pagePosts).
-		GetFunc(opt.TagsURL(), pageTags).
-		GetFunc(opt.TagURL("{id}", 1), pageTag).
-		GetFunc(opt.PostsURL(1), pagePosts).
-		Get(opt.PostURL("{id}"), handlers.NewCompress(http.HandlerFunc(pagePost))). // 获取文章详细内容
-		PostFunc(opt.PostURL("{id}"), pagePost).                                    // 提交评论
+	m.Get(opt.HomeURL(), handlers.NewCompress(etagHandler(pagePosts))).
+		Get(opt.TagsURL(), handlers.NewCompress(etagHandler(pageTags))).
+		Get(opt.TagURL("{id}", 1), handlers.NewCompress(etagHandler(pageTag))).
+		Get(opt.PostsURL(1), handlers.NewCompress(etagHandler(pagePosts))).
+		Get(opt.PostURL("{id}"), handlers.NewCompress(etagHandler(pagePost))).  // 获取文章详细内容
+		Post(opt.PostURL("{id}"), handlers.NewCompress(etagHandler(pagePost))). // 提交评论
 		Get(cfg.UploadURLPrefix, http.StripPrefix(cfg.UploadURLPrefix, http.FileServer(http.Dir(cfg.UploadDir)))).
 		Get(cfg.ThemeURLPrefix, http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.ThemeDir))))
 
@@ -113,7 +113,7 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 		"info":  info,
 		"posts": posts,
 	}
-	render(w, "posts", data, nil)
+	render(w, "posts", data, map[string]string{"Content-Type": "text/html"})
 }
 
 // /tags
@@ -152,7 +152,8 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	render(w, "tags", map[string]interface{}{"info": info, "tags": tags}, nil)
+	data := map[string]interface{}{"info": info, "tags": tags}
+	render(w, "tags", data, map[string]string{"Content-Type": "text/html"})
 }
 
 // /tags/1.html
@@ -215,7 +216,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 		"tag":   tag,
 		"posts": posts,
 	}
-	render(w, "tag", data, nil)
+	render(w, "tag", data, map[string]string{"Content-Type": "text/html"})
 }
 
 // /posts/1.html
@@ -256,12 +257,6 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	etag := strconv.FormatInt(mp.Modified, 10)
-	if r.Header.Get("If-None-Match") == etag {
-		w.WriteHeader(http.StatusNotModified)
-		return
-	}
-
 	if r.Method == "POST" {
 		if err := insertComment(mp.ID, r); err != nil {
 			logs.Error("pagePost:", err)
@@ -293,11 +288,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		"info": info,
 		"post": post,
 	}
-	headers := map[string]string{
-		"Etag":         etag,
-		"Content-Type": "text/html",
-	}
-	render(w, "post", data, headers)
+	render(w, "post", data, map[string]string{"Content-Type": "text/html"})
 }
 
 func insertComment(postID int64, r *http.Request) error {
