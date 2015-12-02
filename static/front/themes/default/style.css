@@ -23,7 +23,7 @@
 body{
     margin:0 auto;
     background:#000;
-    font-family: 'Lantinghei SC', 'Open Sans', Arial, 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, STHeiti, 'WenQuanYi Micro Hei', SimSun, Helvetica, sans-serif;    
+    font-family: 'Lantinghei SC', 'Open Sans', Arial, 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, STHeiti, 'WenQuanYi Micro Hei', SimSun, Helvetica, sans-serif;
 }
 
 a{
@@ -267,6 +267,7 @@ code, pre{
     background:#009688;
     color:#b2dfdb
 }
+
 #sidebar a{
     color:#b2dfdb;
 }
@@ -308,4 +309,28 @@ code, pre{
 
 pre{
     padding:0.2em 0.5em;
+}
+
+
+/******************************* mobile */
+
+@media(max-width:600px){
+    #sidebar{
+        width:0;
+        height:100%;
+        position:fixed;
+        background:#009688;
+        color:#b2dfdb;
+        display:none;
+    }
+
+    #content{
+        background:#fff;
+        color:#212121;
+        left:0;
+        right:0;
+        position:absolute;
+        min-height:100%;
+        margin-left:0;
+    }
 }
