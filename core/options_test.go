@@ -40,6 +40,8 @@ func TestOptions_SetValue(t *testing.T) {
 
 	a.NotError(opt.setValue("pageSize", "45"))
 	a.Equal(opt.PageSize, 45)
+
+	a.Error(opt.setValue("commentsSize", "20"))
 }
 
 func TestOptions_Get(t *testing.T) {

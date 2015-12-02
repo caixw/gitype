@@ -5,6 +5,7 @@
 package core
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -34,8 +35,19 @@ type Options struct {
 	Suffix      string `options:"system,suffix"`      // URL地址的后缀名，仅对文章有效
 	//Language    string `options:"system,language"`      // 界面语言
 
-	Uptime      int64 `options:"system,uptime"`      // 上线时间
-	LastUpdated int64 `options:"system,lastUpdated"` // 最后更新时间
+	// 一些统计数据
+	Uptime               int64  `options:"stat,uptime"`               // 上线时间
+	LastUpdated          int64  `options:"stat,lastUpdated"`          // 最后更新时间
+	CommentsSize         int    `options:"stat,commentsSize"`         // 评论数
+	WattingCommentsSize  int    `options:"stat,wattingCommentsSize"`  // 待评论数量
+	ApprovedCommentsSize int    `options:"stat,approvedCommentsSize"` // 待评论数量
+	SpamCommentsSize     int    `options:"stat,spamCommentsSize"`     // 垃圾论数量
+	PostsSize            int    `options:"stat,postsSize"`            // 文章数量
+	PublishedPostsSize   int    `options:"stat,publishedPostsSize"`   // 已发表文章数量
+	DraftPostsSize       int    `options:"stat,draftPostsSize"`       // 草稿数量
+	LastLogin            int64  `options:"stat,lastLogin"`            // 最后登录时间
+	LastIP               string `options:"stat,lastIP"`               // 最后登录的ip地址
+	LastAgent            string `options:"stat,lastAgent"`            // 最后次登录的用户浏览器
 
 	PageSize        int    `options:"reading,pageSize"`        // 默认每页显示的数量
 	SidebarSize     int    `options:"reading,sidebarSize"`     // 侧边栏每个列表项内显示的数量
@@ -119,8 +131,11 @@ func (opt *Options) setValue(key string, val interface{}) error {
 	t := v.Type()
 	for i := 0; i < t.NumField(); i++ {
 		tags := t.Field(i).Tag.Get("options")
-		index := strings.IndexByte(tags, ',')
-		if tags[index+1:] == key {
+		keys := strings.Split(tags, ",")
+		if keys[1] == key {
+			if keys[0] == "stat" {
+				return fmt.Errorf("该值[%v]无法修改", keys[1])
+			}
 			return conv.Value(val, v.Field(i))
 		}
 	}
