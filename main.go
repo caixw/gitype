@@ -11,6 +11,7 @@ import (
 	"github.com/caixw/typing/boot"
 	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/feed"
+	"github.com/caixw/typing/options"
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/logs"
 	"github.com/issue9/web"
@@ -32,7 +33,7 @@ func main() {
 	}
 
 	// core
-	opt, err := core.Init(db)
+	opt, err := options.Init(db)
 	if err != nil {
 		panic(err)
 	}
@@ -65,20 +66,28 @@ func main() {
 func install() bool {
 	action := flag.String("init", "", "指定需要初始化的内容，可取的值可以为：config和db。")
 	flag.Parse()
+
 	switch *action {
 	case "config":
 		if err := boot.Install(); err != nil {
 			panic(err)
 		}
+
 		return true
 	case "db":
 		_, db, err := boot.Init()
 		if err != nil {
 			panic(err)
 		}
+
 		if err := core.Install(db); err != nil {
 			panic(err)
 		}
+
+		if err := options.Install(db); err != nil {
+			panic(err)
+		}
+
 		return true
 	} // end switch
 

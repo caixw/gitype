@@ -9,7 +9,7 @@ import (
 	"os"
 
 	"github.com/caixw/typing/boot"
-	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/options"
 	"github.com/issue9/orm"
 	"github.com/issue9/web"
 )
@@ -24,7 +24,7 @@ const (
 
 var (
 	db  *orm.DB
-	opt *core.Options
+	opt *options.Options
 
 	sitemapPath    string
 	sitemapXslPath string
@@ -33,7 +33,7 @@ var (
 )
 
 // 初始化sitemap包，path为sitemap.xml文件的保存路径
-func Init(cfg *boot.Config, database *orm.DB, options *core.Options) error {
+func Init(cfg *boot.Config, database *orm.DB, options *options.Options) error {
 	sitemapPath = cfg.TempDir + sitemap
 	sitemapXslPath = cfg.TempDir + sitemapXsl
 	rssPath = cfg.TempDir + rss

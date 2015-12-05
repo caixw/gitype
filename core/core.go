@@ -15,17 +15,11 @@ import (
 
 	"github.com/issue9/context"
 	"github.com/issue9/logs"
-	"github.com/issue9/orm"
 )
 
 const (
 	Version = "0.6.35.151202" // 程序版本号
 )
-
-// 初始化core包。返回程序必要的变量。
-func Init(database *orm.DB) (*Options, error) {
-	return loadOptions(database)
-}
 
 // RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
 // 若v的值是string,[]byte,[]rune则直接转换成字符串写入w。

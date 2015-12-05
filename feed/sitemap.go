@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/options"
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
@@ -49,7 +50,7 @@ func BuildSitemap() error {
 	return err
 }
 
-func addPostsToSitemap(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
+func addPostsToSitemap(buf *bytes.Buffer, db *orm.DB, opt *options.Options) error {
 	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary,
 		{content} AS Content, {created} AS Created, {modified} AS Modified
 		FROM #posts WHERE {state}=?`
@@ -70,7 +71,7 @@ func addPostsToSitemap(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
 	return nil
 }
 
-func addTagsToSitemap(buf *bytes.Buffer, db *orm.DB, opt *core.Options) error {
+func addTagsToSitemap(buf *bytes.Buffer, db *orm.DB, opt *options.Options) error {
 	sql := "SELECT {id} AS ID, {name} AS Name, {title} AS Title, {description} AS Description FROM #tags"
 	rows, err := db.Query(true, sql)
 	if err != nil {

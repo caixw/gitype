@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/options"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
 )
@@ -79,7 +80,7 @@ func (p *Post) Comments() []*Comment {
 	FROM #comments
 	WHERE {postID}=? AND {state}=?
 	ORDER BY {created} `
-	if opt.CommentOrder == core.CommentOrderDesc {
+	if opt.CommentOrder == options.CommentOrderDesc {
 		sql += `DESC `
 	}
 
