@@ -95,13 +95,13 @@ func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
 	core.RenderJSON(w, http.StatusOK, "{}", nil)
 }
 
-// @api get /admin/api/state 获取当前网站的些基本状态
+// @api get /admin/api/stat 获取当前网站的些基本状态
 // @apiGroup admin
 //
 // @apiSuccess 200 OK
 // @apiParam posts            int 文章的数量
 // @apiParam draftPosts       int 草稿的数量
-// @apiParam normalPosts      int 正式文章的数量
+// @apiParam publishedPosts   int 正式文章的数量
 // @apiParam comments         int 评论数量
 // @apiParam waitingComments  int 待审评论数量
 // @apiParam spamComments     int 垃圾评论数量
@@ -111,6 +111,6 @@ func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
 // @apiParam lastIP           string 最后次登录的IP
 // @apiParam lastAgent        string 最后次登录的浏览器相关资料
 // @apiParam screenName       string 用户的当前昵称
-func adminGetState(w http.ResponseWriter, r *http.Request) {
+func adminGetStat(w http.ResponseWriter, r *http.Request) {
 	// TODO
 }

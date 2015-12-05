@@ -5,14 +5,10 @@
 package core
 
 import (
-	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/issue9/conv"
-	"github.com/issue9/logs"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
 )
@@ -114,17 +110,6 @@ func (opt *Options) fromMaps(maps []map[string]string) error {
 	return nil
 }
 
-// 更新系统的最后更新时间
-func (opt *Options) Update(db *orm.DB) {
-	now := time.Now().Unix()
-	opt.LastUpdated = now
-
-	o := &Option{Key: "lastUpdated", Value: strconv.FormatInt(now, 10)}
-	if _, err := db.Update(o); err != nil {
-		logs.Error("core.Options.Update:", err)
-	}
-}
-
 func (opt *Options) setValue(key string, val interface{}) error {
 	v := reflect.ValueOf(opt)
 	v = v.Elem()
@@ -133,16 +118,13 @@ func (opt *Options) setValue(key string, val interface{}) error {
 		tags := t.Field(i).Tag.Get("options")
 		keys := strings.Split(tags, ",")
 		if keys[1] == key {
-			if keys[0] == "stat" {
-				return fmt.Errorf("该值[%v]无法修改", keys[1])
-			}
 			return conv.Value(val, v.Field(i))
 		}
 	}
 	return nil
 }
 
-// 设置options中的值，顺便更新数据中的值。
+// 设置options中的值，顺便更新数据库中的值。
 func (opt *Options) Set(db *orm.DB, key string, val interface{}) error {
 	if err := opt.setValue(key, val); err != nil {
 		return err

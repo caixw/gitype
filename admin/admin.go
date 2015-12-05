@@ -6,9 +6,11 @@ package admin
 
 import (
 	"strings"
+	"time"
 
 	"github.com/caixw/typing/boot"
 	"github.com/caixw/typing/core"
+	"github.com/issue9/logs"
 	"github.com/issue9/orm"
 	"github.com/issue9/upload"
 	"github.com/issue9/web"
@@ -37,7 +39,9 @@ func Init(config *boot.Config, database *orm.DB, options *core.Options) error {
 }
 
 func lastUpdated() {
-	opt.Update(db)
+	if err := opt.Set(db, "lastUpdated", time.Now().Unix()); err != nil {
+		logs.Error("admin.lastUpdated:", err)
+	}
 }
 
 func initRoute() error {
@@ -50,7 +54,7 @@ func initRoute() error {
 	p.PostFunc("/login", adminPostLogin).
 		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
 		Put("/password", loginHandlerFunc(adminChangePassword)).
-		Get("/state", loginHandlerFunc(adminGetState)).
+		Get("/state", loginHandlerFunc(adminGetStat)).
 		Put("/sitemap", loginHandlerFunc(adminPutSitemap)).
 		Post("/media", loginHandlerFunc(adminPostMedia)).
 		Get("/media", loginHandlerFunc(adminGetMedia))
