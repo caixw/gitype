@@ -9,8 +9,8 @@ import (
 
 	"github.com/caixw/typing/admin"
 	"github.com/caixw/typing/boot"
-	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/feed"
+	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/options"
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/logs"
@@ -32,7 +32,7 @@ func main() {
 		panic(err)
 	}
 
-	// core
+	// options
 	opt, err := options.Init(db)
 	if err != nil {
 		panic(err)
@@ -80,7 +80,7 @@ func install() bool {
 			panic(err)
 		}
 
-		if err := core.Install(db); err != nil {
+		if err := models.Install(db); err != nil {
 			panic(err)
 		}
 

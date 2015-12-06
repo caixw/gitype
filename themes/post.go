@@ -7,7 +7,7 @@ package themes
 import (
 	"strconv"
 
-	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/options"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
@@ -27,7 +27,7 @@ type Post struct {
 }
 
 func (p *Post) CommentsSize() int {
-	c := &core.Comment{PostID: p.ID, State: core.CommentStateApproved}
+	c := &models.Comment{PostID: p.ID, State: models.CommentStateApproved}
 	size, err := db.Count(c)
 	if err != nil {
 		logs.Error("themes.Post.CommentsSize:", err)
@@ -84,7 +84,7 @@ func (p *Post) Comments() []*Comment {
 		sql += `DESC `
 	}
 
-	rows, err := db.Query(true, sql, p.ID, core.CommentStateApproved)
+	rows, err := db.Query(true, sql, p.ID, models.CommentStateApproved)
 	if err != nil {
 		logs.Error("themes.Post.Comment:", err)
 		return nil

@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
 )
@@ -86,7 +87,7 @@ func adminGetTags(w http.ResponseWriter, r *http.Request) {
 //     ]
 // }
 func adminPutTag(w http.ResponseWriter, r *http.Request) {
-	t := &core.Tag{}
+	t := &models.Tag{}
 	if !core.ReadJSON(w, r, t) {
 		return
 	}
@@ -166,7 +167,7 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 //     ]
 // }
 func adminPostTag(w http.ResponseWriter, r *http.Request) {
-	t := &core.Tag{}
+	t := &models.Tag{}
 	if !core.ReadJSON(w, r, t) {
 		return
 	}
@@ -235,7 +236,7 @@ func adminDeleteTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := tx.Delete(&core.Tag{ID: id}); err != nil {
+	if _, err := tx.Delete(&models.Tag{ID: id}); err != nil {
 		logs.Error("adminDeleteMeta:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
@@ -262,7 +263,7 @@ func adminDeleteTag(w http.ResponseWriter, r *http.Request) {
 
 // 是否存在相同name或是title的标签
 // title返回参数表示是否有title字段相同，name返回参数表示是否有name字段相同。
-func tagIsExists(t *core.Tag) (title bool, name bool, err error) {
+func tagIsExists(t *models.Tag) (title bool, name bool, err error) {
 	sql := db.Where("({name}=? OR {title}=?) AND {id}<>?", t.Name, t.Title, t.ID).
 		Table("#tags")
 
@@ -302,7 +303,7 @@ func adminGetTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t := &core.Tag{ID: id}
+	t := &models.Tag{ID: id}
 	if err := db.Select(t); err != nil {
 		logs.Error("adminGetTag:", err)
 		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)

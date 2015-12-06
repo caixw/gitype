@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/options"
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/orm"
@@ -68,7 +68,7 @@ func addPostsToAtom(buf *bytes.Buffer, db *orm.DB, opt *options.Options) error {
 	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary,
 		{content} AS Content, {created} AS Created, {modified} AS Modified
 		FROM #posts WHERE {state}=? LIMIT ?`
-	rows, err := db.Query(true, sql, core.PostStatePublished, opt.RssSize)
+	rows, err := db.Query(true, sql, models.PostStatePublished, opt.RssSize)
 	if err != nil {
 		return err
 	}

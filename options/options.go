@@ -2,13 +2,14 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
+// options包用于处理options数据表的相关功能。
 package options
 
 import (
 	"reflect"
 	"strings"
 
-	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
 	"github.com/issue9/conv"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
@@ -131,7 +132,7 @@ func (opt *Options) Set(db *orm.DB, key string, val interface{}) error {
 		return err
 	}
 
-	o := &core.Option{Key: key, Value: conv.MustString(val, "")}
+	o := &models.Option{Key: key, Value: conv.MustString(val, "")}
 	if _, err := db.Update(o); err != nil {
 		return err
 	}
