@@ -24,7 +24,6 @@ func Install(db *orm.DB) error {
 
 	// option
 	return fillOptions(db)
-
 }
 
 // 将Options中的每字段转换成一个map结构，方便其它工具将其转换成sql内容。
@@ -58,6 +57,7 @@ func (opt *Options) toMaps() ([]map[string]string, error) {
 
 // 将一个默认的options值填充到数据库中。
 func fillOptions(db *orm.DB) error {
+	now := time.Now().Unix()
 	opt := &Options{
 		SiteURL:     "http://localhost:8080/",
 		SiteName:    "typing blog",
@@ -67,8 +67,19 @@ func fillOptions(db *orm.DB) error {
 		Keywords:    "typing",
 		Description: "typing-极简的博客系统",
 		Suffix:      ".html",
-		Uptime:      time.Now().Unix(),
-		LastUpdated: time.Now().Unix(),
+
+		Uptime:               now,
+		LastUpdated:          now,
+		CommentsSize:         0,
+		WattingCommentsSize:  0,
+		ApprovedCommentsSize: 0,
+		SpamCommentsSize:     0,
+		PostsSize:            0,
+		PublishedPostsSize:   0,
+		DraftPostsSize:       0,
+		LastLogin:            0,
+		LastIP:               "",
+		LastAgent:            "",
 
 		PageSize:        20,
 		LongDateFormat:  "2006-01-02 15:04:05",
