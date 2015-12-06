@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
 )
 
@@ -26,7 +26,7 @@ func adminGetMedia(w http.ResponseWriter, r *http.Request) {
 		parent = "/"
 	}
 	if strings.Index(parent, "..") >= 0 {
-		core.RenderJSON(w, http.StatusBadRequest, &core.ErrorResult{Message: "格式错误"}, nil)
+		util.RenderJSON(w, http.StatusBadRequest, &util.ErrorResult{Message: "格式错误"}, nil)
 		return
 	}
 
@@ -35,7 +35,7 @@ func adminGetMedia(w http.ResponseWriter, r *http.Request) {
 	fs, err := ioutil.ReadDir(parent)
 	if err != nil {
 		logs.Error("admin.adminGetMeida:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -55,7 +55,7 @@ func adminGetMedia(w http.ResponseWriter, r *http.Request) {
 		}
 		list = append(list, &fileInfo{Name: file.Name(), Type: typ})
 	}
-	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"list": list}, nil)
+	util.RenderJSON(w, http.StatusOK, map[string]interface{}{"list": list}, nil)
 }
 
 // @api post /admin/api/media 上传媒体文件
@@ -69,10 +69,10 @@ func adminGetMedia(w http.ResponseWriter, r *http.Request) {
 func adminPostMedia(w http.ResponseWriter, r *http.Request) {
 	files, err := u.Do("media", r)
 	if err != nil {
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	lastUpdated()
-	core.RenderJSON(w, http.StatusCreated, map[string]interface{}{"media": files[0]}, nil)
+	util.RenderJSON(w, http.StatusCreated, map[string]interface{}{"media": files[0]}, nil)
 }

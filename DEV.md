@@ -33,12 +33,15 @@ typing的配置文件仅提供了一些基本配置，若要达到完全的自�
 
 ##### 自定义模板
 
-所有的模板都在static目录下，其中static/admin对应后的模板；static/front/themes下对应的是前台的各个主题。
+所有的模板都在static目录下，其中static/admin对应后的模板；
+static/front/themes下对应的是前台的各个主题。
 
 
 ##### 默认的安装数据
 
-配置文件在boot/install.go中，数据库定义文件core/install.go中。
+配置文件在boot/install.go中；
+数据库定义及大部分的默认数据models/install.go中；
+配置项在options/install.go中。
 
 
 
@@ -51,7 +54,7 @@ typing的配置文件仅提供了一些基本配置，若要达到完全的自�
 |
 |--- options 与系统配置相关的代码
 |
-|--- core 被其它包引用的核心代码
+|--- util 被其它包引用的核心代码
 |
 |--- feed 与sitemap, rss, atom相关的代码
 |

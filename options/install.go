@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/util"
 	"github.com/issue9/conv"
 	"github.com/issue9/orm"
 )
@@ -63,7 +63,7 @@ func fillOptions(db *orm.DB) error {
 		SiteName:    "typing blog",
 		SecondTitle: "副标题",
 		ScreenName:  "typing",
-		Password:    core.HashPassword("123"),
+		Password:    util.HashPassword("123"),
 		Keywords:    "typing",
 		Description: "typing-极简的博客系统",
 		Suffix:      ".html",
