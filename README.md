@@ -1,4 +1,5 @@
-# typing
+typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=master)](https://travis-ci.org/caixw/typing)
+======
 
 简单的博客系统，具有以下特性：
 
