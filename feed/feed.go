@@ -11,6 +11,7 @@ import (
 	"github.com/caixw/typing/boot"
 	"github.com/caixw/typing/feed/static"
 	"github.com/caixw/typing/options"
+	"github.com/issue9/logs"
 	"github.com/issue9/orm"
 	"github.com/issue9/web"
 )
@@ -66,9 +67,13 @@ func initRoute() error {
 	m.GetFunc("/"+sitemap, func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, sitemapPath)
 	})
+
 	m.GetFunc("/"+sitemapXsl, func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, sitemapXslPath)
+		if _, err := w.Write(static.Sitemap); err != nil {
+			logs.Error("feed.initRoute.route-/sitemap.xsl:", err)
+		}
 	})
+
 	m.GetFunc("/"+rss, func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, rssPath)
 	})
