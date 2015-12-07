@@ -1,4 +1,5 @@
-# typing
+typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=master)](https://travis-ci.org/caixw/typing)
+======
 
 简单的博客系统，具有以下特性：
 
@@ -67,6 +68,13 @@ typing以自用为主，暂时*不支持新功能的PR*。
 bug可在[此处](https://github.com/caixw/typing/issues)提交或是直接PR。
 
 详细的开发文档可在[DEV](DEV.md)中找到。
+
+
+#### 用到的第三方库
+jquery: http://jquery.com
+semantic-ui: http://semantic-ui.com/
+code-prettify: https://github.com/google/code-prettify
+
 
 
 
