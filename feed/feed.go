@@ -5,10 +5,9 @@
 package feed
 
 import (
+	"bytes"
 	"net/http"
-	"os"
 
-	"github.com/caixw/typing/boot"
 	"github.com/caixw/typing/feed/static"
 	"github.com/caixw/typing/options"
 	"github.com/issue9/logs"
@@ -16,43 +15,19 @@ import (
 	"github.com/issue9/web"
 )
 
-// 定义了各文件名。
-const (
-	sitemap    = "sitemap.xml"
-	sitemapXsl = "sitemap.xsl"
-	rss        = "rss.xml"
-	atom       = "atom.xml"
-)
-
 var (
 	db  *orm.DB
 	opt *options.Options
 
-	sitemapPath    string
-	sitemapXslPath string
-	rssPath        string
-	atomPath       string
+	sitemap = new(bytes.Buffer)
+	rss     = new(bytes.Buffer)
+	atom    = new(bytes.Buffer)
 )
 
 // 初始化sitemap包，path为sitemap.xml文件的保存路径
-func Init(cfg *boot.Config, database *orm.DB, options *options.Options) error {
-	sitemapPath = cfg.TempDir + sitemap
-	sitemapXslPath = cfg.TempDir + sitemapXsl
-	rssPath = cfg.TempDir + rss
-	atomPath = cfg.TempDir + atom
+func Init(database *orm.DB, options *options.Options) error {
 	db = database
 	opt = options
-
-	// 输出sitemap.xsl到临时目录
-	file, err := os.Create(sitemapXslPath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	if _, err = file.Write(static.Sitemap); err != nil {
-		return err
-	}
 
 	return initRoute()
 }
@@ -64,21 +39,28 @@ func initRoute() error {
 		return err
 	}
 
-	m.GetFunc("/"+sitemap, func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, sitemapPath)
+	m.GetFunc("/sitemap.xml", func(w http.ResponseWriter, r *http.Request) {
+		if _, err := w.Write(sitemap.Bytes()); err != nil {
+			logs.Error("feed.initRoute.route-/sitemap.xml:", err)
+		}
 	})
 
-	m.GetFunc("/"+sitemapXsl, func(w http.ResponseWriter, r *http.Request) {
+	m.GetFunc("/sitemap.xsl", func(w http.ResponseWriter, r *http.Request) {
 		if _, err := w.Write(static.Sitemap); err != nil {
 			logs.Error("feed.initRoute.route-/sitemap.xsl:", err)
 		}
 	})
 
-	m.GetFunc("/"+rss, func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, rssPath)
+	m.GetFunc("/rss.xml", func(w http.ResponseWriter, r *http.Request) {
+		if _, err := w.Write(rss.Bytes()); err != nil {
+			logs.Error("feed.initRoute.route-/rss.xml:", err)
+		}
 	})
-	m.GetFunc("/"+atom, func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, atomPath)
+
+	m.GetFunc("/atom.xml", func(w http.ResponseWriter, r *http.Request) {
+		if _, err := w.Write(atom.Bytes()); err != nil {
+			logs.Error("feed.initRoute.route-/atom.xml:", err)
+		}
 	})
 
 	return nil

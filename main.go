@@ -49,7 +49,7 @@ func main() {
 	}
 
 	// feed
-	if err = feed.Init(cfg, db, opt); err != nil {
+	if err = feed.Init(db, opt); err != nil {
 		panic(err)
 	}
 

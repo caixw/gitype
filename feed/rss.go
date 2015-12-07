@@ -6,7 +6,6 @@ package feed
 
 import (
 	"bytes"
-	"os"
 	"time"
 
 	"github.com/caixw/typing/models"
@@ -27,22 +26,17 @@ const (
 
 // Build 构建一个rss.xml文件到rssPath文件中，若该文件已经存在，则覆盖。
 func BuildRss() error {
-	buf := bytes.NewBufferString(rssHeader)
-	buf.Grow(10000)
+	rss.Reset()
 
-	if err := addPostsToRss(buf, db, opt); err != nil {
+	if _, err := rss.WriteString(rssHeader); err != nil {
 		return err
 	}
 
-	buf.WriteString(rssFooter)
-
-	file, err := os.Create(rssPath)
-	if err != nil {
+	if err := addPostsToRss(rss, db, opt); err != nil {
 		return err
 	}
 
-	_, err = buf.WriteTo(file)
-	file.Close()
+	_, err := rss.WriteString(rssFooter)
 	return err
 }
 

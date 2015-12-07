@@ -6,7 +6,6 @@ package feed
 
 import (
 	"bytes"
-	"os"
 	"strconv"
 	"time"
 
@@ -27,26 +26,21 @@ const (
 
 // Build 构建一个sitemap.xml文件到sitemapPath文件中，若该文件已经存在，则覆盖。
 func BuildSitemap() error {
-	buf := bytes.NewBufferString(sitemapHeader)
-	buf.Grow(10000)
+	sitemap.Reset()
 
-	if err := addPostsToSitemap(buf, db, opt); err != nil {
+	if _, err := sitemap.WriteString(sitemapHeader); err != nil {
 		return err
 	}
 
-	if err := addTagsToSitemap(buf, db, opt); err != nil {
+	if err := addPostsToSitemap(sitemap, db, opt); err != nil {
 		return err
 	}
 
-	buf.WriteString(sitemapFooter)
-
-	file, err := os.Create(sitemapPath)
-	if err != nil {
+	if err := addTagsToSitemap(sitemap, db, opt); err != nil {
 		return err
 	}
 
-	_, err = buf.WriteTo(file)
-	file.Close()
+	_, err := sitemap.WriteString(sitemapFooter)
 	return err
 }
 

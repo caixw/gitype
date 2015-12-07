@@ -6,7 +6,6 @@ package feed
 
 import (
 	"bytes"
-	"os"
 	"time"
 
 	"github.com/caixw/typing/models"
@@ -25,42 +24,38 @@ const (
 
 // Build 构建一个atom.xml文件到atomPath文件中，若该文件已经存在，则覆盖。
 func BuildAtom() error {
-	buf := bytes.NewBufferString(atomHeader)
-	buf.Grow(10000)
+	atom.Reset()
 
-	buf.WriteString("<id>")
-	buf.WriteString(opt.SiteURL)
-	buf.WriteString("</id>\n")
-
-	buf.WriteString("<link>")
-	buf.WriteString(opt.SiteURL)
-	buf.WriteString("</link>\n")
-
-	buf.WriteString("<title>")
-	buf.WriteString(opt.SiteName)
-	buf.WriteString("</title>\n")
-
-	buf.WriteString("<subtitle>")
-	buf.WriteString(opt.SecondTitle)
-	buf.WriteString("</subtitle>\n")
-
-	buf.WriteString("<update>")
-	buf.WriteString(time.Now().Format("2006-01-02T15:04:05Z08:00"))
-	buf.WriteString("</update>\n")
-
-	if err := addPostsToRss(buf, db, opt); err != nil {
+	if _, err := atom.WriteString(atomHeader); err != nil {
 		return err
 	}
 
-	buf.WriteString(atomFooter)
+	atom.WriteString("<id>")
+	atom.WriteString(opt.SiteURL)
+	atom.WriteString("</id>\n")
 
-	file, err := os.Create(atomPath)
-	if err != nil {
+	atom.WriteString("<link>")
+	atom.WriteString(opt.SiteURL)
+	atom.WriteString("</link>\n")
+
+	atom.WriteString("<title>")
+	atom.WriteString(opt.SiteName)
+	atom.WriteString("</title>\n")
+
+	atom.WriteString("<subtitle>")
+	atom.WriteString(opt.SecondTitle)
+	atom.WriteString("</subtitle>\n")
+
+	atom.WriteString("<update>")
+	atom.WriteString(time.Now().Format("2006-01-02T15:04:05Z08:00"))
+	atom.WriteString("</update>\n")
+
+	if err := addPostsToRss(atom, db, opt); err != nil {
 		return err
 	}
 
-	_, err = buf.WriteTo(file)
-	file.Close()
+	_, err := atom.WriteString(atomFooter)
+
 	return err
 }
 
