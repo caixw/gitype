@@ -18,7 +18,7 @@ import (
 )
 
 // 程序版本号
-const version = "0.8.37.151206"
+const version = "0.8.38.151207"
 
 // 获取程序的版本号
 func Version() string {

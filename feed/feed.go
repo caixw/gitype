@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/caixw/typing/boot"
+	"github.com/caixw/typing/feed/static"
 	"github.com/caixw/typing/options"
 	"github.com/issue9/orm"
 	"github.com/issue9/web"
@@ -41,13 +42,14 @@ func Init(cfg *boot.Config, database *orm.DB, options *options.Options) error {
 	db = database
 	opt = options
 
+	// 输出sitemap.xsl到临时目录
 	file, err := os.Create(sitemapXslPath)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	if _, err = file.Write(files); err != nil {
+	if _, err = file.Write(static.Sitemap); err != nil {
 		return err
 	}
 
