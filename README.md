@@ -51,7 +51,7 @@ frontAPIPrefix | 前端api地址前缀
 adminAPIPrefix | 后台api地址前经
 themeURLPrefix | 各主题公开文件的根URL
 themeDir | 主题文件所在的目录
-tempDir | 临时目录
+tempDir | 临时目录 **暂时未用上**
 uploadDir | 上传文件所在的目录
 uploadDirFormat | 上传文件子目录格式，以时间为格式，可以是2006/01/02/或是2006/01/等，根据自已需求使用。
 uploadSize | 上传文件的最大尺寸
