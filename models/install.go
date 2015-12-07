@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
+// models 定义了所有的数据模型。
 package models
 
 import (
@@ -11,7 +12,8 @@ import (
 	"github.com/issue9/orm"
 )
 
-// 向数据库写入初始内容。
+// 安装数据库和初始化默认的初始数据。
+// options表的数据在options包中安装。
 func Install(db *orm.DB) error {
 	if db == nil {
 		return errors.New("db==nil")
@@ -23,7 +25,12 @@ func Install(db *orm.DB) error {
 	}
 
 	// tags
-	if err := fillTags(db); err != nil {
+	tag := &Tag{
+		Name:        "default",
+		Title:       "默认标签",
+		Description: "这是系统产生的默认标签",
+	}
+	if _, err := db.Insert(tag); err != nil {
 		return err
 	}
 
@@ -78,31 +85,6 @@ func createTables(db *orm.DB) error {
 		&Relationship{},
 	)
 	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	err = tx.Commit()
-	if err != nil {
-		tx.Rollback()
-	}
-	return err
-}
-
-// 填充标签
-func fillTags(db *orm.DB) error {
-	tags := []*Tag{
-		{Name: "default", Title: "默认标签", Description: "这是系统产生的默认标签"},
-		{Name: "tag1", Title: "标签一", Description: "tag1"},
-		{Name: "tag2", Title: "标签二", Description: "tag2"},
-	}
-
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-
-	if err := tx.InsertMany(tags); err != nil {
 		tx.Rollback()
 		return err
 	}

@@ -50,7 +50,7 @@ func getInfo() (*Info, error) {
 		SecondTitle: opt.SecondTitle,
 		Keywords:    opt.Keywords,
 		Description: opt.Description,
-		AppVersion:  util.Version,
+		AppVersion:  util.Version(),
 		GoVersion:   runtime.Version(),
 		Uptime:      opt.Uptime,
 	}
