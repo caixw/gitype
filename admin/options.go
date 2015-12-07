@@ -7,8 +7,8 @@ package admin
 import (
 	"net/http"
 
-	"github.com/caixw/typing/core"
 	"github.com/caixw/typing/feed"
+	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
 )
 
@@ -23,31 +23,31 @@ import (
 // { "value": "abcdef" }
 // @apiSuccess 204 no content
 func adminPatchOption(w http.ResponseWriter, r *http.Request) {
-	key, ok := core.ParamString(w, r, "key")
+	key, ok := util.ParamString(w, r, "key")
 	if !ok {
 		return
 	}
 
 	if _, found := opt.Get(key); !found {
-		core.RenderJSON(w, http.StatusNotFound, nil, nil)
+		util.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
 	data := &struct {
 		Value string `json:"value"`
 	}{}
-	if !core.ReadJSON(w, r, data) {
+	if !util.ReadJSON(w, r, data) {
 		return
 	}
 
 	if err := opt.Set(db, key, data.Value); err != nil {
 		logs.Error("adminPatchOption:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	lastUpdated()
-	core.RenderJSON(w, http.StatusNoContent, nil, nil)
+	util.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // @api get /admin/api/options/{key} 获取设置项的值，不能获取password字段。
@@ -60,23 +60,23 @@ func adminPatchOption(w http.ResponseWriter, r *http.Request) {
 // @apiExample json
 // { "value": "20" }
 func adminGetOption(w http.ResponseWriter, r *http.Request) {
-	key, ok := core.ParamString(w, r, "key")
+	key, ok := util.ParamString(w, r, "key")
 	if !ok {
 		return
 	}
 
 	if key == "password" {
-		core.RenderJSON(w, http.StatusBadRequest, nil, nil)
+		util.RenderJSON(w, http.StatusBadRequest, nil, nil)
 		return
 	}
 
 	val, found := opt.Get(key)
 	if !found {
-		core.RenderJSON(w, http.StatusNotFound, nil, nil)
+		util.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
-	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"value": val}, nil)
+	util.RenderJSON(w, http.StatusOK, map[string]interface{}{"value": val}, nil)
 }
 
 // @api put /admin/api/sitemap 重新生成sitemap
@@ -87,12 +87,12 @@ func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
 	err := feed.BuildSitemap()
 	if err != nil {
 		logs.Error(err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	lastUpdated()
-	core.RenderJSON(w, http.StatusOK, "{}", nil)
+	util.RenderJSON(w, http.StatusOK, "{}", nil)
 }
 
 // @api get /admin/api/stat 获取当前网站的些基本状态

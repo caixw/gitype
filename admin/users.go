@@ -11,7 +11,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
+	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
 )
 
@@ -36,12 +37,12 @@ func adminPostLogin(w http.ResponseWriter, r *http.Request) {
 	inst := &struct {
 		Password string `json:"password"`
 	}{}
-	if !core.ReadJSON(w, r, inst) {
+	if !util.ReadJSON(w, r, inst) {
 		return
 	}
 
-	if core.HashPassword(inst.Password) != opt.Password {
-		core.RenderJSON(w, http.StatusUnauthorized, nil, nil)
+	if util.HashPassword(inst.Password) != opt.Password {
+		util.RenderJSON(w, http.StatusUnauthorized, nil, nil)
 		return
 	}
 
@@ -49,19 +50,19 @@ func adminPostLogin(w http.ResponseWriter, r *http.Request) {
 	n, err := io.ReadFull(rand.Reader, ret)
 	if err != nil {
 		logs.Error("login:无法产生一个随机的token", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	if n == 0 {
 		logs.Error("login:无法产生一个随机的token")
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	h := md5.New()
 	h.Write(ret)
 	token = hex.EncodeToString(h.Sum(nil))
-	core.RenderJSON(w, http.StatusCreated, map[string]string{"token": token}, nil)
+	util.RenderJSON(w, http.StatusCreated, map[string]string{"token": token}, nil)
 }
 
 // @api delete /admin/api/login 注销当前用户的登录
@@ -71,7 +72,7 @@ func adminPostLogin(w http.ResponseWriter, r *http.Request) {
 // @apiSuccess 204 no content
 func adminDeleteLogin(w http.ResponseWriter, r *http.Request) {
 	token = ""
-	core.RenderJSON(w, http.StatusNoContent, nil, nil)
+	util.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // @api put /admin/api/password 理发密码
@@ -93,36 +94,36 @@ func adminChangePassword(w http.ResponseWriter, r *http.Request) {
 		New string `json:"new"`
 	}{}
 
-	if !core.ReadJSON(w, r, l) {
+	if !util.ReadJSON(w, r, l) {
 		return
 	}
 
-	errs := &core.ErrorResult{Message: "提交数据错误", Detail: map[string]string{}}
+	errs := &util.ErrorResult{Message: "提交数据错误", Detail: map[string]string{}}
 	if len(l.New) == 0 {
 		errs.Add("new", "新密码不能为空")
 	}
-	if opt.Password != core.HashPassword(l.Old) {
+	if opt.Password != util.HashPassword(l.Old) {
 		errs.Add("old", "密码错误")
 	}
 	if len(errs.Detail) > 0 {
-		core.RenderJSON(w, http.StatusUnauthorized, errs, nil)
+		util.RenderJSON(w, http.StatusUnauthorized, errs, nil)
 		return
 	}
 
-	o := &core.Option{Key: "password", Value: core.HashPassword(l.New)}
+	o := &models.Option{Key: "password", Value: util.HashPassword(l.New)}
 	if _, err := db.Update(o); err != nil {
 		logs.Error("changePassword:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	opt.Password = o.Value
-	core.RenderJSON(w, http.StatusNoContent, nil, nil)
+	util.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 func loginHandlerFunc(f func(w http.ResponseWriter, r *http.Request)) http.Handler {
 	h := func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") != token {
-			core.RenderJSON(w, http.StatusUnauthorized, nil, nil)
+			util.RenderJSON(w, http.StatusUnauthorized, nil, nil)
 			return
 		}
 		f(w, r)

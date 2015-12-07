@@ -2,12 +2,14 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package core
+// options包用于处理options数据表的相关功能。
+package options
 
 import (
 	"reflect"
 	"strings"
 
+	"github.com/caixw/typing/models"
 	"github.com/issue9/conv"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
@@ -66,8 +68,8 @@ type Options struct {
 	Password   string `options:"users,password"`   // 用户的登录密码
 }
 
-// LoadOptions 从options表中加载数据，并将其转换成Options实例。
-func loadOptions(db *orm.DB) (*Options, error) {
+// 初始化core包。返回程序必要的变量。
+func Init(db *orm.DB) (*Options, error) {
 	sql := "SELECT * FROM #options"
 	rows, err := db.Query(true, sql)
 	if err != nil {
@@ -130,7 +132,7 @@ func (opt *Options) Set(db *orm.DB, key string, val interface{}) error {
 		return err
 	}
 
-	o := &Option{Key: key, Value: conv.MustString(val, "")}
+	o := &models.Option{Key: key, Value: conv.MustString(val, "")}
 	if _, err := db.Update(o); err != nil {
 		return err
 	}

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package core
+package options
 
 import (
 	"testing"
@@ -31,7 +31,7 @@ func TestOptions_fromMaps(t *testing.T) {
 	a.Equal(opt.PageSize, 50)
 }
 
-func TestOptions_SetValue(t *testing.T) {
+func TestOptions_setValue(t *testing.T) {
 	a := assert.New(t)
 	opt := &Options{}
 

@@ -9,7 +9,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
+	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
 )
@@ -20,20 +21,20 @@ import (
 //
 // @apiSuccess 204 no content
 func adminDeleteComment(w http.ResponseWriter, r *http.Request) {
-	id, ok := core.ParamID(w, r, "id")
+	id, ok := util.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
 
-	c := &core.Comment{ID: id}
+	c := &models.Comment{ID: id}
 	if _, err := db.Delete(c); err != nil {
 		logs.Error("adminDeleteComment:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	lastUpdated()
-	core.RenderJSON(w, http.StatusNoContent, nil, nil)
+	util.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // @api get /admin/api/comments 获取所有评论内容
@@ -48,36 +49,36 @@ func adminDeleteComment(w http.ResponseWriter, r *http.Request) {
 func adminGetComments(w http.ResponseWriter, r *http.Request) {
 	var page, size, state int
 	var ok bool
-	if state, ok = core.QueryInt(w, r, "state", core.CommentStateAll); !ok {
+	if state, ok = util.QueryInt(w, r, "state", models.CommentStateAll); !ok {
 		return
 	}
 
 	sql := db.SQL().Table("#comments")
-	if state != core.CommentStateAll {
+	if state != models.CommentStateAll {
 		sql.And("{state}=?", state)
 	}
 	count, err := sql.Count(true)
 	if err != nil {
 		logs.Error("adminGetComments:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	if page, ok = core.QueryInt(w, r, "page", 0); !ok {
+	if page, ok = util.QueryInt(w, r, "page", 0); !ok {
 		return
 	}
-	if size, ok = core.QueryInt(w, r, "size", opt.PageSize); !ok {
+	if size, ok = util.QueryInt(w, r, "size", opt.PageSize); !ok {
 		return
 	}
 	sql.Limit(size, page*size)
 	maps, err := sql.SelectMapString(true, "*")
 	if err != nil {
 		logs.Error("adminGetComments:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "comments": maps}, nil)
+	util.RenderJSON(w, http.StatusOK, map[string]interface{}{"count": count, "comments": maps}, nil)
 }
 
 // @api get /admin/api/comments/count 获取各种状态下的评论数量
@@ -93,7 +94,7 @@ func adminGetCommentsCount(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query(true, sql)
 	if err != nil {
 		logs.Error("adminGetCommentsCount:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	defer rows.Close()
@@ -101,7 +102,7 @@ func adminGetCommentsCount(w http.ResponseWriter, r *http.Request) {
 	maps, err := fetch.MapString(false, rows)
 	if err != nil {
 		logs.Error("adminGetCommentsCount:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -116,7 +117,7 @@ func adminGetCommentsCount(w http.ResponseWriter, r *http.Request) {
 		num, err := strconv.Atoi(v["cnt"])
 		if err != nil {
 			logs.Error("adminGetCommentsCount:", err)
-			core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+			util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 			return
 		}
 		count += num
@@ -132,7 +133,7 @@ func adminGetCommentsCount(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	data["all"] = count // 所有评论的数量
-	core.RenderJSON(w, http.StatusOK, data, nil)
+	util.RenderJSON(w, http.StatusOK, data, nil)
 }
 
 // @api put /admin/api/comments/{id} 修改评论，只能修改管理员发布的评论
@@ -146,20 +147,20 @@ func adminGetCommentsCount(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 200 ok
 func adminPutComment(w http.ResponseWriter, r *http.Request) {
-	id, ok := core.ParamID(w, r, "id")
+	id, ok := util.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
 
-	c := &core.Comment{ID: id}
+	c := &models.Comment{ID: id}
 	cnt, err := db.Count(c)
 	if err != nil {
 		logs.Error("putComment:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	if cnt == 0 {
-		core.RenderJSON(w, http.StatusNotFound, nil, nil)
+		util.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
@@ -167,7 +168,7 @@ func adminPutComment(w http.ResponseWriter, r *http.Request) {
 		Content string `json:"content"`
 	}{}
 
-	if !core.ReadJSON(w, r, ct) {
+	if !util.ReadJSON(w, r, ct) {
 		return
 	}
 
@@ -175,12 +176,12 @@ func adminPutComment(w http.ResponseWriter, r *http.Request) {
 
 	if _, err = db.Update(c); err != nil {
 		logs.Error("putComment", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	lastUpdated()
-	core.RenderJSON(w, http.StatusNoContent, nil, nil)
+	util.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // @api post /admin/api/comments/{id}/waiting 将评论的状态改为waiting
@@ -188,7 +189,7 @@ func adminPutComment(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 204 no content
 func adminSetCommentWaiting(w http.ResponseWriter, r *http.Request) {
-	setCommentState(w, r, core.CommentStateWaiting)
+	setCommentState(w, r, models.CommentStateWaiting)
 }
 
 // @api post /admin/api/comments/{id}/spam 将评论的状态改为spam
@@ -196,7 +197,7 @@ func adminSetCommentWaiting(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 204 no content
 func adminSetCommentSpam(w http.ResponseWriter, r *http.Request) {
-	setCommentState(w, r, core.CommentStateSpam)
+	setCommentState(w, r, models.CommentStateSpam)
 }
 
 // @api post /admin/api/comments/{id}/approved 将评论的状态改为approved
@@ -204,24 +205,24 @@ func adminSetCommentSpam(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 204 no content
 func adminSetCommentApproved(w http.ResponseWriter, r *http.Request) {
-	setCommentState(w, r, core.CommentStateApproved)
+	setCommentState(w, r, models.CommentStateApproved)
 }
 
 func setCommentState(w http.ResponseWriter, r *http.Request, state int) {
-	id, ok := core.ParamID(w, r, "id")
+	id, ok := util.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
 
-	c := &core.Comment{ID: id, State: state}
+	c := &models.Comment{ID: id, State: state}
 	if _, err := db.Update(c); err != nil {
 		logs.Error("setCommentState:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	lastUpdated()
-	core.RenderJSON(w, http.StatusNoContent, nil, nil)
+	util.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // @api post /admin/api/comments 提交新评论
@@ -240,15 +241,15 @@ func adminPostComment(w http.ResponseWriter, r *http.Request) {
 		Content string `json:"content"`
 	}{}
 
-	if !core.ReadJSON(w, r, c) {
+	if !util.ReadJSON(w, r, c) {
 		return
 	}
 
-	comm := &core.Comment{
+	comm := &models.Comment{
 		Parent:      c.Parent,
 		PostID:      c.PostID,
 		Content:     c.Content,
-		State:       core.CommentStateApproved,
+		State:       models.CommentStateApproved,
 		IP:          "",
 		Agent:       "",
 		Created:     time.Now().Unix(),
@@ -259,10 +260,10 @@ func adminPostComment(w http.ResponseWriter, r *http.Request) {
 	}
 	if _, err := db.Insert(comm); err != nil {
 		logs.Error("adminPostComment:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	lastUpdated()
-	core.RenderJSON(w, http.StatusCreated, nil, nil)
+	util.RenderJSON(w, http.StatusCreated, nil, nil)
 }

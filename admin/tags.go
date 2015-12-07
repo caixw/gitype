@@ -7,7 +7,8 @@ package admin
 import (
 	"net/http"
 
-	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
+	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
 )
@@ -41,7 +42,7 @@ func adminGetTags(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query(true, sql)
 	if err != nil {
 		logs.Error("getTags:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -49,11 +50,11 @@ func adminGetTags(w http.ResponseWriter, r *http.Request) {
 	rows.Close()
 	if err != nil {
 		logs.Error("getTags:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"tags": maps}, nil)
+	util.RenderJSON(w, http.StatusOK, map[string]interface{}{"tags": maps}, nil)
 }
 
 // @api put /admin/api/tags/{id} 修改某id的标签内容
@@ -86,13 +87,13 @@ func adminGetTags(w http.ResponseWriter, r *http.Request) {
 //     ]
 // }
 func adminPutTag(w http.ResponseWriter, r *http.Request) {
-	t := &core.Tag{}
-	if !core.ReadJSON(w, r, t) {
+	t := &models.Tag{}
+	if !util.ReadJSON(w, r, t) {
 		return
 	}
 
 	// 检测是否为空
-	errs := &core.ErrorResult{Message: "格式错误", Detail: map[string]string{}}
+	errs := &util.ErrorResult{Message: "格式错误", Detail: map[string]string{}}
 	if len(t.Name) == 0 {
 		errs.Add("name", "不能为空")
 	}
@@ -100,12 +101,12 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 		errs.Add("title", "不能为空")
 	}
 	if errs.HasErrors() {
-		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
+		util.RenderJSON(w, http.StatusBadRequest, errs, nil)
 		return
 	}
 
 	var ok bool
-	t.ID, ok = core.ParamID(w, r, "id")
+	t.ID, ok = util.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
@@ -114,7 +115,7 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 	titleExists, nameExists, err := tagIsExists(t)
 	if err != nil {
 		logs.Error("adminPutTag:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	if titleExists {
@@ -124,18 +125,18 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 		errs.Add("name", "与已有标签同名")
 	}
 	if errs.HasErrors() {
-		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
+		util.RenderJSON(w, http.StatusBadRequest, errs, nil)
 		return
 	}
 
 	if _, err := db.Update(t); err != nil {
 		logs.Error("adminPutTag:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	lastUpdated()
-	core.RenderJSON(w, http.StatusNoContent, nil, nil)
+	util.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // @api post /admin/api/tags 添加新标签
@@ -166,12 +167,12 @@ func adminPutTag(w http.ResponseWriter, r *http.Request) {
 //     ]
 // }
 func adminPostTag(w http.ResponseWriter, r *http.Request) {
-	t := &core.Tag{}
-	if !core.ReadJSON(w, r, t) {
+	t := &models.Tag{}
+	if !util.ReadJSON(w, r, t) {
 		return
 	}
 
-	errs := &core.ErrorResult{Message: "格式错误"}
+	errs := &util.ErrorResult{Message: "格式错误"}
 	if t.ID != 0 {
 		errs.Add("id", "不允许的字段")
 	}
@@ -182,7 +183,7 @@ func adminPostTag(w http.ResponseWriter, r *http.Request) {
 		errs.Add("name", "不能为空")
 	}
 	if errs.HasErrors() {
-		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
+		util.RenderJSON(w, http.StatusBadRequest, errs, nil)
 		return
 	}
 
@@ -190,7 +191,7 @@ func adminPostTag(w http.ResponseWriter, r *http.Request) {
 	titleExists, nameExists, err := tagIsExists(t)
 	if err != nil {
 		logs.Error("adminPostTag:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	if titleExists {
@@ -200,18 +201,18 @@ func adminPostTag(w http.ResponseWriter, r *http.Request) {
 		errs.Add("name", "已有同名字体段")
 	}
 	if errs.HasErrors() {
-		core.RenderJSON(w, http.StatusBadRequest, errs, nil)
+		util.RenderJSON(w, http.StatusBadRequest, errs, nil)
 		return
 	}
 
 	if _, err := db.Insert(t); err != nil {
 		logs.Error("adminPostTag:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	lastUpdated()
-	core.RenderJSON(w, http.StatusCreated, "{}", nil)
+	util.RenderJSON(w, http.StatusCreated, "{}", nil)
 }
 
 // @api delete /admin/api/tags/{id} 删除该id的标签，也将被从relationships表中删除。
@@ -223,7 +224,7 @@ func adminPostTag(w http.ResponseWriter, r *http.Request) {
 //
 // @apiSuccess 204 no content
 func adminDeleteTag(w http.ResponseWriter, r *http.Request) {
-	id, ok := core.ParamID(w, r, "id")
+	id, ok := util.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
@@ -231,13 +232,13 @@ func adminDeleteTag(w http.ResponseWriter, r *http.Request) {
 	tx, err := db.Begin()
 	if err != nil {
 		logs.Error("adminDeleteMeta:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	if _, err := tx.Delete(&core.Tag{ID: id}); err != nil {
+	if _, err := tx.Delete(&models.Tag{ID: id}); err != nil {
 		logs.Error("adminDeleteMeta:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
@@ -245,24 +246,24 @@ func adminDeleteTag(w http.ResponseWriter, r *http.Request) {
 	sql := "DELETE FROM #relationships WHERE {tagID}=?"
 	if _, err := tx.Exec(true, sql, id); err != nil {
 		logs.Error("adminDeleteMeta:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	if err := tx.Commit(); err != nil {
 		logs.Error("adminDeleteMeta:", err)
 		tx.Rollback()
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
 	lastUpdated()
-	core.RenderJSON(w, http.StatusNoContent, nil, nil)
+	util.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
 // 是否存在相同name或是title的标签
 // title返回参数表示是否有title字段相同，name返回参数表示是否有name字段相同。
-func tagIsExists(t *core.Tag) (title bool, name bool, err error) {
+func tagIsExists(t *models.Tag) (title bool, name bool, err error) {
 	sql := db.Where("({name}=? OR {title}=?) AND {id}<>?", t.Name, t.Title, t.ID).
 		Table("#tags")
 
@@ -297,17 +298,17 @@ func tagIsExists(t *core.Tag) (title bool, name bool, err error) {
 // @apiParam title       string 标签名称
 // @apiParam description string 对标签的详细描述
 func adminGetTag(w http.ResponseWriter, r *http.Request) {
-	id, ok := core.ParamID(w, r, "id")
+	id, ok := util.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
 
-	t := &core.Tag{ID: id}
+	t := &models.Tag{ID: id}
 	if err := db.Select(t); err != nil {
 		logs.Error("adminGetTag:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	core.RenderJSON(w, http.StatusOK, t, nil)
+	util.RenderJSON(w, http.StatusOK, t, nil)
 }

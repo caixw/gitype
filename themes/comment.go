@@ -7,7 +7,7 @@ package themes
 import (
 	"strconv"
 
-	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/options"
 )
 
 type Comment struct {
@@ -34,5 +34,5 @@ func (c *Comment) Permalink() string {
 }
 
 func (c *Comment) Fragment() string {
-	return core.CommentFragment(c.ID)
+	return options.CommentFragment(c.ID)
 }

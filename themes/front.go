@@ -13,7 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/caixw/typing/core"
+	"github.com/caixw/typing/models"
+	"github.com/caixw/typing/util"
 	"github.com/issue9/conv"
 	"github.com/issue9/handlers"
 	"github.com/issue9/is"
@@ -53,7 +54,7 @@ func getTagPosts(page int, tagID int64) ([]*Post, error) {
 		WHERE p.{state}=? AND r.{tagID}=?
 		ORDER BY {order} ASC, {created} DESC
 		LIMIT ? OFFSET ?`
-	rows, err := db.Query(true, sql, core.PostStatePublished, tagID, opt.PageSize, opt.PageSize*page)
+	rows, err := db.Query(true, sql, models.PostStatePublished, tagID, opt.PageSize, opt.PageSize*page)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +72,7 @@ func getPosts(page int) ([]*Post, error) {
 	WHERE {state}=?
 	ORDER BY {order} ASC, {created} DESC
 	LIMIT ? OFFSET ?`
-	rows, err := db.Query(true, sql, core.PostStatePublished, opt.PageSize, opt.PageSize*page)
+	rows, err := db.Query(true, sql, models.PostStatePublished, opt.PageSize, opt.PageSize*page)
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +159,7 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 
 // /tags/1.html
 func pageTag(w http.ResponseWriter, r *http.Request) {
-	tagName, ok := core.ParamString(w, r, "id")
+	tagName, ok := util.ParamString(w, r, "id")
 	if !ok {
 		return
 	}
@@ -222,7 +223,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 // /posts/1.html
 // /posts/about.html
 func pagePost(w http.ResponseWriter, r *http.Request) {
-	idStr, ok := core.ParamString(w, r, "id")
+	idStr, ok := util.ParamString(w, r, "id")
 	if !ok {
 		return
 	}
@@ -245,14 +246,14 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	mp := &core.Post{}
+	mp := &models.Post{}
 	if _, err = fetch.Obj(mp, rows); err != nil {
 		logs.Error("pagePost:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	if len(mp.Title) == 0 || mp.State != core.PostStatePublished {
+	if len(mp.Title) == 0 || mp.State != models.PostStatePublished {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -292,11 +293,11 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func insertComment(postID int64, r *http.Request) error {
-	c := &core.Comment{
+	c := &models.Comment{
 		//Parent  int64  `orm:"name(parent)"`          // 子评论的话，此为其上一级评论的id
 		Created:     time.Now().Unix(),
 		PostID:      postID,
-		State:       core.CommentStateWaiting,
+		State:       models.CommentStateWaiting,
 		IP:          r.RemoteAddr,
 		Agent:       r.UserAgent(),
 		IsAdmin:     false,
@@ -316,40 +317,40 @@ func insertComment(postID int64, r *http.Request) error {
 // @apiSuccess 200 OK
 // @apiParam comments array 当前页的评论
 func frontGetPostComments(w http.ResponseWriter, r *http.Request) {
-	id, ok := core.ParamID(w, r, "id")
+	id, ok := util.ParamID(w, r, "id")
 	if !ok {
 		return
 	}
 
-	p := &core.Post{ID: id}
+	p := &models.Post{ID: id}
 	if err := db.Select(p); err != nil {
 		logs.Error("frontGetPostComments:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	if p.State != core.PostStatePublished {
-		core.RenderJSON(w, http.StatusNotFound, nil, nil)
+	if p.State != models.PostStatePublished {
+		util.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
 	sql := db.Where("{postID}=?", id).
-		And("{state}=?", core.CommentStateApproved).
+		And("{state}=?", models.CommentStateApproved).
 		Table("#comments")
 
 	var page int
-	if page, ok = core.QueryInt(w, r, "page", 0); !ok {
+	if page, ok = util.QueryInt(w, r, "page", 0); !ok {
 		return
 	}
 	sql.Limit(opt.PageSize, page*opt.PageSize)
 	maps, err := sql.SelectMap(true, "*")
 	if err != nil {
 		logs.Error("frontGetComments:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 
-	core.RenderJSON(w, http.StatusOK, map[string]interface{}{"comments": maps}, nil)
+	util.RenderJSON(w, http.StatusOK, map[string]interface{}{"comments": maps}, nil)
 }
 
 // @api post /api/posts/{id}/comments 提交新评论
@@ -374,33 +375,33 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 		AuthorEmail string `json:"authorEmail"`
 	}{}
 
-	if !core.ReadJSON(w, r, c) {
+	if !util.ReadJSON(w, r, c) {
 		return
 	}
 
 	// 判断文章状态
 	if c.PostID <= 0 {
-		core.RenderJSON(w, http.StatusNotFound, nil, nil)
+		util.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
-	p := &core.Post{ID: c.PostID}
+	p := &models.Post{ID: c.PostID}
 	if err := db.Select(p); err != nil {
 		logs.Error("forntPostPostComment:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	if (len(p.Title) == 0 && len(p.Content) == 0) || p.State != core.PostStatePublished {
-		core.RenderJSON(w, http.StatusNotFound, nil, nil)
+	if (len(p.Title) == 0 && len(p.Content) == 0) || p.State != models.PostStatePublished {
+		util.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 	if !p.AllowComment {
-		core.RenderJSON(w, http.StatusMethodNotAllowed, nil, nil)
+		util.RenderJSON(w, http.StatusMethodNotAllowed, nil, nil)
 		return
 	}
 
 	// 判断提交数据的状态
-	errs := &core.ErrorResult{}
+	errs := &util.ErrorResult{}
 	if c.Parent < 0 {
 		errs.Detail["parent"] = "无效的parent"
 	}
@@ -423,7 +424,7 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 	u, err := url.Parse(c.AuthorURL)
 	if err != nil {
 		logs.Error("frontPostComment:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
 	c.AuthorURL = u.Scheme + ":" + u.Host
@@ -431,7 +432,7 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 	c.Content = html.EscapeString(c.Content)
 	c.Content = strings.Replace(c.Content, "\n", "<br />", -1)
 
-	comm := &core.Comment{
+	comm := &models.Comment{
 		PostID:      c.PostID,
 		Parent:      c.Parent,
 		AuthorURL:   c.AuthorURL,
@@ -439,15 +440,15 @@ func frontPostPostComment(w http.ResponseWriter, r *http.Request) {
 		AuthorEmail: c.AuthorEmail,
 		Content:     c.Content,
 		Created:     time.Now().Unix(),
-		State:       core.CommentStateWaiting,
+		State:       models.CommentStateWaiting,
 		IP:          r.RemoteAddr,
 		Agent:       r.UserAgent(),
 		IsAdmin:     false,
 	}
 	if _, err := db.Insert(comm); err != nil {
 		logs.Error("frontPostComment:", err)
-		core.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
-	core.RenderJSON(w, http.StatusCreated, nil, nil)
+	util.RenderJSON(w, http.StatusCreated, nil, nil)
 }

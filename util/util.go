@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package core
+package util
 
 import (
 	"crypto/md5"
@@ -15,16 +15,14 @@ import (
 
 	"github.com/issue9/context"
 	"github.com/issue9/logs"
-	"github.com/issue9/orm"
 )
 
-const (
-	Version = "0.6.35.151202" // 程序版本号
-)
+// 程序版本号
+const version = "0.8.37.151206"
 
-// 初始化core包。返回程序必要的变量。
-func Init(database *orm.DB) (*Options, error) {
-	return loadOptions(database)
+// 获取程序的版本号
+func Version() string {
+	return version
 }
 
 // RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
