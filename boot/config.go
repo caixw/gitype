@@ -21,7 +21,7 @@ type Config struct {
 	Core *web.Config `json:"core"`
 
 	Debug   bool   `json:"debug"`   // 是否处于调试模式
-	TempDir string `json:"tempDir"` // 临时文件所在的目录，该目录下的文件被删除不会影响程序整体运行。
+	TempDir string `json:"tempDir"` // 临时文件所在的目录，该目录下的文件被删除不会影响程序整体运行。TODO 不在需要，删除
 
 	// 数据库相关配置
 	DBDSN    string `json:"dbDSN"`    // 数据库dsn
