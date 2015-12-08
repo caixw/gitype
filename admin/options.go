@@ -40,7 +40,7 @@ func adminPatchOption(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := opt.Set(db, key, data.Value); err != nil {
+	if err := opt.Set(db, key, data.Value, false); err != nil {
 		logs.Error("adminPatchOption:", err)
 		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return

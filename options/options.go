@@ -6,6 +6,7 @@
 package options
 
 import (
+	"errors"
 	"reflect"
 	"strings"
 
@@ -112,7 +113,8 @@ func (opt *Options) fromMaps(maps []map[string]string) error {
 	return nil
 }
 
-func (opt *Options) setValue(key string, val interface{}) error {
+// allowSetStat 是否允许修改stat组的值。
+func (opt *Options) setValue(key string, val interface{}, allowSetStat bool) error {
 	v := reflect.ValueOf(opt)
 	v = v.Elem()
 	t := v.Type()
@@ -120,15 +122,18 @@ func (opt *Options) setValue(key string, val interface{}) error {
 		tags := t.Field(i).Tag.Get("options")
 		keys := strings.Split(tags, ",")
 		if keys[1] == key {
-			return conv.Value(val, v.Field(i))
+			if keys[0] != "stat" || allowSetStat {
+				return conv.Value(val, v.Field(i))
+			}
+			return errors.New("该值不能被修改")
 		}
 	}
 	return nil
 }
 
 // 设置options中的值，顺便更新数据库中的值。
-func (opt *Options) Set(db *orm.DB, key string, val interface{}) error {
-	if err := opt.setValue(key, val); err != nil {
+func (opt *Options) Set(db *orm.DB, key string, val interface{}, allowSetStat bool) error {
+	if err := opt.setValue(key, val, allowSetStat); err != nil {
 		return err
 	}
 

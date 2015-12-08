@@ -35,14 +35,16 @@ func TestOptions_setValue(t *testing.T) {
 	a := assert.New(t)
 	opt := &Options{}
 
-	a.NotError(opt.setValue("pageSize", "25"))
+	a.NotError(opt.setValue("pageSize", "25", true))
 	a.Equal(opt.PageSize, 25)
 
-	a.NotError(opt.setValue("pageSize", "45"))
+	a.NotError(opt.setValue("pageSize", "45", false))
 	a.Equal(opt.PageSize, 45)
 
-	a.NotError(opt.setValue("commentsSize", "20"))
+	a.NotError(opt.setValue("commentsSize", "20", true))
 	a.Equal(opt.CommentsSize, 20)
+
+	a.Error(opt.setValue("commentsSize", "25", false))
 }
 
 func TestOptions_Get(t *testing.T) {

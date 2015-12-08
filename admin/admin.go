@@ -39,7 +39,7 @@ func Init(config *boot.Config, database *orm.DB, options *options.Options) error
 }
 
 func lastUpdated() {
-	if err := opt.Set(db, "lastUpdated", time.Now().Unix()); err != nil {
+	if err := opt.Set(db, "lastUpdated", time.Now().Unix(), true); err != nil {
 		logs.Error("admin.lastUpdated:", err)
 	}
 }
