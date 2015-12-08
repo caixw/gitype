@@ -284,6 +284,8 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 	}
 	info.Canonical = opt.URL(post.Permalink())
 	info.Title = post.Title
+	info.Description = post.Summary
+	info.Keywords = post.Keywords()
 
 	data := map[string]interface{}{
 		"info": info,

@@ -6,6 +6,7 @@ package themes
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/options"
@@ -50,6 +51,20 @@ func (p *Post) Permalink() string {
 		return opt.PostURL(p.Name)
 	}
 	return opt.PostURL(strconv.FormatInt(p.ID, 10))
+}
+
+// 与该文章相关的关键字，即该文章所有标签的组成的字符串
+func (p *Post) Keywords() string {
+	tags := p.Tags()
+	if len(tags) == 0 {
+		return ""
+	}
+
+	keys := make([]string, 0, len(tags))
+	for _, val := range tags {
+		keys = append(keys, val.Title)
+	}
+	return strings.Join(keys, ",")
 }
 
 // 获取与当前文章相关的标签。
