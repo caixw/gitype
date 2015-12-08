@@ -5,9 +5,9 @@
 package admin
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/caixw/typing/models"
@@ -59,6 +59,10 @@ func adminSetPostState(w http.ResponseWriter, r *http.Request, state int) {
 		return
 	}
 
+	if err := updatePostsSize(); err != nil {
+		logs.Error("admin.adminSetPostState:", err)
+	}
+
 	lastUpdated()
 	util.RenderJSON(w, http.StatusCreated, "{}", nil)
 }
@@ -71,47 +75,50 @@ func adminSetPostState(w http.ResponseWriter, r *http.Request, state int) {
 // @apiParam draft     int 等待审核的评论数量
 // @apiParam published int 垃圾评论的数量
 func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
+	data := map[string]int{
+		"all":       opt.PostsSize,
+		"draft":     opt.DraftPostsSize,
+		"published": opt.PublishedPostsSize,
+	}
+	util.RenderJSON(w, http.StatusOK, data, nil)
+}
+
+// 更新各状态下的文章数量
+func updatePostsSize() error {
 	sql := "SELECT {state}, count(*) AS cnt FROM #posts GROUP BY {state}"
 	rows, err := db.Query(true, sql)
 	if err != nil {
-		logs.Error("adminGetPostsCount:", err)
-		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
+		return err
 	}
-	defer rows.Close()
-
 	maps, err := fetch.MapString(false, rows)
+	rows.Close()
 	if err != nil {
-		logs.Error("adminGetPostsCount:", err)
-		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
+		return err
 	}
 
-	data := map[string]int{
-		"all":       0,
-		"draft":     0,
-		"published": 0,
-	}
 	count := 0
 	for _, v := range maps {
-		num, err := strconv.Atoi(v["cnt"])
+		state, err := strconv.Atoi(v["state"])
 		if err != nil {
-			logs.Error("adminGetCommentsCount:", err)
-			util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-			return
+			return err
 		}
-		count += num
-		switch v["state"] {
-		case "1":
-			data["published"] = num
-		case "2":
-			data["draft"] = num
+		cnt, err := strconv.Atoi(v["cnt"])
+		if err != nil {
+			return err
+		}
+		count += cnt
+		switch state {
+		case models.PostStateDraft:
+			opt.Set(db, "draftPostsSize", cnt, true)
+		case models.PostStatePublished:
+			opt.Set(db, "publishedPostsSize", cnt, true)
 		default:
-			logs.Error("adminGetPostsCount: 未知的文章状态:", v["state"])
+			return fmt.Errorf("updatePostsSize: 未知的文章状态:[%v]", state)
 		}
 	}
-	data["all"] = count // 所有评论的数量
-	util.RenderJSON(w, http.StatusOK, data, nil)
+	opt.Set(db, "postsSize", count, true)
+
+	return nil
 }
 
 // @api post /admin/api/posts 新建文章
@@ -163,13 +170,6 @@ func adminPostPost(w http.ResponseWriter, r *http.Request) {
 		Created:      t,
 		Modified:     t,
 	}
-
-	/*tags, err := getTagsID(p.Tags)
-	if err != nil {
-		logs.Error("adminPostPost:", err)
-		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}*/
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -279,12 +279,6 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO 是否有必要检测标签是否真实存在
-	/*tags, err := getTagsID(p.Tags)
-	if err != nil {
-		logs.Error("adminPostPost-0:", err)
-		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
-	}*/
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -331,45 +325,11 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := updatePostsSize(); err != nil {
+		logs.Error("admin.adminPutPost:", err)
+	}
 	lastUpdated()
 	util.RenderJSON(w, http.StatusNoContent, nil, nil)
-}
-
-// 将一串标签名转换成id
-// names为一种由标签名组成的字符串，名称之间由逗号分隔。
-func getTagsID(names string) ([]int64, error) {
-	name := strings.Split(names, ",")
-	if len(name) == 0 {
-		return nil, nil
-	}
-
-	cond := strings.Repeat("?,", len(name))
-	sql := "SELECT {id} FROM #tags WHERE {title} IN(" + cond[:len(cond)-1] + ")"
-	args := make([]interface{}, 0, len(name))
-	for _, v := range name {
-		args = append(args, v)
-	}
-	rows, err := db.Query(true, sql, args...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	maps, err := fetch.ColumnString(false, "id", rows)
-	if err != nil {
-		return nil, err
-	}
-
-	ret := make([]int64, 0, len(maps))
-	for _, str := range maps {
-		num, err := strconv.ParseInt(str, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		ret = append(ret, num)
-	}
-
-	return ret, nil
 }
 
 // @api delete /admin/api/posts/{id} 删除文章
@@ -425,6 +385,10 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 		logs.Error("deletePost:", err)
 		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
+	}
+
+	if err := updatePostsSize(); err != nil {
+		logs.Error("admin.adminDeletePost:", err)
 	}
 
 	lastUpdated()

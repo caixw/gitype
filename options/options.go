@@ -132,6 +132,7 @@ func (opt *Options) setValue(key string, val interface{}, allowSetStat bool) err
 }
 
 // 设置options中的值，顺便更新数据库中的值。
+// allowSetStat 是否允许修改stat组的值。
 func (opt *Options) Set(db *orm.DB, key string, val interface{}, allowSetStat bool) error {
 	if err := opt.setValue(key, val, allowSetStat); err != nil {
 		return err

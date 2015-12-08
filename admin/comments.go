@@ -5,6 +5,7 @@
 package admin
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -31,6 +32,10 @@ func adminDeleteComment(w http.ResponseWriter, r *http.Request) {
 		logs.Error("adminDeleteComment:", err)
 		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
+	}
+
+	if err := updateCommentsSize(); err != nil {
+		logs.Error("admin.adminDeleteComment:", err)
 	}
 
 	lastUpdated()
@@ -90,50 +95,54 @@ func adminGetComments(w http.ResponseWriter, r *http.Request) {
 // @apiParam spam     int 垃圾评论的数量
 // @apiParam approved int 通过审核的评论数量
 func adminGetCommentsCount(w http.ResponseWriter, r *http.Request) {
+	data := map[string]int{
+		"waiting":  opt.WaitingCommentsSize,
+		"spam":     opt.SpamCommentsSize,
+		"approved": opt.ApprovedCommentsSize,
+		"all":      opt.CommentsSize,
+	}
+	util.RenderJSON(w, http.StatusOK, data, nil)
+}
+
+// 更新评论的各类数据
+func updateCommentsSize() error {
 	sql := "SELECT {state}, count(*) AS cnt FROM #comments GROUP BY {state}"
 	rows, err := db.Query(true, sql)
 	if err != nil {
-		logs.Error("adminGetCommentsCount:", err)
-		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
+		return err
 	}
-	defer rows.Close()
-
 	maps, err := fetch.MapString(false, rows)
+	rows.Close()
 	if err != nil {
-		logs.Error("adminGetCommentsCount:", err)
-		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return
+		return err
 	}
 
-	data := map[string]int{
-		"all":      0,
-		"waiting":  0,
-		"spam":     0,
-		"approved": 0,
-	}
 	count := 0
 	for _, v := range maps {
-		num, err := strconv.Atoi(v["cnt"])
+		state, err := strconv.Atoi(v["state"])
 		if err != nil {
-			logs.Error("adminGetCommentsCount:", err)
-			util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
-			return
+			return err
 		}
-		count += num
-		switch v["state"] {
-		case "1":
-			data["waiting"] = num
-		case "2":
-			data["spam"] = num
-		case "3":
-			data["approved"] = num
+		cnt, err := strconv.Atoi(v["cnt"])
+		if err != nil {
+			return err
+		}
+
+		count += cnt
+		switch state {
+		case models.CommentStateApproved:
+			opt.Set(db, "approvedCommentsSize", cnt, true)
+		case models.CommentStateSpam:
+			opt.Set(db, "spamCommentsSize", cnt, true)
+		case models.CommentStateWaiting:
+			opt.Set(db, "waitingCommentsSize", cnt, true)
 		default:
-			logs.Error("adminGetCommentsCount: 未知的评论状态:", v["state"])
+			return fmt.Errorf("updateCommentsSize:未知的评论状态:[%v]", state)
 		}
 	}
-	data["all"] = count // 所有评论的数量
-	util.RenderJSON(w, http.StatusOK, data, nil)
+	opt.Set(db, "commentsSize", count, true)
+
+	return nil
 }
 
 // @api put /admin/api/comments/{id} 修改评论，只能修改管理员发布的评论
@@ -180,6 +189,10 @@ func adminPutComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := updateCommentsSize(); err != nil {
+		logs.Error("admin.adminPutComment:", err)
+	}
+
 	lastUpdated()
 	util.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
@@ -219,6 +232,10 @@ func setCommentState(w http.ResponseWriter, r *http.Request, state int) {
 		logs.Error("setCommentState:", err)
 		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
+	}
+
+	if err := updateCommentsSize(); err != nil {
+		logs.Error("admin.setCommentState:", err)
 	}
 
 	lastUpdated()
@@ -262,6 +279,10 @@ func adminPostComment(w http.ResponseWriter, r *http.Request) {
 		logs.Error("adminPostComment:", err)
 		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
+	}
+
+	if err := updateCommentsSize(); err != nil {
+		logs.Error("admin.adminPostComment:", err)
 	}
 
 	lastUpdated()
