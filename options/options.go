@@ -38,7 +38,7 @@ type Options struct {
 	Uptime               int64  `options:"stat,uptime"`               // 上线时间
 	LastUpdated          int64  `options:"stat,lastUpdated"`          // 最后更新时间
 	CommentsSize         int    `options:"stat,commentsSize"`         // 评论数
-	WattingCommentsSize  int    `options:"stat,wattingCommentsSize"`  // 待评论数量
+	WaitingCommentsSize  int    `options:"stat,waitingCommentsSize"`  // 待评论数量
 	ApprovedCommentsSize int    `options:"stat,approvedCommentsSize"` // 待评论数量
 	SpamCommentsSize     int    `options:"stat,spamCommentsSize"`     // 垃圾论数量
 	PostsSize            int    `options:"stat,postsSize"`            // 文章数量

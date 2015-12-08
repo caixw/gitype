@@ -107,10 +107,23 @@ func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
 // @apiParam spamComments     int 垃圾评论数量
 // @apiParam approvedComments int 已审评论数量
 // @apiParam lastLogin        int 最后次登录时间
-// @apiParam lastPost         int 最后次发表文章的时间
 // @apiParam lastIP           string 最后次登录的IP
 // @apiParam lastAgent        string 最后次登录的浏览器相关资料
 // @apiParam screenName       string 用户的当前昵称
 func adminGetStat(w http.ResponseWriter, r *http.Request) {
-	// TODO
+	data := map[string]interface{}{
+		"posts":            opt.PostsSize,
+		"draftPosts":       opt.DraftPostsSize,
+		"publishedPosts":   opt.PublishedPostsSize,
+		"comments":         opt.CommentsSize,
+		"waitingComments":  opt.WaitingCommentsSize,
+		"spamComments":     opt.SpamCommentsSize,
+		"approvedComments": opt.ApprovedCommentsSize,
+		"lastLogin":        opt.LastLogin,
+		"lastIP":           opt.LastIP,
+		"lastAgent":        opt.LastAgent,
+		"screenName":       opt.ScreenName,
+	}
+
+	util.RenderJSON(w, http.StatusOK, data, nil)
 }

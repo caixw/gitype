@@ -71,7 +71,7 @@ func fillOptions(db *orm.DB) error {
 		Uptime:               now,
 		LastUpdated:          now,
 		CommentsSize:         0,
-		WattingCommentsSize:  0,
+		WaitingCommentsSize:  0,
 		ApprovedCommentsSize: 0,
 		SpamCommentsSize:     0,
 		PostsSize:            0,
