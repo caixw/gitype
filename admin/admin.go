@@ -54,7 +54,7 @@ func initRoute() error {
 	p.PostFunc("/login", adminPostLogin).
 		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
 		Put("/password", loginHandlerFunc(adminChangePassword)).
-		Get("/state", loginHandlerFunc(adminGetStat)).
+		Get("/stat", loginHandlerFunc(adminGetStat)).
 		Put("/sitemap", loginHandlerFunc(adminPutSitemap)).
 		Post("/media", loginHandlerFunc(adminPostMedia)).
 		Get("/media", loginHandlerFunc(adminGetMedia))
