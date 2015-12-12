@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// boot 定义了程序启动过程中需要用到的内容，包括：
+// app 定义了程序的初始化的基本内容，包括：
 //  - 加载日志系统;
 //  - 加载配置文件;
 //  - 根据配置文件，初始化相应的数据库实例;

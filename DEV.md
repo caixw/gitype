@@ -18,7 +18,7 @@ typing的配置文件仅提供了一些基本配置，若要达到完全的自�
 
 ##### 修改配置文件路径
 
-配置文件路径包括app.json和logs.xml两个文件，分别对应boot包的LogConfigPath和ConfigPath两个常量。
+配置文件路径包括app.json和logs.xml两个文件，分别对应app包的LogConfigPath和ConfigPath两个常量。
 
 
 ##### 禁用feed相关内容
@@ -39,7 +39,7 @@ static/front/themes下对应的是前台的各个主题。
 
 ##### 默认的安装数据
 
-配置文件在boot/install.go中；
+配置文件在app/install.go中；
 数据库定义及大部分的默认数据models/install.go中；
 配置项在options/install.go中。
 
@@ -50,7 +50,7 @@ static/front/themes下对应的是前台的各个主题。
 ```
 |--- admin 后台的逻辑处理代码
 |
-|--- boot 处理启动时需要初始化的内容
+|--- app 处理启动时需要初始化的内容
 |
 |--- options 与数据库加载的配置内容的相关功能
 |
