@@ -17,14 +17,6 @@ import (
 	"github.com/issue9/logs"
 )
 
-// 程序版本号
-const version = "0.8.40.151208"
-
-// 获取程序的版本号
-func Version() string {
-	return version
-}
-
 // RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
 // 若v的值是string,[]byte,[]rune则直接转换成字符串写入w。
 // 当v为nil时，不输出任何内容，若需要输出一个空对象，请使用"{}"字符串。

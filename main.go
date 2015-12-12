@@ -8,7 +8,7 @@ import (
 	"flag"
 
 	"github.com/caixw/typing/admin"
-	"github.com/caixw/typing/boot"
+	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/feed"
 	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/options"
@@ -26,8 +26,8 @@ func main() {
 		return
 	}
 
-	// boot
-	cfg, db, err := boot.Init()
+	// app
+	cfg, db, err := app.Init()
 	if err != nil {
 		panic(err)
 	}
@@ -69,13 +69,13 @@ func install() bool {
 
 	switch *action {
 	case "config":
-		if err := boot.Install(); err != nil {
+		if err := app.Install(); err != nil {
 			panic(err)
 		}
 
 		return true
 	case "db":
-		_, db, err := boot.Init()
+		_, db, err := app.Init()
 		if err != nil {
 			panic(err)
 		}

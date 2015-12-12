@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/caixw/typing/boot"
+	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/options"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm"
@@ -17,13 +17,13 @@ import (
 )
 
 var (
-	cfg *boot.Config
+	cfg *app.Config
 	db  *orm.DB
 	opt *options.Options
 	u   *upload.Upload
 )
 
-func Init(config *boot.Config, database *orm.DB, options *options.Options) error {
+func Init(config *app.Config, database *orm.DB, options *options.Options) error {
 	cfg = config
 	opt = options
 	db = database

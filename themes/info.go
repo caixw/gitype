@@ -9,8 +9,8 @@ import (
 	"runtime"
 	"strconv"
 
+	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/models"
-	"github.com/caixw/typing/util"
 	"github.com/issue9/orm/fetch"
 )
 
@@ -50,7 +50,7 @@ func getInfo() (*Info, error) {
 		SecondTitle: opt.SecondTitle,
 		Keywords:    opt.Keywords,
 		Description: opt.Description,
-		AppVersion:  util.Version(),
+		AppVersion:  app.Version,
 		GoVersion:   runtime.Version(),
 		Uptime:      opt.Uptime,
 	}
