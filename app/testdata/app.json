@@ -1,0 +1,28 @@
+{
+    "core":{
+        "https"     : false,
+        "keyFile"   : "keyFile",
+        "certFile"  : "certFile",
+        "port"      : "8080",
+        "serverName": "typing",
+        "static"    : {
+            "/admin": "./static/admin/"
+        }
+    },
+
+    "dbDriver": "sqlite3",
+    "dbDSN"   : "./output/main.db",
+    "dbPrefix": "typing_",
+
+    "frontApiPrefix" : "/api",
+    "adminApiPrefix" : "/admin/api",
+    "themeURLPrefix" : "/themes",
+
+    "themeDir": "./static/front/themes/",
+    "tempDir":  "./output/temp/",
+
+    "uploadDir":      "./output/uploads/",
+    "uploadExts":     ".png;.jpg",
+    "uploadURLPrefix":"/uploads",
+    "uploadSize":     1024
+}
