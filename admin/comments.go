@@ -131,16 +131,16 @@ func updateCommentsSize() error {
 		count += cnt
 		switch state {
 		case models.CommentStateApproved:
-			opt.Set(db, "approvedCommentsSize", cnt, true)
+			stat.ApprovedCommentsSize = cnt
 		case models.CommentStateSpam:
-			opt.Set(db, "spamCommentsSize", cnt, true)
+			stat.SpamCommentsSize = cnt
 		case models.CommentStateWaiting:
-			opt.Set(db, "waitingCommentsSize", cnt, true)
+			stat.WaitingCommentsSize = cnt
 		default:
 			return fmt.Errorf("updateCommentsSize:未知的评论状态:[%v]", state)
 		}
 	}
-	opt.Set(db, "commentsSize", count, true)
+	stat.CommentsSize = count
 
 	return nil
 }

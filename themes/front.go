@@ -249,6 +249,9 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		if err := insertComment(mp.ID, r); err != nil {
 			logs.Error("pagePost:", err)
+		} else {
+			stat.WaitingCommentsSize++
+			stat.CommentsSize++
 		}
 	}
 
@@ -282,6 +285,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 	render(w, "post", data, map[string]string{"Content-Type": "text/html"})
 }
 
+// 将当前提交的评论插入数据库
 func insertComment(postID int64, r *http.Request) error {
 	c := &models.Comment{
 		//Parent  int64  `orm:"name(parent)"`          // 子评论的话，此为其上一级评论的id

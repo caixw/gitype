@@ -109,14 +109,14 @@ func updatePostsSize() error {
 		count += cnt
 		switch state {
 		case models.PostStateDraft:
-			opt.Set(db, "draftPostsSize", cnt, true)
+			stat.DraftPostsSize = cnt
 		case models.PostStatePublished:
-			opt.Set(db, "publishedPostsSize", cnt, true)
+			stat.PublishedPostsSize = cnt
 		default:
 			return fmt.Errorf("updatePostsSize: 未知的文章状态:[%v]", state)
 		}
-	}
-	opt.Set(db, "postsSize", count, true)
+	} // end for
+	stat.PostsSize = count
 
 	return nil
 }
