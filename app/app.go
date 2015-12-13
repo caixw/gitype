@@ -2,12 +2,14 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// app 定义了程序的初始化的基本内容，包括：
+// app 定义了程序的基本内容，包括：
 //  - 加载日志系统;
 //  - 加载配置文件;
 //  - 根据配置文件，初始化相应的数据库实例;
+//  - 从数据库加载配置内容及初始数据；
 //  - 默认的配置文件安装脚本;
 //  - 默认的日志配置文件安装脚本;
+//  - 默信的数据库安装脚本;
 package app
 
 import (
@@ -20,7 +22,7 @@ import (
 )
 
 const (
-	Version = "0.9.41.151212" // 程序版本号
+	Version = "0.10.42.151213" // 程序版本号
 
 	// 定义两个配置文件的位置。
 	configPath    = "./config/app.json"
