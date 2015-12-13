@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	Version = "0.10.42.151213" // 程序版本号
+	Version = "0.11.43.151213" // 程序版本号
 
 	// 定义两个配置文件的位置。
 	configPath    = "./config/app.json"
@@ -30,27 +30,32 @@ const (
 )
 
 // 初始化系统，获取系统配置变量和数据库实例。
-func Init() (*Config, *orm.DB, *Options, error) {
+func Init() (*Config, *orm.DB, *Options, *Stat, error) {
 	cfg, err := loadConfig(configPath)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 
 	db, err := initDB(cfg)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 
 	if err = logs.InitFromXMLFile(logConfigPath); err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 
 	opt, err := loadOptions(db)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 
-	return cfg, db, opt, nil
+	stat, err := loadStat(db)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+
+	return cfg, db, opt, stat, nil
 }
 
 // 从一个Config实例中初始一个orm.DB实例。

@@ -76,9 +76,9 @@ func adminSetPostState(w http.ResponseWriter, r *http.Request, state int) {
 // @apiParam published int 垃圾评论的数量
 func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
 	data := map[string]int{
-		"all":       opt.PostsSize,
-		"draft":     opt.DraftPostsSize,
-		"published": opt.PublishedPostsSize,
+		"all":       stat.PostsSize,
+		"draft":     stat.DraftPostsSize,
+		"published": stat.PublishedPostsSize,
 	}
 	util.RenderJSON(w, http.StatusOK, data, nil)
 }

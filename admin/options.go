@@ -95,7 +95,7 @@ func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
 	util.RenderJSON(w, http.StatusOK, "{}", nil)
 }
 
-// @api get /admin/api/stat 获取当前网站的些基本状态
+// @api get /admin/api/state 获取当前网站的些基本状态
 // @apiGroup admin
 //
 // @apiSuccess 200 OK
@@ -110,15 +110,15 @@ func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
 // @apiParam lastIP           string 最后次登录的IP
 // @apiParam lastAgent        string 最后次登录的浏览器相关资料
 // @apiParam screenName       string 用户的当前昵称
-func adminGetStat(w http.ResponseWriter, r *http.Request) {
+func adminGetState(w http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
-		"posts":            opt.PostsSize,
-		"draftPosts":       opt.DraftPostsSize,
-		"publishedPosts":   opt.PublishedPostsSize,
-		"comments":         opt.CommentsSize,
-		"waitingComments":  opt.WaitingCommentsSize,
-		"spamComments":     opt.SpamCommentsSize,
-		"approvedComments": opt.ApprovedCommentsSize,
+		"posts":            stat.PostsSize,
+		"draftPosts":       stat.DraftPostsSize,
+		"publishedPosts":   stat.PublishedPostsSize,
+		"comments":         stat.CommentsSize,
+		"waitingComments":  stat.WaitingCommentsSize,
+		"spamComments":     stat.SpamCommentsSize,
+		"approvedComments": stat.ApprovedCommentsSize,
 		"lastLogin":        opt.LastLogin,
 		"lastIP":           opt.LastIP,
 		"lastAgent":        opt.LastAgent,

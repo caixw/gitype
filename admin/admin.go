@@ -16,16 +16,18 @@ import (
 )
 
 var (
-	cfg *app.Config
-	db  *orm.DB
-	opt *app.Options
-	u   *upload.Upload
+	cfg  *app.Config
+	db   *orm.DB
+	opt  *app.Options
+	stat *app.Stat
+	u    *upload.Upload
 )
 
-func Init(config *app.Config, database *orm.DB, options *app.Options) error {
+func Init(config *app.Config, database *orm.DB, options *app.Options, s *app.Stat) error {
 	cfg = config
 	opt = options
 	db = database
+	stat = s
 
 	// 上传相关配置
 	var err error
@@ -53,7 +55,7 @@ func initRoute() error {
 	p.PostFunc("/login", adminPostLogin).
 		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
 		Put("/password", loginHandlerFunc(adminChangePassword)).
-		Get("/stat", loginHandlerFunc(adminGetStat)).
+		Get("/state", loginHandlerFunc(adminGetState)).
 		Put("/sitemap", loginHandlerFunc(adminPutSitemap)).
 		Post("/media", loginHandlerFunc(adminPostMedia)).
 		Get("/media", loginHandlerFunc(adminGetMedia))

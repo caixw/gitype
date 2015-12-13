@@ -25,7 +25,7 @@ func main() {
 	}
 
 	// app
-	cfg, db, opt, err := app.Init()
+	cfg, db, opt, stat, err := app.Init()
 	if err != nil {
 		panic(err)
 	}
@@ -36,7 +36,7 @@ func main() {
 	}
 
 	// admin
-	if err := admin.Init(cfg, db, opt); err != nil {
+	if err := admin.Init(cfg, db, opt, stat); err != nil {
 		panic(err)
 	}
 
