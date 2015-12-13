@@ -31,7 +31,7 @@ func main() {
 	}
 
 	// themes
-	if err = themes.Init(cfg, db, opt); err != nil {
+	if err = themes.Init(cfg, db, opt, stat); err != nil {
 		panic(err)
 	}
 

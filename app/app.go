@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	Version = "0.11.43.151213" // 程序版本号
+	Version = "0.11.44.151213" // 程序版本号
 
 	// 定义两个配置文件的位置。
 	configPath    = "./config/app.json"

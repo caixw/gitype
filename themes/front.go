@@ -144,15 +144,6 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, tag := range tags {
-		sql := db.Where("{tagID}=?", tag.ID).Table("#relationships")
-		tag.Count, err = sql.Count(true)
-		if err != nil {
-			logs.Error("pageTags:", err)
-			w.WriteHeader(500)
-			return
-		}
-	}
 	data := map[string]interface{}{"info": info, "tags": tags}
 	render(w, "tags", data, map[string]string{"Content-Type": "text/html"})
 }
@@ -165,12 +156,9 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	}
 	tagName = strings.TrimSuffix(tagName, opt.Suffix)
 
-	sql := `SELECT t.{id} AS {ID}, t.{name} AS {Name}, t.{title} AS {Title}, t.{description} AS {Description},
-	count(r.{tagID}) AS {Count}
-	FROM #tags AS t
-	LEFT JOIN #relationships AS r ON t.{id}=r.{tagID}
-	WHERE t.{name}=?
-	GROUP BY t.{id}`
+	sql := `SELECT {id} AS {ID}, {name} AS {Name}, {title} AS {Title}, {description} AS {Description}
+	FROM #tags
+	WHERE {name}=?`
 	rows, err := db.Query(true, sql, tagName)
 	if err != nil {
 		logs.Error("pageTag:", err)
@@ -202,7 +190,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	} else if page > 1 { // 为1的时候，不需要prev
 		info.PrevPage = &Anchor{Title: "上一页", Link: opt.TagURL(tagName, page-1)}
 	}
-	if page*opt.SidebarSize < tag.Count {
+	if page*opt.SidebarSize < tag.Count() {
 		info.NextPage = &Anchor{Title: "下一页", Link: opt.TagURL(tagName, page+1)}
 	}
 	posts, err := getTagPosts(page-1, tag.ID)

@@ -22,11 +22,12 @@ type Stat struct {
 	Tags                 map[int64]int // 标签对应的文章数量
 }
 
+// 从数据库初始化数据
 func loadStat(db *orm.DB) (*Stat, error) {
 	stat := &Stat{}
 	var err error
 
-	/* comments */
+	/* 统计评论数量 */
 	o := &models.Comment{State: models.CommentStateSpam}
 	stat.SpamCommentsSize, err = db.Count(o)
 	if err != nil {
@@ -47,7 +48,7 @@ func loadStat(db *orm.DB) (*Stat, error) {
 
 	stat.CommentsSize = stat.SpamCommentsSize + stat.WaitingCommentsSize + stat.ApprovedCommentsSize
 
-	/* posts */
+	/* 统计文章数量 */
 	p := &models.Post{State: models.PostStateDraft}
 	stat.DraftPostsSize, err = db.Count(p)
 	if err != nil {
@@ -61,6 +62,10 @@ func loadStat(db *orm.DB) (*Stat, error) {
 	}
 
 	stat.PostsSize = stat.PublishedPostsSize + stat.DraftPostsSize
+
+	// posts
+	stat.Posts = make(map[int64]int, stat.PostsSize)
+	stat.Tags = make(map[int64]int, 100)
 
 	return stat, nil
 }

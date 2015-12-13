@@ -19,9 +19,10 @@ import (
 )
 
 var (
-	cfg *app.Config
-	opt *app.Options
-	db  *orm.DB
+	cfg  *app.Config
+	opt  *app.Options
+	stat *app.Stat
+	db   *orm.DB
 
 	tpl       *template.Template // 当前使用的模板
 	themesMap map[string]*Theme  // 所有的主题列表
@@ -46,10 +47,11 @@ type Author struct {
 
 // 从主题根目录加载所有的主题内容，并初始所有的主题下静态文件的路由。
 // defaultTheme 为默认的主题。
-func Init(c *app.Config, database *orm.DB, options *app.Options) error {
+func Init(c *app.Config, database *orm.DB, options *app.Options, s *app.Stat) error {
 	cfg = c
 	opt = options
 	db = database
+	stat = s
 
 	if err := loadThemes(); err != nil {
 		return err
