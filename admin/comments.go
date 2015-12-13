@@ -96,10 +96,10 @@ func adminGetComments(w http.ResponseWriter, r *http.Request) {
 // @apiParam approved int 通过审核的评论数量
 func adminGetCommentsCount(w http.ResponseWriter, r *http.Request) {
 	data := map[string]int{
-		"waiting":  opt.WaitingCommentsSize,
-		"spam":     opt.SpamCommentsSize,
-		"approved": opt.ApprovedCommentsSize,
-		"all":      opt.CommentsSize,
+		"waiting":  stat.WaitingCommentsSize,
+		"spam":     stat.SpamCommentsSize,
+		"approved": stat.ApprovedCommentsSize,
+		"all":      stat.CommentsSize,
 	}
 	util.RenderJSON(w, http.StatusOK, data, nil)
 }

@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/models"
-	"github.com/caixw/typing/options"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm/fetch"
 )
@@ -28,12 +28,17 @@ type Post struct {
 }
 
 func (p *Post) CommentsSize() int {
+	if size, found := stat.Posts[p.ID]; found {
+		return size
+	}
+
 	c := &models.Comment{PostID: p.ID, State: models.CommentStateApproved}
 	size, err := db.Count(c)
 	if err != nil {
 		logs.Error("themes.Post.CommentsSize:", err)
 		return 0
 	}
+	stat.Posts[p.ID] = size
 	return size
 }
 
@@ -95,7 +100,7 @@ func (p *Post) Comments() []*Comment {
 	FROM #comments
 	WHERE {postID}=? AND {state}=?
 	ORDER BY {created} `
-	if opt.CommentOrder == options.CommentOrderDesc {
+	if opt.CommentOrder == app.CommentOrderDesc {
 		sql += `DESC `
 	}
 

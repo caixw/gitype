@@ -2,8 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// options包用于处理options数据表的相关功能。
-package options
+package app
 
 import (
 	"errors"
@@ -34,19 +33,12 @@ type Options struct {
 	Suffix      string `options:"system,suffix"`      // URL地址的后缀名，仅对文章有效
 	//Language    string `options:"system,language"`      // 界面语言
 
-	// 一些统计数据
-	Uptime               int64  `options:"stat,uptime"`               // 上线时间
-	LastUpdated          int64  `options:"stat,lastUpdated"`          // 最后更新时间
-	CommentsSize         int    `options:"stat,commentsSize"`         // 评论数
-	WaitingCommentsSize  int    `options:"stat,waitingCommentsSize"`  // 待评论数量
-	ApprovedCommentsSize int    `options:"stat,approvedCommentsSize"` // 待评论数量
-	SpamCommentsSize     int    `options:"stat,spamCommentsSize"`     // 垃圾论数量
-	PostsSize            int    `options:"stat,postsSize"`            // 文章数量
-	PublishedPostsSize   int    `options:"stat,publishedPostsSize"`   // 已发表文章数量
-	DraftPostsSize       int    `options:"stat,draftPostsSize"`       // 草稿数量
-	LastLogin            int64  `options:"stat,lastLogin"`            // 最后登录时间
-	LastIP               string `options:"stat,lastIP"`               // 最后登录的ip地址
-	LastAgent            string `options:"stat,lastAgent"`            // 最后次登录的用户浏览器
+	// 一些只读数据
+	Uptime      int64  `options:"readonly,uptime"`      // 上线时间
+	LastUpdated int64  `options:"readonly,lastUpdated"` // 最后更新时间
+	LastLogin   int64  `options:"readonly,lastLogin"`   // 最后登录时间
+	LastIP      string `options:"readonly,lastIP"`      // 最后登录的ip地址
+	LastAgent   string `options:"readonly,lastAgent"`   // 最后次登录的用户浏览器
 
 	PageSize        int    `options:"reading,pageSize"`        // 默认每页显示的数量
 	SidebarSize     int    `options:"reading,sidebarSize"`     // 侧边栏每个列表项内显示的数量
@@ -70,7 +62,7 @@ type Options struct {
 }
 
 // 初始化core包。返回程序必要的变量。
-func Init(db *orm.DB) (*Options, error) {
+func loadOptions(db *orm.DB) (*Options, error) {
 	sql := "SELECT * FROM #options"
 	rows, err := db.Query(true, sql)
 	if err != nil {
@@ -113,8 +105,8 @@ func (opt *Options) fromMaps(maps []map[string]string) error {
 	return nil
 }
 
-// allowSetStat 是否允许修改stat组的值。
-func (opt *Options) setValue(key string, val interface{}, allowSetStat bool) error {
+// allowSetStat 是否允许修改readonly组的值。
+func (opt *Options) setValue(key string, val interface{}, allowSetReadonly bool) error {
 	v := reflect.ValueOf(opt)
 	v = v.Elem()
 	t := v.Type()
@@ -122,7 +114,7 @@ func (opt *Options) setValue(key string, val interface{}, allowSetStat bool) err
 		tags := t.Field(i).Tag.Get("options")
 		keys := strings.Split(tags, ",")
 		if keys[1] == key {
-			if keys[0] != "stat" || allowSetStat {
+			if keys[0] != "readonly" || allowSetReadonly {
 				return conv.Value(val, v.Field(i))
 			}
 			return errors.New("该值不能被修改")
@@ -132,9 +124,9 @@ func (opt *Options) setValue(key string, val interface{}, allowSetStat bool) err
 }
 
 // 设置options中的值，顺便更新数据库中的值。
-// allowSetStat 是否允许修改stat组的值。
-func (opt *Options) Set(db *orm.DB, key string, val interface{}, allowSetStat bool) error {
-	if err := opt.setValue(key, val, allowSetStat); err != nil {
+// allowSetStat 是否允许修改readonly组的值。
+func (opt *Options) Set(db *orm.DB, key string, val interface{}, allowSetReadonly bool) error {
+	if err := opt.setValue(key, val, allowSetReadonly); err != nil {
 		return err
 	}
 

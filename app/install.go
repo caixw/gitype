@@ -2,24 +2,44 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package options
+package app
 
 import (
-	"errors"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"reflect"
 	"strings"
 	"time"
 
+	"github.com/caixw/typing/app/static"
+	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/util"
 	"github.com/issue9/conv"
+	"github.com/issue9/logs"
 	"github.com/issue9/orm"
+	"github.com/issue9/web"
 )
 
 // 向数据库写入初始内容。
-func Install(db *orm.DB) error {
-	if db == nil {
-		return errors.New("db==nil")
+func InstallDB() error {
+	cfg, err := loadConfig(configPath)
+	if err != nil {
+		return err
+	}
+
+	db, err := initDB(cfg)
+	if err != nil {
+		return err
+	}
+
+	if err = logs.InitFromXMLFile(logConfigPath); err != nil {
+		return err
+	}
+
+	if err := models.Install(db); err != nil {
+		return err
 	}
 
 	// option
@@ -68,18 +88,11 @@ func fillOptions(db *orm.DB) error {
 		Description: "typing-极简的博客系统",
 		Suffix:      ".html",
 
-		Uptime:               now,
-		LastUpdated:          now,
-		CommentsSize:         0,
-		WaitingCommentsSize:  0,
-		ApprovedCommentsSize: 0,
-		SpamCommentsSize:     0,
-		PostsSize:            0,
-		PublishedPostsSize:   0,
-		DraftPostsSize:       0,
-		LastLogin:            0,
-		LastIP:               "",
-		LastAgent:            "",
+		Uptime:      now,
+		LastUpdated: now,
+		LastLogin:   0,
+		LastIP:      "",
+		LastAgent:   "",
 
 		PageSize:        20,
 		LongDateFormat:  "2006-01-02 15:04:05",
@@ -125,4 +138,47 @@ func fillOptions(db *orm.DB) error {
 		tx.Rollback()
 	}
 	return err
+}
+
+// 用于输出配置文件到指定的位置。
+// 目前包含了日志配置文件和程序本身的配置文件。
+func InstallConfig() error {
+	if err := ioutil.WriteFile(logConfigPath, static.LogConfig, os.ModePerm); err != nil {
+		return err
+	}
+
+	cfg := &Config{
+		Core: &web.Config{
+			HTTPS:      false,
+			CertFile:   "",
+			KeyFile:    "",
+			Port:       "8080",
+			ServerName: "typing",
+			Static: map[string]string{
+				"/admin": "./static/admin/",
+			},
+		},
+
+		DBDSN:    "./output/main.db",
+		DBPrefix: "typing_",
+		DBDriver: "sqlite3",
+
+		FrontAPIPrefix: "/api",
+		AdminAPIPrefix: "/admin/api",
+		ThemeURLPrefix: "/themes",
+		ThemeDir:       "./static/front/themes/",
+		TempDir:        "./output/temp/",
+
+		UploadDir:       "./output/uploads/",
+		UploadDirFormat: "2006/01/",
+		UploadExts:      ".txt;.png;.jpg;.jpeg",
+		UploadSize:      1024 * 1024 * 5,
+		UploadURLPrefix: "/uploads",
+	}
+	data, err := json.MarshalIndent(cfg, "", "    ")
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(configPath, data, os.ModePerm)
 }

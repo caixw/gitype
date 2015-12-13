@@ -2,13 +2,15 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// boot 定义了程序启动过程中需要用到的内容，包括：
+// app 定义了程序的基本内容，包括：
 //  - 加载日志系统;
 //  - 加载配置文件;
 //  - 根据配置文件，初始化相应的数据库实例;
+//  - 从数据库加载配置内容及初始数据；
 //  - 默认的配置文件安装脚本;
 //  - 默认的日志配置文件安装脚本;
-package boot
+//  - 默信的数据库安装脚本;
+package app
 
 import (
 	"errors"
@@ -19,29 +21,41 @@ import (
 	"github.com/issue9/orm/forward"
 )
 
-// 定义两个配置文件的位置。
 const (
+	Version = "0.11.44.151213" // 程序版本号
+
+	// 定义两个配置文件的位置。
 	configPath    = "./config/app.json"
 	logConfigPath = "./config/logs.xml"
 )
 
 // 初始化系统，获取系统配置变量和数据库实例。
-func Init() (*Config, *orm.DB, error) {
+func Init() (*Config, *orm.DB, *Options, *Stat, error) {
 	cfg, err := loadConfig(configPath)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 
 	db, err := initDB(cfg)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 
 	if err = logs.InitFromXMLFile(logConfigPath); err != nil {
-		return nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 
-	return cfg, db, nil
+	opt, err := loadOptions(db)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+
+	stat, err := loadStat(db)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+
+	return cfg, db, opt, stat, nil
 }
 
 // 从一个Config实例中初始一个orm.DB实例。

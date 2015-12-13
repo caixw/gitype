@@ -8,8 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/caixw/typing/boot"
-	"github.com/caixw/typing/options"
+	"github.com/caixw/typing/app"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm"
 	"github.com/issue9/upload"
@@ -17,16 +16,18 @@ import (
 )
 
 var (
-	cfg *boot.Config
-	db  *orm.DB
-	opt *options.Options
-	u   *upload.Upload
+	cfg  *app.Config
+	db   *orm.DB
+	opt  *app.Options
+	stat *app.Stat
+	u    *upload.Upload
 )
 
-func Init(config *boot.Config, database *orm.DB, options *options.Options) error {
+func Init(config *app.Config, database *orm.DB, options *app.Options, s *app.Stat) error {
 	cfg = config
 	opt = options
 	db = database
+	stat = s
 
 	// 上传相关配置
 	var err error
@@ -54,7 +55,7 @@ func initRoute() error {
 	p.PostFunc("/login", adminPostLogin).
 		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
 		Put("/password", loginHandlerFunc(adminChangePassword)).
-		Get("/stat", loginHandlerFunc(adminGetStat)).
+		Get("/state", loginHandlerFunc(adminGetState)).
 		Put("/sitemap", loginHandlerFunc(adminPutSitemap)).
 		Post("/media", loginHandlerFunc(adminPostMedia)).
 		Get("/media", loginHandlerFunc(adminGetMedia))

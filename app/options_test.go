@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package options
+package app
 
 import (
 	"testing"
@@ -41,10 +41,10 @@ func TestOptions_setValue(t *testing.T) {
 	a.NotError(opt.setValue("pageSize", "45", false))
 	a.Equal(opt.PageSize, 45)
 
-	a.NotError(opt.setValue("commentsSize", "20", true))
-	a.Equal(opt.CommentsSize, 20)
+	a.NotError(opt.setValue("lastUpdated", "20", true))
+	a.Equal(opt.LastUpdated, 20)
 
-	a.Error(opt.setValue("commentsSize", "25", false))
+	a.Error(opt.setValue("lastUpdated", "25", false))
 }
 
 func TestOptions_Get(t *testing.T) {

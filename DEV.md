@@ -8,17 +8,17 @@ typing的配置文件仅提供了一些基本配置，若要达到完全的自�
 
 ##### 修改URL结构
 
-所有URL结构的调整，都可以通过修改core/url.go中的相关函数完成。
+所有URL结构的调整，都可以通过修改app/url.go中的相关函数完成。
 
 
 ##### 修改密码加密算法
 
-密码加密算法默认为md5，可通过修改core.HashPassword。
+密码加密算法默认为md5，可通过修改util包的HashPassword函数更改加密算法。
 
 
 ##### 修改配置文件路径
 
-配置文件路径包括app.json和logs.xml两个文件，分别对应boot包的LogConfigPath和ConfigPath两个常量。
+配置文件路径包括app.json和logs.xml两个文件，分别对应app包的logConfigPath和configPath两个常量。
 
 
 ##### 禁用feed相关内容
@@ -39,9 +39,9 @@ static/front/themes下对应的是前台的各个主题。
 
 ##### 默认的安装数据
 
-配置文件在boot/install.go中；
-数据库定义及大部分的默认数据models/install.go中；
-配置项在options/install.go中。
+配置文件在app/install.go中；
+配置项在app/install.go中；
+数据库定义及大部分的默认数据models/install.go中。
 
 
 
@@ -50,9 +50,7 @@ static/front/themes下对应的是前台的各个主题。
 ```
 |--- admin 后台的逻辑处理代码
 |
-|--- boot 处理启动时需要初始化的内容
-|
-|--- options 与数据库加载的配置内容的相关功能
+|--- app 声明程序的基本功能，包括安装脚本，及启动时的一些基本功能加载。
 |
 |--- models 模块定义文件
 |

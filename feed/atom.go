@@ -8,8 +8,8 @@ import (
 	"bytes"
 	"time"
 
+	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/models"
-	"github.com/caixw/typing/options"
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
@@ -59,7 +59,7 @@ func BuildAtom() error {
 	return err
 }
 
-func addPostsToAtom(buf *bytes.Buffer, db *orm.DB, opt *options.Options) error {
+func addPostsToAtom(buf *bytes.Buffer, db *orm.DB, opt *app.Options) error {
 	sql := `SELECT {id} AS ID, {name} AS Name, {title} AS Title, {summary} AS Summary,
 		{content} AS Content, {created} AS Created, {modified} AS Modified
 		FROM #posts WHERE {state}=? LIMIT ?`
