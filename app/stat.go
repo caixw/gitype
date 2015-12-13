@@ -25,47 +25,73 @@ type Stat struct {
 // 从数据库初始化数据
 func loadStat(db *orm.DB) (*Stat, error) {
 	stat := &Stat{}
-	var err error
 
+	if err := stat.ReBuild(db); err != nil {
+		return nil, err
+	}
+
+	return stat, nil
+}
+
+// 重新构建数据
+func (s *Stat) ReBuild(db *orm.DB) error {
 	/* 统计评论数量 */
-	o := &models.Comment{State: models.CommentStateSpam}
-	stat.SpamCommentsSize, err = db.Count(o)
-	if err != nil {
-		return nil, err
+	if err := s.UpdateCommentsSize(db); err != nil {
+		return err
 	}
-
-	o.State = models.CommentStateWaiting
-	stat.WaitingCommentsSize, err = db.Count(o)
-	if err != nil {
-		return nil, err
-	}
-
-	o.State = models.CommentStateApproved
-	stat.ApprovedCommentsSize, err = db.Count(o)
-	if err != nil {
-		return nil, err
-	}
-
-	stat.CommentsSize = stat.SpamCommentsSize + stat.WaitingCommentsSize + stat.ApprovedCommentsSize
 
 	/* 统计文章数量 */
+	if err := s.UpdatePostsSize(db); err != nil {
+		return err
+	}
+
+	// posts
+	s.Posts = make(map[int64]int, s.PostsSize)
+	s.Tags = make(map[int64]int, 100)
+
+	return nil
+}
+
+//更新文章评论数量
+func (s *Stat) UpdatePostsSize(db *orm.DB) (err error) {
 	p := &models.Post{State: models.PostStateDraft}
-	stat.DraftPostsSize, err = db.Count(p)
+	s.DraftPostsSize, err = db.Count(p)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	p.State = models.PostStatePublished
-	stat.PublishedPostsSize, err = db.Count(p)
+	s.PublishedPostsSize, err = db.Count(p)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	stat.PostsSize = stat.PublishedPostsSize + stat.DraftPostsSize
+	s.PostsSize = s.PublishedPostsSize + s.DraftPostsSize
 
-	// posts
-	stat.Posts = make(map[int64]int, stat.PostsSize)
-	stat.Tags = make(map[int64]int, 100)
+	return nil
+}
 
-	return stat, nil
+// 更新评论数据
+func (s *Stat) UpdateCommentsSize(db *orm.DB) (err error) {
+	o := &models.Comment{State: models.CommentStateSpam}
+	s.SpamCommentsSize, err = db.Count(o)
+	if err != nil {
+		return err
+	}
+
+	o.State = models.CommentStateWaiting
+	s.WaitingCommentsSize, err = db.Count(o)
+	if err != nil {
+		return err
+	}
+
+	o.State = models.CommentStateApproved
+	s.ApprovedCommentsSize, err = db.Count(o)
+	if err != nil {
+		return err
+	}
+
+	s.CommentsSize = s.SpamCommentsSize + s.WaitingCommentsSize + s.ApprovedCommentsSize
+
+	return nil
 }

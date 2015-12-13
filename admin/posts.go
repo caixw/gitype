@@ -5,9 +5,7 @@
 package admin
 
 import (
-	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/caixw/typing/models"
@@ -59,7 +57,7 @@ func adminSetPostState(w http.ResponseWriter, r *http.Request, state int) {
 		return
 	}
 
-	if err := updatePostsSize(); err != nil {
+	if err := stat.UpdatePostsSize(db); err != nil {
 		logs.Error("admin.adminSetPostState:", err)
 	}
 
@@ -81,44 +79,6 @@ func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
 		"published": stat.PublishedPostsSize,
 	}
 	util.RenderJSON(w, http.StatusOK, data, nil)
-}
-
-// 更新各状态下的文章数量
-func updatePostsSize() error {
-	sql := "SELECT {state}, count(*) AS cnt FROM #posts GROUP BY {state}"
-	rows, err := db.Query(true, sql)
-	if err != nil {
-		return err
-	}
-	maps, err := fetch.MapString(false, rows)
-	rows.Close()
-	if err != nil {
-		return err
-	}
-
-	count := 0
-	for _, v := range maps {
-		state, err := strconv.Atoi(v["state"])
-		if err != nil {
-			return err
-		}
-		cnt, err := strconv.Atoi(v["cnt"])
-		if err != nil {
-			return err
-		}
-		count += cnt
-		switch state {
-		case models.PostStateDraft:
-			stat.DraftPostsSize = cnt
-		case models.PostStatePublished:
-			stat.PublishedPostsSize = cnt
-		default:
-			return fmt.Errorf("updatePostsSize: 未知的文章状态:[%v]", state)
-		}
-	} // end for
-	stat.PostsSize = count
-
-	return nil
 }
 
 // @api post /admin/api/posts 新建文章
@@ -325,7 +285,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := updatePostsSize(); err != nil {
+	if err := stat.UpdatePostsSize(db); err != nil {
 		logs.Error("admin.adminPutPost:", err)
 	}
 	lastUpdated()
@@ -387,7 +347,7 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := updatePostsSize(); err != nil {
+	if err := stat.UpdatePostsSize(db); err != nil {
 		logs.Error("admin.adminDeletePost:", err)
 	}
 

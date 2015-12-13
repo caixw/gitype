@@ -38,6 +38,7 @@ logs.xml为日志的配置文件，可以定义日志的输入形式和输出日
 具体配置可参考[logs](https://github.com/issue9/logs)的相关文档。
 文件位于程序当前目录的config子目录下。
 
+
 #### app.json
 app.json位于程序当前目录的config子目录下，包含了以下可配置字段，修改后需要重启程序才能启作用。
 
@@ -74,7 +75,6 @@ bug可在[此处](https://github.com/caixw/typing/issues)提交或是直接PR。
 - jquery: http://jquery.com
 - semantic-ui: http://semantic-ui.com/
 - code-prettify: https://github.com/google/code-prettify
-
 
 
 

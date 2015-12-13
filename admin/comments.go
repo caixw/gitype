@@ -5,15 +5,12 @@
 package admin
 
 import (
-	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
-	"github.com/issue9/orm/fetch"
 )
 
 // @api delete /admin/api/comments/{id} 删除某条评论
@@ -34,7 +31,7 @@ func adminDeleteComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := updateCommentsSize(); err != nil {
+	if err := stat.UpdateCommentsSize(db); err != nil {
 		logs.Error("admin.adminDeleteComment:", err)
 	}
 
@@ -104,47 +101,6 @@ func adminGetCommentsCount(w http.ResponseWriter, r *http.Request) {
 	util.RenderJSON(w, http.StatusOK, data, nil)
 }
 
-// 更新评论的各类数据
-func updateCommentsSize() error {
-	sql := "SELECT {state}, count(*) AS cnt FROM #comments GROUP BY {state}"
-	rows, err := db.Query(true, sql)
-	if err != nil {
-		return err
-	}
-	maps, err := fetch.MapString(false, rows)
-	rows.Close()
-	if err != nil {
-		return err
-	}
-
-	count := 0
-	for _, v := range maps {
-		state, err := strconv.Atoi(v["state"])
-		if err != nil {
-			return err
-		}
-		cnt, err := strconv.Atoi(v["cnt"])
-		if err != nil {
-			return err
-		}
-
-		count += cnt
-		switch state {
-		case models.CommentStateApproved:
-			stat.ApprovedCommentsSize = cnt
-		case models.CommentStateSpam:
-			stat.SpamCommentsSize = cnt
-		case models.CommentStateWaiting:
-			stat.WaitingCommentsSize = cnt
-		default:
-			return fmt.Errorf("updateCommentsSize:未知的评论状态:[%v]", state)
-		}
-	}
-	stat.CommentsSize = count
-
-	return nil
-}
-
 // @api put /admin/api/comments/{id} 修改评论，只能修改管理员发布的评论
 // @apiParam id int 需要修改的评论id
 // @apiGroup admin
@@ -189,7 +145,7 @@ func adminPutComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := updateCommentsSize(); err != nil {
+	if err := stat.UpdateCommentsSize(db); err != nil {
 		logs.Error("admin.adminPutComment:", err)
 	}
 
@@ -234,7 +190,7 @@ func setCommentState(w http.ResponseWriter, r *http.Request, state int) {
 		return
 	}
 
-	if err := updateCommentsSize(); err != nil {
+	if err := stat.UpdateCommentsSize(db); err != nil {
 		logs.Error("admin.setCommentState:", err)
 	}
 
@@ -281,7 +237,7 @@ func adminPostComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := updateCommentsSize(); err != nil {
+	if err := stat.UpdateCommentsSize(db); err != nil {
 		logs.Error("admin.adminPostComment:", err)
 	}
 

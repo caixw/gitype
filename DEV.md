@@ -26,9 +26,9 @@ typing的配置文件仅提供了一些基本配置，若要达到完全的自�
 在main.go中删除与feed包相关的代码即可。
 
 
-##### 修正atom, sitemap, rss等文件名称
+##### 修正atom, sitemap, rss等地址名称
 
-修正feed包中的相关常量名称。
+修正feed包中的相关地址名称。
 
 
 ##### 自定义模板
