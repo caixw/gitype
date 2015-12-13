@@ -2,8 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// options包用于处理options数据表的相关功能。
-package options
+package app
 
 import (
 	"errors"
@@ -70,7 +69,7 @@ type Options struct {
 }
 
 // 初始化core包。返回程序必要的变量。
-func Init(db *orm.DB) (*Options, error) {
+func loadOptions(db *orm.DB) (*Options, error) {
 	sql := "SELECT * FROM #options"
 	rows, err := db.Query(true, sql)
 	if err != nil {

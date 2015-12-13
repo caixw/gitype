@@ -14,14 +14,13 @@ import (
 	"strconv"
 
 	"github.com/caixw/typing/app"
-	"github.com/caixw/typing/options"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm"
 )
 
 var (
 	cfg *app.Config
-	opt *options.Options
+	opt *app.Options
 	db  *orm.DB
 
 	tpl       *template.Template // 当前使用的模板
@@ -47,7 +46,7 @@ type Author struct {
 
 // 从主题根目录加载所有的主题内容，并初始所有的主题下静态文件的路由。
 // defaultTheme 为默认的主题。
-func Init(c *app.Config, database *orm.DB, options *options.Options) error {
+func Init(c *app.Config, database *orm.DB, options *app.Options) error {
 	cfg = c
 	opt = options
 	db = database

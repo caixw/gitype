@@ -28,22 +28,27 @@ const (
 )
 
 // 初始化系统，获取系统配置变量和数据库实例。
-func Init() (*Config, *orm.DB, error) {
+func Init() (*Config, *orm.DB, *Options, error) {
 	cfg, err := loadConfig(configPath)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	db, err := initDB(cfg)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	if err = logs.InitFromXMLFile(logConfigPath); err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
-	return cfg, db, nil
+	opt, err := loadOptions(db)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return cfg, db, opt, nil
 }
 
 // 从一个Config实例中初始一个orm.DB实例。

@@ -8,8 +8,8 @@ import (
 	"bytes"
 	"net/http"
 
+	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/feed/static"
-	"github.com/caixw/typing/options"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm"
 	"github.com/issue9/web"
@@ -17,7 +17,7 @@ import (
 
 var (
 	db  *orm.DB
-	opt *options.Options
+	opt *app.Options
 
 	sitemap = new(bytes.Buffer)
 	rss     = new(bytes.Buffer)
@@ -25,7 +25,7 @@ var (
 )
 
 // 初始化sitemap包，path为sitemap.xml文件的保存路径
-func Init(database *orm.DB, options *options.Options) error {
+func Init(database *orm.DB, options *app.Options) error {
 	db = database
 	opt = options
 

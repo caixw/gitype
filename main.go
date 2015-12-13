@@ -10,8 +10,6 @@ import (
 	"github.com/caixw/typing/admin"
 	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/feed"
-	"github.com/caixw/typing/models"
-	"github.com/caixw/typing/options"
 	"github.com/caixw/typing/themes"
 	"github.com/issue9/logs"
 	"github.com/issue9/web"
@@ -27,13 +25,7 @@ func main() {
 	}
 
 	// app
-	cfg, db, err := app.Init()
-	if err != nil {
-		panic(err)
-	}
-
-	// options
-	opt, err := options.Init(db)
+	cfg, db, opt, err := app.Init()
 	if err != nil {
 		panic(err)
 	}
@@ -69,22 +61,13 @@ func install() bool {
 
 	switch *action {
 	case "config":
-		if err := app.Install(); err != nil {
+		if err := app.InstallConfig(); err != nil {
 			panic(err)
 		}
 
 		return true
 	case "db":
-		_, db, err := app.Init()
-		if err != nil {
-			panic(err)
-		}
-
-		if err := models.Install(db); err != nil {
-			panic(err)
-		}
-
-		if err := options.Install(db); err != nil {
+		if err := app.InstallDB(); err != nil {
 			panic(err)
 		}
 
