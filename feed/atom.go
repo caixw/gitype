@@ -24,40 +24,42 @@ const (
 
 // Build 构建一个atom.xml文件到atomPath文件中，若该文件已经存在，则覆盖。
 func BuildAtom() error {
-	if _, err := atomW.WriteString(atomHeader); err != nil {
+	buf := new(bytes.Buffer)
+	if _, err := buf.WriteString(atomHeader); err != nil {
 		return err
 	}
 
-	atomW.WriteString("<id>")
-	atomW.WriteString(opt.SiteURL)
-	atomW.WriteString("</id>\n")
+	buf.WriteString("<id>")
+	buf.WriteString(opt.SiteURL)
+	buf.WriteString("</id>\n")
 
-	atomW.WriteString("<link>")
-	atomW.WriteString(opt.SiteURL)
-	atomW.WriteString("</link>\n")
+	buf.WriteString("<link>")
+	buf.WriteString(opt.SiteURL)
+	buf.WriteString("</link>\n")
 
-	atomW.WriteString("<title>")
-	atomW.WriteString(opt.SiteName)
-	atomW.WriteString("</title>\n")
+	buf.WriteString("<title>")
+	buf.WriteString(opt.SiteName)
+	buf.WriteString("</title>\n")
 
-	atomW.WriteString("<subtitle>")
-	atomW.WriteString(opt.SecondTitle)
-	atomW.WriteString("</subtitle>\n")
+	buf.WriteString("<subtitle>")
+	buf.WriteString(opt.SecondTitle)
+	buf.WriteString("</subtitle>\n")
 
-	atomW.WriteString("<update>")
-	atomW.WriteString(time.Now().Format("2006-01-02T15:04:05Z08:00"))
-	atomW.WriteString("</update>\n")
+	buf.WriteString("<update>")
+	buf.WriteString(time.Now().Format("2006-01-02T15:04:05Z08:00"))
+	buf.WriteString("</update>\n")
 
-	if err := addPostsToRss(atomW, db, opt); err != nil {
+	if err := addPostsToRss(buf, db, opt); err != nil {
 		return err
 	}
 
-	if _, err := atomW.WriteString(atomFooter); err != nil {
+	if _, err := buf.WriteString(atomFooter); err != nil {
 		return err
 	}
 
-	atomR, atomW = atomW, atomR
-	atomW.Reset()
+	atomMutex.Lock()
+	atom = buf
+	atomMutex.Unlock()
 	return nil
 }
 

@@ -26,24 +26,26 @@ const (
 
 // Build 构建一个sitemap.xml文件到sitemapPath文件中，若该文件已经存在，则覆盖。
 func BuildSitemap() error {
-	if _, err := sitemapW.WriteString(sitemapHeader); err != nil {
+	buf := new(bytes.Buffer)
+	if _, err := buf.WriteString(sitemapHeader); err != nil {
 		return err
 	}
 
-	if err := addPostsToSitemap(sitemapW, db, opt); err != nil {
+	if err := addPostsToSitemap(buf, db, opt); err != nil {
 		return err
 	}
 
-	if err := addTagsToSitemap(sitemapW, db, opt); err != nil {
+	if err := addTagsToSitemap(buf, db, opt); err != nil {
 		return err
 	}
 
-	if _, err := sitemapW.WriteString(sitemapFooter); err != nil {
+	if _, err := buf.WriteString(sitemapFooter); err != nil {
 		return err
 	}
 
-	sitemapR, sitemapW = sitemapW, sitemapR
-	sitemapW.Reset()
+	sitemapMutex.Lock()
+	sitemap = buf
+	sitemapMutex.Unlock()
 	return nil
 }
 
