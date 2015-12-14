@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
+// util包用到了logs的相关内容，所以在调用util包之前，
+// 请确保已经正常初始化logs包的内容。
 package util
 
 import (

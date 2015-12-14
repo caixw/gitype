@@ -29,6 +29,16 @@ func Init(database *orm.DB, options *app.Options) error {
 	db = database
 	opt = options
 
+	if err := BuildRss(); err != nil {
+		return err
+	}
+	if err := BuildAtom(); err != nil {
+		return err
+	}
+	if err := BuildSitemap(); err != nil {
+		return err
+	}
+
 	return initRoute()
 }
 
@@ -46,6 +56,7 @@ func initRoute() error {
 		}
 	})
 
+	// NOTE:若修改此路由，请同时修改sitemap.xml中的相对应的.xsl路径
 	m.GetFunc("/sitemap.xsl", func(w http.ResponseWriter, r *http.Request) {
 		if _, err := w.Write(static.Sitemap); err != nil {
 			logs.Error("feed.initRoute.route-/sitemap.xsl:", err)
