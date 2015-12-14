@@ -10,7 +10,7 @@ import (
 	"github.com/caixw/typing/admin"
 	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/feed"
-	"github.com/caixw/typing/themes"
+	"github.com/caixw/typing/front"
 	"github.com/issue9/logs"
 	"github.com/issue9/web"
 
@@ -31,7 +31,7 @@ func main() {
 	}
 
 	// themes
-	if err = themes.Init(cfg, db, opt, stat); err != nil {
+	if err = front.Init(cfg, db, opt, stat); err != nil {
 		panic(err)
 	}
 

@@ -7,7 +7,7 @@ package admin
 import (
 	"net/http"
 
-	"github.com/caixw/typing/themes"
+	"github.com/caixw/typing/front"
 	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
 )
@@ -21,7 +21,7 @@ import (
 // @apiSuccess 200 OK
 // @apiParam themes array 所有主题列表
 func adminGetThemes(w http.ResponseWriter, r *http.Request) {
-	util.RenderJSON(w, http.StatusOK, map[string]interface{}{"themes": themes.Themes()}, nil)
+	util.RenderJSON(w, http.StatusOK, map[string]interface{}{"themes": front.Themes()}, nil)
 }
 
 // @api get /admin/api/themes/current 获取当前的主题信息。
@@ -63,7 +63,7 @@ func adminPutCurrentTheme(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := themes.Switch(v.Value); err != nil {
+	if err := front.Switch(v.Value); err != nil {
 		logs.Error("adminPutTheme:", err)
 		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return

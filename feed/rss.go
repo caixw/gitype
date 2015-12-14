@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/caixw/typing/app"
+	"github.com/caixw/typing/front"
 	"github.com/caixw/typing/models"
-	"github.com/caixw/typing/themes"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
 )
@@ -55,7 +55,7 @@ func addPostsToRss(buf *bytes.Buffer, db *orm.DB, opt *app.Options) error {
 	}
 	defer rows.Close()
 
-	posts := make([]*themes.Post, 0, 100)
+	posts := make([]*front.Post, 0, 100)
 	if _, err := fetch.Obj(&posts, rows); err != nil {
 		return err
 	}

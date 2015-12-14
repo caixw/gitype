@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package themes
+package front
 
 import (
 	"encoding/json"
@@ -13,20 +13,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/caixw/typing/app"
 	"github.com/issue9/logs"
-	"github.com/issue9/orm"
-)
-
-var (
-	cfg  *app.Config
-	opt  *app.Options
-	stat *app.Stat
-	db   *orm.DB
-
-	tpl       *template.Template // 当前使用的模板
-	themesMap map[string]*Theme  // 所有的主题列表
-	current   string             // 当前使用的主题
 )
 
 // Theme 用于描述主题的相关信息，一般从主题目录下的theme.json获取。
@@ -43,25 +30,6 @@ type Author struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	URL   string `json:"url"`
-}
-
-// 从主题根目录加载所有的主题内容，并初始所有的主题下静态文件的路由。
-// defaultTheme 为默认的主题。
-func Init(c *app.Config, database *orm.DB, options *app.Options, s *app.Stat) error {
-	cfg = c
-	opt = options
-	db = database
-	stat = s
-
-	if err := loadThemes(); err != nil {
-		return err
-	}
-
-	if err := Switch(opt.Theme); err != nil {
-		return err
-	}
-
-	return initRoute()
 }
 
 func loadThemes() error {
