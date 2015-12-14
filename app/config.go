@@ -19,10 +19,8 @@ import (
 // Config 表示程序级别的配置，修改这些配置需要重启程序才能启作用，
 // 比如数据库初始化信息，路由项设置等。
 type Config struct {
-	Core *web.Config `json:"core"`
-
-	Debug   bool   `json:"debug"`   // 是否处于调试模式
-	TempDir string `json:"tempDir"` // 临时文件所在的目录，该目录下的文件被删除不会影响程序整体运行。TODO 不在需要，删除
+	Core  *web.Config `json:"core"`
+	Debug bool        `json:"debug"` // 是否处于调试模式
 
 	// 数据库相关配置
 	DBDSN    string `json:"dbDSN"`    // 数据库dsn
@@ -124,11 +122,6 @@ func loadConfig(path string) (*Config, error) {
 		return nil, errors.New("uploadExts包含非法的字符")
 	}
 	if err = checkConfigURL(cfg.UploadURLPrefix, "uploadURLPrefix"); err != nil {
-		return nil, err
-	}
-
-	// temp
-	if err = checkConfigDir(cfg.TempDir, "tempDir"); err != nil {
 		return nil, err
 	}
 

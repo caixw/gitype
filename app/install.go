@@ -167,7 +167,6 @@ func InstallConfig() error {
 		AdminAPIPrefix: "/admin/api",
 		ThemeURLPrefix: "/themes",
 		ThemeDir:       "./static/front/themes/",
-		TempDir:        "./output/temp/",
 
 		UploadDir:       "./output/uploads/",
 		UploadDirFormat: "2006/01/",

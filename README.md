@@ -34,12 +34,14 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=master)](h
 
 
 #### logs.xml
+
 logs.xml为日志的配置文件，可以定义日志的输入形式和输出日的地，
 具体配置可参考[logs](https://github.com/issue9/logs)的相关文档。
 文件位于程序当前目录的config子目录下。
 
 
 #### app.json
+
 app.json位于程序当前目录的config子目录下，包含了以下可配置字段，修改后需要重启程序才能启作用。
 
 名称  | 描述
@@ -52,7 +54,6 @@ frontAPIPrefix | 前端api地址前缀
 adminAPIPrefix | 后台api地址前经
 themeURLPrefix | 各主题公开文件的根URL
 themeDir | 主题文件所在的目录
-tempDir | 临时目录 **暂时未用上**
 uploadDir | 上传文件所在的目录
 uploadDirFormat | 上传文件子目录格式，以时间为格式，可以是2006/01/02/或是2006/01/等，根据自已需求使用。
 uploadSize | 上传文件的最大尺寸
@@ -72,6 +73,7 @@ bug可在[此处](https://github.com/caixw/typing/issues)提交或是直接PR。
 
 
 #### 用到的第三方库
+
 - jquery: http://jquery.com
 - semantic-ui: http://semantic-ui.com/
 - code-prettify: https://github.com/google/code-prettify
