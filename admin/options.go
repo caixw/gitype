@@ -10,6 +10,7 @@ import (
 	"github.com/caixw/typing/feed"
 	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
+	"github.com/issue9/web"
 )
 
 // @api patch /admin/api/options/{key} 修改设置项的值
@@ -52,6 +53,7 @@ func adminPatchOption(w http.ResponseWriter, r *http.Request) {
 
 // @api get /admin/api/options/{key} 获取设置项的值，不能获取password字段。
 // @apiParam key string 名称
+//
 // @apiRequest json
 // @apiHeader Authorization xxx
 //
@@ -66,7 +68,7 @@ func adminGetOption(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if key == "password" {
-		util.RenderJSON(w, http.StatusBadRequest, nil, nil)
+		util.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
@@ -81,6 +83,9 @@ func adminGetOption(w http.ResponseWriter, r *http.Request) {
 
 // @api put /admin/api/sitemap 重新生成sitemap
 // @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
 //
 // @apiSuccess 200 Ok
 func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
@@ -97,6 +102,9 @@ func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
 
 // @api get /admin/api/state 获取当前网站的些基本状态
 // @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
 //
 // @apiSuccess 200 OK
 // @apiParam posts            int 文章的数量
@@ -126,4 +134,70 @@ func adminGetState(w http.ResponseWriter, r *http.Request) {
 	}
 
 	util.RenderJSON(w, http.StatusOK, data, nil)
+}
+
+// @api get /admin/api/modules 获取的模块列表
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+//
+// @apiSuccess 200 OK
+// @apiParam modules array 模块列表的数组
+func adminGetModules(w http.ResponseWriter, r *http.Request) {
+	modules := web.Modules()
+	util.RenderJSON(w, http.StatusOK, map[string]interface{}{"modules": modules}, nil)
+}
+
+// @api put /admin/api/modules/{name}/start 启动一个模块
+// @apiParam name string 模块名称
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+//
+// @apiSuccess 204 OK
+func adminPutModuleStart(w http.ResponseWriter, r *http.Request) {
+	m := getModule(w, r)
+	if m == nil {
+		return
+	}
+
+	m.Start()
+	util.RenderJSON(w, http.StatusNoContent, nil, nil)
+}
+
+// @api put /admin/api/modules/{name}/stop 停止一个模块
+// @apiParam name string 模块名称
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+//
+// @apiSuccess 204 OK
+func adminPutModuleStop(w http.ResponseWriter, r *http.Request) {
+	m := getModule(w, r)
+	if m == nil {
+		return
+	}
+
+	m.Stop()
+	util.RenderJSON(w, http.StatusNoContent, nil, nil)
+}
+
+func getModule(w http.ResponseWriter, r *http.Request) *web.Module {
+	name, ok := util.ParamString(w, r, "name")
+
+	if !ok {
+		util.RenderJSON(w, http.StatusNotFound, nil, nil)
+		return nil
+	}
+
+	m := web.GetModule(name)
+	if m == nil {
+		util.RenderJSON(w, http.StatusNotFound, nil, nil)
+		return nil
+	}
+
+	return m
 }

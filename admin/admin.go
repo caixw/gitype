@@ -39,6 +39,7 @@ func Init(config *app.Config, database *orm.DB, options *app.Options, s *app.Sta
 	return initRoute()
 }
 
+// 更新数据库中的lastUpdated变量
 func lastUpdated() {
 	if err := opt.Set(db, "lastUpdated", time.Now().Unix(), true); err != nil {
 		logs.Error("admin.lastUpdated:", err)
@@ -46,7 +47,7 @@ func lastUpdated() {
 }
 
 func initRoute() error {
-	m, err := web.NewModule("admin")
+	m, err := web.NewModule("adminAPI")
 	if err != nil {
 		return err
 	}
@@ -57,7 +58,12 @@ func initRoute() error {
 		Put("/password", loginHandlerFunc(adminChangePassword)).
 		Get("/state", loginHandlerFunc(adminGetState)).
 		Put("/sitemap", loginHandlerFunc(adminPutSitemap)).
-		Post("/media", loginHandlerFunc(adminPostMedia)).
+		Get("/modules", loginHandlerFunc(adminGetModules)).
+		Put("/modules/{name}/start", loginHandlerFunc(adminPutModuleStart)).
+		Put("/modules/{name}/stop", loginHandlerFunc(adminPutModuleStop))
+
+	// meida
+	p.Post("/media", loginHandlerFunc(adminPostMedia)).
 		Get("/media", loginHandlerFunc(adminGetMedia))
 
 	// themes
