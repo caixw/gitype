@@ -7,6 +7,7 @@ package app
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -44,6 +45,32 @@ type Config struct {
 	UploadURLPrefix string `json:"uploadURLPrefix"` // 上传文件的地址前缀
 }
 
+// 检测配置项的URL，是否符合要求。
+func checkConfigURL(url, field string) error {
+	if len(url) == 0 {
+		return fmt.Errorf("字段[%v]不能为空", field)
+	}
+
+	if strings.HasSuffix(url, "/") {
+		return fmt.Errorf("字段[%v]不能以/符号结尾", field)
+	}
+
+	return nil
+}
+
+// 检测配置项的路径值，是否符合要求。
+func checkConfigDir(dir, field string) error {
+	if len(dir) == 0 {
+		return fmt.Errorf("字段[%v]不能为空", field)
+	}
+
+	if !strings.HasSuffix(dir, "/") && !strings.HasSuffix(dir, string(os.PathSeparator)) {
+		return fmt.Errorf("字段[%v]只能以路径分隔符(/或\\)作结尾", field)
+	}
+
+	return nil
+}
+
 // 加载path的内容，并尝试将其转换成Config实例。
 func loadConfig(path string) (*Config, error) {
 	data, err := ioutil.ReadFile(path)
@@ -57,43 +84,22 @@ func loadConfig(path string) (*Config, error) {
 		return nil, err
 	}
 
-	// 检测AdminAPIPrefix是否符合要求
-	if len(cfg.AdminAPIPrefix) == 0 {
-		return nil, errors.New("必须指定adminApiPrefix值")
+	if err = checkConfigURL(cfg.AdminAPIPrefix, "adminAPIPrefix"); err != nil {
+		return nil, err
 	}
-	if strings.HasSuffix(cfg.AdminAPIPrefix, "/") {
-		return nil, errors.New("adminAPIPrefix不能以/符号结尾")
-	}
-
-	// 检测FrontAPIPrefix是否符合要求
-	if len(cfg.FrontAPIPrefix) == 0 {
-		return nil, errors.New("必须指定frontApiPrefix值")
-	}
-	if strings.HasSuffix(cfg.FrontAPIPrefix, "/") {
-		return nil, errors.New("frontAPIPrefix不能以/符号结尾")
+	if err = checkConfigURL(cfg.FrontAPIPrefix, "frontApiPrefix"); err != nil {
+		return nil, err
 	}
 
-	// 检测ThemeURLPrefix是否符合要求
-	if len(cfg.ThemeURLPrefix) == 0 {
-		return nil, errors.New("必须指定themeURLPrefix值")
+	// theme
+	if err = checkConfigURL(cfg.ThemeURLPrefix, "themeURLPrefix"); err != nil {
+		return nil, err
 	}
-	if strings.HasSuffix(cfg.ThemeURLPrefix, "/") {
-		return nil, errors.New("themeURLPrefix不能以/符号结尾")
-	}
-
-	if len(cfg.ThemeDir) == 0 {
-		return nil, errors.New("themeDir未指定")
-	}
-	if !strings.HasSuffix(cfg.ThemeDir, "/") && !strings.HasSuffix(cfg.ThemeDir, string(os.PathSeparator)) {
-		return nil, errors.New("themeDir只能以/结尾")
+	if err = checkConfigDir(cfg.ThemeDir, "themeDir"); err != nil {
+		return nil, err
 	}
 
-	if len(cfg.TempDir) == 0 {
-		return nil, errors.New("tempDir未指定")
-	}
-	if !strings.HasSuffix(cfg.TempDir, "/") && !strings.HasSuffix(cfg.TempDir, string(os.PathSeparator)) {
-		return nil, errors.New("tempDir只能以/结尾")
-	}
+	// DB
 	if len(cfg.DBDSN) == 0 {
 		return nil, errors.New("app.json中未指定dbDSN")
 	}
@@ -102,8 +108,8 @@ func loadConfig(path string) (*Config, error) {
 	}
 
 	// upload
-	if len(cfg.UploadDir) == 0 {
-		return nil, errors.New("uploadDir未指定")
+	if err = checkConfigDir(cfg.UploadDir, "uploadDir"); err != nil {
+		return nil, err
 	}
 	if len(cfg.UploadDirFormat) == 0 {
 		cfg.UploadDirFormat = "2006/01/02/"
@@ -111,20 +117,19 @@ func loadConfig(path string) (*Config, error) {
 	if strings.Index(cfg.UploadDirFormat, "..") >= 0 {
 		return nil, errors.New("uploadDirFormat不能包含..字符")
 	}
-	if !strings.HasSuffix(cfg.UploadDir, "/") && !strings.HasSuffix(cfg.UploadDir, string(os.PathSeparator)) {
-		return nil, errors.New("uploadDir只能以/结尾")
-	}
 	if cfg.UploadSize < 0 {
 		return nil, errors.New("uploadSize必须大于等于0")
 	}
 	if strings.IndexByte(cfg.UploadExts, '/') >= 0 || strings.IndexByte(cfg.UploadExts, os.PathSeparator) >= 0 {
 		return nil, errors.New("uploadExts包含非法的字符")
 	}
-	if len(cfg.UploadURLPrefix) == 0 {
-		return nil, errors.New("必须指定uploadURLPrefix值")
+	if err = checkConfigURL(cfg.UploadURLPrefix, "uploadURLPrefix"); err != nil {
+		return nil, err
 	}
-	if strings.HasSuffix(cfg.UploadURLPrefix, "/") {
-		return nil, errors.New("uploadURLPrefix不能以/符号结尾")
+
+	// temp
+	if err = checkConfigDir(cfg.TempDir, "tempDir"); err != nil {
+		return nil, err
 	}
 
 	if cfg.Debug { // 调试状态，输出详细信息

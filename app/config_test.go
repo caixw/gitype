@@ -5,10 +5,31 @@
 package app
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/issue9/assert"
 )
+
+func TestCheckConfigDir(t *testing.T) {
+	a := assert.New(t)
+
+	a.Error(checkConfigDir("", "uploadDir"))
+	a.Error(checkConfigDir("/abc", "uploadDir"))
+	a.NotError(checkConfigDir("/abc/", "uploadDir"))
+
+	if runtime.GOOS == "windows" {
+		a.NotError(checkConfigDir("/abc\\", "uploadDir"))
+	}
+}
+
+func TestCheckConfigURL(t *testing.T) {
+	a := assert.New(t)
+
+	a.Error(checkConfigURL("", "uploadURL"))
+	a.Error(checkConfigURL("/abc/", "uploadURL"))
+	a.NotError(checkConfigURL("/abc", "uploadURL"))
+}
 
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
