@@ -26,18 +26,21 @@ const (
 
 // Build 构建一个rss.xml文件到rssPath文件中，若该文件已经存在，则覆盖。
 func BuildRss() error {
-	rss.Reset()
-
-	if _, err := rss.WriteString(rssHeader); err != nil {
+	if _, err := rssW.WriteString(rssHeader); err != nil {
 		return err
 	}
 
-	if err := addPostsToRss(rss, db, opt); err != nil {
+	if err := addPostsToRss(rssW, db, opt); err != nil {
 		return err
 	}
 
-	_, err := rss.WriteString(rssFooter)
-	return err
+	if _, err := rssW.WriteString(rssFooter); err != nil {
+		return err
+	}
+
+	rssR, rssW = rssW, rssR
+	rssW.Reset()
+	return nil
 }
 
 func addPostsToRss(buf *bytes.Buffer, db *orm.DB, opt *app.Options) error {

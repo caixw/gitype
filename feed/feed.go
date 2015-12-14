@@ -19,9 +19,12 @@ var (
 	db  *orm.DB
 	opt *app.Options
 
-	sitemap = new(bytes.Buffer)
-	rss     = new(bytes.Buffer)
-	atom    = new(bytes.Buffer)
+	sitemapW = new(bytes.Buffer)
+	rssW     = new(bytes.Buffer)
+	atomW    = new(bytes.Buffer)
+	sitemapR = new(bytes.Buffer)
+	rssR     = new(bytes.Buffer)
+	atomR    = new(bytes.Buffer)
 )
 
 // 初始化sitemap包，path为sitemap.xml文件的保存路径
@@ -50,7 +53,7 @@ func initRoute() error {
 	}
 
 	m.GetFunc("/sitemap.xml", func(w http.ResponseWriter, r *http.Request) {
-		if _, err := w.Write(sitemap.Bytes()); err != nil {
+		if _, err := w.Write(sitemapR.Bytes()); err != nil {
 			logs.Error("feed.initRoute.route-/sitemap.xml:", err)
 			w.WriteHeader(404) // 若是出错，给客户端的信息提示为404
 		}
@@ -65,14 +68,14 @@ func initRoute() error {
 	})
 
 	m.GetFunc("/rss.xml", func(w http.ResponseWriter, r *http.Request) {
-		if _, err := w.Write(rss.Bytes()); err != nil {
+		if _, err := w.Write(rssR.Bytes()); err != nil {
 			logs.Error("feed.initRoute.route-/rss.xml:", err)
 			w.WriteHeader(404)
 		}
 	})
 
 	m.GetFunc("/atom.xml", func(w http.ResponseWriter, r *http.Request) {
-		if _, err := w.Write(atom.Bytes()); err != nil {
+		if _, err := w.Write(atomR.Bytes()); err != nil {
 			logs.Error("feed.initRoute.route-/atom.xml:", err)
 			w.WriteHeader(404)
 		}
