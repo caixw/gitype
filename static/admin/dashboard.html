@@ -5,12 +5,28 @@
 
 <script>
 function pageInit(){
-    app.setTitle('dashboard');
+    app.setTitle('仪表盘');
 
-    app.get({
-        'url': app.adminAPI('/stat')
+    var state = {}
+    var modules = {}
+
+    var stateReq = app.get({
+        'url': app.adminAPI('/state')
     }).done(function(data, textStatus, jqXHR){
-        app.loadTemplate('#dashboard-container', '#dashboard-template', data);
+        state = data;
+    });
+
+    var modulesReq = app.get({
+        'url': app.adminAPI('/modules')
+    }).done(function(data, textStatus, jqXHR){
+        modules = data.modules;
+    });
+
+    $.when(stateReq, modulesReq).then(function(){
+        app.loadTemplate('#dashboard-container', '#dashboard-template', {
+            'state':   state,
+            'modules': modules
+        });
     });
 }
 </script>
@@ -20,39 +36,48 @@ function pageInit(){
     <div class="ui card">
         <div class="content left aligned">
             文章
-            <div class="right floated meta">{{posts}}</div>
+            <div class="right floated meta">{{state.posts}}</div>
         </div>
 
         <div class="content left aligned">
             已发布
-            <div class="right floated meta">{{publishedPosts}}</div>
+            <div class="right floated meta">{{state.publishedPosts}}</div>
         </div>
 
         <div class="content left aligned">
             草稿箱
-            <div class="right floated meta">{{draftPosts}}</div>
+            <div class="right floated meta">{{state.draftPosts}}</div>
         </div>
     </div>
 
     <div class="ui card">
         <div class="content left aligned">
             评论
-            <div class="right floated meta">{{comments}}</div>
+            <div class="right floated meta">{{state.comments}}</div>
         </div>
 
         <div class="content left aligned">
             已审核
-            <div class="right floated meta">{{approvedComments}}</div>
+            <div class="right floated meta">{{state.approvedComments}}</div>
         </div>
 
         <div class="content left aligned">
             待审核
-            <div class="right floated meta">{{waitingComments}}</div>
+            <div class="right floated meta">{{state.waitingComments}}</div>
         </div>
 
         <div class="content left aligned">
             垃圾审核
-            <div class="right floated meta">{{spamComments}}</div>
+            <div class="right floated meta">{{state.spamComments}}</div>
         </div>
+    </div>
+
+    <div class="ui card">
+    {{#each modules}}
+        <div class="content left aligned">
+            {{name}}
+            <div class="right floated meta">{{#if isRunning}}运行中...{{else}}停止{{/if}}</div>
+        </div>
+    {{/each}}
     </div>
 </script>

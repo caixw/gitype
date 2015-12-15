@@ -146,7 +146,14 @@ func adminGetState(w http.ResponseWriter, r *http.Request) {
 // @apiParam modules array 模块列表的数组
 func adminGetModules(w http.ResponseWriter, r *http.Request) {
 	modules := web.Modules()
-	util.RenderJSON(w, http.StatusOK, map[string]interface{}{"modules": modules}, nil)
+	data := make([]map[string]interface{}, 0, len(modules))
+	for _, v := range modules {
+		data = append(data, map[string]interface{}{
+			"name":      v.Name,
+			"isRunning": v.IsRunning(),
+		})
+	}
+	util.RenderJSON(w, http.StatusOK, map[string]interface{}{"modules": data}, nil)
 }
 
 // @api put /admin/api/modules/{name}/start 启动一个模块
