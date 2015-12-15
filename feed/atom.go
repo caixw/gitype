@@ -17,7 +17,7 @@ import (
 
 const (
 	atomHeader = `<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom>"`
+<feed xmlns="http://www.w3.org/2005/Atom">`
 
 	atomFooter = `</feed>`
 )
@@ -46,10 +46,10 @@ func BuildAtom() error {
 	buf.WriteString("</subtitle>\n")
 
 	buf.WriteString("<update>")
-	buf.WriteString(time.Now().Format("2006-01-02T15:04:05Z08:00"))
+	buf.WriteString(time.Now().Format("2006-01-02T15:04:05Z07:00"))
 	buf.WriteString("</update>\n")
 
-	if err := addPostsToRss(buf, db, opt); err != nil {
+	if err := addPostsToAtom(buf, db, opt); err != nil {
 		return err
 	}
 
@@ -101,7 +101,7 @@ func addItemToAtom(buf *bytes.Buffer, link, title, summary string, update int64)
 
 	t := time.Unix(update, 0)
 	buf.WriteString("<update>")
-	buf.WriteString(t.Format("2006-01-02T15:04:05Z08:00"))
+	buf.WriteString(t.Format("2006-01-02T15:04:05Z07:00"))
 	buf.WriteString("</update>\n")
 
 	buf.WriteString("<summary>")
