@@ -81,7 +81,7 @@ func adminGetOption(w http.ResponseWriter, r *http.Request) {
 	util.RenderJSON(w, http.StatusOK, map[string]interface{}{"value": val}, nil)
 }
 
-// @api put /admin/api/sitemap 重新生成sitemap
+// @api put /admin/api/feed/sitemap 重新生成sitemap
 // @apiGroup admin
 //
 // @apiRequest json
@@ -96,7 +96,42 @@ func adminPutSitemap(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lastUpdated()
+	util.RenderJSON(w, http.StatusOK, "{}", nil)
+}
+
+// @api put /admin/api/feed/rss 重新生成rss
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+//
+// @apiSuccess 200 Ok
+func adminPutRss(w http.ResponseWriter, r *http.Request) {
+	err := feed.BuildRss()
+	if err != nil {
+		logs.Error(err)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	util.RenderJSON(w, http.StatusOK, "{}", nil)
+}
+
+// @api put /admin/api/feed/atom 重新生成atom
+// @apiGroup admin
+//
+// @apiRequest json
+// @apiHeader Authorization xxx
+//
+// @apiSuccess 200 Ok
+func adminPutAtom(w http.ResponseWriter, r *http.Request) {
+	err := feed.BuildAtom()
+	if err != nil {
+		logs.Error(err)
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
 	util.RenderJSON(w, http.StatusOK, "{}", nil)
 }
 

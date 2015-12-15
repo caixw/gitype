@@ -1,5 +1,5 @@
 <div class="config-div">
-    <h1 class="header">Sitemap</h1>
+    <h1 class="header">feed</h1>
     <div class="ui form">
 
         <div class="ui horizontal divider header">sitemap参数设置</div>
@@ -31,15 +31,22 @@
                 <option value="never">从不更新</option>
             </select>
 
-
             <div class="ui left labeled input" style="margin-left:1em">
                 <div class="ui basic label">0.</div>
                 <input type="number" min="0" max="10" name="tagsPriority" id="tagsPriority" />
             </div>
         </div>
 
+
+        <div class="ui horizontal divider header">atom/rss参数设置</div>
+        <div class="inline field">
+            <label for="rssSize">最大记录数量</label>
+            <input type="number" name="rssSize" min="0" max="1000" id="rssSize" />
+        </div>
+
+        <div class="ui divider"></div>
         <div class="field">
-            <button id="rebuild" class="ui primary fluid button">重新生成Sitemap</button>
+            <button id="rebuild" class="ui primary fluid button">重新生成</button>
         </div>
     </div> <!-- end .ui.form -->
 </div>
@@ -47,6 +54,15 @@
 <script>
 function pageInit(){
     function getChangefreq(id){
+        return app.get({
+            'url': app.adminAPI('/options/'+id)
+        }).done(function(data, textStatus, jqXHR){
+            $('#'+id).val(data.value);
+            $('#'+id).attr('data-default', data.value);
+        });
+    }
+
+    function getOption(id){
         return app.get({
             'url': app.adminAPI('/options/'+id)
         }).done(function(data, textStatus, jqXHR){
@@ -85,6 +101,26 @@ function pageInit(){
         });
     }
 
+    function patchOption(id) {
+        $('#'+id).on('blur', function(){
+            var elem = $('#'+id)
+            if (elem.attr('data-default') == elem.val()) {
+                return
+            }
+
+            app.patch({
+                'url': app.adminAPI('/options/'+id),
+                'data':JSON.stringify({"value": elem.val()})
+            }).done(function(){
+                elem.attr('data-default', elem.val());
+                app.showMessage('green', '设置已经保存');
+            }).fail(function(){
+                elem.val(elem.attr('data-default'));
+                app.showMessage('red', '更新'+id+'资源失败');
+            });
+        });
+    } // end patchOption
+
     function patchPriority(id) {
         $('#'+id).on('blur', function(){
             var elem = $('#'+id)
@@ -103,30 +139,39 @@ function pageInit(){
                 app.showMessage('red', '更新'+id+'资源失败');
             });
         });
+    } // end patchPriority
+
+    // 调用指定的生成接口
+    function build(id){
+        return app.put({
+            'url': app.adminAPI('/feed/')+id,
+            'data':'{}'
+        }).done(function(data, textStatus, jqXHR){
+            app.showMessage('green', '成功生成新的'+id);
+        }).fail(function(){
+            app.showMessage('red', '无法重新生成'+id);
+        });
     }
 
     app.setTitle('Sitemap');
 
     $('#rebuild').on('click', function(){
         $('#rebuild').addClass('loading');
-        app.put({
-            'url': app.adminAPI('/sitemap'),
-            'data':'{}'
-        }).done(function(data, textStatus, jqXHR){
-            app.showMessage('green', '成功生成新的sitemap');
-        }).fail(function(){
-            app.showMessage('red', '无法重新生成sitemap');
-        }).always(function(){
+        var rss = build('rss');
+        var atom = build('atom');
+        var sitemap = build('sitemap');
+        $.when(rss, atom, sitemap).always(function(){
             $('#rebuild').removeClass('loading');
         });
-    });
+    }); // end #rebuild.on
 
     $('.ui.form').addClass('loading');
     var pc = getChangefreq('postsChangefreq');
     var tc = getChangefreq('tagsChangefreq');
     var pp = getPriority('postsPriority');
     var tp = getPriority('tagsPriority');
-    $.when(pc, tc, pp, tp).always(function(){
+    var rssSize = getOption('rssSize');
+    $.when(pc, tc, pp, tp, rssSize).always(function(){
         $('.ui.form').removeClass('loading');
         $('.ui.dropdown').dropdown();
     });
@@ -135,5 +180,6 @@ function pageInit(){
     patchChangefreq('tagsChangefreq');
     patchPriority('postsPriority');
     patchPriority('tagsPriority');
+    patchOption('rssSize');
 } // end pageInit
 </script>

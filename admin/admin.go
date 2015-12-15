@@ -53,14 +53,20 @@ func initRoute() error {
 	}
 	p := m.Prefix(cfg.AdminAPIPrefix)
 
-	p.PostFunc("/login", adminPostLogin).
-		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
-		Put("/password", loginHandlerFunc(adminChangePassword)).
-		Get("/state", loginHandlerFunc(adminGetState)).
-		Put("/sitemap", loginHandlerFunc(adminPutSitemap)).
+	p.Get("/state", loginHandlerFunc(adminGetState)).
 		Get("/modules", loginHandlerFunc(adminGetModules)).
 		Put("/modules/{name}/start", loginHandlerFunc(adminPutModuleStart)).
 		Put("/modules/{name}/stop", loginHandlerFunc(adminPutModuleStop))
+
+	// users
+	p.PostFunc("/login", adminPostLogin).
+		Delete("/login", loginHandlerFunc(adminDeleteLogin)).
+		Put("/password", loginHandlerFunc(adminChangePassword))
+
+	// feed
+	p.Put("/feed/sitemap", loginHandlerFunc(adminPutSitemap)).
+		Put("/feed/rss", loginHandlerFunc(adminPutRss)).
+		Put("/feed/atom", loginHandlerFunc(adminPutAtom))
 
 	// meida
 	p.Post("/media", loginHandlerFunc(adminPostMedia)).
