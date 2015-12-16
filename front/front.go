@@ -62,13 +62,15 @@ func initRoute() error {
 		return err
 	}
 
-	m.Get(opt.HomeURL(), handlers.NewCompress(etagHandler(pagePosts))).
-		Get(opt.TagsURL(), handlers.NewCompress(etagHandler(pageTags))).
-		Get(opt.TagURL("{id}", 1), handlers.NewCompress(etagHandler(pageTag))).
-		Get(opt.PostsURL(1), handlers.NewCompress(etagHandler(pagePosts))).
-		Get(opt.PostURL("{id}"), handlers.NewCompress(etagHandler(pagePost))).  // 获取文章详细内容
-		Post(opt.PostURL("{id}"), handlers.NewCompress(etagHandler(pagePost))). // 提交评论
-		Get(cfg.UploadURLPrefix, http.StripPrefix(cfg.UploadURLPrefix, http.FileServer(http.Dir(cfg.UploadDir)))).
+	m.Get(opt.HomeURL(), etagHandler(handlers.CompressFunc(pagePosts))).
+		Get(opt.TagsURL(), etagHandler(handlers.CompressFunc(pageTags))).
+		Get(opt.TagURL("{id}", 1), etagHandler(handlers.CompressFunc(pageTag))).
+		Get(opt.PostsURL(1), etagHandler(handlers.CompressFunc(pagePosts))).
+		Get(opt.PostURL("{id}"), etagHandler(handlers.CompressFunc(pagePost))). // 获取文章详细内容
+		Post(opt.PostURL("{id}"), etagHandler(handlers.CompressFunc(pagePost))) // 提交评论
+
+	// 静态文件路由
+	m.Get(cfg.UploadURLPrefix, http.StripPrefix(cfg.UploadURLPrefix, http.FileServer(http.Dir(cfg.UploadDir)))).
 		Get(cfg.ThemeURLPrefix, http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.ThemeDir))))
 
 	m.Prefix(cfg.FrontAPIPrefix).
@@ -76,6 +78,22 @@ func initRoute() error {
 		GetFunc("/posts/{id:\\d+}/comments", frontGetPostComments)
 
 	return nil
+}
+
+// etag包装
+func etagHandler(h http.Handler) http.Handler {
+	f := func(w http.ResponseWriter, r *http.Request) {
+		etag := strconv.FormatInt(opt.LastUpdated, 10)
+		if r.Header.Get("If-None-Match") == etag {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+
+		w.Header().Set("Etag", etag)
+		h.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(f)
 }
 
 func getTagPosts(page int, tagID int64) ([]*Post, error) {
