@@ -29,11 +29,7 @@ func RenderJSON(w http.ResponseWriter, code int, v interface{}, headers map[stri
 	}
 
 	if v == nil {
-		w.Header().Add("Content-Type", "application/json;charset=utf-8")
-		for k, v := range headers {
-			w.Header().Add(k, v)
-		}
-		w.WriteHeader(code)
+		renderJSONHeader(w, code, headers)
 		return
 	}
 
@@ -55,15 +51,23 @@ func RenderJSON(w http.ResponseWriter, code int, v interface{}, headers map[stri
 		}
 	}
 
-	w.Header().Add("Content-Type", "application/json;charset=utf-8")
-	for k, v := range headers {
-		w.Header().Add(k, v)
-	}
+	renderJSONHeader(w, code, headers)
 
-	w.WriteHeader(code)
 	if _, err := w.Write(data); err != nil {
 		logs.Error("RenderJSON:", err)
 	}
+}
+
+// 将headers当作一个头信息输出，若未指定Content-Type，则默认添加application/json;charset=utf-8作为其值。
+func renderJSONHeader(w http.ResponseWriter, code int, headers map[string]string) {
+	if _, found := headers["Content-Type"]; !found {
+		headers["Content-Type"] = "application/json;charset=utf-8"
+	}
+
+	for k, v := range headers {
+		w.Header().Set(k, v)
+	}
+	w.WriteHeader(code)
 }
 
 // ReadJSON 用于将r中的body当作一个json格式的数据读取到v中，若出错，则直接向w输出出错内容，
@@ -99,8 +103,8 @@ func checkJSONMediaType(r *http.Request) bool {
 		}
 	}
 
-	aceppt := r.Header.Get("Accept")
-	return strings.Index(aceppt, "application/json") >= 0 || strings.Index(aceppt, "*/*") >= 0
+	accept := r.Header.Get("Accept")
+	return strings.Index(accept, "application/json") >= 0 || strings.Index(accept, "*/*") >= 0
 }
 
 // ParamString 获取路径匹配中的参数，并以字符串的格式返回。
