@@ -9,163 +9,55 @@ package util
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"strconv"
-	"strings"
 
-	"github.com/issue9/context"
-	"github.com/issue9/logs"
+	"github.com/issue9/web"
 )
 
-// RenderJSON 用于将v转换成json数据并写入到w中。code为服务端返回的代码。
-// 若v的值是string,[]byte,[]rune则直接转换成字符串写入w。
-// 当v为nil时，不输出任何内容，若需要输出一个空对象，请使用"{}"字符串。
-// headers用于指定额外的Header信息，若传递nil，则表示没有。
 func RenderJSON(w http.ResponseWriter, code int, v interface{}, headers map[string]string) {
-	if w == nil {
-		panic("RenderJSON:参数w不能为空")
-	}
-
-	if v == nil {
-		renderJSONHeader(w, code, headers)
-		return
-	}
-
-	var data []byte
-	switch val := v.(type) {
-	case string:
-		data = []byte(val)
-	case []byte:
-		data = val
-	case []rune:
-		data = []byte(string(val))
-	default:
-		var err error
-		data, err = json.Marshal(val)
-		if err != nil {
-			logs.Error("RenderJSON:", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-	}
-
-	renderJSONHeader(w, code, headers)
-
-	if _, err := w.Write(data); err != nil {
-		logs.Error("RenderJSON:", err)
-	}
+	web.RenderJSON(w, code, v, headers)
 }
 
-// 将headers当作一个头信息输出，若未指定Content-Type，则默认添加application/json;charset=utf-8作为其值。
-func renderJSONHeader(w http.ResponseWriter, code int, headers map[string]string) {
-	if headers == nil {
-		w.Header().Set("Content-Type", "application/json;charset=utf-8")
-		w.WriteHeader(code)
-		return
-	}
-
-	if _, found := headers["Content-Type"]; !found {
-		headers["Content-Type"] = "application/json;charset=utf-8"
-	}
-
-	for k, v := range headers {
-		w.Header().Set(k, v)
-	}
-	w.WriteHeader(code)
-}
-
-// ReadJSON 用于将r中的body当作一个json格式的数据读取到v中，若出错，则直接向w输出出错内容，
-// 并返回false，或是在一切正常的情况下返回true
 func ReadJSON(w http.ResponseWriter, r *http.Request, v interface{}) (ok bool) {
-	if !checkJSONMediaType(r) {
-		RenderJSON(w, http.StatusUnsupportedMediaType, nil, nil)
-		return false
-	}
-
-	data, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		logs.Error("readJSON:", err)
-		RenderJSON(w, http.StatusInternalServerError, nil, nil)
-		return false
-	}
-
-	err = json.Unmarshal(data, v)
-	if err != nil {
-		logs.Error("readJSON:", err)
-		RenderJSON(w, 422, nil, nil) // http包中并未定义422错误
+	if code := web.ReadJSON(r, v); code != http.StatusOK {
+		w.WriteHeader(code)
 		return false
 	}
 
 	return true
 }
 
-func checkJSONMediaType(r *http.Request) bool {
-	if r.Method != "GET" {
-		ct := r.Header.Get("Content-Type")
-		if strings.Index(ct, "application/json") < 0 && strings.Index(ct, "*/*") < 0 {
-			return false
-		}
-	}
-
-	accept := r.Header.Get("Accept")
-	return strings.Index(accept, "application/json") >= 0 || strings.Index(accept, "*/*") >= 0
-}
-
 // ParamString 获取路径匹配中的参数，并以字符串的格式返回。
 // 若不能找到该参数，返回false
 func ParamString(w http.ResponseWriter, r *http.Request, key string) (string, bool) {
-	m, found := context.Get(r).Get("params")
-	if !found {
-		logs.Error("ParamString:在context中找不到params参数")
-		RenderJSON(w, http.StatusGone, nil, nil)
-		return "", false
+	if val, found := web.ParamString(r, key); found {
+		return val, true
 	}
 
-	params := m.(map[string]string)
-	v, found := params[key]
-	if !found {
-		logs.Error("ParamString:在context.params中找不到指定参数:", key)
-		RenderJSON(w, http.StatusGone, nil, nil)
-		return "", false
-	}
-
-	return v, true
+	w.WriteHeader(http.StatusNotFound)
+	return "", false
 }
 
 // ParamInt64 功能同ParamString，但会尝试将返回值转换成int64类型。
 // 若不能找到该参数，返回false
 func ParamInt64(w http.ResponseWriter, r *http.Request, key string) (int64, bool) {
-	v, ok := ParamString(w, r, key)
-	if !ok {
-		return 0, false
+	if val, found := web.ParamInt64(r, key); found {
+		return val, true
 	}
 
-	num, err := strconv.ParseInt(v, 10, 64)
-	if err != nil {
-		logs.Error("ParamInt64:", err)
-		RenderJSON(w, http.StatusGone, nil, nil)
-		return 0, false
-	}
-
-	return num, true
+	w.WriteHeader(http.StatusNotFound)
+	return 0, false
 }
 
 // ParamID 功能同ParamInt64，但值必须大于0
 func ParamID(w http.ResponseWriter, r *http.Request, key string) (int64, bool) {
-	num, ok := ParamInt64(w, r, key)
-	if !ok {
-		return 0, false
+	if val, found := web.ParamID(r, key); found {
+		return val, true
 	}
 
-	if num <= 0 {
-		logs.Trace("ParamID:用户指定了一个小于0的id值:", num)
-		RenderJSON(w, http.StatusNotFound, nil, nil)
-		return 0, false
-	}
-
-	return num, true
+	w.WriteHeader(http.StatusNotFound)
+	return 0, false
 }
 
 // QueryInt 用于获取查询参数key的值，并将其转换成Int类型，若该值不存在返回def作为其默认值，
