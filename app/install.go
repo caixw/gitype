@@ -154,10 +154,9 @@ func InstallConfig() error {
 			KeyFile:    "",
 			Port:       "8080",
 			ServerName: "typing",
-			Static: map[string]string{
-				"/admin": "./static/admin/",
-			},
 		},
+		Debug:          true,
+		AdminURLPrefix: "/admin/",
 
 		DBDSN:    "./output/main.db",
 		DBPrefix: "typing_",

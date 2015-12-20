@@ -5,6 +5,7 @@
 package admin
 
 import (
+	"net/http"
 	"strings"
 	"time"
 
@@ -47,10 +48,13 @@ func lastUpdated() {
 }
 
 func initRoute() error {
-	m, err := web.NewModule("adminAPI")
+	m, err := web.NewModule("admin")
 	if err != nil {
 		return err
 	}
+
+	m.Get(cfg.AdminURLPrefix, http.StripPrefix(cfg.AdminURLPrefix, http.FileServer(http.Dir("./static/admin/"))))
+
 	p := m.Prefix(cfg.AdminAPIPrefix)
 
 	p.Get("/state", loginHandlerFunc(adminGetState)).

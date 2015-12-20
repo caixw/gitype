@@ -19,8 +19,9 @@ import (
 // Config 表示程序级别的配置，修改这些配置需要重启程序才能启作用，
 // 比如数据库初始化信息，路由项设置等。
 type Config struct {
-	Core  *web.Config `json:"core"`
-	Debug bool        `json:"debug"` // 是否处于调试模式
+	Core           *web.Config `json:"core"`
+	Debug          bool        `json:"debug"`          // 是否处于调试模式
+	AdminURLPrefix string      `json:"adminURLPrefix"` // 后台地址入口
 
 	// 数据库相关配置
 	DBDSN    string `json:"dbDSN"`    // 数据库dsn
@@ -80,6 +81,10 @@ func loadConfig(path string) (*Config, error) {
 	err = json.Unmarshal(data, cfg)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(cfg.AdminURLPrefix) == 0 {
+		return nil, errors.New("未指adminURLPrefix变量")
 	}
 
 	if err = checkConfigURL(cfg.AdminAPIPrefix, "adminAPIPrefix"); err != nil {
