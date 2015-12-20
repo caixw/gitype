@@ -60,6 +60,12 @@ func RenderJSON(w http.ResponseWriter, code int, v interface{}, headers map[stri
 
 // 将headers当作一个头信息输出，若未指定Content-Type，则默认添加application/json;charset=utf-8作为其值。
 func renderJSONHeader(w http.ResponseWriter, code int, headers map[string]string) {
+	if headers == nil {
+		w.Header().Set("Content-Type", "application/json;charset=utf-8")
+		w.WriteHeader(code)
+		return
+	}
+
 	if _, found := headers["Content-Type"]; !found {
 		headers["Content-Type"] = "application/json;charset=utf-8"
 	}
