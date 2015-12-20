@@ -62,16 +62,16 @@ func initRoute() error {
 		return err
 	}
 
-	m.Get(opt.HomeURL(), etagHandler(handlers.CompressFunc(pagePosts))).
+	m.Get(opt.HomeURL(), etagHandler(handlers.CompressFunc(pageHome))).
 		Get(opt.TagsURL(), etagHandler(handlers.CompressFunc(pageTags))).
 		Get(opt.TagURL("{id}", 1), etagHandler(handlers.CompressFunc(pageTag))).
 		Get(opt.PostsURL(1), etagHandler(handlers.CompressFunc(pagePosts))).
 		Get(opt.PostURL("{id}"), etagHandler(handlers.CompressFunc(pagePost))). // 获取文章详细内容
 		Post(opt.PostURL("{id}"), etagHandler(handlers.CompressFunc(pagePost))) // 提交评论
 
-	// 静态文件路由
-	m.Get(cfg.UploadURLPrefix, http.StripPrefix(cfg.UploadURLPrefix, http.FileServer(http.Dir(cfg.UploadDir)))).
-		Get(cfg.ThemeURLPrefix, http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.ThemeDir))))
+	// 静态文件路由，TODO 去掉config中对于必须以/结尾的判断
+	m.Get(cfg.UploadURLPrefix+"/", http.StripPrefix(cfg.UploadURLPrefix, http.FileServer(http.Dir(cfg.UploadDir)))).
+		Get(cfg.ThemeURLPrefix+"/", http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.ThemeDir))))
 
 	m.Prefix(cfg.FrontAPIPrefix).
 		PostFunc("/posts/{id:\\d+}/comments", frontPostPostComment).
@@ -131,6 +131,17 @@ func getPosts(page int) ([]*Post, error) {
 	rows.Close()
 
 	return posts, err
+}
+
+func pageHome(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != opt.HomeURL() { // 若是走的首页路由，则必须每个字符都相同。
+		logs.Info(r.URL.Path)
+		w.Header().Set("Content-Type", "text/html")
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	pagePosts(w, r)
 }
 
 // 首页或是列表页
