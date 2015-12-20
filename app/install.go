@@ -155,8 +155,10 @@ func InstallConfig() error {
 			Port:       "8080",
 			ServerName: "typing",
 		},
-		Debug:          true,
+		Debug: true,
+
 		AdminURLPrefix: "/admin/",
+		AdminDir:       "./static/admin/",
 
 		DBDSN:    "./output/main.db",
 		DBPrefix: "typing_",
