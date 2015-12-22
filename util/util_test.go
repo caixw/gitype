@@ -38,3 +38,10 @@ func TestHashPassword(t *testing.T) {
 	str2 := HashPassword(str1)
 	a.NotEmpty(str2).NotEqual(str1, str2)
 }
+
+func TestFileExists(t *testing.T) {
+	a := assert.New(t)
+
+	a.True(FileExists("util.go"))
+	a.False(FileExists("unknown.go"))
+}
