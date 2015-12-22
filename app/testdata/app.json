@@ -4,14 +4,14 @@
         "keyFile"   : "keyFile",
         "certFile"  : "certFile",
         "port"      : "8080",
-        "serverName": "typing",
-        "static"    : {
-            "/admin": "./static/admin/"
-        }
+        "serverName": "typing"
     },
 
+    "adminURLPrefix": "/admin/",
+    "adminDir":       "./static/admin",
+
     "dbDriver": "sqlite3",
-    "dbDSN"   : "./output/main.db",
+    "dbDSN":    "./output/main.db",
     "dbPrefix": "typing_",
 
     "frontApiPrefix" : "/api",

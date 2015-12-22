@@ -149,11 +149,13 @@ func InstallConfig() error {
 
 	cfg := &Config{
 		Core: &web.Config{
-			HTTPS:      false,
-			CertFile:   "",
-			KeyFile:    "",
-			Port:       "8080",
-			ServerName: "typing",
+			HTTPS:    false,
+			CertFile: "",
+			KeyFile:  "",
+			Port:     "8080",
+			Headers: map[string]string{
+				"Server": "typing",
+			},
 		},
 		Debug: true,
 
