@@ -7,7 +7,6 @@ package front
 import (
 	"database/sql"
 	"html"
-	"html/template"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -31,10 +30,6 @@ var (
 	opt  *app.Options
 	stat *app.Stat
 	db   *orm.DB
-
-	tpl       *template.Template // 当前使用的模板
-	themesMap map[string]*Theme  // 所有的主题列表
-	current   string             // 当前使用的主题
 )
 
 // 从主题根目录加载所有的主题内容，并初始所有的主题下静态文件的路由。
@@ -133,11 +128,28 @@ func getPosts(page int) ([]*Post, error) {
 	return posts, err
 }
 
+// 输出一个特写状态码下的错误页面。若该页面模板不存在，则只输出状态码，而没有内容。
+// 只对状态码大于等于400的起作用。
+func pageHttpStatusCode(w http.ResponseWriter, r *http.Request, code int) {
+	if code < 400 {
+		return
+	}
+	w.WriteHeader(code)
+
+	path := themeDir(currentTheme) + strconv.Itoa(code) + ".html"
+	if !util.FileExists(path) { // 文件不存在，则只输出状态码，省略内容。
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+	http.ServeFile(w, r, path)
+}
+
+// 首页
 func pageHome(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != opt.HomeURL() { // 若是走的首页路由，则必须每个字符都相同。
-		logs.Info(r.URL.Path)
-		w.Header().Set("Content-Type", "text/html")
-		w.WriteHeader(http.StatusNotFound)
+	// 首页的匹配模式为：/，可以匹配任意路径。所以此处作个判断，除了完全匹配的，其余都返回404
+	if r.URL.Path != opt.HomeURL() {
+		pageHttpStatusCode(w, r, http.StatusNotFound)
 		return
 	}
 
@@ -149,7 +161,7 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 	info, err := getInfo()
 	if err != nil {
 		logs.Error("pagePosts:", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -168,7 +180,7 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 	posts, err := getPosts(page - 1)
 	if err != nil {
 		logs.Error("pagePosts:", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -184,7 +196,7 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 	info, err := getInfo()
 	if err != nil {
 		logs.Error("pageTags:", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 	info.Canonical = opt.URL(opt.TagsURL())
@@ -194,7 +206,7 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query(true, sql)
 	if err != nil {
 		logs.Error("pageTags:", err)
-		w.WriteHeader(500)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
@@ -202,7 +214,7 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 	tags := make([]*Tag, 0, 100)
 	if _, err = fetch.Obj(&tags, rows); err != nil {
 		logs.Error("pageTags:", err)
-		w.WriteHeader(500)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -224,7 +236,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query(true, sql, tagName)
 	if err != nil {
 		logs.Error("pageTag:", err)
-		w.WriteHeader(500)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
@@ -232,14 +244,14 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	tag := &Tag{}
 	if _, err = fetch.Obj(tag, rows); err != nil {
 		logs.Error("pageTag:", err)
-		w.WriteHeader(500)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	info, err := getInfo()
 	if err != nil {
 		logs.Error("pageTag:", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -258,7 +270,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 	posts, err := getTagPosts(page-1, tag.ID)
 	if err != nil {
 		logs.Error("pageTag:", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -291,7 +303,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		logs.Error("pagePost:", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
@@ -299,12 +311,12 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 	mp := &models.Post{}
 	if _, err = fetch.Obj(mp, rows); err != nil {
 		logs.Error("pagePost:", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	if len(mp.Title) == 0 || mp.State != models.PostStatePublished {
-		w.WriteHeader(http.StatusNotFound)
+		pageHttpStatusCode(w, r, http.StatusNotFound)
 		return
 	}
 
@@ -332,7 +344,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 	info, err := getInfo()
 	if err != nil {
 		logs.Error("pagePost:", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 	info.Canonical = opt.URL(post.Permalink())

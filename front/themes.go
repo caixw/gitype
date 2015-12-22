@@ -15,6 +15,12 @@ import (
 	"github.com/issue9/logs"
 )
 
+var (
+	tpl          *template.Template // 当前使用的模板
+	themesMap    map[string]*Theme  // 所有的主题列表
+	currentTheme string             // 当前使用的主题
+)
+
 // Theme 用于描述主题的相关信息，一般从主题目录下的theme.json获取。
 type Theme struct {
 	ID          string  `json:"id"`                    // 主题的唯一id，即其文件夹名称
@@ -31,13 +37,19 @@ type Author struct {
 	URL   string `json:"url"`
 }
 
+// 获取指定主题的目录。
+func themeDir(themeID string) string {
+	return cfg.ThemeDir + themeID + string(os.PathSeparator)
+}
+
+// 加载主题目录下的所有主题
 func loadThemes() error {
 	fs, err := ioutil.ReadDir(cfg.ThemeDir)
 	if err != nil {
 		return err
 	}
 	if len(fs) == 0 {
-		return errors.New("不存在任何主题目录")
+		return errors.New("front.loadthemes:不存在任何主题目录")
 	}
 	themesMap = make(map[string]*Theme, len(fs))
 
@@ -48,9 +60,7 @@ func loadThemes() error {
 		}
 
 		id := file.Name()
-		themePath := cfg.ThemeDir + id + string(os.PathSeparator)
-
-		theme, err := loadThemeFile(themePath + "theme.json")
+		theme, err := loadThemeFile(themeDir(id) + "theme.json")
 		if err != nil {
 			return err
 		}
@@ -88,10 +98,10 @@ func Themes() []*Theme {
 // 切换主题，若themeID与当前主题相同，则为重新加载其模板。
 func Switch(themeID string) (err error) {
 	logs.Info("切换当前主题为：", themeID)
-	current = themeID
+	currentTheme = themeID
 	tpl, err = template.New("").
 		Funcs(funcMap).
-		ParseGlob(cfg.ThemeDir + themeID + "/*.html")
+		ParseGlob(themeDir(themeID) + "*.html")
 
 	return err
 }
@@ -99,8 +109,8 @@ func Switch(themeID string) (err error) {
 // 输出指定模板
 func render(w http.ResponseWriter, name string, data interface{}, headers map[string]string) {
 	if cfg.Debug { // 调试状态下，实时加载模板
-		if err := Switch(current); err != nil {
-			logs.Error("themes.render:", err)
+		if err := Switch(currentTheme); err != nil {
+			logs.Error("front.render:", err)
 		}
 	}
 
@@ -110,7 +120,7 @@ func render(w http.ResponseWriter, name string, data interface{}, headers map[st
 
 	err := tpl.ExecuteTemplate(w, name, data)
 	if err != nil {
-		logs.Error("themes.Render:", err)
+		logs.Error("front.Render:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
