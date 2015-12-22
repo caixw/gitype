@@ -107,7 +107,7 @@ func Switch(themeID string) (err error) {
 }
 
 // 输出指定模板
-func render(w http.ResponseWriter, name string, data interface{}, headers map[string]string) {
+func render(w http.ResponseWriter, r *http.Request, name string, data interface{}, headers map[string]string) {
 	if cfg.Debug { // 调试状态下，实时加载模板
 		if err := Switch(currentTheme); err != nil {
 			logs.Error("front.render:", err)
@@ -121,7 +121,7 @@ func render(w http.ResponseWriter, name string, data interface{}, headers map[st
 	err := tpl.ExecuteTemplate(w, name, data)
 	if err != nil {
 		logs.Error("front.Render:", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
 }

@@ -189,7 +189,7 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 		"info":  info,
 		"posts": posts,
 	}
-	render(w, "posts", data, map[string]string{"Content-Type": "text/html"})
+	render(w, r, "posts", data, map[string]string{"Content-Type": "text/html"})
 }
 
 // /tags
@@ -220,7 +220,7 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]interface{}{"info": info, "tags": tags}
-	render(w, "tags", data, map[string]string{"Content-Type": "text/html"})
+	render(w, r, "tags", data, map[string]string{"Content-Type": "text/html"})
 }
 
 // /tags/1.html
@@ -280,7 +280,7 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 		"tag":   tag,
 		"posts": posts,
 	}
-	render(w, "tag", data, map[string]string{"Content-Type": "text/html"})
+	render(w, r, "tag", data, map[string]string{"Content-Type": "text/html"})
 }
 
 // /posts/1.html
@@ -357,7 +357,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		"info": info,
 		"post": post,
 	}
-	render(w, "post", data, map[string]string{"Content-Type": "text/html"})
+	render(w, r, "post", data, map[string]string{"Content-Type": "text/html"})
 }
 
 // 将当前提交的评论插入数据库
