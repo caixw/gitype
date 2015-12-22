@@ -134,6 +134,7 @@ func pageHttpStatusCode(w http.ResponseWriter, r *http.Request, code int) {
 	if code < 400 {
 		return
 	}
+	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(code)
 
 	path := themeDir(currentTheme) + strconv.Itoa(code) + ".html"
@@ -141,7 +142,7 @@ func pageHttpStatusCode(w http.ResponseWriter, r *http.Request, code int) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html")
+	// TODO: serveFile会自动写入一个状态码，导致多次输出状态码的提示
 	http.ServeFile(w, r, path)
 }
 
