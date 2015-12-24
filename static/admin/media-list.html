@@ -5,10 +5,9 @@
 
     <div class="ui divider"></div>
 
-    <form enctype="multipart/form-data">
+    <form enctype="multipart/form-data" action="">
         <input type="file" name="media" id="media" />
-        <!--buton class="ui submit button" type="submit">上传</button-->
-        <input class="ui submit button" type="submit" />
+        <button class="ui submit button" type="submit">上传</button>
     </form>
 </div>
 
@@ -21,12 +20,15 @@ function pageInit(){
 
     loadFiles('/');
 
+    // 加载指定目录下的文件列表
     function loadFiles(path){
         app.get({
             'url': app.adminAPI('/media?parent=')+path
         }).done(function(data, textStatus, jqXHR){
             $('#media-list').html('');
-            for (var i = 0; i < data.list.length; i++) { // 转换图标
+
+            // 数据转换
+            for (var i = 0; i < data.list.length; i++) {
                 data.list[i].path = path + '/' + data.list[i].name;
                 switch (data.list[i].type) {
                     case 'image':
@@ -43,7 +45,8 @@ function pageInit(){
                 }
             }
 
-            var dirs = path.split('/');
+            // 构建面包屑导航数据
+            var dirs = path.replace(/\/*/, '/').split('/');
             data.breadcrumb = [];
             var bcpath = '';
             for (var i = 0; i < dirs.length; i++) {
@@ -57,6 +60,7 @@ function pageInit(){
                 }
                 data.breadcrumb.push(obj);
             } // end for
+
             app.loadTemplate('#media-list', '#media-template', data);
             $('#media-list a.item[data-html]').popup();
             initActions();
@@ -80,7 +84,7 @@ function pageInit(){
 <script type="x-handler-template" id="media-template">
     <div class="ui small breadcrumb">
         {{#each breadcrumb}}
-        <span class="section" data-path="{{path}}">{{name}}</span>
+        <span class="section" data-path="{{path}}" style="cursor:pointer">{{name}}</span>
         <i class="right chevron icon divider"></i>
         {{/each}}
     </div>

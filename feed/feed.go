@@ -30,7 +30,7 @@ var (
 	rssMutex sync.Mutex
 )
 
-// 初始化sitemap包，path为sitemap.xml文件的保存路径
+// 初始化sitemap包
 func Init(database *orm.DB, options *app.Options) error {
 	db = database
 	opt = options

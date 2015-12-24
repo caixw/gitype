@@ -30,7 +30,7 @@ func main() {
 		panic(err)
 	}
 
-	// themes
+	// front
 	if err = front.Init(cfg, db, opt, stat); err != nil {
 		panic(err)
 	}
