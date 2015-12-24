@@ -2,8 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// util包用到了logs的相关内容，所以在调用util包之前，
-// 请确保已经正常初始化logs包的内容。
+// util 包含了一些各个模块需要用到的函数。
 package util
 
 import (
@@ -16,10 +15,12 @@ import (
 	"github.com/issue9/web"
 )
 
+// 输出json数据到客户端。
 func RenderJSON(w http.ResponseWriter, code int, v interface{}, headers map[string]string) {
 	web.RenderJSON(w, code, v, headers)
 }
 
+// 从客户端读取数据到v变量中，若出错，则返回false，并向客户端输出一条错误代码。
 func ReadJSON(w http.ResponseWriter, r *http.Request, v interface{}) (ok bool) {
 	if code := web.ReadJSON(r, v); code != http.StatusOK {
 		w.WriteHeader(code)
@@ -78,7 +79,7 @@ func QueryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int,
 }
 
 // HashPassword 是一个简单的密码加密函数。
-// 若需要更换密码加密算法，理发此函数即可。
+// 若需要更换密码加密算法，更改此函数即可。
 func HashPassword(password string) string {
 	return MD5(password)
 }
