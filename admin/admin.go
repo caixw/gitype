@@ -53,7 +53,7 @@ func initRoute() error {
 		return err
 	}
 
-	m.Get(cfg.AdminURLPrefix, http.StripPrefix(cfg.AdminURLPrefix, http.FileServer(http.Dir(cfg.AdminDir))))
+	m.Get(cfg.AdminURLPrefix+"/", http.StripPrefix(cfg.AdminURLPrefix, http.FileServer(http.Dir(cfg.AdminDir))))
 
 	p := m.Prefix(cfg.AdminAPIPrefix)
 

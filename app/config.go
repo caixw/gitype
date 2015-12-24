@@ -85,8 +85,8 @@ func loadConfig(path string) (*Config, error) {
 		return nil, err
 	}
 
-	if len(cfg.AdminURLPrefix) == 0 {
-		return nil, errors.New("未指adminURLPrefix变量")
+	if err = checkConfigURL(cfg.AdminURLPrefix, "adminURLPrefix"); err != nil {
+		return nil, err
 	}
 
 	if err = checkConfigURL(cfg.AdminAPIPrefix, "adminAPIPrefix"); err != nil {
