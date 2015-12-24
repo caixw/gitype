@@ -333,4 +333,14 @@ pre{
         min-height:100%;
         margin-left:0;
     }
+
+
+    #comments .meta{
+        flex-direction:column;
+    }
+
+    #comments .meta input{
+        width:100%;
+        margin:2px 0px;
+    }
 }
