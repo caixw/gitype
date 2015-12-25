@@ -78,11 +78,9 @@ func (opt *Options) toMaps() ([]map[string]string, error) {
 func fillOptions(db *orm.DB, cfg *Config) error {
 	now := time.Now().Unix()
 	opt := &Options{
-		SiteURL:     "http://localhost:8080/",
 		SiteName:    "typing blog",
 		SecondTitle: "副标题",
-		ScreenName:  "typing",
-		Password:    cfg.Password(defaultPassword),
+		SiteURL:     "http://localhost:8080/",
 		Keywords:    "typing",
 		Description: "typing-极简的博客系统",
 		Suffix:      ".html",
@@ -94,9 +92,9 @@ func fillOptions(db *orm.DB, cfg *Config) error {
 		LastAgent:   "",
 
 		PageSize:        20,
+		SidebarSize:     10,
 		LongDateFormat:  "2006-01-02 15:04:05",
 		ShortDateFormat: "2006-01-02",
-		SidebarSize:     10,
 		CommentOrder:    CommentOrderDesc,
 
 		PostsChangefreq: "never",
@@ -106,6 +104,12 @@ func fillOptions(db *orm.DB, cfg *Config) error {
 		RssSize:         20,
 
 		Theme: "default",
+
+		Menus: "{}",
+
+		ScreenName: "typing",
+		Email:      "",
+		Password:   cfg.Password(defaultPassword),
 	}
 
 	maps, err := opt.toMaps()
