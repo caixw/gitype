@@ -49,6 +49,7 @@ app.json位于程序当前目录的config子目录下，包含了以下可配置
 debug | 是否处于调试模式
 adminURLPrefix | 后台地址入口
 adminDir | 后台静态文件对应的目录
+salt | 密码的加盐值
 dbDSN | 数据库dsn
 dbPrefix | 数据表名前缀
 dbDriver | 数据库类型，可以是mysql, sqlite3, postgresql

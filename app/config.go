@@ -14,6 +14,7 @@ import (
 
 	"github.com/issue9/handlers"
 	"github.com/issue9/web"
+	"yuesaopai.com/common/util"
 )
 
 // Config 表示程序级别的配置，修改这些配置需要重启程序才能启作用，
@@ -26,6 +27,7 @@ type Config struct {
 	// 后台相关的设置
 	AdminURLPrefix string `json:"adminURLPrefix"` // 后台地址入口
 	AdminDir       string `json:"adminDir"`       // 后台静态文件对应的目录
+	Salt           string `json:"salt"`           // 密码加盐值，一量确认，不能修改
 
 	// 数据库相关配置
 	DBDSN    string `json:"dbDSN"`    // 数据库dsn
@@ -46,6 +48,11 @@ type Config struct {
 	UploadSize      int64  `json:"uploadSize"`      // 上传文件的最大尺寸
 	UploadExts      string `json:"uploadExts"`      // 允许的上传文件扩展名，eg: .txt;.png,;.pdf
 	UploadURLPrefix string `json:"uploadURLPrefix"` // 上传文件的地址前缀
+}
+
+// 返回一个加盐值的密码。
+func (c *Config) Password(password string) string {
+	return util.MD5(util.MD5(password) + c.Salt)
 }
 
 // 检测配置项的URL，是否符合要求。

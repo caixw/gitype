@@ -15,7 +15,6 @@ import (
 
 	"github.com/caixw/typing/app/static"
 	"github.com/caixw/typing/models"
-	"github.com/caixw/typing/util"
 	"github.com/issue9/conv"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm"
@@ -43,7 +42,7 @@ func InstallDB() error {
 	}
 
 	// option
-	return fillOptions(db)
+	return fillOptions(db, cfg)
 }
 
 // 将Options中的每字段转换成一个map结构，方便其它工具将其转换成sql内容。
@@ -76,14 +75,14 @@ func (opt *Options) toMaps() ([]map[string]string, error) {
 }
 
 // 将一个默认的options值填充到数据库中。
-func fillOptions(db *orm.DB) error {
+func fillOptions(db *orm.DB, cfg *Config) error {
 	now := time.Now().Unix()
 	opt := &Options{
 		SiteURL:     "http://localhost:8080/",
 		SiteName:    "typing blog",
 		SecondTitle: "副标题",
 		ScreenName:  "typing",
-		Password:    util.HashPassword("123"),
+		Password:    cfg.Password(defaultPassword),
 		Keywords:    "typing",
 		Description: "typing-极简的博客系统",
 		Suffix:      ".html",
@@ -159,7 +158,7 @@ func InstallConfig() error {
 		},
 		Debug: true,
 
-		AdminURLPrefix: "/admin/",
+		AdminURLPrefix: "/admin",
 		AdminDir:       "./static/admin/",
 
 		DBDSN:    "./output/main.db",

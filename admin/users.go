@@ -41,7 +41,7 @@ func adminPostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if util.HashPassword(inst.Password) != opt.Password {
+	if cfg.Password(inst.Password) != opt.Password {
 		util.RenderJSON(w, http.StatusUnauthorized, nil, nil)
 		return
 	}
@@ -102,7 +102,7 @@ func adminChangePassword(w http.ResponseWriter, r *http.Request) {
 	if len(l.New) == 0 {
 		errs.Add("new", "新密码不能为空")
 	}
-	if opt.Password != util.HashPassword(l.Old) {
+	if opt.Password != cfg.Password(l.Old) {
 		errs.Add("old", "密码错误")
 	}
 	if len(errs.Detail) > 0 {
@@ -110,7 +110,7 @@ func adminChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	o := &models.Option{Key: "password", Value: util.HashPassword(l.New)}
+	o := &models.Option{Key: "password", Value: cfg.Password(l.New)}
 	if _, err := db.Update(o); err != nil {
 		logs.Error("changePassword:", err)
 		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)

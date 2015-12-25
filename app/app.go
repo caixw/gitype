@@ -27,6 +27,8 @@ const (
 	// 定义两个配置文件的位置。
 	configPath    = "./config/app.json"
 	logConfigPath = "./config/logs.xml"
+
+	defaultPassword = "123" // 默认的后台登录密码
 )
 
 // 初始化系统，获取系统配置变量和数据库实例。
