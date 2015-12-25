@@ -62,9 +62,6 @@ func Install(db *orm.DB) error {
 	if _, err := db.Insert(&Relationship{TagID: 1, PostID: 1}); err != nil {
 		return err
 	}
-	if _, err := db.Insert(&Relationship{TagID: 2, PostID: 1}); err != nil {
-		return err
-	}
 
 	return nil
 }
