@@ -103,16 +103,16 @@ func adminChangePassword(w http.ResponseWriter, r *http.Request) {
 		errs.Add("new", "新密码不能为空")
 	}
 	if opt.Password != cfg.Password(l.Old) {
-		errs.Add("old", "密码错误")
+		errs.Add("old", "旧密码错误")
 	}
 	if len(errs.Detail) > 0 {
-		util.RenderJSON(w, http.StatusUnauthorized, errs, nil)
+		util.RenderJSON(w, http.StatusBadRequest, errs, nil)
 		return
 	}
 
 	o := &models.Option{Key: "password", Value: cfg.Password(l.New)}
 	if _, err := db.Update(o); err != nil {
-		logs.Error("changePassword:", err)
+		logs.Error("adminChangePassword:", err)
 		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
 	}
@@ -120,6 +120,7 @@ func adminChangePassword(w http.ResponseWriter, r *http.Request) {
 	util.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
+// 验证后台登录信息
 func loginHandlerFunc(f func(w http.ResponseWriter, r *http.Request)) http.Handler {
 	h := func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") != token {
