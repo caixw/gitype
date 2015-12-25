@@ -25,7 +25,7 @@ func (t *Tag) Count() int {
 	r := &models.Relationship{TagID: t.ID}
 	cnt, err := db.Count(r)
 	if err != nil {
-		logs.Error("themes.Tag.Count:", err)
+		logs.Error("front.Tag.Count:", err)
 	}
 	stat.Tags[t.ID] = cnt
 	return cnt

@@ -35,7 +35,7 @@ func (p *Post) CommentsSize() int {
 	c := &models.Comment{PostID: p.ID, State: models.CommentStateApproved}
 	size, err := db.Count(c)
 	if err != nil {
-		logs.Error("themes.Post.CommentsSize:", err)
+		logs.Error("front.Post.CommentsSize:", err)
 		return 0
 	}
 	stat.Posts[p.ID] = size
@@ -80,14 +80,14 @@ func (p *Post) Tags() []*Tag {
 
 	rows, err := db.Query(true, sql, p.ID)
 	if err != nil {
-		logs.Error("themes.Post.Tags:", err)
+		logs.Error("front.Post.Tags:", err)
 		return nil
 	}
 	defer rows.Close()
 
 	tags := make([]*Tag, 0, 5)
 	if _, err = fetch.Obj(&tags, rows); err != nil {
-		logs.Error("themes.Post.Tags:", err)
+		logs.Error("front.Post.Tags:", err)
 		return nil
 	}
 	return tags
@@ -106,14 +106,14 @@ func (p *Post) Comments() []*Comment {
 
 	rows, err := db.Query(true, sql, p.ID, models.CommentStateApproved)
 	if err != nil {
-		logs.Error("themes.Post.Comment:", err)
+		logs.Error("front.Post.Comment:", err)
 		return nil
 	}
 	defer rows.Close()
 
 	comments := make([]*Comment, 0, opt.PageSize)
 	if _, err := fetch.Obj(&comments, rows); err != nil {
-		logs.Error("themes.Post.Comment:", err)
+		logs.Error("front.Post.Comment:", err)
 		return nil
 	}
 	return comments
