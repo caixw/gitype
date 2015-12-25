@@ -105,7 +105,7 @@ func fillOptions(db *orm.DB, cfg *Config) error {
 
 		Theme: "default",
 
-		Menus: "{}",
+		Menus: "[]",
 
 		ScreenName: "typing",
 		Email:      "",
