@@ -5,9 +5,7 @@
 package admin
 
 import (
-	"crypto/md5"
 	"crypto/rand"
-	"encoding/hex"
 	"io"
 	"net/http"
 
@@ -59,9 +57,7 @@ func adminPostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h := md5.New()
-	h.Write(ret)
-	token = hex.EncodeToString(h.Sum(nil))
+	token = util.MD5(string(ret))
 	util.RenderJSON(w, http.StatusCreated, map[string]string{"token": token}, nil)
 }
 

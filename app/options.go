@@ -33,7 +33,7 @@ type Options struct {
 	Suffix      string `options:"system,suffix"`      // URL地址的后缀名，仅对文章有效
 	//Language    string `options:"system,language"`      // 界面语言
 
-	// 一些只读数据
+	// 一些只读数据，不能通过后台设置界面修改的数据。
 	Uptime      int64  `options:"readonly,uptime"`      // 上线时间
 	LastUpdated int64  `options:"readonly,lastUpdated"` // 最后更新时间
 	LastLogin   int64  `options:"readonly,lastLogin"`   // 最后登录时间
