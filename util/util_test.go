@@ -31,14 +31,6 @@ func TestRenderJSON(t *testing.T) {
 	a.Equal(w.Body.String(), "")
 }
 
-func TestHashPassword(t *testing.T) {
-	a := assert.New(t)
-
-	str1 := "123"
-	str2 := HashPassword(str1)
-	a.NotEmpty(str2).NotEqual(str1, str2)
-}
-
 func TestFileExists(t *testing.T) {
 	a := assert.New(t)
 
