@@ -64,7 +64,6 @@ func initRoute() error {
 		Get(opt.PostURL("{id}"), etagHandler(handlers.CompressFunc(pagePost))). // 获取文章详细内容
 		Post(opt.PostURL("{id}"), etagHandler(handlers.CompressFunc(pagePost))) // 提交评论
 
-	// 静态文件路由，TODO 去掉config中对于必须以/结尾的判断
 	// TODO 静态文件压缩
 	m.Get(cfg.UploadURLPrefix+"/", http.StripPrefix(cfg.UploadURLPrefix, http.FileServer(http.Dir(cfg.UploadDir)))).
 		Get(cfg.ThemeURLPrefix+"/", http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.ThemeDir))))

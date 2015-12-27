@@ -22,36 +22,41 @@ import (
 )
 
 const (
-	Version = "0.12.59.151224" // 程序版本号
+	Version = "0.12.60.151227" // 程序版本号
+
+	defaultPassword = "123" // 默认的后台登录密码
 
 	// 定义两个配置文件的位置。
 	configPath    = "./config/app.json"
 	logConfigPath = "./config/logs.xml"
-
-	defaultPassword = "123" // 默认的后台登录密码
 )
 
 // 初始化系统，获取系统配置变量和数据库实例。
 func Init() (*Config, *orm.DB, *Options, *Stat, error) {
+	// 初始化日志系统
+	if err := logs.InitFromXMLFile(logConfigPath); err != nil {
+		return nil, nil, nil, nil, err
+	}
+
+	// 加载app.json配置文件
 	cfg, err := loadConfig(configPath)
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
 
+	// 根据配置文件初始化数据库
 	db, err := initDB(cfg)
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
 
-	if err = logs.InitFromXMLFile(logConfigPath); err != nil {
-		return nil, nil, nil, nil, err
-	}
-
+	// 加载数据库中的配置项
 	opt, err := loadOptions(db)
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
 
+	// 初始化系统的状态数据。
 	stat, err := loadStat(db)
 	if err != nil {
 		return nil, nil, nil, nil, err

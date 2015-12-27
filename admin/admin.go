@@ -24,6 +24,7 @@ var (
 	u    *upload.Upload
 )
 
+// 初始化当前模块
 func Init(config *app.Config, database *orm.DB, options *app.Options, s *app.Stat) error {
 	cfg = config
 	opt = options

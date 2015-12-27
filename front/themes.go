@@ -49,7 +49,7 @@ func loadThemes() error {
 		return err
 	}
 	if len(fs) == 0 {
-		return errors.New("front.loadthemes:不存在任何主题目录")
+		return errors.New("front.loadThemes:不存在任何主题目录")
 	}
 	themesMap = make(map[string]*Theme, len(fs))
 
