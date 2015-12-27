@@ -12,9 +12,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/caixw/typing/util"
 	"github.com/issue9/handlers"
 	"github.com/issue9/web"
-	"yuesaopai.com/common/util"
 )
 
 // Config 表示程序级别的配置，修改这些配置需要重启程序才能启作用，

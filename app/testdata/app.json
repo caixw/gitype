@@ -7,8 +7,8 @@
         "serverName": "typing"
     },
 
-    "adminURLPrefix": "/admin/",
-    "adminDir":       "./static/admin",
+    "adminURLPrefix": "/admin",
+    "adminDir":       "./static/admin/",
 
     "dbDriver": "sqlite3",
     "dbDSN":    "./output/main.db",
