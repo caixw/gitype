@@ -1,6 +1,9 @@
 <h1 class="header">仪表盘</h1>
 
-<div id="dashboard-container" class="ui two stackable cards">
+<div id="dashboard-size-container" class="ui two stackable cards">
+</div>
+
+<div id="dashboard-modules-container" class="ui two stackable cards">
 </div>
 
 <script>
@@ -10,81 +13,97 @@ function pageInit(){
     var state = {}
     var modules = {}
 
-    var stateReq = app.get({
+    app.get({
         'url': app.adminAPI('/state')
     }).done(function(data, textStatus, jqXHR){
-        state = data;
-        console.log(state);
-        state.lastUpdated = (new Date(data.lastUpdated*1000)).toLocaleString();
+        data.lastUpdated = (new Date(data.lastUpdated*1000)).toLocaleString();
+        app.loadTemplate('#dashboard-size-container', '#dashboard-size-template', data);
     });
 
-    var modulesReq = app.get({
+    app.get({
         'url': app.adminAPI('/modules')
     }).done(function(data, textStatus, jqXHR){
-        modules = data.modules;
+        app.loadTemplate('#dashboard-modules-container', '#dashboard-modules-template', data);
     });
-
-    $.when(stateReq, modulesReq).then(function(){
-        app.loadTemplate('#dashboard-container', '#dashboard-template', {
-            'state':   state,
-            'modules': modules
-        });
-    });
-}
+} // end pageInit
 </script>
 
 
-<script type="x-handler-template" id="dashboard-template">
+<script type="x-handler-template" id="dashboard-size-template">
     <div class="ui card">
         <div class="content left aligned">
             最后更新
-            <div class="right floated meta" id="last-updated">{{state.lastUpdated}}</div>
+            <div class="right floated meta" id="last-updated">{{lastUpdated}}</div>
         </div>
 
         <div class="content left aligned">
             文章
-            <div class="right floated meta">{{state.posts}}</div>
+            <div class="right floated meta">{{posts}}</div>
         </div>
 
         <div class="content left aligned">
             已发布
-            <div class="right floated meta">{{state.publishedPosts}}</div>
+            <div class="right floated meta">{{publishedPosts}}</div>
         </div>
 
         <div class="content left aligned">
             草稿
-            <div class="right floated meta">{{state.draftPosts}}</div>
+            <div class="right floated meta">{{draftPosts}}</div>
         </div>
     </div>
 
     <div class="ui card">
         <div class="content left aligned">
             评论
-            <div class="right floated meta">{{state.comments}}</div>
+            <div class="right floated meta">{{comments}}</div>
         </div>
 
         <div class="content left aligned">
             已审核
-            <div class="right floated meta">{{state.approvedComments}}</div>
+            <div class="right floated meta">{{approvedComments}}</div>
         </div>
 
         <div class="content left aligned">
             待审核
-            <div class="right floated meta">{{state.waitingComments}}</div>
+            <div class="right floated meta">{{waitingComments}}</div>
         </div>
 
         <div class="content left aligned">
             垃圾评论
-            <div class="right floated meta">{{state.spamComments}}</div>
+            <div class="right floated meta">{{spamComments}}</div>
         </div>
     </div>
+</script>
 
+<script type="x-handler-template" id="dashboard-modules-template">
     <div class="ui card">
-    {{#each modules}}
+        <div class="content left aligned">
+            模块控制
+        </div>
+        {{#each modules}}
         <div class="content left aligned">
             {{name}}
             <div class="right floated meta">{{#if isRunning}}运行中...{{else}}停止{{/if}}</div>
         </div>
-    {{/each}}
+        {{/each}}
+    </div>
+
+    <div class="ui card">
+        <div class="content left aligned">
+            最后登录
+        </div>
+
+        <div class="content left aligned">
+            时间
+            <div class="right floated meta">{{time}}</div>
+        </div>
+        <div class="content left aligned">
+            IP
+            <div class="right floated meta">{{ip}}</div>
+        </div>
+        <div class="content left aligned">
+            浏览器标志
+            <div class="right floated meta">{{agent}}</div>
+        </div>
     </div>
 </script>
