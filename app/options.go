@@ -31,6 +31,7 @@ type Options struct {
 	Keywords    string `options:"system,keywords"`    // 默认页面的keywords内容
 	Description string `options:"system,description"` // 默认页面的description内容
 	Suffix      string `options:"system,suffix"`      // URL地址的后缀名，仅对文章有效
+	Beian       string `options:"system,beian"`       // 备案号
 	//Language    string `options:"system,language"`      // 界面语言
 
 	// 一些只读数据，不能通过后台设置界面修改的数据。

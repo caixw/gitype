@@ -32,7 +32,9 @@ type Info struct {
 	GoVersion   string     // 编译的go版本号
 	PostSize    int        // 总文章数量
 	CommentSize int        // 总评论数量
+	Beian       string     // 备案号
 	Uptime      int64      // 上线时间
+	LastUpdated int64      // 最后更新时间
 	RSS         *Anchor    // RSS，NOTICE:指针方便模板判断其值是否为空
 	Atom        *Anchor    // Atom
 	PrevPage    *Anchor    // 前一页
@@ -50,9 +52,11 @@ func getInfo() (*Info, error) {
 		SecondTitle: opt.SecondTitle,
 		Keywords:    opt.Keywords,
 		Description: opt.Description,
+		Uptime:      opt.Uptime,
+		LastUpdated: opt.LastUpdated,
+		Beian:       opt.Beian,
 		AppVersion:  app.Version,
 		GoVersion:   runtime.Version(),
-		Uptime:      opt.Uptime,
 	}
 
 	menus := make([]Anchor, 0, 10)

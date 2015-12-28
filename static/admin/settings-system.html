@@ -44,6 +44,13 @@
             <div class="description">文章URL地址显示的后缀名，对标签，类型等不启作用</div>
         </div>
 
+        <div class="field">
+            <label for="description">备案号</label>
+            <input id="beian" type="text" value="" />
+            <div class="description">网站的备案号</div>
+        </div>
+
+
         <br /><br />
         <div class="ui horizontal divider header">阅读</div>
 
@@ -96,6 +103,7 @@ function pageInit(){
     var keywords        = getData('keywords');
     var description     = getData('description');
     var suffix          = getData('suffix');
+    var beian           = getData('beian');
     var pageSize        = getData('pageSize');
     var sidebarSize     = getData('sidebarSize');
     var commentOrder    = getData('commentOrder');
@@ -116,6 +124,7 @@ function pageInit(){
     patchData('blur', 'keywords');
     patchData('blur', 'description');
     patchData('blur', 'suffix');
+    patchData('blur', 'beian');
     patchData('blur', 'pageSize');
     patchData('blur', 'sidebarSize');
     patchData('blur', 'longDateFormat');

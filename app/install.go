@@ -84,6 +84,7 @@ func fillOptions(db *orm.DB, cfg *Config) error {
 		Keywords:    "typing",
 		Description: "typing-极简的博客系统",
 		Suffix:      ".html",
+		Beian:       "备案中...",
 
 		Uptime:      now,
 		LastUpdated: now,
