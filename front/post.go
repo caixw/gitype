@@ -27,6 +27,12 @@ type Post struct {
 	AllowComment bool   // 是否允许评论
 }
 
+// 是否需要显示评论的相关内容。
+func (p *Post) ShowComments() bool {
+	return p.AllowComment || p.CommentsSize() > 0
+}
+
+// 评论数量
 func (p *Post) CommentsSize() int {
 	if size, found := stat.Posts[p.ID]; found {
 		return size

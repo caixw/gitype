@@ -12,9 +12,12 @@
                     <a href="{{.Permalink}}">{{.Title}}</a>
                 {{end}}
                 </span>
+
+                {{if .ShowComments}}
                 <span>
                     <a href="{{.Permalink}}#comments" itemprop="discussionUrl"><span itemprop="commentCount">{{.CommentsSize}}</span>条评论</a>
                 </span>
+                {{end}}
             </div>
         </header>
         {{.Entry|html}}

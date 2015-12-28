@@ -11,15 +11,18 @@
                     <a href="{{.Permalink}}">{{.Title}}</a>
                 {{end}}
                 </span>
+
+                {{if .post.ShowComments}}
                 <span>
                     <a href="{{.post.Permalink}}#comments" itemprop="discussionUrl"><span itemprop="commentCount">{{.post.CommentsSize}}</span>条评论</a>
                 </span>
+                {{end}}
             </div>
         </header>
         {{.post.Content|html}}
     </article>
 
-    {{if or .post.AllowComment (gt (len .post.Comments) 0)}}
+    {{if .post.ShowComments}}
     <div id="comments">
         <h2 class="title">评论</h2>
         {{if .post.AllowComment}}
