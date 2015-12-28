@@ -159,6 +159,7 @@ func adminGetState(w http.ResponseWriter, r *http.Request) {
 		"waitingComments":  stat.WaitingCommentsSize,
 		"spamComments":     stat.SpamCommentsSize,
 		"approvedComments": stat.ApprovedCommentsSize,
+		"lastUpdated":      opt.LastUpdated,
 		"screenName":       opt.ScreenName,
 	}
 

@@ -14,6 +14,8 @@ function pageInit(){
         'url': app.adminAPI('/state')
     }).done(function(data, textStatus, jqXHR){
         state = data;
+        console.log(state);
+        state.lastUpdated = (new Date(data.lastUpdated*1000)).toLocaleString();
     });
 
     var modulesReq = app.get({
@@ -35,6 +37,11 @@ function pageInit(){
 <script type="x-handler-template" id="dashboard-template">
     <div class="ui card">
         <div class="content left aligned">
+            最后更新
+            <div class="right floated meta" id="last-updated">{{state.lastUpdated}}</div>
+        </div>
+
+        <div class="content left aligned">
             文章
             <div class="right floated meta">{{state.posts}}</div>
         </div>
@@ -45,7 +52,7 @@ function pageInit(){
         </div>
 
         <div class="content left aligned">
-            草稿箱
+            草稿
             <div class="right floated meta">{{state.draftPosts}}</div>
         </div>
     </div>
@@ -67,7 +74,7 @@ function pageInit(){
         </div>
 
         <div class="content left aligned">
-            垃圾审核
+            垃圾评论
             <div class="right floated meta">{{state.spamComments}}</div>
         </div>
     </div>
