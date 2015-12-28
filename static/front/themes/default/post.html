@@ -19,6 +19,7 @@
         {{.post.Content|html}}
     </article>
 
+    {{if or .post.AllowComment (gt (len .post.Comments) 0)}}
     <div id="comments">
         <h2 class="title">评论</h2>
         {{if .post.AllowComment}}
@@ -48,6 +49,8 @@
         </article>
         {{end}}
     </div><!-- end #comments -->
+    {{end}}
+
 </div>
 
 {{template "footer" .info}}
