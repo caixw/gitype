@@ -8,6 +8,7 @@ import (
 	"crypto/rand"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/util"
@@ -57,6 +58,10 @@ func adminPostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logs.Infof("登录信息：IP:%v;Agent:%v;Time:%v\n",
+		r.RemoteAddr,
+		r.UserAgent,
+		time.Now().Format("2006-01-02 15:04:05"))
 	token = util.MD5(string(ret))
 	util.RenderJSON(w, http.StatusCreated, map[string]string{"token": token}, nil)
 }
