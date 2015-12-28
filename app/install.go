@@ -87,9 +87,6 @@ func fillOptions(db *orm.DB, cfg *Config) error {
 
 		Uptime:      now,
 		LastUpdated: now,
-		LastLogin:   0,
-		LastIP:      "",
-		LastAgent:   "",
 
 		PageSize:        20,
 		SidebarSize:     10,
