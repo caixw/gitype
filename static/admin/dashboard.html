@@ -10,9 +10,6 @@
 function pageInit(){
     app.setTitle('仪表盘');
 
-    var state = {}
-    var modules = {}
-
     app.get({
         'url': app.adminAPI('/state')
     }).done(function(data, textStatus, jqXHR){
