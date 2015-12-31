@@ -34,6 +34,11 @@ func TestRenderJSON(t *testing.T) {
 func TestFileExists(t *testing.T) {
 	a := assert.New(t)
 
+	// 测试文件
 	a.True(FileExists("util.go"))
 	a.False(FileExists("unknown.go"))
+
+	// 测试文件夹
+	a.True(FileExists("./"))
+	a.False(FileExists("./unknown_dir/"))
 }
