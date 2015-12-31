@@ -11,9 +11,12 @@
         {{if .Keywords}}<meta name="keywords" content="{{.Keywords}}" />{{end}}
         {{if .Description}}<meta name="description" content="{{.Description}}" />{{end}}
         <link rel="stylesheet" href="{{"default/style.css"|themeURL}}" />
-        <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=desert"></script>
+        <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.js"></script>
+        <script src="//cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=desert"></script>
     </head>
     <body>
+    {{template "sidebar" .}}
+
     <div id="content">
         <div class="container">
 {{end}}

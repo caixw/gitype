@@ -1,12 +1,32 @@
 "use strict";
 
-// 控制top按钮的显示
-window.addEventListener('scroll', function(){
-    var button = document.getElementById('return-top');
-    var t = document.documentElement.scrollTop || document.body.scrollTop;
-    if(t>30){
-        button.style.display='block';
+// 根据与页面顶部的距离，控制是否显示top按钮。
+$(window).on('scroll', function(){
+    var button = $('#return-top');
+    if($(document).scrollTop() > 30){
+        button.fadeIn();
     }else{
-        button.style.display='none';
+        button.fadeOut();
     }
-}, false);
+}).trigger('scroll'); // end $(window).onscroll
+
+
+/***************** 根据不同的屏宽调整显示内容 ********************/
+
+var result = window.matchMedia("(max-width:600px)");
+result.addListener(sizeChange);
+
+sizeChange(result)
+
+// 根据r是否匹配，控制具体的显示规则
+function sizeChange(r){
+    if (r.matches){
+        $('#sidebar .topbar .title a').before('<span class="menu-toggle">&#9776;</span>');
+
+        $('#sidebar .topbar .menu-toggle').on('click', function(){
+            $('#sidebar .menus').fadeToggle();
+        });
+    }else{
+        $('#sidebar .topbar.menu-toggle').remove();
+    }
+}

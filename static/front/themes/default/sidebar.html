@@ -2,49 +2,53 @@
 <aside id="sidebar">
 <div class="container">
 
-    <div class="block">
-        <p class="title"><a href="{{.SiteURL}}">{{.SiteName}}</a></p>
-        <p>{{.SecondTitle}}</p>
-    </div>
+    <div class="topbar">
+        <div class="block">
+            <p class="title" id="title"><a href="{{.SiteURL}}">{{.SiteName}}</a></p>
+            <p class="second-title">{{.SecondTitle}}</p>
+        </div>
+    </div><!-- end .topbar -->
 
-    <div class="block">
-        {{range .Menus}}
-        <p><a href="{{.Link}}">{{.Title}}</a></p>
+    <div class="menus">
+        <div class="block">
+            {{range .Menus}}
+            <p><a href="{{.Link}}">{{.Title}}</a></p>
+            {{end}}
+        </div>
+
+        {{$len := len .Tops}}
+        {{if gt $len 0}}
+        <div class="block">
+            <div class="header">最新评论</div>
+            <ul class="content">
+            {{range .Tops}}
+                <li><a href="{{.Permalink}}">{{.Content|strip}}</a></li>
+            {{end}}
+            </ul>
+        </div>
         {{end}}
-    </div>
 
-    {{$len := len .Tops}}
-    {{if gt $len 0}}
-    <div class="block">
-        <div class="header">最新评论</div>
-        <ul class="content">
-        {{range .Tops}}
-            <li><a href="{{.Permalink}}">{{.Content|strip}}</a></li>
+        {{$len := len .Hots}}
+        {{if gt $len 0}}
+        <div class="block">
+            <div class="header">热门文章</div>
+            <ul class="content">
+            {{range .Hots}}
+                <li><a href="{{.Permalink}}">{{.Title}}</a></li>
+            {{end}}
+            </ul>
+        </div>
         {{end}}
-        </ul>
-    </div>
-    {{end}}
 
-    {{$len := len .Hots}}
-    {{if gt $len 0}}
-    <div class="block">
-        <div class="header">热门文章</div>
-        <ul class="content">
-        {{range .Hots}}
-            <li><a href="{{.Permalink}}">{{.Title}}</a></li>
-        {{end}}
-        </ul>
-    </div>
-    {{end}}
-
-    <div class="block">
-        <div class="header">站点数据</div>
-        <ul class="content">
-            <li>上线时间: <time>{{.Uptime|sdate}}</time></li>
-            <li>文章数量: {{.PostSize}}</li>
-            <li>评论数量: {{.CommentSize}}</li>
-        </ul>
-    </div>
+        <div class="block">
+            <div class="header">站点数据</div>
+            <ul class="content">
+                <li>上线时间: <time>{{.Uptime|sdate}}</time></li>
+                <li>文章数量: {{.PostSize}}</li>
+                <li>评论数量: {{.CommentSize}}</li>
+            </ul>
+        </div>
+    </div><!-- end .menus -->
 
 </div>
 </aside>
