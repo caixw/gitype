@@ -58,11 +58,18 @@ func adminPostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token = util.MD5(string(ret))
+	if len(token) == 0 {
+		logs.Error("login:无法正确生成登录的token")
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
 	logs.Infof("登录信息：IP:%v;Agent:%v;Time:%v\n",
 		r.RemoteAddr,
 		r.UserAgent,
 		time.Now().Format("2006-01-02 15:04:05"))
-	token = util.MD5(string(ret))
+
 	util.RenderJSON(w, http.StatusCreated, map[string]string{"token": token}, nil)
 }
 
