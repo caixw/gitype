@@ -35,8 +35,9 @@ type Options struct {
 	//Language    string `options:"system,language"`      // 界面语言
 
 	// 一些只读数据，不能通过后台设置界面修改的数据。
-	Uptime      int64 `options:"readonly,uptime"`      // 上线时间
-	LastUpdated int64 `options:"readonly,lastUpdated"` // 最后更新时间
+	Uptime      int64  `options:"readonly,uptime"`      // 上线时间
+	LastUpdated int64  `options:"readonly,lastUpdated"` // 最后更新时间
+	Last        string `options:"readonly,last"`        // 是后几次的登录记录
 
 	PageSize        int    `options:"reading,pageSize"`        // 默认每页显示的数量
 	SidebarSize     int    `options:"reading,sidebarSize"`     // 侧边栏每个列表项内显示的数量
