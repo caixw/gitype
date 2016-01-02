@@ -1,9 +1,6 @@
 <h1 class="header">仪表盘</h1>
 
-<div id="dashboard-size-container" class="ui two stackable cards">
-</div>
-
-<div id="dashboard-modules-container" class="ui two stackable cards">
+<div id="dashboard-container" class="ui two stackable cards">
 </div>
 
 <script>
@@ -14,19 +11,26 @@ function pageInit(){
         'url': app.adminAPI('/state')
     }).done(function(data, textStatus, jqXHR){
         data.lastUpdated = (new Date(data.lastUpdated*1000)).toLocaleString();
-        app.loadTemplate('#dashboard-size-container', '#dashboard-size-template', data);
+        var last = JSON.parse(data.last);
+        data.time = last[1].time;
+        data.ip = last[1].ip;
+        data.agent = last[1].agent;
+        app.loadTemplate('#dashboard-container', '#dashboard-template', data);
+
+        // 加载完模板之后，再尝试加载控制模块的子模板
+        app.get({
+            'url': app.adminAPI('/modules')
+        }).done(function(data, textStatus, jqXHR){
+            app.loadTemplate('#dashboard-modules-container', '#dashboard-modules-template', data);
+        });
     });
 
-    app.get({
-        'url': app.adminAPI('/modules')
-    }).done(function(data, textStatus, jqXHR){
-        app.loadTemplate('#dashboard-modules-container', '#dashboard-modules-template', data);
-    });
+    
 } // end pageInit
 </script>
 
 
-<script type="x-handler-template" id="dashboard-size-template">
+<script type="x-handler-template" id="dashboard-template">
     <div class="ui card">
         <div class="content left aligned">
             最后更新
@@ -70,20 +74,8 @@ function pageInit(){
             <div class="right floated meta">{{spamComments}}</div>
         </div>
     </div>
-</script>
 
-<script type="x-handler-template" id="dashboard-modules-template">
-    <div class="ui card">
-        <div class="content left aligned">
-            模块控制
-        </div>
-        {{#each modules}}
-        <div class="content left aligned">
-            {{name}}
-            <div class="right floated meta">{{#if isRunning}}运行中...{{else}}停止{{/if}}</div>
-        </div>
-        {{/each}}
-    </div>
+    <div class="ui card" id="dashboard-modules-container"></div>
 
     <div class="ui card">
         <div class="content left aligned">
@@ -103,4 +95,16 @@ function pageInit(){
             <div class="right floated meta">{{agent}}</div>
         </div>
     </div>
+</script>
+
+<script type="x-handler-template" id="dashboard-modules-template">
+    <div class="content left aligned">
+        模块控制
+    </div>
+    {{#each modules}}
+    <div class="content left aligned">
+        {{name}}
+        <div class="right floated meta">{{#if isRunning}}运行中...{{else}}停止{{/if}}</div>
+    </div>
+    {{/each}}
 </script>

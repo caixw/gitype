@@ -161,6 +161,7 @@ func adminGetState(w http.ResponseWriter, r *http.Request) {
 		"approvedComments": stat.ApprovedCommentsSize,
 		"lastUpdated":      opt.LastUpdated,
 		"screenName":       opt.ScreenName,
+		"last":             opt.Last,
 	}
 
 	util.RenderJSON(w, http.StatusOK, data, nil)
