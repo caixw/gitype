@@ -53,13 +53,21 @@ function App(options) {
         settings.headers     = {'Authorization': window.sessionStorage.token};
 
         return $.ajax(settings).fail(function(jqXHR, textStatus, errorThrown){
-            if (jqXHR.status == 401) {
+            var msg;
+            if (jqXHR.status == 400){
+                msg = JSON.parse(jqXHR.responseText).message;
+            }else if(jqXHR.status == 401){ // 未登录
                 window.sessionStorage.token = '';
                 self.redirect('login');
                 return;
+            }else if (jqXHR.status == 404){
+                msg = '请求的资源不存在或是不可用';
+            }else if(jqXHR.status == 500){
+                msg = '服务器端错误，具体信息以查看服务器日志';
+            }else{
+                msg = '访问资源<'+settings.url+'>时发生以下错误：'+jqXHR.status;
             }
 
-            var msg = '访问资源<'+settings.url+'>时发生以下错误：'+jqXHR.status;
             self.showMessage('red', msg);
         });
     }
@@ -96,13 +104,13 @@ function App(options) {
 
     // 在页面右下解显示一提示信息，该信息会自动消失。
     this.showMessage = function(color, message) {
-        var div = $('<div id="message" class="ui '+color+' visible message">'+message+'</div>');
-        div.hide();
-        $('.message-row').prepend(div);
-        div.slideDown();
+        var msg = $('<div class="ui '+color+' visible message">'+message+'</div>');
+        msg.hide();
+        $('.message-row').prepend(msg);
+        msg.slideDown();
 
         window.setTimeout(function() {
-            div.slideUp(function(){div.remove();});
+            msg.slideUp(function(){msg.remove();});
         }, opt.messageTimeout);
     };
 
