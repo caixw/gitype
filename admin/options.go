@@ -202,6 +202,7 @@ func adminPutModuleStart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	m.Start()
+	logs.Infof("options:启动[%v]模块\n", m.Name)
 	util.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
@@ -220,12 +221,14 @@ func adminPutModuleStop(w http.ResponseWriter, r *http.Request) {
 	}
 
 	m.Stop()
+	logs.Infof("options:停止了[%v]模块的运行\n", m.Name)
 	util.RenderJSON(w, http.StatusNoContent, nil, nil)
 }
 
+// 从请求参数中解析出模块实例。
 func getModule(w http.ResponseWriter, r *http.Request) *web.Module {
 	name, ok := util.ParamString(w, r, "name")
-	if name == moduleName {
+	if name == moduleName { // 当前模块不能被控制
 		util.RenderJSON(w, http.StatusBadRequest, &util.ErrorResult{Message: "无法控制该模块！"}, nil)
 		return nil
 	}

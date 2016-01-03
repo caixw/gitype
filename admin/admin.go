@@ -16,6 +16,7 @@ import (
 	"github.com/issue9/web"
 )
 
+// 当前模块的名称
 const moduleName = "admin"
 
 var (

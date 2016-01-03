@@ -62,10 +62,10 @@ function App(options) {
                 return;
             }else if (jqXHR.status == 404){
                 msg = '请求的资源不存在或是不可用';
-            }else if(jqXHR.status == 500){
+            }else if(jqXHR.status >= 500){
                 msg = '服务器端错误，具体信息以查看服务器日志';
             }else{
-                msg = '访问资源<'+settings.url+'>时发生以下错误：'+jqXHR.status;
+                msg = '访问资源<'+settings.url+'>时返回以下状态码：'+jqXHR.status;
             }
 
             self.showMessage('red', msg);
