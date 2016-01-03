@@ -16,6 +16,8 @@ import (
 	"github.com/issue9/web"
 )
 
+const moduleName = "admin"
+
 var (
 	cfg  *app.Config
 	db   *orm.DB
@@ -49,7 +51,7 @@ func lastUpdated() {
 }
 
 func initRoute() error {
-	m, err := web.NewModule("admin")
+	m, err := web.NewModule(moduleName)
 	if err != nil {
 		return err
 	}

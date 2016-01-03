@@ -6,6 +6,7 @@ package admin
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"io"
 	"net/http"
 	"time"
@@ -14,6 +15,15 @@ import (
 	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
 )
+
+// 最大的登录日志数量
+const maxLoginLogs = 5
+
+type login struct {
+	IP    string `json:"ip,omitempty"`
+	Agent string `json:"agent,omitempty"`
+	Time  string `json:"time,omitempty"`
+}
 
 // 记录登录后的token值
 var token string
@@ -58,12 +68,51 @@ func adminPostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logs.Infof("登录信息：IP:%v;Agent:%v;Time:%v\n",
-		r.RemoteAddr,
-		r.UserAgent,
-		time.Now().Format("2006-01-02 15:04:05"))
 	token = util.MD5(string(ret))
+	if len(token) == 0 {
+		logs.Error("login:无法正确生成登录的token")
+		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
+		return
+	}
+
+	// 记录日志出错，仅输出错误内容，但不返回500错误。
+	if err = writeLastLogs(r); err != nil {
+		logs.Error("login:", err)
+	}
+
 	util.RenderJSON(w, http.StatusCreated, map[string]string{"token": token}, nil)
+}
+
+func writeLastLogs(r *http.Request) error {
+	ls := make([]*login, 0, maxLoginLogs)
+	if err := json.Unmarshal([]byte(opt.Last), &ls); err != nil {
+		return err
+	}
+
+	l := &login{
+		IP:    r.RemoteAddr,
+		Agent: r.UserAgent(),
+		Time:  time.Now().Format("2006-01-02 15:04:05"),
+	}
+
+	if len(ls) >= maxLoginLogs { // 去掉最后一条记录
+		ls = ls[:maxLoginLogs-1]
+	}
+	//lss := make([]*login, 0, maxLoginLogs)
+	//lss = append(lss, l)
+	lss := []*login{l}
+	lss = append(lss, ls...)
+	bs, err := json.Marshal(lss)
+	if err != nil {
+		return err
+	}
+
+	if err := opt.Set(db, "last", string(bs), true); err != nil {
+		return err
+	}
+	logs.Infof("登录信息：IP:%v;Agent:%v;Time:%v\n", l.IP, l.Agent, l.Time)
+
+	return nil
 }
 
 // @api delete /admin/api/login 注销当前用户的登录
