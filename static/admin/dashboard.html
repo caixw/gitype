@@ -18,13 +18,44 @@ function pageInit(){
         app.loadTemplate('#dashboard-container', '#dashboard-template', data);
 
         // 加载完模板之后，再尝试加载控制模块的子模板
+        loadModulesState();
+    });
+
+    function loadModulesState(){
         app.get({
             'url': app.adminAPI('/modules')
         }).done(function(data, textStatus, jqXHR){
-            app.loadTemplate('#dashboard-modules-container', '#dashboard-modules-template', data);
-        });
-    });
+            var modules = data.modules;
+            for(var i=0; i< data.modules.length; i++){
+                if (modules[i].isRunning){
+                    modules[i].stateText = '运行中...';
+                    modules[i].icon = 'stop';
+                }else{
+                    modules[i].stateText = '已停止';
+                    modules[i].icon = 'play';
+                }
+            }
+            $('#dashboard-modules-container').html('');
+            app.loadTemplate('#dashboard-modules-container', '#dashboard-modules-template', modules);
 
+            // 初始化按钮事件
+            $('#dashboard-modules-container .meta i').on('click', function(){
+                var name = $(this).attr('data-name');
+                var state = $(this).attr('data-state');
+
+                var key = 'stop';
+                if (state == 'play'){
+                    key = 'start';
+                }
+
+                app.put({
+                    'url': app.adminAPI('/modules/'+name+'/'+key)
+                }).done(function(){
+                    loadModulesState();
+                });
+            });
+        });
+    }
     
 } // end pageInit
 </script>
@@ -101,10 +132,10 @@ function pageInit(){
     <div class="content left aligned">
         模块控制
     </div>
-    {{#each modules}}
+    {{#each this}}
     <div class="content left aligned">
         {{name}}
-        <div class="right floated meta">{{#if isRunning}}运行中...{{else}}停止{{/if}}</div>
+        <div class="right floated meta"><i data-name="{{name}}" data-state="{{icon}}" class="{{icon}} icon"></i>&#160;{{stateText}}</div>
     </div>
     {{/each}}
 </script>

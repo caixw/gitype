@@ -225,6 +225,10 @@ func adminPutModuleStop(w http.ResponseWriter, r *http.Request) {
 
 func getModule(w http.ResponseWriter, r *http.Request) *web.Module {
 	name, ok := util.ParamString(w, r, "name")
+	if name == moduleName {
+		util.RenderJSON(w, http.StatusBadRequest, &util.ErrorResult{Message: "无法控制该模块！"}, nil)
+		return nil
+	}
 
 	if !ok {
 		util.RenderJSON(w, http.StatusNotFound, nil, nil)
