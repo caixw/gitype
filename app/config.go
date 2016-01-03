@@ -42,6 +42,8 @@ type Config struct {
 	ThemeURLPrefix string `json:"themeURLPrefix"` // 各主题公开文件的根URL
 	ThemeDir       string `json:"themeDir"`       // 主题文件所在的目录
 
+	RootDir string `json:"rootDir"` // 根地址下文件对应的目录
+
 	// 上传文件相关配置
 	UploadDir       string `json:"uploadDir"`       // 上传文件所在的目录
 	UploadDirFormat string `json:"uploadDirFormat"` // 上传文件子路径的格式，只能以时间为格式
@@ -110,6 +112,10 @@ func loadConfig(path string) (*Config, error) {
 		return nil, err
 	}
 	if err = checkConfigDir(cfg.ThemeDir, "themeDir"); err != nil {
+		return nil, err
+	}
+
+	if err = checkConfigDir(cfg.RootDir, "rootDir"); err != nil {
 		return nil, err
 	}
 

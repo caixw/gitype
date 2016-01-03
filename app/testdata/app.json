@@ -7,8 +7,11 @@
         "serverName": "typing"
     },
 
+    "debug": true,
+
     "adminURLPrefix": "/admin",
     "adminDir":       "./static/admin/",
+    "salt":           "123",
 
     "dbDriver": "sqlite3",
     "dbDSN":    "./output/main.db",
@@ -20,6 +23,8 @@
 
     "themeDir": "./static/front/themes/",
     "tempDir":  "./output/temp/",
+
+    "rootDir": "./static/front/root/",
 
     "uploadDir":      "./output/uploads/",
     "uploadExts":     ".png;.jpg",

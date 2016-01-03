@@ -163,6 +163,7 @@ func InstallConfig() error {
 
 		AdminURLPrefix: "/admin",
 		AdminDir:       "./static/admin/",
+		Salt:           "",
 
 		DBDSN:    "./output/main.db",
 		DBPrefix: "typing_",
@@ -170,8 +171,11 @@ func InstallConfig() error {
 
 		FrontAPIPrefix: "/api",
 		AdminAPIPrefix: "/admin/api",
+
 		ThemeURLPrefix: "/themes",
 		ThemeDir:       "./static/front/themes/",
+
+		RootDir: "./static/front/root/",
 
 		UploadDir:       "./output/uploads/",
 		UploadDirFormat: "2006/01/",
