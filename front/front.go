@@ -128,7 +128,7 @@ func getPosts(page int) ([]*Post, error) {
 	return posts, err
 }
 
-// 输出一个特写状态码下的错误页面。若该页面模板不存在，则只输出状态码，而没有内容。
+// 输出一个特定状态码下的错误页面。若该页面模板不存在，则只输出状态码，而没有内容。
 // 只对状态码大于等于400的起作用。
 func pageHttpStatusCode(w http.ResponseWriter, r *http.Request, code int) {
 	if code < 400 {
