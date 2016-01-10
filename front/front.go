@@ -57,7 +57,7 @@ func initRoute() error {
 		return err
 	}
 
-	m.Get(opt.HomeURL(), etagHandler(handlers.CompressFunc(pageHome))).
+	m.Get("/", etagHandler(handlers.CompressFunc(pageRoot))).
 		Get(opt.TagsURL(), etagHandler(handlers.CompressFunc(pageTags))).
 		Get(opt.TagURL("{id}", 1), etagHandler(handlers.CompressFunc(pageTag))).
 		Get(opt.PostsURL(1), etagHandler(handlers.CompressFunc(pagePosts))).
@@ -68,6 +68,7 @@ func initRoute() error {
 	m.Get(cfg.UploadURLPrefix+"/", http.StripPrefix(cfg.UploadURLPrefix, http.FileServer(http.Dir(cfg.UploadDir)))).
 		Get(cfg.ThemeURLPrefix+"/", http.StripPrefix(cfg.ThemeURLPrefix, http.FileServer(http.Dir(cfg.ThemeDir))))
 
+	// API
 	m.Prefix(cfg.FrontAPIPrefix).
 		PostFunc("/posts/{id:\\d+}/comments", frontPostPostComment).
 		GetFunc("/posts/{id:\\d+}/comments", frontGetPostComments)
@@ -147,14 +148,20 @@ func pageHttpStatusCode(w http.ResponseWriter, r *http.Request, code int) {
 }
 
 // 首页
-func pageHome(w http.ResponseWriter, r *http.Request) {
-	// 首页的匹配模式为：/，可以匹配任意路径。所以此处作个判断，除了完全匹配的，其余都返回404
-	if r.URL.Path != opt.HomeURL() {
-		pageHttpStatusCode(w, r, http.StatusNotFound)
+func pageRoot(w http.ResponseWriter, r *http.Request) {
+	// 首页的匹配模式为：/，可以匹配任意路径。所以此处作个判断，只有完全匹配的，才是显示首页
+	if r.URL.Path == opt.HomeURL() {
+		pagePosts(w, r)
 		return
 	}
 
-	pagePosts(w, r)
+	path := cfg.RootDir + r.URL.Path
+	if util.FileExists(path) {
+		http.ServeFile(w, r, path)
+		return
+	}
+
+	pageHttpStatusCode(w, r, http.StatusNotFound)
 }
 
 // 首页或是列表页

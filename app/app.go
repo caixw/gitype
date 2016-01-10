@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	Version = "0.12.66.160103" // 程序版本号
+	Version = "0.12.67.160111" // 程序版本号
 
 	defaultPassword = "123" // 默认的后台登录密码
 
