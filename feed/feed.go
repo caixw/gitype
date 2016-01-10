@@ -61,7 +61,7 @@ func initRoute() error {
 
 		if _, err := w.Write(sitemap.Bytes()); err != nil {
 			logs.Error("feed.initRoute.route-/sitemap.xml:", err)
-			w.WriteHeader(404) // 若是出错，给客户端的信息提示为404
+			w.WriteHeader(http.StatusNotFound) // 若是出错，给客户端的信息提示为404
 		}
 	})
 
@@ -69,7 +69,7 @@ func initRoute() error {
 	m.GetFunc("/sitemap.xsl", func(w http.ResponseWriter, r *http.Request) {
 		if _, err := w.Write(static.Sitemap); err != nil {
 			logs.Error("feed.initRoute.route-/sitemap.xsl:", err)
-			w.WriteHeader(404)
+			w.WriteHeader(http.StatusNotFound)
 		}
 	})
 
@@ -79,7 +79,7 @@ func initRoute() error {
 
 		if _, err := w.Write(rss.Bytes()); err != nil {
 			logs.Error("feed.initRoute.route-/rss.xml:", err)
-			w.WriteHeader(404)
+			w.WriteHeader(http.StatusNotFound)
 		}
 	})
 
@@ -89,7 +89,7 @@ func initRoute() error {
 
 		if _, err := w.Write(atom.Bytes()); err != nil {
 			logs.Error("feed.initRoute.route-/atom.xml:", err)
-			w.WriteHeader(404)
+			w.WriteHeader(http.StatusNotFound)
 		}
 	})
 
