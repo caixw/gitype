@@ -11,8 +11,6 @@ import (
 	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/feed"
 	"github.com/caixw/typing/front"
-	"github.com/issue9/logs"
-	"github.com/issue9/web"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -25,29 +23,28 @@ func main() {
 	}
 
 	// app
-	cfg, db, opt, stat, err := app.Init()
+	a, err := app.Init()
 	if err != nil {
 		panic(err)
 	}
 
 	// front
-	if err = front.Init(cfg, db, opt, stat); err != nil {
+	if err = front.Init(a); err != nil {
 		panic(err)
 	}
 
 	// admin
-	if err := admin.Init(cfg, db, opt, stat); err != nil {
+	if err := admin.Init(a); err != nil {
 		panic(err)
 	}
 
 	// feed
-	if err = feed.Init(db, opt); err != nil {
+	if err = feed.Init(a); err != nil {
 		panic(err)
 	}
 
-	web.Run(cfg.Core)
-	db.Close()
-	logs.Flush()
+	a.Run()
+	a.Close()
 }
 
 // 执行安装命令。

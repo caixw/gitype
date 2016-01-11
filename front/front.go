@@ -34,11 +34,11 @@ var (
 
 // 从主题根目录加载所有的主题内容，并初始所有的主题下静态文件的路由。
 // defaultTheme 为默认的主题。
-func Init(c *app.Config, database *orm.DB, options *app.Options, s *app.Stat) error {
-	cfg = c
-	opt = options
-	db = database
-	stat = s
+func Init(a *app.App) error {
+	cfg = a.Config()
+	opt = a.Options()
+	db = a.DB()
+	stat = a.Stat()
 
 	if err := loadThemes(); err != nil {
 		return err

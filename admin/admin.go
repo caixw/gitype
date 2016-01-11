@@ -28,11 +28,11 @@ var (
 )
 
 // 初始化当前模块
-func Init(config *app.Config, database *orm.DB, options *app.Options, s *app.Stat) error {
-	cfg = config
-	opt = options
-	db = database
-	stat = s
+func Init(a *app.App) error {
+	cfg = a.Config()
+	opt = a.Options()
+	db = a.DB()
+	stat = a.Stat()
 
 	// 上传相关配置
 	var err error
