@@ -11,6 +11,7 @@ install:
     - go get github.com/issue9/logs
     - go get github.com/issue9/orm
     - go get github.com/issue9/upload
+    - go get github.com/issue9/rands
     - go get github.com/issue9/web
     - go get github.com/go-sql-driver/mysql
     - go get github.com/mattn/go-sqlite3
