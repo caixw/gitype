@@ -18,7 +18,7 @@ import (
 	"github.com/issue9/conv"
 	"github.com/issue9/logs"
 	"github.com/issue9/orm"
-	"github.com/issue9/rand"
+	"github.com/issue9/rands"
 	"github.com/issue9/web"
 )
 
@@ -164,7 +164,7 @@ func InstallConfig() error {
 
 		AdminURLPrefix: "/admin",
 		AdminDir:       "./static/admin/",
-		Salt:           rand.String(6, 7, rand.Lower, rand.Upper, rand.Digit, rand.Punct),
+		Salt:           rands.String(6, 7, rands.Lower, rands.Upper, rands.Digit, rands.Punct),
 
 		DBDSN:    "./output/main.db",
 		DBPrefix: "typing_",
