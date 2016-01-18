@@ -23,8 +23,8 @@ import (
 )
 
 // 向数据库写入初始内容。
-func InstallDB() error {
-	cfg, err := loadConfig(configPath)
+func InstallDB(appdir string) error {
+	cfg, err := loadConfig(appdir + configFile)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,8 @@ func InstallDB() error {
 		return err
 	}
 
-	if err = logs.InitFromXMLFile(logConfigPath); err != nil {
+	// TODO 安装过程中，不必要初始化日志系统
+	if err = logs.InitFromXMLFile(appdir + logConfigFile); err != nil {
 		return err
 	}
 
@@ -145,8 +146,8 @@ func fillOptions(db *orm.DB, cfg *Config) error {
 
 // 用于输出配置文件到指定的位置。
 // 目前包含了日志配置文件和程序本身的配置文件。
-func InstallConfig() error {
-	if err := ioutil.WriteFile(logConfigPath, static.LogConfig, os.ModePerm); err != nil {
+func InstallConfig(appdir string) error {
+	if err := ioutil.WriteFile(appdir+logConfigFile, static.LogConfig, os.ModePerm); err != nil {
 		return err
 	}
 
@@ -189,5 +190,5 @@ func InstallConfig() error {
 		return err
 	}
 
-	return ioutil.WriteFile(configPath, data, os.ModePerm)
+	return ioutil.WriteFile(appdir+configFile, data, os.ModePerm)
 }

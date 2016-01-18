@@ -14,6 +14,8 @@ package app
 
 import (
 	"errors"
+	"os"
+	"strings"
 
 	"github.com/issue9/logs"
 	"github.com/issue9/orm"
@@ -23,15 +25,17 @@ import (
 )
 
 const (
-	Version = "0.13.68.160111" // 程序版本号
+	Version = "0.14.69.160111" // 程序版本号
 
 	defaultPassword = "123" // 默认的后台登录密码
 
-	configPath    = "./config/app.json"
-	logConfigPath = "./config/logs.xml"
+	configFile    = "app.json"
+	logConfigFile = "logs.xml"
 )
 
 type App struct {
+	appdir string
+
 	config  *Config
 	options *Options
 	stat    *Stat
@@ -39,42 +43,49 @@ type App struct {
 }
 
 // 初始化系统，获取系统配置变量和数据库实例。
-func Init() (*App, error) {
+func Init(appdir string) (a *App, err error) {
+	if !strings.HasSuffix(appdir, "/") && !strings.HasSuffix(appdir, string(os.PathSeparator)) {
+		appdir += string(os.PathSeparator)
+	}
+
+	a = &App{
+		appdir: appdir,
+	}
+
 	// 初始化日志系统
-	if err := logs.InitFromXMLFile(logConfigPath); err != nil {
+	if err := logs.InitFromXMLFile(a.Appdir(logConfigFile)); err != nil {
 		return nil, err
 	}
 
 	// 加载app.json配置文件
-	cfg, err := loadConfig(configPath)
+	a.config, err = loadConfig(a.Appdir(configFile))
 	if err != nil {
 		return nil, err
 	}
 
 	// 根据配置文件初始化数据库
-	db, err := initDB(cfg)
+	a.db, err = initDB(a.config)
 	if err != nil {
 		return nil, err
 	}
 
 	// 加载数据库中的配置项
-	opt, err := loadOptions(db)
+	a.options, err = loadOptions(a.db)
 	if err != nil {
 		return nil, err
 	}
 
 	// 初始化系统的状态数据。
-	stat, err := loadStat(db)
+	a.stat, err = loadStat(a.db)
 	if err != nil {
 		return nil, err
 	}
 
-	return &App{
-		config:  cfg,
-		db:      db,
-		options: opt,
-		stat:    stat,
-	}, nil
+	return a, nil
+}
+
+func (a *App) Appdir(path string) string {
+	return a.appdir + path
 }
 
 func (a *App) Config() *Config {

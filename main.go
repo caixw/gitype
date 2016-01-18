@@ -18,12 +18,12 @@ import (
 )
 
 func main() {
-	if install() {
+	if install("./config/") {
 		return
 	}
 
 	// app
-	a, err := app.Init()
+	a, err := app.Init("./config/")
 	if err != nil {
 		panic(err)
 	}
@@ -52,19 +52,19 @@ func main() {
 // 根据返回值来确定是否退出整个程序。
 // 若返回true则表示当前已经执行完安装命令，可以退出整个程序，
 // 否则表示当前程序没有从命令参数中获取安装指令，继续执行程序其它部分。
-func install() bool {
+func install(appdir string) bool {
 	action := flag.String("init", "", "指定需要初始化的内容，可取的值可以为：config和db。")
 	flag.Parse()
 
 	switch *action {
 	case "config":
-		if err := app.InstallConfig(); err != nil {
+		if err := app.InstallConfig(appdir); err != nil {
 			panic(err)
 		}
 
 		return true
 	case "db":
-		if err := app.InstallDB(); err != nil {
+		if err := app.InstallDB(appdir); err != nil {
 			panic(err)
 		}
 
