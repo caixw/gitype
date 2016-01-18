@@ -16,7 +16,6 @@ import (
 	"github.com/caixw/typing/app/static"
 	"github.com/caixw/typing/models"
 	"github.com/issue9/conv"
-	"github.com/issue9/logs"
 	"github.com/issue9/orm"
 	"github.com/issue9/rands"
 	"github.com/issue9/web"
@@ -31,11 +30,6 @@ func InstallDB(appdir string) error {
 
 	db, err := initDB(cfg)
 	if err != nil {
-		return err
-	}
-
-	// TODO 安装过程中，不必要初始化日志系统
-	if err = logs.InitFromXMLFile(appdir + logConfigFile); err != nil {
 		return err
 	}
 
