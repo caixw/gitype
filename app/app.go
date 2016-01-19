@@ -42,7 +42,8 @@ var (
 	stats   *Stats
 )
 
-// 初始化系统，获取系统配置变量和数据库实例。
+// 初始化app包。
+// 除Install函数，其它函数都依赖Init()做初始化。
 func Init(dir string) (err error) {
 	if !strings.HasSuffix(dir, "/") && !strings.HasSuffix(dir, string(os.PathSeparator)) {
 		dir += string(os.PathSeparator)

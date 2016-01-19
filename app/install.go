@@ -27,6 +27,8 @@ func Install(appdir string) error {
 		return err
 	}
 
+	// TODO 完善安装界面
+
 	return installDB(appdir)
 }
 
