@@ -108,7 +108,7 @@ func writeLastLogs(r *http.Request) error {
 		return err
 	}
 
-	if err := app.SetOption(db, "last", string(bs), true); err != nil {
+	if err := app.SetOption("last", string(bs), true); err != nil {
 		return err
 	}
 	logs.Infof("登录信息：IP:%v;Agent:%v;Time:%v\n", l.IP, l.Agent, l.Time)

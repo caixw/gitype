@@ -11,7 +11,6 @@ import (
 
 	"github.com/caixw/typing/models"
 	"github.com/issue9/conv"
-	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
 )
 
@@ -67,7 +66,7 @@ func GetOptions() *Options {
 
 // 重新从数据库加载options表的数据到Options实例中。
 func ReloadOptions() (*Options, error) {
-	opt, err := loadOptions(db)
+	opt, err := loadOptions()
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +76,7 @@ func ReloadOptions() (*Options, error) {
 }
 
 // 初始化core包。返回程序必要的变量。
-func loadOptions(db *orm.DB) (*Options, error) {
+func loadOptions() (*Options, error) {
 	sql := "SELECT * FROM #options"
 	rows, err := db.Query(true, sql)
 	if err != nil {
@@ -140,7 +139,7 @@ func (opt *Options) setValue(key string, val interface{}, allowSetReadonly bool)
 
 // 设置options中的值，顺便更新数据库中的值。
 // allowSetStat 是否允许修改readonly组的值。
-func SetOption(db *orm.DB, key string, val interface{}, allowSetReadonly bool) error {
+func SetOption(key string, val interface{}, allowSetReadonly bool) error {
 	if err := options.setValue(key, val, allowSetReadonly); err != nil {
 		return err
 	}

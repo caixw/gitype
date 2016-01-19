@@ -46,7 +46,7 @@ func Init() error {
 
 // 更新数据库中的lastUpdated变量
 func lastUpdated() {
-	if err := app.SetOption(db, "lastUpdated", time.Now().Unix(), true); err != nil {
+	if err := app.SetOption("lastUpdated", time.Now().Unix(), true); err != nil {
 		logs.Error("admin.lastUpdated:", err)
 	}
 }

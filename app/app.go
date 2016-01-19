@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	Version = "0.15.70.160119" // 程序版本号
+	Version = "0.15.71.160119" // 程序版本号
 
 	defaultPassword = "123" // 默认的后台登录密码
 
@@ -67,7 +67,7 @@ func Init(dir string) (err error) {
 	}
 
 	// 加载数据库中的配置项
-	options, err = loadOptions(db)
+	options, err = loadOptions()
 	if err != nil {
 		return err
 	}
