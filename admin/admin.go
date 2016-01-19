@@ -20,19 +20,19 @@ import (
 const moduleName = "admin"
 
 var (
-	cfg  *app.Config
-	db   *orm.DB
-	opt  *app.Options
-	stat *app.Stat
-	u    *upload.Upload
+	cfg   *app.Config
+	db    *orm.DB
+	opt   *app.Options
+	stats *app.Stats
+	u     *upload.Upload
 )
 
 // 初始化当前模块
-func Init(a *app.App) error {
-	cfg = a.Config()
-	opt = a.Options()
-	db = a.DB()
-	stat = a.Stat()
+func Init() error {
+	cfg = app.GetConfig()
+	opt = app.GetOptions()
+	db = app.GetDB()
+	stats = app.GetStats()
 
 	// 上传相关配置
 	var err error
@@ -46,7 +46,7 @@ func Init(a *app.App) error {
 
 // 更新数据库中的lastUpdated变量
 func lastUpdated() {
-	if err := opt.Set(db, "lastUpdated", time.Now().Unix(), true); err != nil {
+	if err := app.SetOption(db, "lastUpdated", time.Now().Unix(), true); err != nil {
 		logs.Error("admin.lastUpdated:", err)
 	}
 }

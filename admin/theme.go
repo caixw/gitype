@@ -7,6 +7,7 @@ package admin
 import (
 	"net/http"
 
+	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/front"
 	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
@@ -57,7 +58,7 @@ func adminPutCurrentTheme(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := opt.Set(db, "theme", v.Value, false); err != nil {
+	if err := app.SetOption(db, "theme", v.Value, false); err != nil {
 		logs.Error("adminPutTheme:", err)
 		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return

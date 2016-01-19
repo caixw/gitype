@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	Version = "0.14.69.160111" // 程序版本号
+	Version = "0.15.70.160119" // 程序版本号
 
 	defaultPassword = "123" // 默认的后台登录密码
 
@@ -33,83 +33,68 @@ const (
 	logConfigFile = "logs.xml"
 )
 
-type App struct {
+var (
 	appdir string
 
 	config  *Config
-	options *Options
-	stat    *Stat
 	db      *orm.DB
-}
+	options *Options
+	stats   *Stats
+)
 
 // 初始化系统，获取系统配置变量和数据库实例。
-func Init(appdir string) (a *App, err error) {
-	if !strings.HasSuffix(appdir, "/") && !strings.HasSuffix(appdir, string(os.PathSeparator)) {
-		appdir += string(os.PathSeparator)
+func Init(dir string) (err error) {
+	if !strings.HasSuffix(dir, "/") && !strings.HasSuffix(dir, string(os.PathSeparator)) {
+		dir += string(os.PathSeparator)
 	}
-
-	a = &App{
-		appdir: appdir,
-	}
+	appdir = dir
 
 	// 初始化日志系统
-	if err := logs.InitFromXMLFile(a.Appdir(logConfigFile)); err != nil {
-		return nil, err
+	if err := logs.InitFromXMLFile(Appdir(logConfigFile)); err != nil {
+		return err
 	}
 
 	// 加载app.json配置文件
-	a.config, err = loadConfig(a.Appdir(configFile))
+	config, err = loadConfig(Appdir(configFile))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// 根据配置文件初始化数据库
-	a.db, err = initDB(a.config)
+	db, err = initDB(config)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// 加载数据库中的配置项
-	a.options, err = loadOptions(a.db)
+	options, err = loadOptions(db)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// 初始化系统的状态数据。
-	a.stat, err = loadStat(a.db)
+	stats, err = loadStats()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return a, nil
+	return nil
 }
 
-func (a *App) Appdir(path string) string {
-	return a.appdir + path
+func Appdir(path string) string {
+	return appdir + path
 }
 
-func (a *App) Config() *Config {
-	return a.config
+func GetDB() *orm.DB {
+	return db
 }
 
-func (a *App) Options() *Options {
-	return a.options
+func Run() {
+	web.Run(config.Core)
 }
 
-func (a *App) Stat() *Stat {
-	return a.stat
-}
-
-func (a *App) DB() *orm.DB {
-	return a.db
-}
-
-func (a *App) Run() {
-	web.Run(a.config.Core)
-}
-
-func (a *App) Close() {
-	a.db.Close()
+func Close() {
+	db.Close()
 	logs.Flush()
 }
 

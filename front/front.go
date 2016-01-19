@@ -26,19 +26,19 @@ import (
 )
 
 var (
-	cfg  *app.Config
-	opt  *app.Options
-	stat *app.Stat
-	db   *orm.DB
+	cfg   *app.Config
+	opt   *app.Options
+	stats *app.Stats
+	db    *orm.DB
 )
 
 // 从主题根目录加载所有的主题内容，并初始所有的主题下静态文件的路由。
 // defaultTheme 为默认的主题。
-func Init(a *app.App) error {
-	cfg = a.Config()
-	opt = a.Options()
-	db = a.DB()
-	stat = a.Stat()
+func Init() error {
+	cfg = app.GetConfig()
+	opt = app.GetOptions()
+	db = app.GetDB()
+	stats = app.GetStats()
 
 	if err := loadThemes(); err != nil {
 		return err
@@ -58,11 +58,11 @@ func initRoute() error {
 	}
 
 	m.Get("/", etagHandler(handlers.CompressFunc(pageRoot))).
-		Get(opt.TagsURL(), etagHandler(handlers.CompressFunc(pageTags))).
-		Get(opt.TagURL("{id}", 1), etagHandler(handlers.CompressFunc(pageTag))).
-		Get(opt.PostsURL(1), etagHandler(handlers.CompressFunc(pagePosts))).
-		Get(opt.PostURL("{id}"), etagHandler(handlers.CompressFunc(pagePost))). // 获取文章详细内容
-		Post(opt.PostURL("{id}"), etagHandler(handlers.CompressFunc(pagePost))) // 提交评论
+		Get(app.TagsURL(), etagHandler(handlers.CompressFunc(pageTags))).
+		Get(app.TagURL("{id}", 1), etagHandler(handlers.CompressFunc(pageTag))).
+		Get(app.PostsURL(1), etagHandler(handlers.CompressFunc(pagePosts))).
+		Get(app.PostURL("{id}"), etagHandler(handlers.CompressFunc(pagePost))). // 获取文章详细内容
+		Post(app.PostURL("{id}"), etagHandler(handlers.CompressFunc(pagePost))) // 提交评论
 
 	// TODO 静态文件压缩
 	m.Get(cfg.UploadURLPrefix+"/", http.StripPrefix(cfg.UploadURLPrefix, http.FileServer(http.Dir(cfg.UploadDir)))).
@@ -150,7 +150,7 @@ func pageHttpStatusCode(w http.ResponseWriter, r *http.Request, code int) {
 // 首页
 func pageRoot(w http.ResponseWriter, r *http.Request) {
 	// 首页的匹配模式为：/，可以匹配任意路径。所以此处作个判断，只有完全匹配的，才是显示首页
-	if r.URL.Path == opt.HomeURL() {
+	if r.URL.Path == app.HomeURL() {
 		pagePosts(w, r)
 		return
 	}
@@ -175,14 +175,14 @@ func pagePosts(w http.ResponseWriter, r *http.Request) {
 
 	page := conv.MustInt(r.FormValue("page"), 1)
 	if page == 1 {
-		info.Canonical = opt.URL(opt.HomeURL())
+		info.Canonical = app.URL(app.HomeURL())
 	} else if page > 1 { // 为1的时候，不需要prev
-		info.Canonical = opt.URL(opt.PostsURL(page))
-		info.PrevPage = &Anchor{Title: "上一页", Link: opt.PostsURL(page - 1)}
+		info.Canonical = app.URL(app.PostsURL(page))
+		info.PrevPage = &Anchor{Title: "上一页", Link: app.PostsURL(page - 1)}
 	}
 
 	if page*opt.SidebarSize < info.PostSize {
-		info.NextPage = &Anchor{Title: "下一页", Link: opt.PostsURL(page + 1)}
+		info.NextPage = &Anchor{Title: "下一页", Link: app.PostsURL(page + 1)}
 	}
 
 	posts, err := getPosts(page - 1)
@@ -207,7 +207,7 @@ func pageTags(w http.ResponseWriter, r *http.Request) {
 		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
-	info.Canonical = opt.URL(opt.TagsURL())
+	info.Canonical = app.URL(app.TagsURL())
 	info.Title = "标签"
 
 	sql := `SELECT {id} AS {ID}, {name} AS {Name}, {title} AS {Title} FROM #tags`
@@ -263,17 +263,17 @@ func pageTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	info.Canonical = opt.URL(tag.Permalink())
+	info.Canonical = app.URL(tag.Permalink())
 	info.Title = tag.Title
 
 	page := conv.MustInt(r.FormValue("page"), 1)
 	if page < 1 { // 不能小于1
 		page = 1
 	} else if page > 1 { // 为1的时候，不需要prev
-		info.PrevPage = &Anchor{Title: "上一页", Link: opt.TagURL(tagName, page-1)}
+		info.PrevPage = &Anchor{Title: "上一页", Link: app.TagURL(tagName, page-1)}
 	}
 	if page*opt.SidebarSize < tag.Count() {
-		info.NextPage = &Anchor{Title: "下一页", Link: opt.TagURL(tagName, page+1)}
+		info.NextPage = &Anchor{Title: "下一页", Link: app.TagURL(tagName, page+1)}
 	}
 	posts, err := getTagPosts(page-1, tag.ID)
 	if err != nil {
@@ -332,8 +332,8 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		if err := insertComment(mp.ID, r); err != nil {
 			logs.Error("pagePost:", err)
 		} else {
-			stat.WaitingCommentsSize++
-			stat.CommentsSize++
+			stats.WaitingCommentsSize++
+			stats.CommentsSize++
 		}
 	}
 
@@ -355,7 +355,7 @@ func pagePost(w http.ResponseWriter, r *http.Request) {
 		pageHttpStatusCode(w, r, http.StatusInternalServerError)
 		return
 	}
-	info.Canonical = opt.URL(post.Permalink())
+	info.Canonical = app.URL(post.Permalink())
 	info.Title = post.Title
 	info.Description = post.Summary
 	info.Keywords = post.Keywords()

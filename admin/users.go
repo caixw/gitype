@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
@@ -50,7 +51,7 @@ func adminPostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if cfg.Password(inst.Password) != opt.Password {
+	if app.Password(inst.Password) != opt.Password {
 		util.RenderJSON(w, http.StatusUnauthorized, nil, nil)
 		return
 	}
@@ -107,7 +108,7 @@ func writeLastLogs(r *http.Request) error {
 		return err
 	}
 
-	if err := opt.Set(db, "last", string(bs), true); err != nil {
+	if err := app.SetOption(db, "last", string(bs), true); err != nil {
 		return err
 	}
 	logs.Infof("登录信息：IP:%v;Agent:%v;Time:%v\n", l.IP, l.Agent, l.Time)
@@ -152,7 +153,7 @@ func adminChangePassword(w http.ResponseWriter, r *http.Request) {
 	if len(l.New) == 0 {
 		errs.Add("new", "新密码不能为空")
 	}
-	if opt.Password != cfg.Password(l.Old) {
+	if opt.Password != app.Password(l.Old) {
 		errs.Add("old", "旧密码错误")
 	}
 	if len(errs.Detail) > 0 {
@@ -160,7 +161,7 @@ func adminChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	o := &models.Option{Key: "password", Value: cfg.Password(l.New)}
+	o := &models.Option{Key: "password", Value: app.Password(l.New)}
 	if _, err := db.Update(o); err != nil {
 		logs.Error("adminChangePassword:", err)
 		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)

@@ -21,8 +21,17 @@ import (
 	"github.com/issue9/web"
 )
 
+// 执行安装程序，若正常完成，或是已经安装过，则返回nil。
+func Install(appdir string) error {
+	if err := installConfig(appdir); err != nil {
+		return err
+	}
+
+	return installDB(appdir)
+}
+
 // 向数据库写入初始内容。
-func InstallDB(appdir string) error {
+func installDB(appdir string) error {
 	cfg, err := loadConfig(appdir + configFile)
 	if err != nil {
 		return err
@@ -104,7 +113,7 @@ func fillOptions(db *orm.DB, cfg *Config) error {
 
 		ScreenName: "typing",
 		Email:      "",
-		Password:   cfg.Password(defaultPassword),
+		Password:   Password(defaultPassword),
 	}
 
 	maps, err := opt.toMaps()
@@ -140,7 +149,7 @@ func fillOptions(db *orm.DB, cfg *Config) error {
 
 // 用于输出配置文件到指定的位置。
 // 目前包含了日志配置文件和程序本身的配置文件。
-func InstallConfig(appdir string) error {
+func installConfig(appdir string) error {
 	if err := ioutil.WriteFile(appdir+logConfigFile, static.LogConfig, os.ModePerm); err != nil {
 		return err
 	}

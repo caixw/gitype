@@ -31,7 +31,7 @@ func adminDeleteComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := stat.UpdateCommentsSize(db); err != nil {
+	if err := stats.UpdateCommentsSize(); err != nil {
 		logs.Error("admin.adminDeleteComment:", err)
 	}
 
@@ -93,10 +93,10 @@ func adminGetComments(w http.ResponseWriter, r *http.Request) {
 // @apiParam approved int 通过审核的评论数量
 func adminGetCommentsCount(w http.ResponseWriter, r *http.Request) {
 	data := map[string]int{
-		"waiting":  stat.WaitingCommentsSize,
-		"spam":     stat.SpamCommentsSize,
-		"approved": stat.ApprovedCommentsSize,
-		"all":      stat.CommentsSize,
+		"waiting":  stats.WaitingCommentsSize,
+		"spam":     stats.SpamCommentsSize,
+		"approved": stats.ApprovedCommentsSize,
+		"all":      stats.CommentsSize,
 	}
 	util.RenderJSON(w, http.StatusOK, data, nil)
 }
@@ -145,7 +145,7 @@ func adminPutComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := stat.UpdateCommentsSize(db); err != nil {
+	if err := stats.UpdateCommentsSize(); err != nil {
 		logs.Error("admin.adminPutComment:", err)
 	}
 
@@ -190,7 +190,7 @@ func setCommentState(w http.ResponseWriter, r *http.Request, state int) {
 		return
 	}
 
-	if err := stat.UpdateCommentsSize(db); err != nil {
+	if err := stats.UpdateCommentsSize(); err != nil {
 		logs.Error("admin.setCommentState:", err)
 	}
 
@@ -237,7 +237,7 @@ func adminPostComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := stat.UpdateCommentsSize(db); err != nil {
+	if err := stats.UpdateCommentsSize(); err != nil {
 		logs.Error("admin.adminPostComment:", err)
 	}
 

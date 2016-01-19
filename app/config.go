@@ -52,9 +52,14 @@ type Config struct {
 	UploadURLPrefix string `json:"uploadURLPrefix"` // 上传文件的地址前缀
 }
 
+// 获取Config实例
+func GetConfig() *Config {
+	return config
+}
+
 // 返回一个加盐值的密码。
-func (c *Config) Password(password string) string {
-	return util.MD5(util.MD5(password) + c.Salt)
+func Password(password string) string {
+	return util.MD5(util.MD5(password) + config.Salt)
 }
 
 // 检测配置项的URL，是否符合要求。

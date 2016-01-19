@@ -4,13 +4,10 @@
 
 package app
 
-import (
-	"github.com/caixw/typing/models"
-	"github.com/issue9/orm"
-)
+import "github.com/caixw/typing/models"
 
 // 一些临时性的统计数据，在程序启动时初始化，关闭之后也不会被保存到数据库。
-type Stat struct {
+type Stats struct {
 	CommentsSize         int           // 评论数
 	WaitingCommentsSize  int           // 待评论数量
 	ApprovedCommentsSize int           // 待评论数量
@@ -22,26 +19,30 @@ type Stat struct {
 	Tags                 map[int64]int // 标签对应的文章数量
 }
 
-// 从数据库初始化数据
-func loadStat(db *orm.DB) (*Stat, error) {
-	stat := &Stat{}
+func GetStats() *Stats {
+	return stats
+}
 
-	if err := stat.ReBuild(db); err != nil {
+// 从数据库初始化数据
+func loadStats() (*Stats, error) {
+	stats := &Stats{}
+
+	if err := stats.ReBuild(); err != nil {
 		return nil, err
 	}
 
-	return stat, nil
+	return stats, nil
 }
 
 // 重新构建数据
-func (s *Stat) ReBuild(db *orm.DB) error {
+func (s *Stats) ReBuild() error {
 	/* 统计评论数量 */
-	if err := s.UpdateCommentsSize(db); err != nil {
+	if err := s.UpdateCommentsSize(); err != nil {
 		return err
 	}
 
 	/* 统计文章数量 */
-	if err := s.UpdatePostsSize(db); err != nil {
+	if err := s.UpdatePostsSize(); err != nil {
 		return err
 	}
 
@@ -53,7 +54,7 @@ func (s *Stat) ReBuild(db *orm.DB) error {
 }
 
 //更新文章评论数量
-func (s *Stat) UpdatePostsSize(db *orm.DB) (err error) {
+func (s *Stats) UpdatePostsSize() (err error) {
 	p := &models.Post{State: models.PostStateDraft}
 	s.DraftPostsSize, err = db.Count(p)
 	if err != nil {
@@ -72,7 +73,7 @@ func (s *Stat) UpdatePostsSize(db *orm.DB) (err error) {
 }
 
 // 更新评论数据
-func (s *Stat) UpdateCommentsSize(db *orm.DB) (err error) {
+func (s *Stats) UpdateCommentsSize() (err error) {
 	o := &models.Comment{State: models.CommentStateSpam}
 	s.SpamCommentsSize, err = db.Count(o)
 	if err != nil {

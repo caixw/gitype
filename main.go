@@ -5,8 +5,6 @@
 package main
 
 import (
-	"flag"
-
 	"github.com/caixw/typing/admin"
 	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/feed"
@@ -18,33 +16,32 @@ import (
 )
 
 func main() {
-	if install("./config/") {
-		return
+	if err := app.Install("./config/"); err != nil {
+		panic(err)
 	}
 
 	// app
-	a, err := app.Init("./config/")
-	if err != nil {
+	if err := app.Init("./config/"); err != nil {
 		panic(err)
 	}
 
 	// front
-	if err = front.Init(a); err != nil {
+	if err := front.Init(); err != nil {
 		panic(err)
 	}
 
 	// admin
-	if err := admin.Init(a); err != nil {
+	if err := admin.Init(); err != nil {
 		panic(err)
 	}
 
 	// feed
-	if err = feed.Init(a); err != nil {
+	if err := feed.Init(); err != nil {
 		panic(err)
 	}
 
-	a.Run()
-	a.Close()
+	app.Run()
+	app.Close()
 }
 
 // 执行安装命令。
@@ -53,23 +50,8 @@ func main() {
 // 若返回true则表示当前已经执行完安装命令，可以退出整个程序，
 // 否则表示当前程序没有从命令参数中获取安装指令，继续执行程序其它部分。
 func install(appdir string) bool {
-	action := flag.String("init", "", "指定需要初始化的内容，可取的值可以为：config和db。")
-	flag.Parse()
+	//action := flag.String("init", "", "指定需要初始化的内容，可取的值可以为：config和db。")
+	//flag.Parse()
 
-	switch *action {
-	case "config":
-		if err := app.InstallConfig(appdir); err != nil {
-			panic(err)
-		}
-
-		return true
-	case "db":
-		if err := app.InstallDB(appdir); err != nil {
-			panic(err)
-		}
-
-		return true
-	} // end switch
-
-	return false
+	return true
 }

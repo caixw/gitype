@@ -47,10 +47,10 @@ func TestOptions_setValue(t *testing.T) {
 	a.Error(opt.setValue("lastUpdated", "25", false))
 }
 
-func TestOptions_Get(t *testing.T) {
+func TestGetOption(t *testing.T) {
 	a := assert.New(t)
-	opt := &Options{PageSize: 22}
+	options = &Options{PageSize: 22}
 
-	val, found := opt.Get("pageSize")
+	val, found := GetOption("pageSize")
 	a.True(found).Equal(val, 22)
 }

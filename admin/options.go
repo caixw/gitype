@@ -7,6 +7,7 @@ package admin
 import (
 	"net/http"
 
+	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/feed"
 	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
@@ -29,7 +30,7 @@ func adminPatchOption(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, found := opt.Get(key); !found {
+	if _, found := app.GetOption(key); !found {
 		util.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
 	}
@@ -41,7 +42,7 @@ func adminPatchOption(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := opt.Set(db, key, data.Value, false); err != nil {
+	if err := app.SetOption(db, key, data.Value, false); err != nil {
 		logs.Error("adminPatchOption:", err)
 		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
 		return
@@ -72,7 +73,7 @@ func adminGetOption(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	val, found := opt.Get(key)
+	val, found := app.GetOption(key)
 	if !found {
 		util.RenderJSON(w, http.StatusNotFound, nil, nil)
 		return
@@ -152,13 +153,13 @@ func adminPutAtom(w http.ResponseWriter, r *http.Request) {
 // @apiParam screenName       string 用户的当前昵称
 func adminGetState(w http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
-		"posts":            stat.PostsSize,
-		"draftPosts":       stat.DraftPostsSize,
-		"publishedPosts":   stat.PublishedPostsSize,
-		"comments":         stat.CommentsSize,
-		"waitingComments":  stat.WaitingCommentsSize,
-		"spamComments":     stat.SpamCommentsSize,
-		"approvedComments": stat.ApprovedCommentsSize,
+		"posts":            stats.PostsSize,
+		"draftPosts":       stats.DraftPostsSize,
+		"publishedPosts":   stats.PublishedPostsSize,
+		"comments":         stats.CommentsSize,
+		"waitingComments":  stats.WaitingCommentsSize,
+		"spamComments":     stats.SpamCommentsSize,
+		"approvedComments": stats.ApprovedCommentsSize,
 		"lastUpdated":      opt.LastUpdated,
 		"screenName":       opt.ScreenName,
 		"last":             opt.Last,

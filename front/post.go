@@ -34,7 +34,7 @@ func (p *Post) ShowComments() bool {
 
 // 评论数量
 func (p *Post) CommentsSize() int {
-	if size, found := stat.Posts[p.ID]; found {
+	if size, found := stats.Posts[p.ID]; found {
 		return size
 	}
 
@@ -44,7 +44,7 @@ func (p *Post) CommentsSize() int {
 		logs.Error("front.Post.CommentsSize:", err)
 		return 0
 	}
-	stat.Posts[p.ID] = size
+	stats.Posts[p.ID] = size
 	return size
 }
 
@@ -59,9 +59,9 @@ func (p *Post) Entry() string {
 // 返回文章的链接，相对URL
 func (p *Post) Permalink() string {
 	if len(p.Name) > 0 {
-		return opt.PostURL(p.Name)
+		return app.PostURL(p.Name)
 	}
-	return opt.PostURL(strconv.FormatInt(p.ID, 10))
+	return app.PostURL(strconv.FormatInt(p.ID, 10))
 }
 
 // 与该文章相关的关键字，即该文章所有标签的组成的字符串
