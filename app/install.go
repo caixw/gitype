@@ -6,6 +6,7 @@ package app
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -21,15 +22,16 @@ import (
 	"github.com/issue9/web"
 )
 
-// 执行安装程序，若正常完成，或是已经安装过，则返回nil。
-func Install(appdir string) error {
-	if err := installConfig(appdir); err != nil {
-		return err
+// 执行安装程序。
+func Install(appdir, action string) error {
+	switch action {
+	case "config":
+		return installConfig(appdir)
+	case "db":
+		return installDB(appdir)
+	default:
+		return errors.New("app.Install:无效的action值")
 	}
-
-	// TODO 完善安装界面
-
-	return installDB(appdir)
 }
 
 // 向数据库写入初始内容。
