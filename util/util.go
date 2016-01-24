@@ -6,10 +6,7 @@
 package util
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/issue9/web"
@@ -76,17 +73,4 @@ func QueryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int,
 		return 0, false
 	}
 	return ret, true
-}
-
-// 将一段字符串转换成md5编码
-func MD5(str string) string {
-	m := md5.New()
-	m.Write([]byte(str))
-	return hex.EncodeToString(m.Sum(nil))
-}
-
-// 判断文件是否存在
-func FileExists(path string) bool {
-	_, err := os.Stat(path)
-	return err == nil || os.IsExist(err)
 }

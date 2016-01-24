@@ -29,8 +29,8 @@ const (
 
 	defaultPassword = "123" // 默认的后台登录密码
 
-	configFile    = "app.json"
-	logConfigFile = "logs.xml"
+	configFile    = "config/app.json"
+	logConfigFile = "config/logs.xml"
 )
 
 var (

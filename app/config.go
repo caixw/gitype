@@ -12,8 +12,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/caixw/typing/util"
 	"github.com/issue9/handlers"
+	"github.com/issue9/utils"
 	"github.com/issue9/web"
 )
 
@@ -59,7 +59,7 @@ func GetConfig() *Config {
 
 // 返回一个加盐值的密码。
 func Password(password string) string {
-	return util.MD5(util.MD5(password) + config.Salt)
+	return utils.MD5(utils.MD5(password) + config.Salt)
 }
 
 // 检测配置项的URL，是否符合要求。

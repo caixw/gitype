@@ -22,6 +22,7 @@ import (
 	"github.com/issue9/logs"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
+	"github.com/issue9/utils"
 	"github.com/issue9/web"
 )
 
@@ -139,7 +140,7 @@ func pageHttpStatusCode(w http.ResponseWriter, r *http.Request, code int) {
 	w.WriteHeader(code)
 
 	path := themeDir(currentTheme) + strconv.Itoa(code) + ".html"
-	if !util.FileExists(path) { // 文件不存在，则只输出状态码，省略内容。
+	if !utils.FileExists(path) { // 文件不存在，则只输出状态码，省略内容。
 		return
 	}
 
@@ -156,7 +157,7 @@ func pageRoot(w http.ResponseWriter, r *http.Request) {
 	}
 
 	path := cfg.RootDir + r.URL.Path
-	if util.FileExists(path) {
+	if utils.FileExists(path) {
 		http.ServeFile(w, r, path)
 		return
 	}

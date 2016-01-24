@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/caixw/typing/util"
+	"github.com/issue9/utils"
 )
 
 // 去掉所有的标签信息
@@ -39,7 +39,7 @@ func htmlEscaped(html string) interface{} {
 
 // 转换成gravatar头像
 func avatarImage(email string) interface{} {
-	url := "https://secure.gravatar.com/avatar/" + util.MD5(strings.ToLower(email))
+	url := "https://secure.gravatar.com/avatar/" + utils.MD5(strings.ToLower(email))
 	// TODO 将选项添加到options中
 	return url + "?s=96&d=mm&r=g"
 }

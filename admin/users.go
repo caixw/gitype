@@ -15,6 +15,7 @@ import (
 	"github.com/caixw/typing/models"
 	"github.com/caixw/typing/util"
 	"github.com/issue9/logs"
+	"github.com/issue9/utils"
 )
 
 // 最大的登录日志数量
@@ -69,7 +70,7 @@ func adminPostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token = util.MD5(string(ret))
+	token = utils.MD5(string(ret))
 	if len(token) == 0 {
 		logs.Error("login:无法正确生成登录的token")
 		util.RenderJSON(w, http.StatusInternalServerError, nil, nil)
