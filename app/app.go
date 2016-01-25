@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	Version = "0.15.71.160119" // 程序版本号
+	Version = "0.16.75.160125" // 程序版本号
 
 	defaultPassword = "123" // 默认的后台登录密码
 
