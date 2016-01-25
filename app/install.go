@@ -19,11 +19,22 @@ import (
 	"github.com/issue9/conv"
 	"github.com/issue9/orm"
 	"github.com/issue9/rands"
+	"github.com/issue9/utils"
 	"github.com/issue9/web"
 )
 
 // 执行安装程序。
 func Install(appdir, action string) error {
+	if !utils.FileExists(appdir) {
+		if err := os.MkdirAll(appdir, os.ModePerm); err != nil {
+			return err
+		}
+
+		if !utils.FileExists(appdir) {
+			return fmt.Errorf("appdir[%v]不存在，且无法创建", appdir)
+		}
+	}
+
 	switch action {
 	case "config":
 		return installConfig(appdir)

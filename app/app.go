@@ -14,6 +14,7 @@ package app
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 
@@ -21,6 +22,7 @@ import (
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/dialect"
 	"github.com/issue9/orm/forward"
+	"github.com/issue9/utils"
 	"github.com/issue9/web"
 )
 
@@ -49,6 +51,10 @@ var (
 // 初始化app包。
 // 除Install函数，其它函数都依赖Init()做初始化。
 func Init(dir string) (err error) {
+	if !utils.FileExists(dir) {
+		return fmt.Errorf("appdir[%v]不存在", appdir)
+	}
+
 	if !strings.HasSuffix(dir, "/") && !strings.HasSuffix(dir, string(os.PathSeparator)) {
 		dir += string(os.PathSeparator)
 	}
