@@ -27,17 +27,18 @@ import (
 )
 
 const (
-	Version = "0.16.75.160125" // 程序版本号
+	Version = "0.16.76.160125" // 程序版本号
 
 	defaultPassword = "123" // 默认的后台登录密码
 
-	configDir     = "config"
-	configFile    = configDir + "/app.json"
-	logConfigFile = configDir + "/logs.xml"
-	adminDir      = "static/admin"
-	themeDir      = "static/front/themes"
-	rootDir       = "static/front/root"
-	uploadDir     = "static/uploads"
+	configDir     = "config"                // 配置文件存放目录
+	configFile    = configDir + "/app.json" // 程序的配置文件，对应config结构
+	logConfigFile = configDir + "/logs.xml" // 日志配置文件
+
+	adminDir  = "static/admin"        // 后台静态文件所在目录
+	themeDir  = "static/front/themes" // 前端主题所在目录
+	rootDir   = "static/front/root"   // 自定义url对应的目录
+	uploadDir = "static/uploads"      // 上传目录
 )
 
 var (
@@ -93,6 +94,7 @@ func Init(dir string) (err error) {
 	return nil
 }
 
+// 获取相对于appdir的一个文件或是目录的绝对地址
 func Appdir(path string) string {
 	return appdir + path
 }
