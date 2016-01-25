@@ -23,6 +23,10 @@ import (
 )
 
 // 执行安装程序。
+//
+// dir用于指定数据存放的路径，action用于指定当前的安装步骤，只能为以下两个值：
+//  - config 向当前的dir目录输出一个默认的配置文件；
+//  - db 根据配置文件，初始化相应的数据；
 func Install(dir, action string) error {
 	if !strings.HasSuffix(dir, "/") && !strings.HasSuffix(dir, string(os.PathSeparator)) {
 		dir += string(os.PathSeparator)

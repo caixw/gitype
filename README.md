@@ -49,7 +49,6 @@ app.json位于程序当前目录的config子目录下，包含了以下可配置
 :---- |:----
 debug | 是否处于调试模式
 adminURLPrefix | 后台地址入口
-adminDir | 后台静态文件对应的目录
 salt | 密码的加盐值
 dbDSN | 数据库dsn
 dbPrefix | 数据表名前缀
@@ -57,9 +56,6 @@ dbDriver | 数据库类型，可以是mysql, sqlite3, postgresql
 frontAPIPrefix | 前端api地址前缀
 adminAPIPrefix | 后台api地址前经
 themeURLPrefix | 各主题公开文件的根URL
-rootDir | 自定义url的根目录
-themeDir | 主题文件所在的目录
-uploadDir | 上传文件所在的目录
 uploadDirFormat | 上传文件子目录格式，以时间为格式，可以是2006/01/02/或是2006/01/等，根据自已需求使用。
 uploadSize | 上传文件的最大尺寸
 uploadExts | 允许的上传文件扩展名，eg: .txt;.png,;.pdf

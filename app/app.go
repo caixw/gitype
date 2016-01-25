@@ -52,6 +52,8 @@ var (
 
 // 初始化app包。
 // 除Install函数，其它函数都依赖Init()做初始化。
+//
+// dir 用于指定当前程序的数据存放路径。
 func Init(dir string) (err error) {
 	if !utils.FileExists(dir) {
 		return fmt.Errorf("appdir[%v]不存在", appdir)
