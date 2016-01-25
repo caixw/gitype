@@ -31,6 +31,10 @@ const (
 
 	configFile    = "config/app.json"
 	logConfigFile = "config/logs.xml"
+	adminDir      = "static/admin"
+	themeDir      = "static/front/themes"
+	rootDir       = "static/front/root"
+	uploadDir     = "static/uploads"
 )
 
 var (

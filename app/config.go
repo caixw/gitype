@@ -26,7 +26,7 @@ type Config struct {
 
 	// 后台相关的设置
 	AdminURLPrefix string `json:"adminURLPrefix"` // 后台地址入口
-	AdminDir       string `json:"adminDir"`       // 后台静态文件对应的目录
+	AdminDir       string `json:"-"`              // 后台静态文件对应的目录
 	Salt           string `json:"salt"`           // 密码加盐值，一量确认，不能修改
 
 	// 数据库相关配置
@@ -40,12 +40,12 @@ type Config struct {
 
 	// 主题相关配置
 	ThemeURLPrefix string `json:"themeURLPrefix"` // 各主题公开文件的根URL
-	ThemeDir       string `json:"themeDir"`       // 主题文件所在的目录
+	ThemeDir       string `json:"-"`              // 主题文件所在的目录
 
-	RootDir string `json:"rootDir"` // 根地址下文件对应的目录
+	RootDir string `json:"-"` // 根地址下文件对应的目录
 
 	// 上传文件相关配置
-	UploadDir       string `json:"uploadDir"`       // 上传文件所在的目录
+	UploadDir       string `json:"-"`               // 上传文件所在的目录
 	UploadDirFormat string `json:"uploadDirFormat"` // 上传文件子路径的格式，只能以时间为格式
 	UploadSize      int64  `json:"uploadSize"`      // 上传文件的最大尺寸
 	UploadExts      string `json:"uploadExts"`      // 允许的上传文件扩展名，eg: .txt;.png,;.pdf
@@ -75,19 +75,6 @@ func checkConfigURL(url, field string) error {
 	return nil
 }
 
-// 检测配置项的路径值，是否符合要求。
-func checkConfigDir(dir, field string) error {
-	if len(dir) == 0 {
-		return fmt.Errorf("字段[%v]不能为空", field)
-	}
-
-	if !strings.HasSuffix(dir, "/") && !strings.HasSuffix(dir, string(os.PathSeparator)) {
-		return fmt.Errorf("字段[%v]只能以路径分隔符(/或\\)作结尾", field)
-	}
-
-	return nil
-}
-
 // 加载path的内容，并尝试将其转换成Config实例。
 func loadConfig(path string) (*Config, error) {
 	data, err := ioutil.ReadFile(path)
@@ -104,6 +91,7 @@ func loadConfig(path string) (*Config, error) {
 	if err = checkConfigURL(cfg.AdminURLPrefix, "adminURLPrefix"); err != nil {
 		return nil, err
 	}
+	cfg.AdminDir = Appdir(adminDir)
 
 	if err = checkConfigURL(cfg.AdminAPIPrefix, "adminAPIPrefix"); err != nil {
 		return nil, err
@@ -116,13 +104,8 @@ func loadConfig(path string) (*Config, error) {
 	if err = checkConfigURL(cfg.ThemeURLPrefix, "themeURLPrefix"); err != nil {
 		return nil, err
 	}
-	if err = checkConfigDir(cfg.ThemeDir, "themeDir"); err != nil {
-		return nil, err
-	}
-
-	if err = checkConfigDir(cfg.RootDir, "rootDir"); err != nil {
-		return nil, err
-	}
+	cfg.ThemeDir = Appdir(themeDir)
+	cfg.RootDir = Appdir(rootDir)
 
 	// DB
 	if len(cfg.DBDSN) == 0 {
@@ -133,9 +116,8 @@ func loadConfig(path string) (*Config, error) {
 	}
 
 	// upload
-	if err = checkConfigDir(cfg.UploadDir, "uploadDir"); err != nil {
-		return nil, err
-	}
+	cfg.UploadDir = Appdir(uploadDir)
+
 	if len(cfg.UploadDirFormat) == 0 {
 		cfg.UploadDirFormat = "2006/01/02/"
 	}
