@@ -25,14 +25,8 @@ import (
 
 // 执行安装程序。
 func Install(appdir, action string) error {
-	if !utils.FileExists(appdir) {
-		if err := os.MkdirAll(appdir, os.ModePerm); err != nil {
-			return err
-		}
-
-		if !utils.FileExists(appdir) {
-			return fmt.Errorf("appdir[%v]不存在，且无法创建", appdir)
-		}
+	if !strings.HasSuffix(appdir, "/") && !strings.HasSuffix(appdir, string(os.PathSeparator)) {
+		appdir += string(os.PathSeparator)
 	}
 
 	switch action {
@@ -165,6 +159,15 @@ func fillOptions(db *orm.DB, cfg *Config) error {
 // 用于输出配置文件到指定的位置。
 // 目前包含了日志配置文件和程序本身的配置文件。
 func installConfig(appdir string) error {
+	if !utils.FileExists(appdir + configDir) {
+		if err := os.MkdirAll(appdir+configDir, os.ModePerm); err != nil {
+			return err
+		}
+		if !utils.FileExists(appdir + configDir) {
+			return fmt.Errorf("路径[%v]不存在，且无法创建", appdir+configDir)
+		}
+	}
+
 	if err := ioutil.WriteFile(appdir+logConfigFile, static.LogConfig, os.ModePerm); err != nil {
 		return err
 	}

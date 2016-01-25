@@ -31,8 +31,9 @@ const (
 
 	defaultPassword = "123" // 默认的后台登录密码
 
-	configFile    = "config/app.json"
-	logConfigFile = "config/logs.xml"
+	configDir     = "config"
+	configFile    = configDir + "/app.json"
+	logConfigFile = configDir + "/logs.xml"
 	adminDir      = "static/admin"
 	themeDir      = "static/front/themes"
 	rootDir       = "static/front/root"
