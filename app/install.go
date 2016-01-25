@@ -17,36 +17,36 @@ import (
 	"github.com/caixw/typing/app/static"
 	"github.com/caixw/typing/models"
 	"github.com/issue9/conv"
-	"github.com/issue9/orm"
 	"github.com/issue9/rands"
 	"github.com/issue9/utils"
 	"github.com/issue9/web"
 )
 
 // 执行安装程序。
-func Install(appdir, action string) error {
-	if !strings.HasSuffix(appdir, "/") && !strings.HasSuffix(appdir, string(os.PathSeparator)) {
-		appdir += string(os.PathSeparator)
+func Install(dir, action string) error {
+	if !strings.HasSuffix(dir, "/") && !strings.HasSuffix(dir, string(os.PathSeparator)) {
+		dir += string(os.PathSeparator)
 	}
 
 	switch action {
 	case "config":
-		return installConfig(appdir)
+		return installConfig(dir)
 	case "db":
-		return installDB(appdir)
+		appdir = dir
+		return installDB()
 	default:
 		return errors.New("app.Install:无效的action值")
 	}
 }
 
 // 向数据库写入初始内容。
-func installDB(appdir string) error {
-	cfg, err := loadConfig(appdir + configFile)
+func installDB() (err error) {
+	config, err = loadConfig(Appdir(configFile))
 	if err != nil {
 		return err
 	}
 
-	db, err := initDB(cfg)
+	db, err = initDB(config)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func installDB(appdir string) error {
 	}
 
 	// option
-	return fillOptions(db, cfg)
+	return fillOptions()
 }
 
 // 将Options中的每字段转换成一个map结构，方便其它工具将其转换成sql内容。
@@ -89,7 +89,7 @@ func (opt *Options) toMaps() ([]map[string]string, error) {
 }
 
 // 将一个默认的options值填充到数据库中。
-func fillOptions(db *orm.DB, cfg *Config) error {
+func fillOptions() error {
 	now := time.Now().Unix()
 	opt := &Options{
 		SiteName:    "typing blog",
@@ -158,17 +158,17 @@ func fillOptions(db *orm.DB, cfg *Config) error {
 
 // 用于输出配置文件到指定的位置。
 // 目前包含了日志配置文件和程序本身的配置文件。
-func installConfig(appdir string) error {
-	if !utils.FileExists(appdir + configDir) {
-		if err := os.MkdirAll(appdir+configDir, os.ModePerm); err != nil {
+func installConfig(dir string) error {
+	if !utils.FileExists(dir + configDir) {
+		if err := os.MkdirAll(dir+configDir, os.ModePerm); err != nil {
 			return err
 		}
-		if !utils.FileExists(appdir + configDir) {
-			return fmt.Errorf("路径[%v]不存在，且无法创建", appdir+configDir)
+		if !utils.FileExists(dir + configDir) {
+			return fmt.Errorf("路径[%v]不存在，且无法创建", dir+configDir)
 		}
 	}
 
-	if err := ioutil.WriteFile(appdir+logConfigFile, static.LogConfig, os.ModePerm); err != nil {
+	if err := ioutil.WriteFile(dir+logConfigFile, static.LogConfig, os.ModePerm); err != nil {
 		return err
 	}
 
@@ -187,7 +187,7 @@ func installConfig(appdir string) error {
 		AdminURLPrefix: "/admin",
 		Salt:           rands.String(6, 7, rands.Lower, rands.Upper, rands.Digit, rands.Punct),
 
-		DBDSN:    "./appdir/main.db",
+		DBDSN:    "./dir/main.db",
 		DBPrefix: "typing_",
 		DBDriver: "sqlite3",
 
@@ -206,5 +206,5 @@ func installConfig(appdir string) error {
 		return err
 	}
 
-	return ioutil.WriteFile(appdir+configFile, data, os.ModePerm)
+	return ioutil.WriteFile(dir+configFile, data, os.ModePerm)
 }
