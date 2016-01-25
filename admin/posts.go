@@ -57,7 +57,7 @@ func adminSetPostState(w http.ResponseWriter, r *http.Request, state int) {
 		return
 	}
 
-	if err := stat.UpdatePostsSize(db); err != nil {
+	if err := stats.UpdatePostsSize(); err != nil {
 		logs.Error("admin.adminSetPostState:", err)
 	}
 
@@ -74,9 +74,9 @@ func adminSetPostState(w http.ResponseWriter, r *http.Request, state int) {
 // @apiParam published int 垃圾评论的数量
 func adminGetPostsCount(w http.ResponseWriter, r *http.Request) {
 	data := map[string]int{
-		"all":       stat.PostsSize,
-		"draft":     stat.DraftPostsSize,
-		"published": stat.PublishedPostsSize,
+		"all":       stats.PostsSize,
+		"draft":     stats.DraftPostsSize,
+		"published": stats.PublishedPostsSize,
 	}
 	util.RenderJSON(w, http.StatusOK, data, nil)
 }
@@ -285,7 +285,7 @@ func adminPutPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := stat.UpdatePostsSize(db); err != nil {
+	if err := stats.UpdatePostsSize(); err != nil {
 		logs.Error("admin.adminPutPost:", err)
 	}
 	lastUpdated()
@@ -347,7 +347,7 @@ func adminDeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := stat.UpdatePostsSize(db); err != nil {
+	if err := stats.UpdatePostsSize(); err != nil {
 		logs.Error("admin.adminDeletePost:", err)
 	}
 

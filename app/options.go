@@ -11,7 +11,6 @@ import (
 
 	"github.com/caixw/typing/models"
 	"github.com/issue9/conv"
-	"github.com/issue9/orm"
 	"github.com/issue9/orm/fetch"
 )
 
@@ -60,8 +59,24 @@ type Options struct {
 	Password   string `options:"users,password"`   // 用户的登录密码
 }
 
+// 获取Options实例
+func GetOptions() *Options {
+	return options
+}
+
+// 重新从数据库加载options表的数据到Options实例中。
+func ReloadOptions() (*Options, error) {
+	opt, err := loadOptions()
+	if err != nil {
+		return nil, err
+	}
+
+	options = opt
+	return options, nil
+}
+
 // 初始化core包。返回程序必要的变量。
-func loadOptions(db *orm.DB) (*Options, error) {
+func loadOptions() (*Options, error) {
 	sql := "SELECT * FROM #options"
 	rows, err := db.Query(true, sql)
 	if err != nil {
@@ -124,8 +139,8 @@ func (opt *Options) setValue(key string, val interface{}, allowSetReadonly bool)
 
 // 设置options中的值，顺便更新数据库中的值。
 // allowSetStat 是否允许修改readonly组的值。
-func (opt *Options) Set(db *orm.DB, key string, val interface{}, allowSetReadonly bool) error {
-	if err := opt.setValue(key, val, allowSetReadonly); err != nil {
+func SetOption(key string, val interface{}, allowSetReadonly bool) error {
+	if err := options.setValue(key, val, allowSetReadonly); err != nil {
 		return err
 	}
 
@@ -138,8 +153,8 @@ func (opt *Options) Set(db *orm.DB, key string, val interface{}, allowSetReadonl
 }
 
 // 获取指定名称的值。
-func (opt *Options) Get(key string) (value interface{}, found bool) {
-	v := reflect.ValueOf(opt)
+func GetOption(key string) (value interface{}, found bool) {
+	v := reflect.ValueOf(options)
 	v = v.Elem()
 	t := v.Type()
 	for i := 0; i < t.NumField(); i++ {

@@ -5,6 +5,7 @@
 package front
 
 import (
+	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/models"
 	"github.com/issue9/logs"
 )
@@ -18,7 +19,7 @@ type Tag struct {
 }
 
 func (t *Tag) Count() int {
-	if cnt, found := stat.Tags[t.ID]; found {
+	if cnt, found := stats.Tags[t.ID]; found {
 		return cnt
 	}
 
@@ -27,10 +28,10 @@ func (t *Tag) Count() int {
 	if err != nil {
 		logs.Error("front.Tag.Count:", err)
 	}
-	stat.Tags[t.ID] = cnt
+	stats.Tags[t.ID] = cnt
 	return cnt
 }
 
 func (t *Tag) Permalink() string {
-	return opt.TagURL(t.Name, 1)
+	return app.TagURL(t.Name, 1)
 }

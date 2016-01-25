@@ -14,55 +14,100 @@ package app
 
 import (
 	"errors"
+	"fmt"
+	"os"
+	"strings"
 
 	"github.com/issue9/logs"
 	"github.com/issue9/orm"
 	"github.com/issue9/orm/dialect"
 	"github.com/issue9/orm/forward"
+	"github.com/issue9/utils"
+	"github.com/issue9/web"
 )
 
 const (
-	Version = "0.12.67.160111" // 程序版本号
+	Version = "0.15.71.160119" // 程序版本号
 
 	defaultPassword = "123" // 默认的后台登录密码
 
-	// 定义两个配置文件的位置。
-	configPath    = "./config/app.json"
-	logConfigPath = "./config/logs.xml"
+	configDir     = "config"
+	configFile    = configDir + "/app.json"
+	logConfigFile = configDir + "/logs.xml"
+	adminDir      = "static/admin"
+	themeDir      = "static/front/themes"
+	rootDir       = "static/front/root"
+	uploadDir     = "static/uploads"
 )
 
-// 初始化系统，获取系统配置变量和数据库实例。
-func Init() (*Config, *orm.DB, *Options, *Stat, error) {
+var (
+	appdir string
+
+	config  *Config
+	db      *orm.DB
+	options *Options
+	stats   *Stats
+)
+
+// 初始化app包。
+// 除Install函数，其它函数都依赖Init()做初始化。
+func Init(dir string) (err error) {
+	if !utils.FileExists(dir) {
+		return fmt.Errorf("appdir[%v]不存在", appdir)
+	}
+
+	if !strings.HasSuffix(dir, "/") && !strings.HasSuffix(dir, string(os.PathSeparator)) {
+		dir += string(os.PathSeparator)
+	}
+	appdir = dir
+
 	// 初始化日志系统
-	if err := logs.InitFromXMLFile(logConfigPath); err != nil {
-		return nil, nil, nil, nil, err
+	if err := logs.InitFromXMLFile(Appdir(logConfigFile)); err != nil {
+		return err
 	}
 
 	// 加载app.json配置文件
-	cfg, err := loadConfig(configPath)
+	config, err = loadConfig(Appdir(configFile))
 	if err != nil {
-		return nil, nil, nil, nil, err
+		return err
 	}
 
 	// 根据配置文件初始化数据库
-	db, err := initDB(cfg)
+	db, err = initDB(config)
 	if err != nil {
-		return nil, nil, nil, nil, err
+		return err
 	}
 
 	// 加载数据库中的配置项
-	opt, err := loadOptions(db)
+	options, err = loadOptions()
 	if err != nil {
-		return nil, nil, nil, nil, err
+		return err
 	}
 
 	// 初始化系统的状态数据。
-	stat, err := loadStat(db)
+	stats, err = loadStats()
 	if err != nil {
-		return nil, nil, nil, nil, err
+		return err
 	}
 
-	return cfg, db, opt, stat, nil
+	return nil
+}
+
+func Appdir(path string) string {
+	return appdir + path
+}
+
+func GetDB() *orm.DB {
+	return db
+}
+
+func Run() {
+	web.Run(config.Core)
+}
+
+func Close() {
+	db.Close()
+	logs.Flush()
 }
 
 // 从一个Config实例中初始一个orm.DB实例。

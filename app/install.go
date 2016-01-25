@@ -6,6 +6,7 @@ package app
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -16,25 +17,37 @@ import (
 	"github.com/caixw/typing/app/static"
 	"github.com/caixw/typing/models"
 	"github.com/issue9/conv"
-	"github.com/issue9/logs"
 	"github.com/issue9/orm"
 	"github.com/issue9/rands"
+	"github.com/issue9/utils"
 	"github.com/issue9/web"
 )
 
+// 执行安装程序。
+func Install(appdir, action string) error {
+	if !strings.HasSuffix(appdir, "/") && !strings.HasSuffix(appdir, string(os.PathSeparator)) {
+		appdir += string(os.PathSeparator)
+	}
+
+	switch action {
+	case "config":
+		return installConfig(appdir)
+	case "db":
+		return installDB(appdir)
+	default:
+		return errors.New("app.Install:无效的action值")
+	}
+}
+
 // 向数据库写入初始内容。
-func InstallDB() error {
-	cfg, err := loadConfig(configPath)
+func installDB(appdir string) error {
+	cfg, err := loadConfig(appdir + configFile)
 	if err != nil {
 		return err
 	}
 
 	db, err := initDB(cfg)
 	if err != nil {
-		return err
-	}
-
-	if err = logs.InitFromXMLFile(logConfigPath); err != nil {
 		return err
 	}
 
@@ -109,7 +122,7 @@ func fillOptions(db *orm.DB, cfg *Config) error {
 
 		ScreenName: "typing",
 		Email:      "",
-		Password:   cfg.Password(defaultPassword),
+		Password:   Password(defaultPassword),
 	}
 
 	maps, err := opt.toMaps()
@@ -145,8 +158,17 @@ func fillOptions(db *orm.DB, cfg *Config) error {
 
 // 用于输出配置文件到指定的位置。
 // 目前包含了日志配置文件和程序本身的配置文件。
-func InstallConfig() error {
-	if err := ioutil.WriteFile(logConfigPath, static.LogConfig, os.ModePerm); err != nil {
+func installConfig(appdir string) error {
+	if !utils.FileExists(appdir + configDir) {
+		if err := os.MkdirAll(appdir+configDir, os.ModePerm); err != nil {
+			return err
+		}
+		if !utils.FileExists(appdir + configDir) {
+			return fmt.Errorf("路径[%v]不存在，且无法创建", appdir+configDir)
+		}
+	}
+
+	if err := ioutil.WriteFile(appdir+logConfigFile, static.LogConfig, os.ModePerm); err != nil {
 		return err
 	}
 
@@ -163,7 +185,6 @@ func InstallConfig() error {
 		Debug: true,
 
 		AdminURLPrefix: "/admin",
-		AdminDir:       "./static/admin/",
 		Salt:           rands.String(6, 7, rands.Lower, rands.Upper, rands.Digit, rands.Punct),
 
 		DBDSN:    "./output/main.db",
@@ -174,11 +195,7 @@ func InstallConfig() error {
 		AdminAPIPrefix: "/admin/api",
 
 		ThemeURLPrefix: "/themes",
-		ThemeDir:       "./static/front/themes/",
 
-		RootDir: "./static/front/root/",
-
-		UploadDir:       "./output/uploads/",
 		UploadDirFormat: "2006/01/",
 		UploadExts:      ".txt;.png;.jpg;.jpeg",
 		UploadSize:      1024 * 1024 * 5,
@@ -189,5 +206,5 @@ func InstallConfig() error {
 		return err
 	}
 
-	return ioutil.WriteFile(configPath, data, os.ModePerm)
+	return ioutil.WriteFile(appdir+configFile, data, os.ModePerm)
 }

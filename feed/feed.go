@@ -31,9 +31,9 @@ var (
 )
 
 // 初始化sitemap包
-func Init(database *orm.DB, options *app.Options) error {
-	db = database
-	opt = options
+func Init() error {
+	db = app.GetDB()
+	opt = app.GetOptions()
 
 	if err := BuildRss(); err != nil {
 		return err

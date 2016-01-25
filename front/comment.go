@@ -28,9 +28,9 @@ type Comment struct {
 // 文章的固定链接，相对URL，若要绝对URL，请使用opt.URL()进行封装。
 func (c *Comment) Permalink() string {
 	if len(c.PostName) > 0 {
-		return opt.CommentURL(c.PostName, c.ID)
+		return app.CommentURL(c.PostName, c.ID)
 	}
-	return opt.CommentURL(strconv.FormatInt(c.PostID, 10), c.ID)
+	return app.CommentURL(strconv.FormatInt(c.PostID, 10), c.ID)
 }
 
 func (c *Comment) Fragment() string {

@@ -13,12 +13,7 @@ typing的配置文件仅提供了一些基本配置，若要达到完全的自�
 
 ##### 修改密码加密算法
 
-密码加密算法默认为md5加盐，可通过修改app/Config.Password函数更改加密算法。
-
-
-##### 修改配置文件路径
-
-配置文件路径包括app.json和logs.xml两个文件，分别对应app包的logConfigPath和configPath两个常量。
+密码加密算法默认为md5加盐，可通过修改app/Password函数更改加密算法。
 
 
 ##### 禁用feed相关内容
