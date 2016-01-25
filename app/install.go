@@ -185,7 +185,6 @@ func installConfig(appdir string) error {
 		Debug: true,
 
 		AdminURLPrefix: "/admin",
-		AdminDir:       "./static/admin/",
 		Salt:           rands.String(6, 7, rands.Lower, rands.Upper, rands.Digit, rands.Punct),
 
 		DBDSN:    "./output/main.db",
@@ -196,11 +195,7 @@ func installConfig(appdir string) error {
 		AdminAPIPrefix: "/admin/api",
 
 		ThemeURLPrefix: "/themes",
-		ThemeDir:       "./static/front/themes/",
 
-		RootDir: "./static/front/root/",
-
-		UploadDir:       "./output/uploads/",
 		UploadDirFormat: "2006/01/",
 		UploadExts:      ".txt;.png;.jpg;.jpeg",
 		UploadSize:      1024 * 1024 * 5,
