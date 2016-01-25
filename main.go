@@ -49,7 +49,7 @@ func main() {
 		return
 	}
 
-	if len(*appdir) == 0 || utils.FileExists(*appdir) {
+	if len(*appdir) == 0 || !utils.FileExists(*appdir) {
 		fmt.Printf("appdir参数[%v]指定的目录不存在\n", *appdir)
 		return
 	}
