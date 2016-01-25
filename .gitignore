@@ -32,4 +32,6 @@ _testmain.go
 # 项目临时文件
 typing
 
+/appdir
+
 /static/front/themes/test
