@@ -74,7 +74,7 @@ func Init(dir string) (err error) {
 	}
 
 	// 根据配置文件初始化数据库
-	db, err = initDB(config)
+	db, err = initDB()
 	if err != nil {
 		return err
 	}
@@ -113,9 +113,9 @@ func Close() {
 }
 
 // 从一个Config实例中初始一个orm.DB实例。
-func initDB(cfg *Config) (*orm.DB, error) {
+func initDB() (*orm.DB, error) {
 	var d forward.Dialect
-	switch cfg.DBDriver {
+	switch config.DBDriver {
 	case "sqlite3":
 		d = dialect.Sqlite3()
 	case "mysql":
@@ -123,8 +123,8 @@ func initDB(cfg *Config) (*orm.DB, error) {
 	case "postgres":
 		d = dialect.Postgres()
 	default:
-		return nil, errors.New("不能理解的dbDriver值：" + cfg.DBDriver)
+		return nil, errors.New("不能理解的dbDriver值：" + config.DBDriver)
 	}
 
-	return orm.NewDB(cfg.DBDriver, cfg.DBDSN, cfg.DBPrefix, d)
+	return orm.NewDB(config.DBDriver, config.DBDSN, config.DBPrefix, d)
 }

@@ -28,11 +28,11 @@ func Install(dir, action string) error {
 		dir += string(os.PathSeparator)
 	}
 
+	appdir = dir
 	switch action {
 	case "config":
-		return installConfig(dir)
+		return installConfig()
 	case "db":
-		appdir = dir
 		return installDB()
 	default:
 		return errors.New("app.Install:无效的action值")
@@ -46,7 +46,7 @@ func installDB() (err error) {
 		return err
 	}
 
-	db, err = initDB(config)
+	db, err = initDB()
 	if err != nil {
 		return err
 	}
@@ -158,17 +158,17 @@ func fillOptions() error {
 
 // 用于输出配置文件到指定的位置。
 // 目前包含了日志配置文件和程序本身的配置文件。
-func installConfig(dir string) error {
-	if !utils.FileExists(dir + configDir) {
-		if err := os.MkdirAll(dir+configDir, os.ModePerm); err != nil {
+func installConfig() error {
+	if !utils.FileExists(Appdir(configDir)) {
+		if err := os.MkdirAll(Appdir(configDir), os.ModePerm); err != nil {
 			return err
 		}
-		if !utils.FileExists(dir + configDir) {
-			return fmt.Errorf("路径[%v]不存在，且无法创建", dir+configDir)
+		if !utils.FileExists(Appdir(configDir)) {
+			return fmt.Errorf("路径[%v]不存在，且无法创建", Appdir(configDir))
 		}
 	}
 
-	if err := ioutil.WriteFile(dir+logConfigFile, static.LogConfig, os.ModePerm); err != nil {
+	if err := ioutil.WriteFile(Appdir(logConfigFile), static.LogConfig, os.ModePerm); err != nil {
 		return err
 	}
 
@@ -187,7 +187,7 @@ func installConfig(dir string) error {
 		AdminURLPrefix: "/admin",
 		Salt:           rands.String(6, 7, rands.Lower, rands.Upper, rands.Digit, rands.Punct),
 
-		DBDSN:    "./dir/main.db",
+		DBDSN:    "./appdir/main.db",
 		DBPrefix: "typing_",
 		DBDriver: "sqlite3",
 
@@ -206,5 +206,5 @@ func installConfig(dir string) error {
 		return err
 	}
 
-	return ioutil.WriteFile(dir+configFile, data, os.ModePerm)
+	return ioutil.WriteFile(Appdir(configFile), data, os.ModePerm)
 }
