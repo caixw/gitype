@@ -191,7 +191,7 @@ func installConfig() error {
 		AdminURLPrefix: "/admin",
 		Salt:           rands.String(6, 7, rands.Lower, rands.Upper, rands.Digit, rands.Punct),
 
-		DBDSN:    "./appdir/main.db",
+		DBDSN:    "./output/main.db",
 		DBPrefix: "typing_",
 		DBDriver: "sqlite3",
 

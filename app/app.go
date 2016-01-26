@@ -35,10 +35,10 @@ const (
 	configFile    = configDir + "/app.json" // 程序的配置文件，对应config结构
 	logConfigFile = configDir + "/logs.xml" // 日志配置文件
 
-	adminDir  = "static/admin"        // 后台静态文件所在目录
-	themeDir  = "static/front/themes" // 前端主题所在目录
-	rootDir   = "static/front/root"   // 自定义url对应的目录
-	uploadDir = "static/uploads"      // 上传目录
+	adminDir  = "static/admin/"   // 后台静态文件所在目录
+	themeDir  = "static/themes/"  // 前端主题所在目录
+	rootDir   = "static/root/"    // 自定义url对应的目录
+	uploadDir = "static/uploads/" // 上传目录
 )
 
 var (

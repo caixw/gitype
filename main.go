@@ -41,7 +41,7 @@ const usage = `typing 一个简单博客程序。
 func main() {
 	flag.Usage = func() { fmt.Println(usage) }
 	help := flag.Bool("help", false, "显示帮助信息")
-	appdir := flag.String("appdir", "./appdir/", "指定程序的数据存放目录")
+	appdir := flag.String("appdir", "./", "指定程序的数据存放目录")
 	action := flag.String("install", "", "指定需要初始化的内容，可取的值可以为：config和db。")
 	flag.Parse()
 
