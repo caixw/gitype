@@ -1,0 +1,6 @@
+language: go
+go:
+    - tip
+    - 1.5
+install:
+    - go get github.com/issue9/assert
