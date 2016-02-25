@@ -49,5 +49,5 @@ func (d *Data) TagsURL() string {
 // 生成主题页面地址
 //  /themes/default/xx.css
 func (d *Data) ThemeURL(path string) string {
-	return "/themes/" + path
+	return "/themes" + path
 }

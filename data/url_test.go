@@ -41,3 +41,10 @@ func TestData_TagURL(t *testing.T) {
 	a.Equal(d.TagURL("tag1", 1), "/tags/tag1.html")
 	a.Equal(d.TagURL("tag1", 2), "/tags/tag1.html?page=2")
 }
+
+func TestData_ThemeURL(t *testing.T) {
+	a := assert.New(t)
+
+	d := &Data{}
+	a.Equal(d.ThemeURL("/tag1"), "/themes/tag1")
+}
