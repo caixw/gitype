@@ -39,8 +39,14 @@ func TestLoadPost(t *testing.T) {
 	post, err := loadPost("./testdata/posts", "./testdata/posts/post1/meta.yaml", conf, tags)
 	a.NotError(err).NotNil(post)
 	a.Equal(len(post.Tags), 2).Equal(post.Tags[0].Slug, "default1")
+	a.Equal(tags[0].Count, 1) // 会同时增加标签的计数器
 	a.Equal(post.Modified, 0)
+	a.Equal(post.Template, "post") // 默认模板
 	a.Equal(post.Content, "<article>a1</article>\n")
+
+	post, err = loadPost("./testdata/posts", "./testdata/posts/folder/post2/meta.yaml", conf, tags)
+	a.NotError(err).NotNil(post)
+	a.Equal(post.Template, "t1") // 模板
 }
 
 func TestData_loadPosts(t *testing.T) {

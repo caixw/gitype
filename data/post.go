@@ -103,7 +103,6 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 
 	if len(p.Slug) == 0 {
 		return nil, fmt.Errorf("[%v]:文章唯一名称不能为空", name)
-
 	}
 
 	if len(p.Title) == 0 {
@@ -130,6 +129,7 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 		for _, tagName := range ts {
 			if tag.Slug == tagName {
 				p.Tags = append(p.Tags, tag)
+				tag.Count++
 				break
 			}
 		}
@@ -148,6 +148,11 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 		return nil, fmt.Errorf("[%v]:解析其修改时间是出错：[%v]", name, err)
 	}
 	p.Modified = t.Unix()
+
+	// 指定默认模板
+	if len(p.Template) == 0 {
+		p.Template = "post"
+	}
 
 	return p, nil
 }
