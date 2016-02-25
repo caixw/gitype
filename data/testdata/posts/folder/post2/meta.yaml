@@ -1,0 +1,15 @@
+# post1
+
+title: 文章1
+slug: post1
+author:
+    name: name
+    email: email
+top: true
+path: content.html
+created: 2016-01-02T13:14:11+0800
+modified: 2016-01-02T13:14:11+0800
+summary: summary
+
+tags: default1
+template: t1

@@ -1,0 +1,40 @@
+// Copyright 2016 by caixw, All rights reserved.
+// Use of this source code is governed by a MIT
+// license that can be found in the LICENSE file.
+
+package data
+
+import (
+	"testing"
+
+	"github.com/issue9/assert"
+)
+
+func TestData_loadTags(t *testing.T) {
+	a := assert.New(t)
+
+	data := &Data{path: "./testdata/"}
+	a.NotError(data.loadTags())
+	a.NotNil(data.Tags)
+	a.Equal(data.Tags[0].Slug, "default1")
+	a.Equal(data.Tags[0].Color, "efefef")
+	a.Equal(data.Tags[0].Title, "默认1")
+	a.Equal(data.Tags[1].Slug, "default2")
+
+	t.Log(data.Tags[0])
+}
+
+func TestData_FindTag(t *testing.T) {
+	a := assert.New(t)
+
+	data := &Data{
+		path: "./testdata/",
+		Tags: []*Tag{
+			&Tag{Slug: "default1"},
+			&Tag{Slug: "default2"},
+		},
+	}
+	a.NotNil(data.FindTag("default1"))
+	a.NotNil(data.FindTag("default2"))
+	a.Nil(data.FindTag("default3"))
+}

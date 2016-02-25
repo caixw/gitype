@@ -1,0 +1,14 @@
+# 这是标签定义的测试文件 /data/tags.yaml
+
+- slug: default1
+  title: 默认1
+  color: efefef
+  content: >
+    这是系统默认的内容1。
+
+
+- slug: default2
+  title: 默认2
+  color: efefef
+  content: >
+    这是系统默认的内容2。

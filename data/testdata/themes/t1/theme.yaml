@@ -1,0 +1,8 @@
+name: name
+description: desc
+version: 1.0
+screenshot: screenshot.jpg
+author:
+    name: name
+    email: email
+    url: url
