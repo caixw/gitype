@@ -4,50 +4,37 @@
 
 package data
 
-import "strconv"
+import (
+	"io/ioutil"
+	"path/filepath"
 
-// 构建绝对地址。
-func (d *Data) URL(path string) string {
-	return d.Config.URL + path
+	"gopkg.in/yaml.v2"
+)
+
+// 自定义URL
+type URLS struct {
+	Root   string `yaml:"root,omitempty"`   // 根地址
+	Suffix string `yaml:"suffix,omitempty"` // 地址后缀
+	Posts  string `yaml:"posts,omitempty"`  // 列表页地址
+	Post   string `yaml:"post,omitempty"`   // 文章详细页地址
+	Tags   string `yaml:"tags,omitempty"`   // 标签列表页地址
+	Tag    string `yaml:"tag,omitempty"`    // 标签详细页地址
+	Themes string `yaml:"themes,omitempty"` // 主题地址
+	Atom   string `yaml:"atom"`             // atom 地址
+	RSS    string `yaml:"rss"`              // RSS 地址
 }
 
-// 生成文章页URL
-//  /posts/p1.html
-func (d *Data) PostURL(slug string) string {
-	return "/posts/" + slug + d.Config.Suffix
-}
-
-// 生成列表页URL
-//  /
-//  /posts.html?page=2
-func (d *Data) PostsURL(page int) string {
-	if page <= 1 {
-		return "/"
+func (d *Data) loadURLS() error {
+	path := filepath.Join(d.path, "meta", "urls.yaml")
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
 	}
 
-	return "/posts" + d.Config.Suffix + "?page=" + strconv.Itoa(page)
-}
-
-// 生成标签详情页URL
-//  /tags/tag1.html
-//  /tags/tag1.html?page=2
-func (d *Data) TagURL(slug string, page int) string {
-	base := "/tags/" + slug + d.Config.Suffix
-	if page <= 1 {
-		return base
+	urls := &URLS{}
+	if err = yaml.Unmarshal(data, urls); err != nil {
+		return err
 	}
-
-	return base + "?page=" + strconv.Itoa(page)
-}
-
-// 生成标签页URL
-// /tags.html
-func (d *Data) TagsURL() string {
-	return "/tags" + d.Config.Suffix
-}
-
-// 生成主题页面地址
-//  /themes/default/xx.css
-func (d *Data) ThemeURL(path string) string {
-	return "/themes" + path
+	d.URLS = urls
+	return nil
 }

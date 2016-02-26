@@ -24,7 +24,6 @@ type Config struct {
 	URL             string `yaml:"url"`                       // 网站的地址
 	Keyword         string `yaml:"keyword,omitempty"`         // 默认情况下的keyword内容
 	Description     string `yaml:"description,omitempty"`     // 默认情况下的descrription内容
-	Suffix          string `yaml:"suffix,omitempty"`          // 地址的后缀
 	Beian           string `yaml:"beian,omitempty"`           // 备案号
 	Uptime          int64  `yaml:"-"`                         // 上线时间，unix时间戳，由UptimeFormat转换而来
 	UptimeFormat    string `yaml:"uptime"`                    // 上线时间，字符串表示
@@ -64,9 +63,8 @@ func (d *Data) loadConfig() error {
 		return err
 	}
 
-	// 合并默认值
+	// 合并默认值,TODO 以安装的方式提供默认数据，而不是采有合并的方式
 	conf := &Config{
-		Suffix:          ".html",
 		PageSize:        20,
 		LongDateFormat:  "2006-01-02 15:04:05",
 		ShortDateFormat: "2006-01-02",
@@ -150,10 +148,6 @@ func checkConfig(conf *Config, path string) error {
 	}
 	if !found {
 		return configError("Theme", "该主题并不存在")
-	}
-
-	if len(conf.Suffix) > 0 && conf.Suffix[0] != '.' {
-		return configError("Suffix", "必须以.开头")
 	}
 
 	// RSS

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"html/template"
 	"io/ioutil"
+	"path"
 	"path/filepath"
 	"time"
 )
@@ -42,7 +43,7 @@ func (d *Data) loadTemplate() error {
 		"html":  htmlEscaped,
 		"ldate": d.longDateFormat,
 		"sdate": d.shortDateFormat,
-		"theme": d.ThemeURL,
+		"theme": func(p string) string { return path.Join(d.URLS.Themes, p) },
 	}
 
 	path := filepath.Join(d.path, "themes", d.Config.Theme)

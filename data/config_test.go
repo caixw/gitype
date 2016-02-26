@@ -65,13 +65,8 @@ func TestCheckConfig(t *testing.T) {
 	conf.URL = "https://caixw.io"
 	a.Error(checkConfig(conf, "./testdata"))
 
-	// suffix 未以.开头
-	conf.Theme = "t1"
-	conf.Suffix = "html"
-	a.Error(checkConfig(conf, "./testdata"))
-
 	// RSS.Title
-	conf.Suffix = ".html"
+	conf.Theme = "t1"
 	conf.RSS = &RSS{}
 	a.Error(checkConfig(conf, "./testdata"))
 

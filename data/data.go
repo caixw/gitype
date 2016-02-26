@@ -15,6 +15,7 @@ type Data struct {
 	path string // data的根目录
 
 	Config   *Config            // 配置内容
+	URLS     *URLS              // 自定义URL
 	Tags     []*Tag             // map对顺序是未定的，所以使用slice
 	Template *template.Template // 当前主题模板
 	Posts    []*Post            // 所有的文章列表
@@ -25,6 +26,10 @@ type Data struct {
 func Load(path string) (*Data, error) {
 	d := &Data{
 		path: path,
+	}
+
+	if err := d.loadURLS(); err != nil {
+		return nil, err
 	}
 
 	// tags
