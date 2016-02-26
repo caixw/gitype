@@ -9,18 +9,18 @@ import "path/filepath"
 
 type Path struct {
 	Root string // 根目录
-	Data string // 数据所在目录
-	Conf string // 程序配置所在目录
+	Data string // data 数据所在目录
+	Conf string // conf 程序配置所在目录
 
-	ConfApp  string
-	ConfLogs string
+	ConfApp  string // conf/app.json
+	ConfLogs string // conf/logs.xml
 
-	DataConf   string
-	DataTags   string
-	DataURLS   string
-	DataPosts  string
-	DataThemes string
-	DataRaws   string
+	DataConf   string // data/meta/config.yaml
+	DataTags   string // data/meta/tags.yaml
+	DataURLS   string // data/meta/urls.yaml
+	DataPosts  string // data/posts
+	DataThemes string // data/themes
+	DataRaws   string // data/raws
 }
 
 func New(root string) *Path {
