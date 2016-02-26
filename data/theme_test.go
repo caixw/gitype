@@ -14,8 +14,8 @@ import (
 func TestLoadTemplate(t *testing.T) {
 	a := assert.New(t)
 
-	d := &Data{path: "./testdata", Config: &Config{Theme: "t1"}}
-	a.NotError(d.loadTemplate()).NotNil(d.Template)
+	d := &Data{Config: &Config{Theme: "t1"}}
+	a.NotError(d.loadTemplate("./testdata/themes")).NotNil(d.Template)
 
 	w := bytes.NewBufferString("")
 	a.NotError(d.Template.ExecuteTemplate(w, "header.html", map[string]string{"val": "123"}))

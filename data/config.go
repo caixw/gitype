@@ -50,9 +50,9 @@ func configError(field, message string) error {
 	return fmt.Errorf("字段[%v]错误:[%v]", field, message)
 }
 
-// 加载配置文件
-func (d *Data) loadConfig() error {
-	path := filepath.Join(d.path, "meta", "config.yaml")
+// 加载配置文件。
+// path 配置文件的地址。
+func (d *Data) loadConfig(path string) error {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func (d *Data) loadConfig() error {
 	}
 
 	// 检测变量是否正确
-	if err = checkConfig(conf, d.path); err != nil {
+	if err = checkConfig(conf, d.path.Data); err != nil {
 		return err
 	}
 

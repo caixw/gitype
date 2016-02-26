@@ -48,9 +48,7 @@ func (d *Data) FindPost(slug string) *Post {
 
 // 加载所有的文章内容。
 // dir data/posts目录。
-func (d *Data) loadPosts() error {
-	dir := filepath.Join(d.path, "posts")
-
+func (d *Data) loadPosts(dir string) error {
 	paths := make([]string, 0, 100)
 
 	// 遍历data/posts目录，查找所有的meta.yaml文章。

@@ -6,13 +6,17 @@
 // 会调用github.com/issue9/logs包的内容，调用之前需要初始化该包。
 package data
 
-import "html/template"
+import (
+	"html/template"
+
+	"github.com/caixw/typing/path"
+)
 
 // 客户保存的时间格式。
 const parseDateFormat = "2006-01-02T15:04:05-0700"
 
 type Data struct {
-	path string // data的根目录
+	path *path.Path
 
 	Config   *Config            // 配置内容
 	URLS     *URLS              // 自定义URL
@@ -23,32 +27,32 @@ type Data struct {
 
 // 加载一份新的数据。
 // path 为数据所在的目录。
-func Load(path string) (*Data, error) {
+func Load(path *path.Path) (*Data, error) {
 	d := &Data{
 		path: path,
 	}
 
-	if err := d.loadURLS(); err != nil {
+	if err := d.loadURLS(path.DataURLS); err != nil {
 		return nil, err
 	}
 
 	// tags
-	if err := d.loadTags(); err != nil {
+	if err := d.loadTags(path.DataTags); err != nil {
 		return nil, err
 	}
 
 	// config
-	if err := d.loadConfig(); err != nil {
+	if err := d.loadConfig(path.DataConf); err != nil {
 		return nil, err
 	}
 
 	// 加载主题的模板
-	if err := d.loadTemplate(); err != nil {
+	if err := d.loadTemplate(path.DataThemes); err != nil {
 		return nil, err
 	}
 
 	// 加载文章
-	if err := d.loadPosts(); err != nil {
+	if err := d.loadPosts(path.DataPosts); err != nil {
 		return nil, err
 	}
 

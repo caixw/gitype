@@ -6,7 +6,6 @@ package data
 
 import (
 	"io/ioutil"
-	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
@@ -24,8 +23,7 @@ type URLS struct {
 	RSS    string `yaml:"rss"`              // RSS 地址
 }
 
-func (d *Data) loadURLS() error {
-	path := filepath.Join(d.path, "meta", "urls.yaml")
+func (d *Data) loadURLS(path string) error {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err

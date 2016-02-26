@@ -37,8 +37,9 @@ func getThemesName(path string) ([]string, error) {
 	return themes, nil
 }
 
-// 加载主题的模板
-func (d *Data) loadTemplate() error {
+// 加载主题的模板。
+// dir 模板所在的目录。
+func (d *Data) loadTemplate(dir string) error {
 	var funcMap = template.FuncMap{
 		"html":  htmlEscaped,
 		"ldate": d.longDateFormat,
@@ -46,11 +47,10 @@ func (d *Data) loadTemplate() error {
 		"theme": func(p string) string { return path.Join(d.URLS.Themes, p) },
 	}
 
-	path := filepath.Join(d.path, "themes", d.Config.Theme)
 	var err error
 	d.Template, err = template.New("").
 		Funcs(funcMap).
-		ParseGlob(filepath.Join(path, "*.html"))
+		ParseGlob(filepath.Join(dir, d.Config.Theme, "*.html"))
 	return err
 }
 

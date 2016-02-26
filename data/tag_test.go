@@ -7,14 +7,15 @@ package data
 import (
 	"testing"
 
+	"github.com/caixw/typing/path"
 	"github.com/issue9/assert"
 )
 
 func TestData_loadTags(t *testing.T) {
 	a := assert.New(t)
 
-	data := &Data{path: "./testdata/"}
-	a.NotError(data.loadTags())
+	data := &Data{}
+	a.NotError(data.loadTags("./testdata/meta/tags.yaml"))
 	a.NotNil(data.Tags)
 	a.Equal(data.Tags[0].Slug, "default1")
 	a.Equal(data.Tags[0].Color, "efefef")
@@ -28,7 +29,7 @@ func TestData_FindTag(t *testing.T) {
 	a := assert.New(t)
 
 	data := &Data{
-		path: "./testdata/",
+		path: path.New("./testdata/"),
 		Tags: []*Tag{
 			&Tag{Slug: "default1"},
 			&Tag{Slug: "default2"},

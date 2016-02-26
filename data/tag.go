@@ -6,7 +6,6 @@ package data
 
 import (
 	"io/ioutil"
-	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
@@ -20,8 +19,7 @@ type Tag struct {
 	Count   int    `yaml:"-"` // 文章计数
 }
 
-func (d *Data) loadTags() error {
-	path := filepath.Join(d.path, "meta", "tags.yaml")
+func (d *Data) loadTags(path string) error {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err

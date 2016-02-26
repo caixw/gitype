@@ -7,14 +7,15 @@ package data
 import (
 	"testing"
 
+	"github.com/caixw/typing/path"
 	"github.com/issue9/assert"
 )
 
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
-	d := &Data{path: "./testdata"}
-	a.NotError(d.loadConfig()).NotNil(d.Config)
+	d := &Data{path: &path.Path{Data: "./testdata"}} // loadConfig 用到path.Data变量
+	a.NotError(d.loadConfig("./testdata/meta/config.yaml")).NotNil(d.Config)
 	conf := d.Config
 	a.Equal(conf.Title, "title")
 	a.Equal(conf.URL, "https://caixw.io")

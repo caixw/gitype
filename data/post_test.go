@@ -14,7 +14,6 @@ func TestData_FindPost(t *testing.T) {
 	a := assert.New(t)
 
 	data := &Data{
-		path: "./testdata/",
 		Posts: []*Post{
 			&Post{Slug: "default1"},
 			&Post{Slug: "default2"},
@@ -61,11 +60,10 @@ func TestData_loadPosts(t *testing.T) {
 	}
 
 	d := &Data{
-		path:   "./testdata",
 		Tags:   tags,
 		Config: conf,
 	}
-	a.NotError(d.loadPosts())
+	a.NotError(d.loadPosts("./testdata/posts"))
 	a.Equal(len(d.Posts), 2)
 	p2 := d.Posts[1]
 	a.Equal(p2.Tags[0].Slug, "default1")
