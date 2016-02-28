@@ -5,6 +5,7 @@
 package data
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path"
 
@@ -15,7 +16,7 @@ import (
 type Tag struct {
 	Slug      string `yaml:"slug"`
 	Title     string `yaml:"title"`
-	Color     string `yaml:"color,omitempty"`
+	Color     string `yaml:"color,omitempty"` // 未指定，则继承父容器
 	Content   string `yaml:"content"`
 	Count     int    `yaml:"-"` // 文章计数
 	Premalink string `yaml:"-"`
@@ -31,7 +32,19 @@ func (d *Data) loadTags(p string) error {
 	if err = yaml.Unmarshal(data, &tags); err != nil {
 		return err
 	}
-	for _, tag := range tags {
+	for index, tag := range tags {
+		if len(tag.Slug) == 0 {
+			return fmt.Errorf("第[%v]个标签未指slug", index)
+		}
+
+		if len(tag.Title) == 0 {
+			return fmt.Errorf("第[%v]个标签未指title", index)
+		}
+
+		if len(tag.Content) == 0 {
+			return fmt.Errorf("第[%v]个标签未指content", index)
+		}
+
 		tag.Premalink = path.Join(d.URLS.Root, d.URLS.Tag, tag.Slug+d.URLS.Suffix)
 	}
 	d.Tags = tags
