@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -32,6 +33,21 @@ type Post struct {
 	ModifiedFormat string  `yaml:"modified"` // 修改时间的字符串表示形式
 	TagsString     string  `yaml:"tags"`     // 关联标签的列表
 	Path           string  `yaml:"path"`     // 正文的文件名，相对于meta所在的目录
+}
+
+// 排序接口
+type posts []*Post
+
+func (p posts) Less(i, j int) bool {
+	return p[i].Created < p[j].Created
+}
+
+func (p posts) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
+func (p posts) Len() int {
+	return len(p)
 }
 
 // 查找指定名称的文章。
@@ -78,6 +94,7 @@ func (d *Data) loadPosts(dir string) error {
 
 		d.Posts = append(d.Posts, p)
 	}
+	sort.Sort(posts(d.Posts))
 
 	return nil
 }

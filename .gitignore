@@ -26,9 +26,10 @@ _testmain.go
 # osx
 .DS_Store
 
-#vim
+# vim
 *.swp
 
 # app
 typing
-/output
+testdata/logs/*
+testdata/data/themes/test/*
