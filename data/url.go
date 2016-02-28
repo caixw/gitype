@@ -19,8 +19,6 @@ type URLS struct {
 	Tags   string `yaml:"tags,omitempty"`   // 标签列表页地址
 	Tag    string `yaml:"tag,omitempty"`    // 标签详细页地址
 	Themes string `yaml:"themes,omitempty"` // 主题地址
-	Atom   string `yaml:"atom"`             // atom 地址
-	RSS    string `yaml:"rss"`              // RSS 地址
 }
 
 func (d *Data) loadURLS(path string) error {

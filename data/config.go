@@ -22,7 +22,7 @@ type Config struct {
 	Title           string `yaml:"title"`                     // 网站标题
 	Subtitle        string `yaml:"subtitle,omitempty"`        // 网站副标题
 	URL             string `yaml:"url"`                       // 网站的地址
-	Keyword         string `yaml:"keyword,omitempty"`         // 默认情况下的keyword内容
+	Keywords        string `yaml:"keywords,omitempty"`        // 默认情况下的keyword内容
 	Description     string `yaml:"description,omitempty"`     // 默认情况下的descrription内容
 	Beian           string `yaml:"beian,omitempty"`           // 备案号
 	Uptime          int64  `yaml:"-"`                         // 上线时间，unix时间戳，由UptimeFormat转换而来
@@ -43,6 +43,7 @@ type Config struct {
 type RSS struct {
 	Title string `yaml:"title"` // 标题
 	Size  int    `yaml:"size"`  // 显示数量
+	URL   string `yaml:"url"`   // 地址
 }
 
 // 生成一条config字段值错误的error实例

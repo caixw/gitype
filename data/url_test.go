@@ -17,5 +17,5 @@ func TestLoadURLS(t *testing.T) {
 	a.NotError(d.loadURLS("./testdata/meta/urls.yaml"))
 	urls := d.URLS
 	a.NotNil(urls)
-	a.Equal(urls.Post, "/posts").Equal(urls.Atom, "/atom.xml")
+	a.Equal(urls.Post, "/posts").Equal(urls.Themes, "/themes")
 }
