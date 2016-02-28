@@ -6,21 +6,23 @@ package data
 
 import (
 	"io/ioutil"
+	"path"
 
 	"gopkg.in/yaml.v2"
 )
 
 // 描述标签信息
 type Tag struct {
-	Slug    string `yaml:"slug"`
-	Title   string `yaml:"title"`
-	Color   string `yaml:"color,omitempty"`
-	Content string `yaml:"content"`
-	Count   int    `yaml:"-"` // 文章计数
+	Slug      string `yaml:"slug"`
+	Title     string `yaml:"title"`
+	Color     string `yaml:"color,omitempty"`
+	Content   string `yaml:"content"`
+	Count     int    `yaml:"-"` // 文章计数
+	Premalink string `yaml:"-"`
 }
 
-func (d *Data) loadTags(path string) error {
-	data, err := ioutil.ReadFile(path)
+func (d *Data) loadTags(p string) error {
+	data, err := ioutil.ReadFile(p)
 	if err != nil {
 		return err
 	}
@@ -28,6 +30,9 @@ func (d *Data) loadTags(path string) error {
 	tags := make([]*Tag, 0, 100)
 	if err = yaml.Unmarshal(data, &tags); err != nil {
 		return err
+	}
+	for _, tag := range tags {
+		tag.Premalink = path.Join(d.URLS.Root, d.URLS.Tag, tag.Slug+d.URLS.Suffix)
 	}
 	d.Tags = tags
 	return nil

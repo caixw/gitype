@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -33,33 +34,7 @@ type Post struct {
 	ModifiedFormat string  `yaml:"modified"` // 修改时间的字符串表示形式
 	TagsString     string  `yaml:"tags"`     // 关联标签的列表
 	Path           string  `yaml:"path"`     // 正文的文件名，相对于meta所在的目录
-}
-
-// 排序接口
-type posts []*Post
-
-func (p posts) Less(i, j int) bool {
-	return p[i].Created < p[j].Created
-}
-
-func (p posts) Swap(i, j int) {
-	p[i], p[j] = p[j], p[i]
-}
-
-func (p posts) Len() int {
-	return len(p)
-}
-
-// 查找指定名称的文章。
-// 若返回nil，则表示该文章不存在。
-func (d *Data) FindPost(slug string) *Post {
-	for _, post := range d.Posts {
-		if post.Slug == slug {
-			return post
-		}
-	}
-
-	return nil
+	Permalink      string  `yaml:"-"`
 }
 
 // 加载所有的文章内容。
@@ -85,14 +60,15 @@ func (d *Data) loadPosts(dir string) error {
 
 	// 开始加载文章的具体内容。
 	d.Posts = make([]*Post, 0, len(paths))
-	for _, path := range paths {
-		p, err := loadPost(dir, path, d.Config, d.Tags)
+	for _, p := range paths {
+		post, err := loadPost(dir, p, d.Config, d.Tags)
 		if err != nil {
 			logs.Error(err)
 			continue
 		}
+		post.Permalink = path.Join(d.URLS.Root, d.URLS.Post, post.Slug+d.URLS.Suffix)
 
-		d.Posts = append(d.Posts, p)
+		d.Posts = append(d.Posts, post)
 	}
 	sort.Sort(posts(d.Posts))
 
