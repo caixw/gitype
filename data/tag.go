@@ -50,15 +50,3 @@ func (d *Data) loadTags(p string) error {
 	d.Tags = tags
 	return nil
 }
-
-// 查找指定名称的标签。
-// 若返回nil，则表示该标签不存在。
-func (d *Data) FindTag(slug string) *Tag {
-	for _, tag := range d.Tags {
-		if tag.Slug == slug {
-			return tag
-		}
-	}
-
-	return nil
-}

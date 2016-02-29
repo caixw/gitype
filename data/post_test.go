@@ -10,20 +10,6 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestData_FindPost(t *testing.T) {
-	a := assert.New(t)
-
-	data := &Data{
-		Posts: []*Post{
-			&Post{Slug: "default1"},
-			&Post{Slug: "default2"},
-		},
-	}
-	a.NotNil(data.FindPost("default1"))
-	a.NotNil(data.FindPost("default2"))
-	a.Nil(data.FindPost("default3"))
-}
-
 func TestLoadPost(t *testing.T) {
 	a := assert.New(t)
 

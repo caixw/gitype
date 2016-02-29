@@ -34,15 +34,3 @@ func (p posts) Swap(i, j int) {
 func (p posts) Len() int {
 	return len(p)
 }
-
-// 查找指定名称的文章。
-// 若返回nil，则表示该文章不存在。
-func (d *Data) FindPost(slug string) *Post {
-	for _, post := range d.Posts {
-		if post.Slug == slug {
-			return post
-		}
-	}
-
-	return nil
-}

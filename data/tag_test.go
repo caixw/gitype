@@ -7,7 +7,6 @@ package data
 import (
 	"testing"
 
-	"github.com/caixw/typing/path"
 	"github.com/issue9/assert"
 )
 
@@ -24,19 +23,4 @@ func TestData_loadTags(t *testing.T) {
 	a.Equal(data.Tags[0].Premalink, "/root/tags/default1.html")
 
 	t.Log(data.Tags[0])
-}
-
-func TestData_FindTag(t *testing.T) {
-	a := assert.New(t)
-
-	data := &Data{
-		path: path.New("./testdata/"),
-		Tags: []*Tag{
-			&Tag{Slug: "default1"},
-			&Tag{Slug: "default2"},
-		},
-	}
-	a.NotNil(data.FindTag("default1"))
-	a.NotNil(data.FindTag("default2"))
-	a.Nil(data.FindTag("default3"))
 }
