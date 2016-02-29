@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"path"
 	"path/filepath"
+	"regexp"
 	"time"
 )
 
@@ -41,10 +42,11 @@ func getThemesName(path string) ([]string, error) {
 // dir 模板所在的目录。
 func (d *Data) loadTemplate(dir string) error {
 	var funcMap = template.FuncMap{
-		"html":  htmlEscaped,
-		"ldate": d.longDateFormat,
-		"sdate": d.shortDateFormat,
-		"theme": func(p string) string { return path.Join(d.URLS.Themes, p) },
+		"strip":    stripTags,
+		"html":     htmlEscaped,
+		"ldate":    d.longDateFormat,
+		"sdate":    d.shortDateFormat,
+		"themeURL": func(p string) string { return path.Join(d.URLS.Themes, p) },
 	}
 
 	var err error
@@ -67,4 +69,12 @@ func (d *Data) shortDateFormat(t int64) interface{} {
 // 将内容显示为html内容
 func htmlEscaped(html string) interface{} {
 	return template.HTML(html)
+}
+
+// 去掉所有的标签信息
+var stripExpr = regexp.MustCompile("</?[^</>]+/?>")
+
+// 过滤标签。
+func stripTags(html string) string {
+	return stripExpr.ReplaceAllString(html, "")
 }

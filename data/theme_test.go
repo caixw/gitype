@@ -42,3 +42,17 @@ func TestData_shortDataFormat(t *testing.T) {
 	d := &Data{Config: &Config{ShortDateFormat: "2006-01-02"}}
 	a.Equal(d.shortDateFormat(1456324895), "2016-02-24")
 }
+
+func TestStripTags(t *testing.T) {
+	a := assert.New(t)
+
+	tests := map[string]string{
+		"<div>str</div>":        "str",
+		"str<br />":             "str",
+		"<div><p>str</p></div>": "str",
+	}
+
+	for expr, val := range tests {
+		a.Equal(stripTags(expr), val, "测试[%v]时出错", expr)
+	}
+}
