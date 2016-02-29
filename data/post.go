@@ -120,7 +120,7 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 		for _, tagName := range ts {
 			if tag.Slug == tagName {
 				p.Tags = append(p.Tags, tag)
-				tag.Count++
+				tag.Posts = append(tag.Posts, p)
 				break
 			}
 		}

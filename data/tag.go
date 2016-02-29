@@ -14,12 +14,12 @@ import (
 
 // 描述标签信息
 type Tag struct {
-	Slug      string `yaml:"slug"`
-	Title     string `yaml:"title"`
-	Color     string `yaml:"color,omitempty"` // 未指定，则继承父容器
-	Content   string `yaml:"content"`
-	Count     int    `yaml:"-"` // 文章计数
-	Premalink string `yaml:"-"`
+	Slug      string  `yaml:"slug"`
+	Title     string  `yaml:"title"`
+	Color     string  `yaml:"color,omitempty"` // 未指定，则继承父容器
+	Content   string  `yaml:"content"`
+	Posts     []*Post `yaml:"-"` // 关联的文章
+	Premalink string  `yaml:"-"`
 }
 
 func (d *Data) loadTags(p string) error {
@@ -45,6 +45,7 @@ func (d *Data) loadTags(p string) error {
 			return fmt.Errorf("第[%v]个标签未指content", index)
 		}
 
+		tag.Posts = make([]*Post, 0, 10)
 		tag.Premalink = path.Join(d.URLS.Root, d.URLS.Tag, tag.Slug+d.URLS.Suffix)
 	}
 	d.Tags = tags

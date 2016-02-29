@@ -14,8 +14,8 @@ func TestLoadPost(t *testing.T) {
 	a := assert.New(t)
 
 	tags := []*Tag{
-		&Tag{Slug: "default1"},
-		&Tag{Slug: "default2"},
+		&Tag{Slug: "default1", Posts: make([]*Post, 0, 10)},
+		&Tag{Slug: "default2", Posts: make([]*Post, 0, 10)},
 	}
 	conf := &Config{
 		Theme: "t1",
@@ -24,7 +24,7 @@ func TestLoadPost(t *testing.T) {
 	post, err := loadPost("./testdata/posts", "./testdata/posts/post1/meta.yaml", conf, tags)
 	a.NotError(err).NotNil(post)
 	a.Equal(len(post.Tags), 2).Equal(post.Tags[0].Slug, "default1")
-	a.Equal(tags[0].Count, 1) // 会同时增加标签的计数器
+	a.Equal(len(tags[0].Posts), 1) // 会同时增加标签的计数器
 	a.Equal(post.Modified, 0)
 	a.Equal(post.Template, "post") // 默认模板
 	a.Equal(post.Content, "<article>a1</article>\n")
