@@ -19,7 +19,7 @@ type Tag struct {
 	Color     string  `yaml:"color,omitempty"` // 未指定，则继承父容器
 	Content   string  `yaml:"content"`
 	Posts     []*Post `yaml:"-"` // 关联的文章
-	Premalink string  `yaml:"-"`
+	Permalink string  `yaml:"-"`
 }
 
 func (d *Data) loadTags(p string) error {
@@ -46,7 +46,7 @@ func (d *Data) loadTags(p string) error {
 		}
 
 		tag.Posts = make([]*Post, 0, 10)
-		tag.Premalink = path.Join(d.URLS.Root, d.URLS.Tag, tag.Slug+d.URLS.Suffix)
+		tag.Permalink = path.Join(d.URLS.Root, d.URLS.Tag, tag.Slug+d.URLS.Suffix)
 	}
 	d.Tags = tags
 	return nil
