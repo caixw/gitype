@@ -11,11 +11,10 @@ import (
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/path"
-	"github.com/issue9/logs"
 	"github.com/issue9/web"
 )
 
-const version = "0.1.10.20160226" // 版本号
+const Version = "0.1.10.20160303" // 版本号
 
 type App struct {
 	path    *path.Path
@@ -33,12 +32,6 @@ func (a *App) reload() (err error) {
 func Run(p *path.Path) error {
 	a := &App{
 		path: p,
-	}
-
-	// 初始化日志
-	err := logs.InitFromXMLFile(a.path.ConfLogs)
-	if err != nil {
-		return err
 	}
 
 	// 加载程序配置

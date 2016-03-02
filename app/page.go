@@ -54,7 +54,7 @@ func (a *App) newPage() *page {
 		Canonical:   conf.URL,
 		Keywords:    conf.Keywords,
 		Description: conf.Description,
-		AppVersion:  version,
+		AppVersion:  Version,
 		GoVersion:   runtime.Version(),
 		PostSize:    len(a.data.Posts),
 		Beian:       conf.Beian,

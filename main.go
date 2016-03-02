@@ -5,14 +5,49 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+	"runtime"
+
 	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/path"
+	"github.com/issue9/logs"
 )
 
-func main() {
-	err := app.Run(path.New("./testdata"))
+const usage = `typing 一个简单博客程序。
+源代码以MIT开源许可，并发布于github: https://github.com/caixw/typing
 
+命令行语法：
+ typing [options]
+
+ options:
+  -h      显示帮助信息；
+  -v      显示程序版本信息；
+  -appdir 指定程序的数据存放路径，未指定，则为当前运行目录。`
+
+func main() {
+	help := flag.Bool("h", false, "显示当前信息")
+	version := flag.Bool("v", false, "显示程序的版本信息")
+	appdir := flag.String("appdir", "./testdata", "指定运行的数据目录")
+	flag.Parse()
+
+	if *help {
+		fmt.Println(usage)
+		return
+	}
+
+	if *version {
+		fmt.Println(app.Version, "build with", runtime.Version())
+		return
+	}
+
+	p := path.New(*appdir)
+
+	// 初始化日志
+	err := logs.InitFromXMLFile(p.ConfLogs)
 	if err != nil {
 		panic(err)
 	}
+
+	logs.Fatal(app.Run(p))
 }
