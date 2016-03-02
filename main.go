@@ -10,6 +10,7 @@ import (
 	"runtime"
 
 	"github.com/caixw/typing/app"
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 )
 
@@ -36,7 +37,7 @@ func main() {
 	}
 
 	if *version {
-		fmt.Println(app.Version, "build with", runtime.Version())
+		fmt.Println(vars.Version, "build with", runtime.Version())
 		return
 	}
 
