@@ -59,17 +59,17 @@ func (a *App) getPagePost(p *page, posts []*data.Post, page int, w http.Response
 	}
 
 	p.Posts = posts[start:end]
-	p.Canonical = a.PostsURL(uint(page))
+	p.Canonical = a.postsURL(uint(page))
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  a.PostsURL(uint(page - 1)), // 页码从1开始计数
+			URL:  a.postsURL(uint(page - 1)), // 页码从1开始计数
 		}
 	}
 	if end < len(posts) {
 		p.PrevPage = &data.Link{
 			Text: "下一页",
-			URL:  a.PostsURL(uint(page + 1)), // 页码从1开始计数
+			URL:  a.postsURL(uint(page + 1)), // 页码从1开始计数
 		}
 	}
 
@@ -149,7 +149,7 @@ func (a *App) getTag(w http.ResponseWriter, r *http.Request) {
 func (a *App) getTags(w http.ResponseWriter, r *http.Request) {
 	p := a.newPage()
 	p.Title = "标签"
-	p.Canonical = a.TagsURL()
+	p.Canonical = a.tagsURL()
 	p.render(w, r, "tags", nil)
 }
 

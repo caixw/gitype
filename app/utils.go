@@ -9,6 +9,7 @@ import (
 	"path"
 	"strconv"
 
+	"github.com/issue9/logs"
 	"github.com/issue9/web"
 )
 
@@ -33,18 +34,19 @@ func queryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int,
 
 	ret, err := strconv.Atoi(val)
 	if err != nil {
+		logs.Error("app.queryInt:", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return 0, false
 	}
 	return ret, true
 }
 
-func (a *App) PostURL(slug string) string {
+func (a *App) postURL(slug string) string {
 	u := a.data.URLS
 	return path.Join(u.Root, u.Post, slug+u.Suffix)
 }
 
-func (a *App) PostsURL(page uint) string {
+func (a *App) postsURL(page uint) string {
 	u := a.data.URLS
 
 	if page <= 1 {
@@ -53,7 +55,7 @@ func (a *App) PostsURL(page uint) string {
 	return path.Join(u.Root, u.Posts+u.Suffix) + "?page=" + strconv.Itoa(int(page))
 }
 
-func (a *App) TagURL(slug string, page uint) string {
+func (a *App) tagURL(slug string, page uint) string {
 	u := a.data.URLS
 
 	base := path.Join(u.Root, u.Tag, slug+u.Suffix)
@@ -64,7 +66,7 @@ func (a *App) TagURL(slug string, page uint) string {
 	return base + "?page=" + strconv.Itoa(int(page))
 }
 
-func (a *App) TagsURL() string {
+func (a *App) tagsURL() string {
 	u := a.data.URLS
 	return path.Join(u.Root, u.Tags+u.Suffix)
 }
