@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // 定义了需要用到的一些路径信息
-package path
+package vars
 
 import "path/filepath"
 
@@ -23,7 +23,7 @@ type Path struct {
 	DataRaws   string // data/raws
 }
 
-func New(root string) *Path {
+func NewPath(root string) *Path {
 	conf := filepath.Join(root, "conf")
 	data := filepath.Join(root, "data")
 	meta := filepath.Join(data, "meta")

@@ -10,7 +10,6 @@ import (
 	"runtime"
 
 	"github.com/caixw/typing/app"
-	"github.com/caixw/typing/path"
 	"github.com/issue9/logs"
 )
 
@@ -41,7 +40,7 @@ func main() {
 		return
 	}
 
-	p := path.New(*appdir)
+	p := vars.NewPath(*appdir)
 
 	// 初始化日志
 	err := logs.InitFromXMLFile(p.ConfLogs)

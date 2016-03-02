@@ -10,14 +10,12 @@ import (
 	"time"
 
 	"github.com/caixw/typing/data"
-	"github.com/caixw/typing/path"
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/web"
 )
 
-const Version = "0.1.10.20160303" // 版本号
-
 type App struct {
-	path    *path.Path
+	path    *vars.Path
 	data    *data.Data
 	updated int64
 }
@@ -29,7 +27,7 @@ func (a *App) reload() (err error) {
 	return
 }
 
-func Run(p *path.Path) error {
+func Run(p *vars.Path) error {
 	a := &App{
 		path: p,
 	}

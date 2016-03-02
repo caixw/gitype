@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package path
+package vars
 
 import (
 	"runtime"
@@ -20,7 +20,7 @@ func TestNew(t *testing.T) {
 
 	a := assert.New(t)
 
-	p := New("./testdata")
+	p := NewPath("./testdata")
 
 	a.Equal(p.Root, "./testdata").
 		Equal(p.Data, "testdata/data").

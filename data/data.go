@@ -9,14 +9,14 @@ package data
 import (
 	"html/template"
 
-	"github.com/caixw/typing/path"
+	"github.com/caixw/typing/vars"
 )
 
 // 客户保存的时间格式。
 const parseDateFormat = "2006-01-02T15:04:05-0700"
 
 type Data struct {
-	path *path.Path
+	path *vars.Path
 
 	Config   *Config            // 配置内容
 	URLS     *URLS              // 自定义URL
@@ -27,7 +27,7 @@ type Data struct {
 
 // 加载一份新的数据。
 // path 为数据所在的目录。
-func Load(path *path.Path) (*Data, error) {
+func Load(path *vars.Path) (*Data, error) {
 	d := &Data{
 		path: path,
 	}

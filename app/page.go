@@ -12,6 +12,7 @@ import (
 	"strconv"
 
 	"github.com/caixw/typing/data"
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 )
 
@@ -54,7 +55,7 @@ func (a *App) newPage() *page {
 		Canonical:   conf.URL,
 		Keywords:    conf.Keywords,
 		Description: conf.Description,
-		AppVersion:  Version,
+		AppVersion:  vars.Version,
 		GoVersion:   runtime.Version(),
 		PostSize:    len(a.data.Posts),
 		Beian:       conf.Beian,

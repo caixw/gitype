@@ -20,7 +20,7 @@ func TestData_loadTags(t *testing.T) {
 	a.Equal(data.Tags[0].Color, "efefef")
 	a.Equal(data.Tags[0].Title, "默认1")
 	a.Equal(data.Tags[1].Slug, "default2")
-	a.Equal(data.Tags[0].Premalink, "/root/tags/default1.html")
+	a.Equal(data.Tags[0].Permalink, "/root/tags/default1.html")
 
 	t.Log(data.Tags[0])
 }
