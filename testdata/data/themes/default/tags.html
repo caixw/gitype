@@ -1,0 +1,13 @@
+{{define "tags"}}
+{{template "header" .}}
+
+<div class="tags">
+    <h1>标签</h1>
+    {{range .Tags}}
+    <a style="color:{{.Color}}" class="item" href="{{.Permalink}}">{{.Title}}</a>
+    {{end}}
+
+</div>
+
+{{template "footer" .}}
+{{end}}

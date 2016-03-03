@@ -1,0 +1,30 @@
+{{define "sidebar"}}
+<aside id="sidebar">
+<div class="container">
+
+    <div class="topbar">
+        <div class="block">
+            <p class="title" id="title"><a href="{{.URL}}">{{.SiteName}}</a></p>
+            <p class="second-title">{{.Subtitle}}</p>
+        </div>
+    </div><!-- end .topbar -->
+
+    <div class="menus">
+        <div class="block">
+            {{range .Menus}}
+            <p><a href="{{.URL}}" title="{{.Title}}">{{.Text}}</a></p>
+            {{end}}
+        </div>
+
+        <div class="block">
+            <div class="header">站点数据</div>
+            <ul class="content">
+                <li>上线时间: <time>{{.Uptime|sdate}}</time></li>
+                <li>文章数量: {{.PostSize}}</li>
+            </ul>
+        </div>
+    </div><!-- end .menus -->
+
+</div>
+</aside>
+{{end}}
