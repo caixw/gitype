@@ -80,6 +80,5 @@ func Run(p *vars.Path) error {
 		return err
 	}
 
-	web.Run(conf)
-	return nil
+	return web.Run(conf)
 }

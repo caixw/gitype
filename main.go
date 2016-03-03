@@ -7,6 +7,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"runtime"
 
 	"github.com/caixw/typing/app"
@@ -49,5 +50,5 @@ func main() {
 		panic(err)
 	}
 
-	logs.Fatal(app.Run(p))
+	log.Fatal(app.Run(p))
 }
