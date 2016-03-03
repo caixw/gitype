@@ -69,7 +69,7 @@ func (a *App) newPage() *page {
 		page.RSS = &data.Link{Title: conf.RSS.Title, URL: conf.RSS.URL}
 	}
 
-	if conf.RSS != nil {
+	if conf.Atom != nil {
 		page.Atom = &data.Link{Title: conf.Atom.Title, URL: conf.Atom.URL}
 	}
 
