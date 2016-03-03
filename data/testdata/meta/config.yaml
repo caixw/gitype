@@ -19,4 +19,5 @@ menus:
 atom:
     title: atom
     size: 20
+    url: /atom.xml
 

@@ -57,7 +57,7 @@ type Sitemap struct {
 }
 
 // 生成一条config字段值错误的error实例
-func configError(field, message string) error {
+func confError(field, message string) error {
 	return fmt.Errorf("字段[%v]错误:[%v]", field, message)
 }
 
@@ -106,7 +106,7 @@ func fixedConfig(conf *Config) error {
 	} else {
 		t, err := time.Parse(parseDateFormat, conf.UptimeFormat)
 		if err != nil {
-			return configError("UptimeFormat", err.Error())
+			return confError("UptimeFormat", err.Error())
 		}
 		conf.Uptime = t.Unix()
 	}
@@ -123,28 +123,28 @@ func fixedConfig(conf *Config) error {
 // path data的路径名。
 func checkConfig(conf *Config, path string) error {
 	if conf.PageSize <= 0 {
-		return configError("pageSize", "必须为大于零的整数")
+		return confError("pageSize", "必须为大于零的整数")
 	}
 
 	// Author
 	if conf.Author == nil {
-		return configError("Author", "必须指定作者")
+		return confError("Author", "必须指定作者")
 	}
 	if len(conf.Author.Name) == 0 {
-		return configError("Author.Name", "不能为空")
+		return confError("Author.Name", "不能为空")
 	}
 
 	if len(conf.Title) == 0 {
-		return configError("Title", "不能为空")
+		return confError("Title", "不能为空")
 	}
 
 	if !is.URL(conf.URL) {
-		return configError("URL", "不是一个合法的域名或IP")
+		return confError("URL", "不是一个合法的域名或IP")
 	}
 
 	// theme
 	if len(conf.Theme) == 0 {
-		return configError("Theme", "不能为空")
+		return confError("Theme", "不能为空")
 	}
 	themes, err := getThemesName(filepath.Join(path, "themes"))
 	if err != nil {
@@ -158,28 +158,75 @@ func checkConfig(conf *Config, path string) error {
 		}
 	}
 	if !found {
-		return configError("Theme", "该主题并不存在")
+		return confError("Theme", "该主题并不存在")
 	}
 
-	// RSS
-	if conf.RSS != nil {
-		if len(conf.RSS.Title) == 0 {
-			return configError("RSS.Title", "不能为空")
-		}
-		if conf.RSS.Size <= 0 {
-			return configError("RSS.Size", "必须大于0")
-		}
+	if err := checkRSS("RSS", conf.RSS); err != nil {
+		return err
 	}
 
-	// Atom
-	if conf.Atom != nil {
-		if len(conf.Atom.Title) == 0 {
-			return configError("Atom.Title", "不能为空")
+	if err := checkRSS("Atom", conf.Atom); err != nil {
+		return err
+	}
+
+	if err := checkSitemap(conf.Sitemap); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 检测RSS是否正常
+func checkRSS(typ string, rss *RSS) error {
+	if rss != nil {
+		if len(rss.Title) == 0 {
+			return confError(typ+".Title", "不能为空")
 		}
-		if conf.Atom.Size <= 0 {
-			return configError("Atom.Size", "必须大于0")
+		if rss.Size <= 0 {
+			return confError(typ+".Size", "必须大于0")
+		}
+		if len(rss.URL) == 0 {
+			return confError(typ+".URL", "不能为空")
 		}
 	}
 
 	return nil
+}
+
+// 检测sitemap取值是否正确
+func checkSitemap(s *Sitemap) error {
+	if s != nil {
+		switch {
+		case len(s.URL) == 0:
+			return confError("Sitemap.URL", "不能为空")
+		case s.TagPriority > 1 || s.TagPriority < 0:
+			return confError("Sitemap.TagPriority", "介于[0,1]之间的浮点数")
+		case s.PostPriority > 1 || s.PostPriority < 0:
+			return confError("Sitemap.PostPriority", "介于[0,1]之间的浮点数")
+		case !isChangereq(s.TagChangefreq):
+			return confError("Sitemap.TagChangefreq", "取值不正确")
+		case !isChangereq(s.PostChangefreq):
+			return confError("Sitemap.PostChangefreq", "取值不正确")
+		}
+	}
+	return nil
+}
+
+var changereqs = []string{
+	"never",
+	"yearly",
+	"monthly",
+	"weekly",
+	"daily",
+	"hourly",
+	"always",
+}
+
+func isChangereq(val string) bool {
+	for _, v := range changereqs {
+		if v == val {
+			return true
+		}
+	}
+	return false
 }
