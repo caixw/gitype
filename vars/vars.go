@@ -5,4 +5,5 @@
 // 定义一些程序通用的数据。
 package vars
 
-const Version = "0.1.10.20160303" // 版本号
+// 版本号
+const Version = "0.1.10.20160303"

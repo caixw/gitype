@@ -36,14 +36,24 @@ type Config struct {
 	Author *Author `yaml:"author"`          // 默认的作者信息
 
 	// feeds
-	RSS  *RSS `yaml:"rss,omitempty"`
-	Atom *RSS `yaml:"atom,omitempty"`
+	RSS     *RSS     `yaml:"rss,omitempty"`
+	Atom    *RSS     `yaml:"atom,omitempty"`
+	Sitemap *Sitemap `yaml:"sitemap,omitempty"`
 }
 
 type RSS struct {
 	Title string `yaml:"title"` // 标题
 	Size  int    `yaml:"size"`  // 显示数量
 	URL   string `yaml:"url"`   // 地址
+}
+
+type Sitemap struct {
+	URL            string  `yaml:"url"`
+	EnableTag      bool    `yaml:"enableTag,omitempty"`
+	TagPriority    float64 `yaml:"tagPriority"`
+	PostPriority   float64 `yaml:"postPriority"`
+	TagChangefreq  string  `yaml:"tagChangefreq"`
+	PostChangefreq string  `yaml:"postChangefreq"`
 }
 
 // 生成一条config字段值错误的error实例

@@ -19,14 +19,34 @@ func (a *App) initRoute() error {
 	}
 
 	urls := a.data.URLS
-	m.Prefix(urls.Root).
-		GetFunc(urls.Post+"/{slug}"+urls.Suffix, accessLog(a.getPost)).
+	p := m.Prefix(urls.Root)
+
+	p.GetFunc(urls.Post+"/{slug}"+urls.Suffix, accessLog(a.getPost)).
 		GetFunc(urls.Posts+urls.Suffix, accessLog(a.getPosts)).
 		GetFunc(urls.Tag+"/{slug}"+urls.Suffix, accessLog(a.getTag)).
 		GetFunc(urls.Tags+urls.Suffix+"{:.*}", accessLog(a.getTags)).
 		GetFunc(urls.Themes+"/", accessLog(a.getThemes)).
 		GetFunc("/", accessLog(a.getRaws))
 
+	// feeds
+	conf := a.data.Config
+	if conf.RSS != nil {
+		p.GetFunc(conf.RSS.URL, accessLog(func(w http.ResponseWriter, r *http.Request) {
+			w.Write(a.rssBuffer.Bytes())
+		}))
+	}
+
+	if conf.Atom != nil {
+		p.GetFunc(conf.Atom.URL, accessLog(func(w http.ResponseWriter, r *http.Request) {
+			w.Write(a.atomBuffer.Bytes())
+		}))
+	}
+
+	if conf.Sitemap != nil {
+		p.GetFunc(conf.Sitemap.URL, accessLog(func(w http.ResponseWriter, r *http.Request) {
+			w.Write(a.sitemapBuffer.Bytes())
+		}))
+	}
 	return nil
 }
 
