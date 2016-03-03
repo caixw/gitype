@@ -19,7 +19,7 @@ const (
 	sitemapFooter = `</urlset>`
 )
 
-// Build 构建一个sitemap.xml文件到sitemapPath文件中，若该文件已经存在，则覆盖。
+// 生成一个符合sitemap规范的xml广西buffer。
 func BuildSitemap(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
 	if _, err := buf.WriteString(sitemapHeader); err != nil {
@@ -30,8 +30,10 @@ func BuildSitemap(d *data.Data) (*bytes.Buffer, error) {
 		return nil, err
 	}
 
-	if err := addTagsToSitemap(buf, d); err != nil {
-		return nil, err
+	if d.Config.Sitemap.EnableTag {
+		if err := addTagsToSitemap(buf, d); err != nil {
+			return nil, err
+		}
 	}
 
 	if _, err := buf.WriteString(sitemapFooter); err != nil {

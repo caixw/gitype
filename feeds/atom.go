@@ -18,7 +18,7 @@ const (
 	atomFooter = `</feed>`
 )
 
-// Build 构建一个atom.xml文件到atomPath文件中，若该文件已经存在，则覆盖。
+// 生成一个符合atom规范的xml广西buffer。
 func BuildAtom(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
 	if _, err := buf.WriteString(atomHeader); err != nil {

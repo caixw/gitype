@@ -20,7 +20,7 @@ const (
 </rss>`
 )
 
-// Build 构建一个rss.xml文件到rssPath文件中，若该文件已经存在，则覆盖。
+// 生成一个符合rss规范的xml广西buffer。
 func BuildRSS(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
 	if _, err := buf.WriteString(rssHeader); err != nil {
