@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/issue9/logs"
-
 	"gopkg.in/yaml.v2"
 )
 
@@ -34,7 +33,7 @@ type Post struct {
 	ModifiedFormat string  `yaml:"modified"` // 修改时间的字符串表示形式
 	TagsString     string  `yaml:"tags"`     // 关联标签的列表
 	Path           string  `yaml:"path"`     // 正文的文件名，相对于meta所在的目录
-	Permalink      string  `yaml:"-"`
+	Permalink      string  `yaml:"-"`        // 文章的唯一链接
 }
 
 // 加载所有的文章内容。
@@ -80,7 +79,7 @@ func (d *Data) loadPosts(dir string) error {
 // path 表示具体文章的meta.yaml文章；
 func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 	dir := filepath.Dir(path)                 // 获取路径部分
-	name := strings.TrimPrefix(dir, postsDir) // 获取相对于data/posts 的名称
+	name := strings.TrimPrefix(dir, postsDir) // 获取相对于data/posts的名称
 
 	data, err := ioutil.ReadFile(path)
 	if err != nil {

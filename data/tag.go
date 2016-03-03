@@ -14,12 +14,12 @@ import (
 
 // 描述标签信息
 type Tag struct {
-	Slug      string  `yaml:"slug"`
-	Title     string  `yaml:"title"`
-	Color     string  `yaml:"color,omitempty"` // 未指定，则继承父容器
-	Content   string  `yaml:"content"`
-	Posts     []*Post `yaml:"-"` // 关联的文章
-	Permalink string  `yaml:"-"`
+	Slug      string  `yaml:"slug"`            //  唯一名称
+	Title     string  `yaml:"title"`           // 名称
+	Color     string  `yaml:"color,omitempty"` // 标签颜色。若未指定，则继承父容器
+	Content   string  `yaml:"content"`         // 对该标签的详细描述
+	Posts     []*Post `yaml:"-"`               // 关联的文章
+	Permalink string  `yaml:"-"`               // 唯一链接
 }
 
 func (d *Data) loadTags(p string) error {

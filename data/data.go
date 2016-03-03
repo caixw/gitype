@@ -26,7 +26,6 @@ type Data struct {
 }
 
 // 加载一份新的数据。
-// path 为数据所在的目录。
 func Load(path *vars.Path) (*Data, error) {
 	d := &Data{
 		path: path,

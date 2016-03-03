@@ -91,6 +91,7 @@ func (p *page) render(w http.ResponseWriter, r *http.Request, name string, heade
 }
 
 // 输出一个特定状态码下的错误页面。若该页面模板不存在，则panic。
+// 只查找当前主题目录下的相关文件。
 // 只对状态码大于等于400的起作用。
 func (p *page) renderStatusCode(w http.ResponseWriter, r *http.Request, code int) {
 	if code < 400 {

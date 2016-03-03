@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
+// 核心处理模块，包括路由函数和页面渲染等。
+// 会调用github.com/issue9/logs包的内容，调用之前需要初始化该包。
 package app
 
 import (

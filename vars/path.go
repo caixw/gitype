@@ -7,6 +7,8 @@ package vars
 
 import "path/filepath"
 
+// 定义了程序需要用到的各种目录结构。
+// 统一定义方便修改目录结构，也不容易发生因输入错误造成的bug。
 type Path struct {
 	Root string // 根目录
 	Data string // data 数据所在目录
