@@ -41,12 +41,12 @@ func queryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int,
 	return ret, true
 }
 
-func (a *App) postURL(slug string) string {
+func (a *app) postURL(slug string) string {
 	u := a.data.URLS
 	return path.Join(u.Root, u.Post, slug+u.Suffix)
 }
 
-func (a *App) postsURL(page uint) string {
+func (a *app) postsURL(page uint) string {
 	u := a.data.URLS
 
 	if page <= 1 {
@@ -55,7 +55,7 @@ func (a *App) postsURL(page uint) string {
 	return path.Join(u.Root, u.Posts+u.Suffix) + "?page=" + strconv.Itoa(int(page))
 }
 
-func (a *App) tagURL(slug string, page uint) string {
+func (a *app) tagURL(slug string, page uint) string {
 	u := a.data.URLS
 
 	base := path.Join(u.Root, u.Tag, slug+u.Suffix)
@@ -66,7 +66,7 @@ func (a *App) tagURL(slug string, page uint) string {
 	return base + "?page=" + strconv.Itoa(int(page))
 }
 
-func (a *App) tagsURL() string {
+func (a *app) tagsURL() string {
 	u := a.data.URLS
 	return path.Join(u.Root, u.Tags+u.Suffix)
 }

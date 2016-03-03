@@ -21,7 +21,7 @@ var (
 		Root:   "",
 	}
 
-	appTest = &App{data: &data.Data{URLS: urlsTest}}
+	appTest = &app{data: &data.Data{URLS: urlsTest}}
 )
 
 func TestApp_postsURL(t *testing.T) {

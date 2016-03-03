@@ -12,7 +12,7 @@ import (
 	"github.com/issue9/web"
 )
 
-func (a *App) initRoute() error {
+func (a *app) initRoute() error {
 	m, err := web.NewModule("front")
 	if err != nil {
 		return err
@@ -51,7 +51,7 @@ func (a *App) initRoute() error {
 }
 
 // /
-func (a *App) getRaws(w http.ResponseWriter, r *http.Request) {
+func (a *app) getRaws(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == a.data.URLS.Root || r.URL.Path == a.data.URLS.Root+"/" {
 		a.getPosts(w, r)
 		return
@@ -64,7 +64,7 @@ func (a *App) getRaws(w http.ResponseWriter, r *http.Request) {
 
 // 从posts中摘取指定页码的文章存入到p中。
 // posts用于筛选的所有文章列表；page当前显示的页码，从1开始。
-func (a *App) getPagePost(p *page, posts []*data.Post, page int, w http.ResponseWriter) (ok bool) {
+func (a *app) getPagePost(p *page, posts []*data.Post, page int, w http.ResponseWriter) (ok bool) {
 	size := a.data.Config.PageSize
 	start := size * (page - 1) // 系统从零开始计数
 	if start > len(posts) {
@@ -99,7 +99,7 @@ func (a *App) getPagePost(p *page, posts []*data.Post, page int, w http.Response
 // 首页及文章列表页
 // /
 // /posts.html?page=2
-func (a *App) getPosts(w http.ResponseWriter, r *http.Request) {
+func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	page, ok := queryInt(w, r, "page", 1)
 	if !ok {
 		return
@@ -118,7 +118,7 @@ func (a *App) getPosts(w http.ResponseWriter, r *http.Request) {
 
 // 主题文件
 // /themes/...
-func (a *App) getThemes(w http.ResponseWriter, r *http.Request) {
+func (a *app) getThemes(w http.ResponseWriter, r *http.Request) {
 	root := http.Dir(a.path.DataThemes)
 	prefix := a.data.URLS.Root + a.data.URLS.Themes
 	http.StripPrefix(prefix, http.FileServer(root)).ServeHTTP(w, r)
@@ -126,7 +126,7 @@ func (a *App) getThemes(w http.ResponseWriter, r *http.Request) {
 
 // 标签详细页
 // /tags/tag1.html?page=2
-func (a *App) getTag(w http.ResponseWriter, r *http.Request) {
+func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	slug, ok := paramString(w, r, "slug")
 	if !ok {
 		return
@@ -166,7 +166,7 @@ func (a *App) getTag(w http.ResponseWriter, r *http.Request) {
 
 // 标签列表页
 // /tags.html
-func (a *App) getTags(w http.ResponseWriter, r *http.Request) {
+func (a *app) getTags(w http.ResponseWriter, r *http.Request) {
 	p := a.newPage()
 	p.Title = "标签"
 	p.Canonical = a.tagsURL()
@@ -175,7 +175,7 @@ func (a *App) getTags(w http.ResponseWriter, r *http.Request) {
 
 // 文章详细页
 // /posts/{slug}.html
-func (a *App) getPost(w http.ResponseWriter, r *http.Request) {
+func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 	slug, ok := paramString(w, r, "slug")
 	if !ok {
 		return

@@ -41,10 +41,10 @@ type page struct {
 	Posts       []*data.Post // 文章列表，文章列表页用到。
 	Post        *data.Post   // 文章详细内容，单文章页面用到。
 
-	app *App
+	app *app
 }
 
-func (a *App) newPage() *page {
+func (a *app) newPage() *page {
 	conf := a.data.Config
 
 	page := &page{

@@ -18,7 +18,7 @@ import (
 	"github.com/issue9/web"
 )
 
-type App struct {
+type app struct {
 	path    *vars.Path
 	data    *data.Data
 	updated int64
@@ -30,7 +30,7 @@ type App struct {
 }
 
 // 重新加载数据
-func (a *App) reload() (err error) {
+func (a *app) reload() (err error) {
 	a.data, err = data.Load(a.path)
 	a.updated = time.Now().Unix()
 
@@ -58,7 +58,7 @@ func (a *App) reload() (err error) {
 }
 
 func Run(p *vars.Path) error {
-	a := &App{
+	a := &app{
 		path: p,
 	}
 
