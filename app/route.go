@@ -9,17 +9,13 @@ import (
 
 	"github.com/caixw/typing/data"
 	"github.com/issue9/logs"
-	"github.com/issue9/web"
 )
 
 func (a *app) initRoute() error {
-	m, err := web.NewModule("front")
-	if err != nil {
-		return err
-	}
+	a.module.Clean()
 
 	urls := a.data.URLS
-	p := m.Prefix(urls.Root)
+	p := a.module.Prefix(urls.Root)
 
 	p.GetFunc(urls.Post+"/{slug}"+urls.Suffix, accessLog(a.getPost)).
 		GetFunc(urls.Posts+urls.Suffix, accessLog(a.getPosts)).

@@ -20,10 +20,11 @@ import (
 
 type app struct {
 	path    *vars.Path
-	data    *data.Data
+	module  *web.Module
 	updated int64
 
-	// feed
+	// 可重复加载的数据
+	data          *data.Data
 	rssBuffer     *bytes.Buffer
 	atomBuffer    *bytes.Buffer
 	sitemapBuffer *bytes.Buffer
@@ -31,8 +32,9 @@ type app struct {
 
 // 重新加载数据
 func (a *app) reload() (err error) {
-	a.data, err = data.Load(a.path)
-	a.updated = time.Now().Unix()
+	if a.data, err = data.Load(a.path); err != nil {
+		return
+	}
 
 	if a.data.Config.RSS != nil {
 		a.rssBuffer, err = feeds.BuildRSS(a.data)
@@ -54,12 +56,27 @@ func (a *app) reload() (err error) {
 			return
 		}
 	}
-	return
+
+	a.updated = time.Now().Unix()
+
+	// 重新初始化路由项
+	return a.initRoute()
 }
 
 func Run(p *vars.Path) error {
+	m, err := web.NewModule("front")
+	if err != nil {
+		return err
+	}
+
 	a := &app{
-		path: p,
+		path:   p,
+		module: m,
+	}
+
+	// 加载数据
+	if err = a.reload(); err != nil {
+		return err
 	}
 
 	// 加载程序配置
@@ -71,16 +88,5 @@ func Run(p *vars.Path) error {
 	if err = json.Unmarshal(data, conf); err != nil {
 		return err
 	}
-
-	// 加载数据
-	if err = a.reload(); err != nil {
-		return err
-	}
-
-	// 初始化路由
-	if err = a.initRoute(); err != nil {
-		return err
-	}
-
 	return web.Run(conf)
 }
