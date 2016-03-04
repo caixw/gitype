@@ -18,7 +18,6 @@ import (
 
 // 一些基本配置项。
 type Config struct {
-	Logo            string `yaml:"logo,omitempty"`            // 网站的logo
 	Title           string `yaml:"title"`                     // 网站标题
 	Subtitle        string `yaml:"subtitle,omitempty"`        // 网站副标题
 	URL             string `yaml:"url"`                       // 网站的地址
