@@ -9,6 +9,7 @@ package app
 import (
 	"bytes"
 	"encoding/json"
+	"html/template"
 	"io/ioutil"
 	"time"
 
@@ -19,9 +20,10 @@ import (
 )
 
 type app struct {
-	path    *vars.Path
-	module  *web.Module
-	updated int64
+	path     *vars.Path
+	module   *web.Module
+	updated  int64
+	adminTpl *template.Template
 
 	// 可重复加载的数据
 	data          *data.Data
@@ -70,8 +72,14 @@ func Run(p *vars.Path) error {
 	}
 
 	a := &app{
-		path:   p,
-		module: m,
+		path:    p,
+		module:  m,
+		updated: time.Now().Unix(),
+	}
+
+	// 初始化控制台相关操作
+	if err := a.initAdmin(); err != nil {
+		return err
 	}
 
 	// 加载数据

@@ -6,4 +6,9 @@
 package vars
 
 // 版本号
-const Version = "0.1.10.20160303"
+const Version = "0.1.11.20160305"
+
+const (
+	AdminURL      = "/admin"
+	AdminPassword = "123"
+)
