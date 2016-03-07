@@ -5,6 +5,7 @@
 package data
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -21,7 +22,7 @@ func TestLoadPost(t *testing.T) {
 		Theme: "t1",
 	}
 
-	post, err := loadPost("./testdata/posts", "./testdata/posts/post1/meta.yaml", conf, tags)
+	post, err := loadPost(filepath.Clean("./testdata/posts"), filepath.Clean("./testdata/posts/post1/meta.yaml"), conf, tags)
 	a.NotError(err).NotNil(post)
 	a.Equal(len(post.Tags), 2).Equal(post.Tags[0].Slug, "default1")
 	a.Equal(len(tags[0].Posts), 1) // 会同时增加标签的计数器
@@ -29,8 +30,9 @@ func TestLoadPost(t *testing.T) {
 	a.Equal(post.Template, "post") // 默认模板
 	a.Equal(post.Content, "<article>a1</article>\n")
 
-	post, err = loadPost("./testdata/posts", "./testdata/posts/folder/post2/meta.yaml", conf, tags)
+	post, err = loadPost(filepath.Clean("./testdata/posts"), filepath.Clean("./testdata/posts/folder/post2/meta.yaml"), conf, tags)
 	a.NotError(err).NotNil(post)
+	a.Equal(post.Slug, "folder/post2")
 	a.Equal(post.Template, "t1") // 模板
 }
 
