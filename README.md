@@ -13,15 +13,56 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=master)](h
  
 1. 下载代码:`go get github.com/caixw/typing`；
 1. 编译并运行代码，使用appdir指定数据地址；
-** testdata目录为测试用数据，同时也是个完整的数据内容，可以根据些目录下的内容作为数据的初始内容 **
+** 源码目录下的testdata为测试用数据，同时也是个完整的数据内容，可以根据些目录下的内容作为数据的初始内容 **
+
+
+
+### 目录结构
+
+```
+|--- conf 程序的配置文件
+|
+|--- data 程序的数据目录
+      |
+      |--- meta 博客的一些设置项
+      |     |
+      |     |--- config.yaml 基本设置项，比如网站名称等
+      |     |
+      |     |--- urls.yaml 自定义路由项的一些设置
+      |     |
+      |     |--- tags.yaml 标签的定义
+      |
+      |--- posts 文章所在的目录
+      |
+      |--- raws 其它可直接通过地址访问的内容可直接放在此处
+      |
+      |--- themes 自定义的主题目录
+```
  
  
  
-### 配置文件
+### 设置
  
 conf目录下的为程序级别的配置文件，在程序加载之后，无法再次更改。其中
 app.json定义了诸如端口，证书等基本数据；
 logs.xml定义了日志的输出形式和保存路径，具体配置可参考[logs](https://github.com/issue9/logs)的相关文档。
+
+
+##### app.json
+
+值        | 类型        | 描述
+:---------|:------------|:------
+https     | bool        | 是否启用https
+certFile  | string      | 当https为true时，此值为必填
+keyFile   | string      | 当https为true时，此值为必填
+port      | string      | 端口，不指定，默认为80或是443
+headers   | map         | 附加的头信息，头信息可能在其它地方被修改
+pprof     | string      | 指定pprof地址，输出net/pprof中指定的一些信息
+
+
+##### 自定义路由
+
+
  
  
  
