@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/caixw/typing/data"
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 )
 
@@ -17,7 +18,8 @@ func (a *app) initRoute() error {
 	urls := a.data.URLS
 	p := a.module.Prefix(urls.Root)
 
-	p.GetFunc(urls.Post+"/{slug}"+urls.Suffix, accessLog(a.getPost)).
+	p.GetFunc(urls.Post+"/{slug:.+}"+urls.Suffix, accessLog(a.getPost)).
+		GetFunc(vars.MediaURL+"/", accessLog(a.getMedia)).
 		GetFunc(urls.Posts+urls.Suffix, accessLog(a.getPosts)).
 		GetFunc(urls.Tag+"/{slug}"+urls.Suffix, accessLog(a.getTag)).
 		GetFunc(urls.Tags+urls.Suffix+"{:.*}", accessLog(a.getTags)).
@@ -90,6 +92,13 @@ func (a *app) getPagePost(p *page, posts []*data.Post, page int, w http.Response
 	}
 
 	return true
+}
+
+// 获取媒体文件
+//
+// /media/2015/intro-php/content.html ==> /posts/2015/intro-php/content.html
+func (a *app) getMedia(w http.ResponseWriter, r *http.Request) {
+	http.StripPrefix(vars.MediaURL, http.FileServer(http.Dir(a.path.DataPosts))).ServeHTTP(w, r)
 }
 
 // 首页及文章列表页
