@@ -24,7 +24,16 @@ type Link struct {
 type posts []*Post
 
 func (p posts) Less(i, j int) bool {
-	return p[i].Created < p[j].Created
+	switch {
+	case p[i].Top && p[j].Top:
+		return p[i].Created < p[j].Created
+	case p[i].Top:
+		return true
+	case p[j].Top:
+		return false
+	default:
+		return p[i].Created < p[j].Created
+	}
 }
 
 func (p posts) Swap(i, j int) {
