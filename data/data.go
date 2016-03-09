@@ -21,6 +21,7 @@ type Data struct {
 	Config   *Config            // 配置内容
 	URLS     *URLS              // 自定义URL
 	Tags     []*Tag             // map对顺序是未定的，所以使用slice
+	Links    []*Link            // 友情链接
 	Template *template.Template // 当前主题模板
 	Posts    []*Post            // 所有的文章列表
 }

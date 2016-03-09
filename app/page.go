@@ -36,6 +36,7 @@ type page struct {
 	PrevPage    *data.Link   // 前一页
 	NextPage    *data.Link   // 下一页
 	Tags        []*data.Tag  // 标签列表
+	Links       []*data.Link // 友情链接
 	Tag         *data.Tag    // 标签详细页面，非标签详细页，则为空
 	Menus       []*data.Link // 菜单
 	Posts       []*data.Post // 文章列表，文章列表页用到。
@@ -62,6 +63,7 @@ func (a *app) newPage() *page {
 		Uptime:      conf.Uptime,
 		LastUpdated: a.updated,
 		Tags:        a.data.Tags,
+		Links:       a.data.Links,
 		Menus:       conf.Menus,
 		app:         a,
 	}

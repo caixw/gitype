@@ -12,14 +12,6 @@ type Author struct {
 	Avatar string `yaml:"avatar,omitempty"`
 }
 
-// 描述链接内容
-type Link struct {
-	Icon  string `yaml:"icon,omitempty"`
-	Title string `yaml:"title,omitempty"`
-	URL   string `yaml:"url"`
-	Text  string `yaml:"text'`
-}
-
 // 排序接口
 type posts []*Post
 
