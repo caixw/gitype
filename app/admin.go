@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/web"
 )
@@ -26,13 +25,13 @@ func (a *app) initAdmin() (err error) {
 		return err
 	}
 
-	admin.GetFunc(vars.AdminURL, a.getAdminPage).
-		PostFunc(vars.AdminURL, a.postAdminPage)
+	admin.GetFunc(a.conf.AdminURL, a.getAdminPage).
+		PostFunc(a.conf.AdminURL, a.postAdminPage)
 	return nil
 }
 
 func (a *app) postAdminPage(w http.ResponseWriter, r *http.Request) {
-	if r.FormValue("password") == vars.AdminPassword {
+	if r.FormValue("password") == a.conf.AdminPassword {
 		if err := a.reload(); err != nil {
 			logs.Error("app.postAdminPage:", err)
 			w.WriteHeader(http.StatusInternalServerError)

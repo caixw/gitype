@@ -14,7 +14,4 @@ const (
 	// 造成不必要的麻烦。
 	// 相对于URLS.Root地址。
 	MediaURL = "/media"
-
-	AdminURL      = "/admin"
-	AdminPassword = "123"
 )

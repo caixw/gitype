@@ -1,9 +1,13 @@
 {
-    "https":    false,
-    "certFile": "",
-    "keyFile":  "",
-    "port":     ":8080",
-    "headers": {
-        "server": "typing"
-    }
+    "core":{
+        "https":    false,
+        "certFile": "",
+        "keyFile":  "",
+        "port":     ":8080",
+        "headers": {
+            "server": "typing"
+        }
+    },
+    "adminURL": "/admin",
+    "adminPassword": "123456"
 }

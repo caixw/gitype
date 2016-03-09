@@ -13,10 +13,10 @@ import (
 )
 
 func (a *app) initRoute() error {
-	a.module.Clean()
+	a.front.Clean()
 
 	urls := a.data.URLS
-	p := a.module.Prefix(urls.Root)
+	p := a.front.Prefix(urls.Root)
 
 	p.GetFunc(urls.Post+"/{slug:.+}"+urls.Suffix, accessLog(a.getPost)).
 		GetFunc(vars.MediaURL+"/", accessLog(a.getMedia)).

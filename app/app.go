@@ -8,9 +8,7 @@ package app
 
 import (
 	"bytes"
-	"encoding/json"
 	"html/template"
-	"io/ioutil"
 	"time"
 
 	"github.com/caixw/typing/data"
@@ -21,8 +19,9 @@ import (
 
 type app struct {
 	path     *vars.Path
-	module   *web.Module
-	updated  int64
+	front    *web.Module
+	conf     *config
+	updated  int64 // 更新时间，一般为重新加载数据的时间
 	adminTpl *template.Template
 
 	// 可重复加载的数据
@@ -71,10 +70,16 @@ func Run(p *vars.Path) error {
 		return err
 	}
 
+	conf, err := loadConfig(p.ConfApp)
+	if err != nil {
+		return err
+	}
+
 	a := &app{
 		path:    p,
-		module:  m,
+		front:   m,
 		updated: time.Now().Unix(),
+		conf:    conf,
 	}
 
 	// 初始化控制台相关操作
@@ -87,14 +92,5 @@ func Run(p *vars.Path) error {
 		return err
 	}
 
-	// 加载程序配置
-	data, err := ioutil.ReadFile(a.path.ConfApp)
-	if err != nil {
-		return err
-	}
-	conf := &web.Config{}
-	if err = json.Unmarshal(data, conf); err != nil {
-		return err
-	}
-	return web.Run(conf)
+	return web.Run(a.conf.Core)
 }
