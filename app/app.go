@@ -64,6 +64,11 @@ func (a *app) reload() (err error) {
 	return a.initRoute()
 }
 
+// 是否处于调试模式
+func (a *app) isDebug() bool {
+	return len(a.conf.Core.Pprof) > 0
+}
+
 func Run(p *vars.Path) error {
 	m, err := web.NewModule("front")
 	if err != nil {

@@ -18,30 +18,30 @@ func (a *app) initRoute() error {
 	urls := a.data.URLS
 	p := a.front.Prefix(urls.Root)
 
-	p.GetFunc(urls.Post+"/{slug:.+}"+urls.Suffix, accessLog(a.getPost)).
-		GetFunc(vars.MediaURL+"/", accessLog(a.getMedia)).
-		GetFunc(urls.Posts+urls.Suffix, accessLog(a.getPosts)).
-		GetFunc(urls.Tag+"/{slug}"+urls.Suffix, accessLog(a.getTag)).
-		GetFunc(urls.Tags+urls.Suffix+"{:.*}", accessLog(a.getTags)).
-		GetFunc(urls.Themes+"/", accessLog(a.getThemes)).
-		GetFunc("/", accessLog(a.getRaws))
+	p.GetFunc(urls.Post+"/{slug:.+}"+urls.Suffix, a.pre(a.getPost)).
+		GetFunc(vars.MediaURL+"/", a.pre(a.getMedia)).
+		GetFunc(urls.Posts+urls.Suffix, a.pre(a.getPosts)).
+		GetFunc(urls.Tag+"/{slug}"+urls.Suffix, a.pre(a.getTag)).
+		GetFunc(urls.Tags+urls.Suffix+"{:.*}", a.pre(a.getTags)).
+		GetFunc(urls.Themes+"/", a.pre(a.getThemes)).
+		GetFunc("/", a.pre(a.getRaws))
 
 	// feeds
 	conf := a.data.Config
 	if conf.RSS != nil {
-		p.GetFunc(conf.RSS.URL, accessLog(func(w http.ResponseWriter, r *http.Request) {
+		p.GetFunc(conf.RSS.URL, a.pre(func(w http.ResponseWriter, r *http.Request) {
 			w.Write(a.rssBuffer.Bytes())
 		}))
 	}
 
 	if conf.Atom != nil {
-		p.GetFunc(conf.Atom.URL, accessLog(func(w http.ResponseWriter, r *http.Request) {
+		p.GetFunc(conf.Atom.URL, a.pre(func(w http.ResponseWriter, r *http.Request) {
 			w.Write(a.atomBuffer.Bytes())
 		}))
 	}
 
 	if conf.Sitemap != nil {
-		p.GetFunc(conf.Sitemap.URL, accessLog(func(w http.ResponseWriter, r *http.Request) {
+		p.GetFunc(conf.Sitemap.URL, a.pre(func(w http.ResponseWriter, r *http.Request) {
 			w.Write(a.sitemapBuffer.Bytes())
 		}))
 	}
@@ -110,7 +110,7 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if page < 1 {
-		w.WriteHeader(http.StatusNotFound) // 页码为负数的页码不存在
+		w.WriteHeader(http.StatusNotFound) // 页码为负数的表示不存在
 		return
 	}
 
@@ -226,9 +226,14 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 	p.render(w, r, post.Template, nil)
 }
 
-// 输出访问日志
-func accessLog(h http.HandlerFunc) http.HandlerFunc {
+// 每次访问前需要做的预处理工作。
+func (a *app) pre(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if a.isDebug() { // 调试状态，则每次都重新加载数据
+			a.reload()
+		}
+
+		// 输出访问日志
 		logs.Infof("%v：%v", r.UserAgent(), r.URL)
 		h(w, r)
 	}
