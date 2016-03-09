@@ -7,8 +7,8 @@
 package app
 
 import (
-	"bytes"
 	"html/template"
+	"net/http"
 	"time"
 
 	"github.com/caixw/typing/data"
@@ -23,12 +23,7 @@ type app struct {
 	conf     *config
 	updated  int64 // 更新时间，一般为重新加载数据的时间
 	adminTpl *template.Template
-
-	// 可重复加载的数据
-	data          *data.Data
-	rssBuffer     *bytes.Buffer
-	atomBuffer    *bytes.Buffer
-	sitemapBuffer *bytes.Buffer
+	data     *data.Data
 }
 
 // 重新加载数据
@@ -38,32 +33,69 @@ func (a *app) reload() error {
 		return err
 	}
 	a.data = data
-
-	if a.data.Config.RSS != nil {
-		a.rssBuffer, err = feeds.BuildRSS(a.data)
-		if err != nil {
-			return err
-		}
-	}
-
-	if a.data.Config.Atom != nil {
-		a.atomBuffer, err = feeds.BuildAtom(a.data)
-		if err != nil {
-			return err
-		}
-	}
-
-	if a.data.Config.Sitemap != nil {
-		a.sitemapBuffer, err = feeds.BuildSitemap(a.data)
-		if err != nil {
-			return err
-		}
-	}
-
 	a.updated = time.Now().Unix()
+	a.front.Clean() // 清除路由项
 
-	// 重新初始化路由项
-	return a.initFrontRoute()
+	if err := a.initFrontRoute(); err != nil {
+		return err
+	}
+
+	return a.initFeeds()
+}
+
+// 重新初始化路由项
+func (a *app) initFrontRoute() error {
+	urls := a.data.URLS
+	p := a.front.Prefix(urls.Root)
+
+	p.GetFunc(urls.Post+"/{slug:.+}"+urls.Suffix, a.pre(a.getPost)).
+		GetFunc(vars.MediaURL+"/", a.pre(a.getMedia)).
+		GetFunc(urls.Posts+urls.Suffix, a.pre(a.getPosts)).
+		GetFunc(urls.Tag+"/{slug}"+urls.Suffix, a.pre(a.getTag)).
+		GetFunc(urls.Tags+urls.Suffix+"{:.*}", a.pre(a.getTags)).
+		GetFunc(urls.Themes+"/", a.pre(a.getThemes)).
+		GetFunc("/", a.pre(a.getRaws))
+	return nil
+}
+
+func (a *app) initFeeds() error {
+	conf := a.data.Config
+	p := a.front.Prefix(a.data.URLS.Root)
+
+	if conf.RSS != nil {
+		rss, err := feeds.BuildRSS(a.data)
+		if err != nil {
+			return err
+		}
+
+		p.GetFunc(conf.RSS.URL, a.pre(func(w http.ResponseWriter, r *http.Request) {
+			w.Write(rss.Bytes())
+		}))
+	}
+
+	if conf.Atom != nil {
+		atom, err := feeds.BuildAtom(a.data)
+		if err != nil {
+			return err
+		}
+
+		p.GetFunc(conf.Atom.URL, a.pre(func(w http.ResponseWriter, r *http.Request) {
+			w.Write(atom.Bytes())
+		}))
+	}
+
+	if conf.Sitemap != nil {
+		sitemap, err := feeds.BuildSitemap(a.data)
+		if err != nil {
+			return err
+		}
+
+		p.GetFunc(conf.Sitemap.URL, a.pre(func(w http.ResponseWriter, r *http.Request) {
+			w.Write(sitemap.Bytes())
+		}))
+	}
+
+	return nil
 }
 
 // 是否处于调试模式

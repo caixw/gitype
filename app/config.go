@@ -12,6 +12,7 @@ import (
 	"github.com/issue9/web"
 )
 
+// 配置文件
 type config struct {
 	Core          *web.Config `json:"core"`
 	AdminURL      string      `json:"adminURL"`

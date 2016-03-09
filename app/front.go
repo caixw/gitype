@@ -12,42 +12,6 @@ import (
 	"github.com/issue9/logs"
 )
 
-func (a *app) initFrontRoute() error {
-	a.front.Clean()
-
-	urls := a.data.URLS
-	p := a.front.Prefix(urls.Root)
-
-	p.GetFunc(urls.Post+"/{slug:.+}"+urls.Suffix, a.pre(a.getPost)).
-		GetFunc(vars.MediaURL+"/", a.pre(a.getMedia)).
-		GetFunc(urls.Posts+urls.Suffix, a.pre(a.getPosts)).
-		GetFunc(urls.Tag+"/{slug}"+urls.Suffix, a.pre(a.getTag)).
-		GetFunc(urls.Tags+urls.Suffix+"{:.*}", a.pre(a.getTags)).
-		GetFunc(urls.Themes+"/", a.pre(a.getThemes)).
-		GetFunc("/", a.pre(a.getRaws))
-
-	// feeds
-	conf := a.data.Config
-	if conf.RSS != nil {
-		p.GetFunc(conf.RSS.URL, a.pre(func(w http.ResponseWriter, r *http.Request) {
-			w.Write(a.rssBuffer.Bytes())
-		}))
-	}
-
-	if conf.Atom != nil {
-		p.GetFunc(conf.Atom.URL, a.pre(func(w http.ResponseWriter, r *http.Request) {
-			w.Write(a.atomBuffer.Bytes())
-		}))
-	}
-
-	if conf.Sitemap != nil {
-		p.GetFunc(conf.Sitemap.URL, a.pre(func(w http.ResponseWriter, r *http.Request) {
-			w.Write(a.sitemapBuffer.Bytes())
-		}))
-	}
-	return nil
-}
-
 // /
 func (a *app) getRaws(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == a.data.URLS.Root || r.URL.Path == a.data.URLS.Root+"/" {
