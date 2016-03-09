@@ -12,7 +12,7 @@ import (
 	"github.com/issue9/logs"
 )
 
-func (a *app) initRoute() error {
+func (a *app) initFrontRoute() error {
 	a.front.Clean()
 
 	urls := a.data.URLS
