@@ -1,20 +1,16 @@
 {{define "posts"}}
 {{template "header" .}}
 
-<div>
+<div class="posts">
     {{range .posts}}
     <article class="post" itemscope itemtype="http://schema.org/Blog">
         <header>
             <h2 class="title"><a href="{{.Permalink}}" itemprop="name">{{.Title}}</a></h2>
             <div class="meta">
                 <span>发布时间:<time itemprop="dateCreated">{{.Created|sdate}}</time></span>
-                <span>标签:{{range .Tags}}
+                <span class="tags">标签:{{range .Tags}}
                     <a href="{{.Permalink}}">{{.Title}}</a>
                 {{end}}
-                </span>
-
-                <span>
-                    <a href="{{.Permalink}}#comments" itemprop="discussionUrl">评论</a>
                 </span>
             </div>
         </header>

@@ -14,7 +14,15 @@
         <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.js"></script>
     </head>
     <body>
-    {{template "sidebar" .}}
+
+    <header id="header">
+        <nav class="container">
+            <a class="item title" title="{{.Subtitle}}" href="{{.URL}}">{{.SiteName}}</a>
+            {{range .Menus}}
+            <a class="item" href="{{.URL}}">{{.Text}}</a>
+            {{end}}
+        </nav>
+    </header>
 
     <div id="content">
         <div class="container">

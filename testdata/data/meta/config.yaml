@@ -13,6 +13,10 @@ menus:
     title: title1
     text: text1
 
+  - url: url1
+    title: title1
+    text: text1
+
   - url: url2
     title: title2
     icon: icon2
@@ -20,4 +24,3 @@ atom:
     url: /atom.xml
     title: atom
     size: 20
-

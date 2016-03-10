@@ -13,11 +13,15 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=master)](h
  
 1. 下载代码:`go get github.com/caixw/typing`；
 1. 编译并运行代码，使用appdir指定数据地址；
-** 源码目录下的testdata为测试用数据，同时也是个完整的数据内容，可以根据些目录下的内容作为数据的初始内容 **
+** 源码目录下的testdata为测试用数据，同时也是个完整的数据内容，可以根据此目录下的内容作为数据的初始内容 **
 
 
 
 ### 目录结构
+
+以下为数据内容的目录结构。
+其中conf为程序的配置相关内容，包含了后台更新界面的密码，不能对外公开；
+data为博客的实际内容，包含了文章，标签，友链以及网站名称等相关的配置。
 
 ```
 |--- conf 程序的配置文件
@@ -31,6 +35,8 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=master)](h
       |     |--- urls.yaml 自定义路由项的一些设置
       |     |
       |     |--- tags.yaml 标签的定义
+      |     |
+      |     |--- links.yaml 友情链接
       |
       |--- posts 文章所在的目录
       |

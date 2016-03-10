@@ -4,10 +4,10 @@
 <div itemscope itemtype="http://schema.org/Blog">
     <article class="post">
         <header>
-            <h2 class="title" itemprop="name">{{.Post.Title}}</h2>
+            <h1 class="title" itemprop="name">{{.Post.Title}}</h1>
             <div class="meta">
                 <span>发布时间:<time itemprop="dateCreated">{{.Post.Created|ldate}}</time></span>
-                <span>标签:{{range .Post.Tags}}
+                <span class="tags">标签:{{range .Post.Tags}}
                     <a href="{{.Permalink}}">{{.Title}}</a>
                 {{end}}
                 </span>
