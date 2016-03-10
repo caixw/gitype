@@ -2,7 +2,7 @@
 {{template "header" .}}
 
 <div class="posts">
-    {{range .posts}}
+    {{range .Posts}}
     <article class="post" itemscope itemtype="http://schema.org/Blog">
         <header>
             <h2 class="title"><a href="{{.Permalink}}" itemprop="name">{{.Title}}</a></h2>
@@ -14,7 +14,7 @@
                 </span>
             </div>
         </header>
-        {{.Content|html}}
+        {{.Summary|html}}
         <p><a href="{{.Permalink}}">继续阅读&#160;&raquo;</a></p>
     </article>
     {{end}}
