@@ -46,6 +46,7 @@ func (d *Data) loadTemplate(dir string) error {
 		"html":     htmlEscaped,
 		"ldate":    d.longDateFormat,
 		"sdate":    d.shortDateFormat,
+		"rfc3339":  rfc3339DateFormat,
 		"themeURL": func(p string) string { return path.Join(d.URLS.Themes, p) },
 	}
 
@@ -54,6 +55,10 @@ func (d *Data) loadTemplate(dir string) error {
 		Funcs(funcMap).
 		ParseGlob(filepath.Join(dir, d.Config.Theme, "*.html"))
 	return err
+}
+
+func rfc3339DateFormat(t int64) interface{} {
+	return time.Unix(t, 0).Format(time.RFC3339)
 }
 
 // 根据options中的格式显示长日期

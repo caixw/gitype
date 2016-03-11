@@ -1,23 +1,26 @@
 {{define "header"}}
 <!DOCTYPE html>
-<html lang="zh-Hans">
-    <head>
-        <meta charset="utf-8" />
+<html lang="zh-Hans" itemscope itemtype="https://schema.org/Blog">
+    <head itemscope itemtype="http://schema.org/WebSite">
+        <meta charset="utf-8" itemprop="encoding" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{{if .Title}}{{.Title}} &#8250; {{end}}{{.SiteName}}</title>
-        {{if .Canonical}}<link rel="canonical" href="{{.Canonical}}" />{{end}}
+        <title itemprop="name">{{if .Title}}{{.Title}} &#8250; {{end}}{{.SiteName}}</title>
+        {{if .Canonical}}<link rel="canonical" href="{{.Canonical}}" itemprop="url" />{{end}}
         {{if .RSS}}<link rel="alternate" type="application/rss+xml" Title="{{.RSS.Title}}" href="{{.RSS.URL}}" />{{end}}
         {{if .Atom}}<link rel="alternate" type="application/atom+xml" Title="{{.Atom.Title}}" href="{{.Atom.URL}}" />{{end}}
-        {{if .Keywords}}<meta name="keywords" content="{{.Keywords}}" />{{end}}
-        {{if .Description}}<meta name="description" content="{{.Description}}" />{{end}}
+        {{if .Keywords}}<meta name="keywords" content="{{.Keywords}}" itemprop="keywords" />{{end}}
+        {{if .Description}}<meta name="description" content="{{.Description}}" itemprop="description" />{{end}}
         <link rel="stylesheet" href="{{"default/style.css"|themeURL}}" />
         <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.js"></script>
     </head>
-    <body>
 
+    <body>
     <header id="header">
         <nav class="container">
-            <a class="item title" title="{{.Subtitle}}" href="{{.URL}}">{{.SiteName}}</a>
+            <a class="item title" title="{{.Subtitle}}" href="{{.URL}}">
+                <span itemprop="name">{{.SiteName}}</span>
+            </a>
+            <meta itemprop="headline" content="{{.Subtitle}}" />
             {{range .Menus}}
             <a class="item" href="{{.URL}}">{{.Text}}</a>
             {{end}}

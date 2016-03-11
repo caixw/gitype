@@ -1,21 +1,27 @@
 {{define "post"}}
 {{template "header" .}}
 
-<div itemscope itemtype="http://schema.org/Blog">
-    <article class="post">
-        <header>
-            <h1 class="title" itemprop="name">{{.Post.Title}}</h1>
-            <div class="meta">
-                <span>发布时间:<time itemprop="dateCreated">{{.Post.Created|ldate}}</time></span>
-                <span class="tags">标签:{{range .Post.Tags}}
-                    <a href="{{.Permalink}}">{{.Title}}</a>
-                {{end}}
-                </span>
-            </div>
-        </header>
-        {{.Post.Content|html}}
-    </article>
-</div>
+<article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <header>
+        <h1 class="title" itemprop="name headline">{{.Post.Title}}</h1>
+        <div class="meta">
+            <meta itemprop="dateModified" content="{{.Post.Modified|rfc3339}}" />
+            <span class="item">发布时间:
+                <time itemprop="datePublished dateCreated" datetime="{{.Post.Created|rfc3339}}">{{.Post.Created|ldate}}</time>
+            </span>
+            <span class="item">标签:{{range .Post.Tags}}
+                <a href="{{.Permalink}}"><span itemprop="keywords">{{.Title}}</span></a>
+            {{end}}
+            </span>
+            <span class="item" itemprop="author" itemscope itemtype="https://schema.org/Person">
+                {{.Post.Author.Name}}
+            </span>
+        </div>
+    </header>
+    <article itemprop="articleBody">{{.Post.Content|html}}</article>
+</article>
+
+{{template "page-nav" .}}
 
 {{template "footer" .}}
 {{end}}

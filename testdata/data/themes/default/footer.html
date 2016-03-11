@@ -4,9 +4,12 @@
 
         <footer id="footer">
             <div class="container">
-                <p>
-                    &copy; 2016 by <a href="{{.URL}}">caixw</a> -
-                    {{.Beian}} -
+                <p itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    &copy; 2016 by
+                    <a href="{{.URL}}" itemprop="url">
+                        <span itemprop="name">caixw</span>
+                    </a>
+                    - {{.Beian}} -
                     阿里云9折优惠码:O2BCSO
                 </p>
 

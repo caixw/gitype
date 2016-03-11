@@ -1,33 +1,10 @@
 {{define "posts"}}
 {{template "header" .}}
 
-<div class="posts">
-    {{range .Posts}}
-    <article class="post" itemscope itemtype="http://schema.org/Blog">
-        <header>
-            <h2 class="title"><a href="{{.Permalink}}" itemprop="name">{{.Title}}</a></h2>
-            <div class="meta">
-                <span>发布时间:<time itemprop="dateCreated">{{.Created|sdate}}</time></span>
-                <span class="tags">标签:{{range .Tags}}
-                    <a href="{{.Permalink}}">{{.Title}}</a>
-                {{end}}
-                </span>
-            </div>
-        </header>
-        {{.Summary|html}}
-        <p><a href="{{.Permalink}}">继续阅读&#160;&raquo;</a></p>
-    </article>
-    {{end}}
 
-    {{if or .PrevPage .NextPage}}
-    <div id="pages-nav">
-        {{if .PrevPage}}<a class="prev" href="{{.PrevPage.Link}}">{{.info.PrevPage.Title}}</a>{{end}}
-        {{if .NextPage}}<a class="next" href="{{.NextPage.Link}}">{{.info.NextPage.Title}}</a>{{end}}
-        <div class="clearfix"></div>
-    </div>
-    {{end}}
+{{template "post-list" .}}
 
-</div>
+{{template "page-nav" .}}
 
 {{template "footer" .}}
 {{end}}

@@ -1,43 +1,16 @@
 {{define "tag"}}
 {{template "header" .}}
 
-<div>
-    <article class="post">
-        <header>
-            <h1 class="title">{{.Tag.Title}}</h1>
-        </header>
-        {{.Tag.Content|html}}
-    </article>
+<article class="post">
+    <header>
+        <h1 class="title">{{.Tag.Title}}</h1>
+    </header>
+    {{.Tag.Content|html}}
+</article>
 
-    <div class="posts">
-        {{range .Posts}}
-        <article class="post" itemscope itemtype="http://schema.org/Blog">
-            <header>
-                <h2 class="title"><a href="{{.Permalink}}" itemprop="name">{{.Title}}</a></h2>
-                <div class="meta">
-                    <span>发布时间:<time itemprop="dateCreated">{{.Created|sdate}}</time></span>
-                    <span>标签:{{range .Tags}}
-                        <a href="{{.Permalink}}">{{.Title}}</a>
-                    {{end}}
-                    </span>
-                </div>
-            </header>
-            {{.Summary|html}}
-            <p><a href="{{.Permalink}}">继续阅读&#160;&raquo;</a></p>
-        </article>
-        {{end}}
-    </div>
+{{template "post-list" .}}
 
-    {{if or .PrevPage .NextPage}}
-    <div id="pages-nav">
-        {{if .PrevPage}}<a class="prev" href="{{.PrevPage.Link}}">{{.PrevPage.Title}}</a>{{end}}
-        {{if .NextPage}}<a class="next" href="{{.NextPage.Link}}">{{.NextPage.Title}}</a>{{end}}
-        <div class="clearfix"></div>
-    </div>
-    {{end}}
-
-</div>
-
+{{template "page-nav" .}}
 
 {{template "footer" .}}
 {{end}}

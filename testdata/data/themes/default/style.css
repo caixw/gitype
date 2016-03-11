@@ -91,8 +91,8 @@ code, pre{
     margin-bottom:0.2rem;
 }
 
-#content .post .meta .tags{
-    margin-left:2rem;
+#content .post .meta .item{
+    margin-right:2rem;
 }
 
 #content .post section p{

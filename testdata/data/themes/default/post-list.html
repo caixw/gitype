@@ -1,0 +1,27 @@
+{{define "post-list"}}
+<div class="posts">
+    {{range .Posts}}
+    <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+            <h2 class="title">
+                <a href="{{.Permalink}}" itemprop="url">
+                    <span itemprop="name headline">{{.Title}}<span>
+                </a>
+            </h2>
+            <div class="meta">
+                <meta itemprop="dateModified" content="{{.Modified|rfc3339}}" />
+                <span class="item">发布时间:
+                    <time itemprop="dateCreated datePublished" datetime="{{.Created|rfc3339}}">{{.Created|sdate}}</time>
+                </span>
+                <span class="item">标签:{{range .Tags}}
+                    <a href="{{.Permalink}}"><span itemprop="keywords">{{.Title}}</span></a>
+                {{end}}
+                </span>
+            </div>
+        </header>
+        <div itemprop="description">{{.Summary|html}}</div>
+        <p><a itemprop="url" href="{{.Permalink}}">继续阅读&#160;&raquo;</a></p>
+    </article>
+    {{end}}
+</div>
+{{end}}
