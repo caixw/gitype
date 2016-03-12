@@ -104,6 +104,17 @@ code, pre{
     border-bottom: 1px solid #f5f5f5;
 }
 
+/************* #page-nav ***********/
+#page-nav{
+    border-bottom:1px solid #699cc8;
+}
+
+#page-nav .container{
+    max-width:70rem;
+    margin:auto;
+    text-align:left;
+}
+
 
 /************ #top ************/
 #top{

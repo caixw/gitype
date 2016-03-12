@@ -2,9 +2,11 @@
 
 {{if or .PrevPage .NextPage}}
 <div id="pages-nav">
-    {{if .PrevPage}}<a class="prev" href="{{.PrevPage.URL}}">{{.PrevPage.Text}}</a>{{end}}
-    {{if .NextPage}}<a class="next" href="{{.NextPage.URL}}">{{.NextPage.Text}}</a>{{end}}
-    <div class="clearfix"></div>
+    <div class="container">
+        {{if .PrevPage}}<a class="prev" rel="prev" href="{{.PrevPage.URL}}">{{.PrevPage.Text}}</a>{{end}}
+        {{if .NextPage}}<a class="next" rel="next" href="{{.NextPage.URL}}">{{.NextPage.Text}}</a>{{end}}
+        <div class="clearfix"></div>
+    </div>
 </div>
 {{end}}
 

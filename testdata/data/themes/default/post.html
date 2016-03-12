@@ -10,7 +10,7 @@
                 <time itemprop="datePublished dateCreated" datetime="{{.Post.Created|rfc3339}}">{{.Post.Created|ldate}}</time>
             </span>
             <span class="item">标签:{{range .Post.Tags}}
-                <a href="{{.Permalink}}"><span itemprop="keywords">{{.Title}}</span></a>
+                <a href="{{.Permalink}}" rel="tag"><span itemprop="keywords">{{.Title}}</span></a>
             {{end}}
             </span>
             <span class="item" itemprop="author" itemscope itemtype="https://schema.org/Person">

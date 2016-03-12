@@ -14,7 +14,7 @@
                     <time itemprop="dateCreated datePublished" datetime="{{.Created|rfc3339}}">{{.Created|sdate}}</time>
                 </span>
                 <span class="item">标签:{{range .Tags}}
-                    <a href="{{.Permalink}}"><span itemprop="keywords">{{.Title}}</span></a>
+                    <a href="{{.Permalink}}" rel="tag"><span itemprop="keywords">{{.Title}}</span></a>
                 {{end}}
                 </span>
             </div>
