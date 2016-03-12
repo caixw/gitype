@@ -27,6 +27,7 @@ a:hover{
     max-width:70rem;
     margin:auto;
     text-align:left;
+    padding:0rem 1rem; /* 宽度小于max-width时，需要指定padding，否则排版会靠边 */
 }
 
 code, pre{
