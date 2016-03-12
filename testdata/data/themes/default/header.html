@@ -1,15 +1,26 @@
 {{define "header"}}
 <!DOCTYPE html>
-<html lang="zh-Hans" itemscope itemtype="https://schema.org/Blog">
+<html lang="zh-cmn-Hans" itemscope itemtype="https://schema.org/Blog" xmlns:og="http://ogp.me/ns#">
     <head itemscope itemtype="http://schema.org/WebSite">
         <meta charset="utf-8" itemprop="encoding" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title itemprop="name">{{if .Title}}{{.Title}} &#8250; {{end}}{{.SiteName}}</title>
-        {{if .Canonical}}<link rel="canonical" href="{{.Canonical}}" itemprop="url" />{{end}}
+        <meta property="og:type" content="article" />
+        <meta property="og:locale" content="zh-cmn-Hans" />
+        <meta property="og:title" content="{{if .Title}}{{.Title}} &#8250; {{end}}{{.SiteName}}"/>
+        <meta property="og:site_name" content="{{.SiteName}}"/>
+        {{if .Canonical}}
+        <link rel="canonical" href="{{.Canonical}}" itemprop="url" />
+        <meta property="og:url" content="{{.Canonical}}"/>
+        {{end}}
         {{if .RSS}}<link rel="alternate" type="application/rss+xml" Title="{{.RSS.Title}}" href="{{.RSS.URL}}" />{{end}}
         {{if .Atom}}<link rel="alternate" type="application/atom+xml" Title="{{.Atom.Title}}" href="{{.Atom.URL}}" />{{end}}
         {{if .Keywords}}<meta name="keywords" content="{{.Keywords}}" itemprop="keywords" />{{end}}
-        {{if .Description}}<meta name="description" content="{{.Description}}" itemprop="description" />{{end}}
+        {{if .Description}}
+        <meta name="description" content="{{.Description}}" itemprop="description" />
+        <meta property="og:description" content="{{.Description}}"/>
+        {{end}}
         <link rel="stylesheet" href="{{"default/style.css"|themeURL}}" />
         <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.js"></script>
     </head>
