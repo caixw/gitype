@@ -23,6 +23,12 @@ a:hover{
     clear:both;
 }
 
+.container{
+    max-width:70rem;
+    margin:auto;
+    text-align:left;
+}
+
 code, pre{
     font-family: monospace;
 }
@@ -35,11 +41,6 @@ code, pre{
     top:0;
     left:0;
     width:100%;
-}
-
-#header .container{
-    max-width:70rem;
-    margin:auto;
 }
 
 #header .container .item{
@@ -79,20 +80,13 @@ code, pre{
     word-break: break-all;
 }
 
-#content .container{
-    max-width :70rem;
-    margin:auto;
-    text-align:left;
-    padding:.5rem 1rem;
-}
-
 #content .post .title{
     font-size:2rem;
     margin-bottom:0.2rem;
 }
 
 #content .post .meta .item{
-    margin-right:2rem;
+    margin-right:1rem;
 }
 
 #content .post section p{
@@ -105,14 +99,9 @@ code, pre{
 }
 
 /************* #page-nav ***********/
-#page-nav{
-    border-bottom:1px solid #699cc8;
-}
 
-#page-nav .container{
-    max-width:70rem;
-    margin:auto;
-    text-align:left;
+#pages-nav{
+    padding:2rem 0rem;
 }
 
 

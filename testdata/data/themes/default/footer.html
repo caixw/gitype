@@ -2,6 +2,16 @@
             </div> <!-- end .container -->
         </div> <!-- end #content -->
 
+        {{if or .PrevPage .NextPage}}
+        <div id="pages-nav">
+            <div class="container">
+                {{if .PrevPage}}<a class="prev" rel="prev" href="{{.PrevPage.URL}}">{{.PrevPage.Text}}</a>{{end}}
+                {{if .NextPage}}<a class="next" rel="next" href="{{.NextPage.URL}}">{{.NextPage.Text}}</a>{{end}}
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        {{end}}
+
         <footer id="footer">
             <div class="container">
                 <p itemprop="author" itemscope itemtype="https://schema.org/Person">
