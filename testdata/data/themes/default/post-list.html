@@ -9,13 +9,21 @@
                 </a>
             </h2>
             <div class="meta">
-                <meta itemprop="dateModified" content="{{.Modified|rfc3339}}" />
                 <span class="item">发布时间:
                     <time itemprop="dateCreated datePublished" datetime="{{.Created|rfc3339}}">{{.Created|sdate}}</time>
                 </span>
+
+                <span class="item">修改时间:
+                    <time itemprop="dateModified" datetime="{{.Modified|rfc3339}}">{{.Modified|sdate}}</time>
+                </span>
+
                 <span class="item">标签:{{range .Tags}}
                     <a href="{{.Permalink}}" rel="tag"><span itemprop="keywords">{{.Title}}</span></a>
                 {{end}}
+                </span>
+
+                <span class="item" itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    作者：<span itemprop="name">{{.Author.Name}}</span>
                 </span>
             </div>
         </header>

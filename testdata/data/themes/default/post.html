@@ -5,20 +5,25 @@
     <header>
         <h1 class="title" itemprop="name headline">{{.Post.Title}}</h1>
         <div class="meta">
-            <meta itemprop="dateModified" content="{{.Post.Modified|rfc3339}}" />
             <span class="item">发布时间:
                 <time itemprop="datePublished dateCreated" datetime="{{.Post.Created|rfc3339}}">{{.Post.Created|ldate}}</time>
             </span>
+
+            <span class="item">修改时间:
+                <time itemprop="dateModified" datetime="{{.Post.Modified|rfc3339}}">{{.Post.Modified|ldate}}</time>
+            </span>
+
             <span class="item">标签:{{range .Post.Tags}}
                 <a href="{{.Permalink}}" rel="tag"><span itemprop="keywords">{{.Title}}</span></a>
             {{end}}
             </span>
+
             <span class="item" itemprop="author" itemscope itemtype="https://schema.org/Person">
-                {{.Post.Author.Name}}
+                作者：<span itemprop="name">{{.Post.Author.Name}}</span>
             </span>
         </div>
     </header>
-    <article itemprop="articleBody">{{.Post.Content|html}}</article>
+    {{.Post.Content|html}}
 </article>
 
 {{template "footer" .}}
