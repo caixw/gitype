@@ -191,14 +191,22 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 }
 
 // 每次访问前需要做的预处理工作。
-func (a *app) pre(h http.HandlerFunc) http.HandlerFunc {
+func (a *app) pre(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if a.isDebug() { // 调试状态，则每次都重新加载数据
 			a.reload()
 		}
 
 		// 输出访问日志
-		logs.Infof("%v：%v", r.UserAgent(), r.URL)
-		h(w, r)
+		logs.Infof("%v：%v\n", r.UserAgent(), r.URL)
+
+		// 直接根据整个博客的最后更新时间来确认etag
+		if r.Header.Get("If-None-Match") == a.etag {
+			logs.Infof("304:%v\n", r.URL)
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Set("Etag", a.etag)
+		f(w, r)
 	}
 }

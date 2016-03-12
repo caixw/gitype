@@ -9,6 +9,7 @@ package app
 import (
 	"html/template"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/caixw/typing/data"
@@ -22,6 +23,7 @@ type app struct {
 	front    *web.Module
 	conf     *config
 	updated  int64 // 更新时间，一般为重新加载数据的时间
+	etag     string
 	adminTpl *template.Template
 	data     *data.Data
 }
@@ -34,6 +36,7 @@ func (a *app) reload() error {
 	}
 	a.data = data
 	a.updated = time.Now().Unix()
+	a.etag = strconv.FormatInt(a.updated, 10)
 	a.front.Clean() // 清除路由项
 
 	if err := a.initFrontRoute(); err != nil {
