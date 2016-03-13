@@ -9,6 +9,7 @@ import (
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
+	"github.com/issue9/handlers"
 	"github.com/issue9/logs"
 )
 
@@ -82,7 +83,7 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	if !a.getPagePost(p, a.data.Posts, page, w) {
 		return
 	}
-	p.render(w, r, "posts", nil)
+	p.render(w, r, "posts", map[string]string{"Content-Type": "text/html"})
 }
 
 // 主题文件
@@ -130,7 +131,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	if !a.getPagePost(p, tag.Posts, page, w) {
 		return
 	}
-	p.render(w, r, "tag", nil)
+	p.render(w, r, "tag", map[string]string{"Content-Type": "text/html"})
 }
 
 // 标签列表页
@@ -139,7 +140,7 @@ func (a *app) getTags(w http.ResponseWriter, r *http.Request) {
 	p := a.newPage()
 	p.Title = "标签"
 	p.Canonical = a.tagsURL()
-	p.render(w, r, "tags", nil)
+	p.render(w, r, "tags", map[string]string{"Content-Type": "text/html"})
 }
 
 // 文章详细页
@@ -187,7 +188,7 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 	p.PrevPage = prev
 	p.Canonical = post.Permalink
 
-	p.render(w, r, post.Template, nil)
+	p.render(w, r, post.Template, map[string]string{"Content-Type": "text/html"})
 }
 
 // 每次访问前需要做的预处理工作。
@@ -207,6 +208,6 @@ func (a *app) pre(f http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Etag", a.etag)
-		f(w, r)
+		handlers.CompressFunc(f).ServeHTTP(w, r)
 	}
 }
