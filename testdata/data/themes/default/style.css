@@ -34,6 +34,11 @@ code, pre{
     font-family: monospace;
 }
 
+/* 调整图标，使其上下居中 */
+.fa{
+    margin-top:0.1rem;
+}
+
 /*********** #header ************/
 #header{
     box-shadow: 1px 1px #699cc8;
@@ -85,7 +90,7 @@ code, pre{
 }
 
 #content .post .meta .item{
-    margin-right:1rem;
+    margin-right:.7rem;
 }
 
 #content .post section>p{
@@ -104,9 +109,19 @@ code, pre{
     padding:2rem 0rem;
 }
 
+#pages-nav .next{
+    float:right;
+}
+
 /************ #top ************/
 #top{
     position: fixed;
     right:2rem;
     bottom:5rem;
+    color:black;
+}
+
+#top:hover{
+    text-decoration:none;
+    color:#699cc8;
 }

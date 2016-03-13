@@ -1,4 +1,4 @@
-{{define "post-list"}}
+{{define "post-list" -}}
 <div class="posts">
     {{range .Posts}}
     <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
@@ -9,27 +9,32 @@
                 </a>
             </h2>
             <div class="meta">
-                <span class="item">发布时间:
+                <span class="item">
+                    <i title="发布时间" class="fa fa-clock-o"></i>
                     <time itemprop="dateCreated datePublished" datetime="{{.Created|rfc3339}}">{{.Created|sdate}}</time>
                 </span>
 
-                <span class="item">修改时间:
+                <span class="item">
+                    <i title="修改时间" class="fa fa-clock-o"></i>
                     <time itemprop="dateModified" datetime="{{.Modified|rfc3339}}">{{.Modified|sdate}}</time>
                 </span>
 
-                <span class="item">标签:{{range .Tags}}
+                <span class="item">
+                    <i title="关联标签" class="fa fa-tags"></i>
+                    {{range .Tags}}
                     <a href="{{.Permalink}}" rel="tag"><span itemprop="keywords">{{.Title}}</span></a>
-                {{end}}
+                    {{end}}
                 </span>
 
                 <span class="item" itemprop="author" itemscope itemtype="https://schema.org/Person">
-                    作者:<span itemprop="name">{{.Author.Name}}</span>
+                    <i title="作者" class="fa fa-user"></i>
+                    <span itemprop="name">{{.Author.Name}}</span>
                 </span>
             </div>
         </header>
-        <div itemprop="description">{{.Summary|html}}</div>
+        {{.Summary|html}}
         <p><a itemprop="url" href="{{.Permalink}}">继续阅读&#160;&raquo;</a></p>
     </article>
     {{end}}
 </div>
-{{end}}
+{{- end}}

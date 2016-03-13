@@ -1,25 +1,30 @@
-{{define "post"}}
+{{define "post" -}}
 {{template "header" .}}
 
 <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <header>
         <h1 class="title" itemprop="name headline">{{.Post.Title}}</h1>
         <div class="meta">
-            <span class="item">发布时间:
+            <span class="item">
+                <i title="发布时间" class="fa fa-clock-o"></i>
                 <time itemprop="datePublished dateCreated" datetime="{{.Post.Created|rfc3339}}">{{.Post.Created|ldate}}</time>
             </span>
 
-            <span class="item">修改时间:
+            <span class="item">
+                <i title="修改时间" class="fa fa-clock-o"></i>
                 <time itemprop="dateModified" datetime="{{.Post.Modified|rfc3339}}">{{.Post.Modified|ldate}}</time>
             </span>
 
-            <span class="item">标签:{{range .Post.Tags}}
+            <span class="item">
+                <i title="关联标签" class="fa fa-tags"></i>
+                {{range .Post.Tags}}
                 <a href="{{.Permalink}}" rel="tag"><span itemprop="keywords">{{.Title}}</span></a>
-            {{end}}
+                {{end}}
             </span>
 
             <span class="item" itemprop="author" itemscope itemtype="https://schema.org/Person">
-                作者:<span itemprop="name">{{.Post.Author.Name}}</span>
+                <i title="作者" class="fa fa-user"></i>
+                <span itemprop="name">{{.Post.Author.Name}}</span>
             </span>
         </div>
     </header>
@@ -27,4 +32,4 @@
 </article>
 
 {{template "footer" .}}
-{{end}}
+{{- end}}

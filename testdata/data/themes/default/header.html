@@ -1,4 +1,4 @@
-{{define "header"}}
+{{define "header" -}}
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" itemscope itemtype="https://schema.org/Blog" xmlns:og="http://ogp.me/ns#">
     <head itemscope itemtype="http://schema.org/WebSite">
@@ -24,6 +24,7 @@
         <meta property="og:description" content="{{.Description}}"/>
         {{end}}
         <link rel="stylesheet" href="{{"default/style.css"|themeURL}}" />
+        <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
         <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.js"></script>
     </head>
 
@@ -34,12 +35,17 @@
                 <span itemprop="name">{{.SiteName}}</span>
             </a>
             <meta itemprop="headline" content="{{.Subtitle}}" />
-            {{range .Menus}}
-            <a class="item" href="{{.URL}}">{{.Text}}</a>
+            {{range .Menus -}}
+            <a class="item" href="{{.URL}}">
+                {{if .Icon -}}
+                <i class="fa fa-{{.Icon}}"></i>
+                {{- end}}
+                {{.Text}}
+            </a>
             {{end}}
         </nav>
     </header>
 
     <div id="content">
         <div class="container">
-{{end}}
+{{- end}}

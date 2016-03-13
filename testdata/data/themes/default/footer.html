@@ -1,16 +1,26 @@
-{{define "footer"}}
+{{define "footer" -}}
             </div> <!-- end .container -->
         </div> <!-- end #content -->
 
-        {{if or .PrevPage .NextPage}}
+        {{if or .PrevPage .NextPage -}}
         <div id="pages-nav">
             <div class="container">
-                {{if .PrevPage}}<a class="prev" rel="prev" href="{{.PrevPage.URL}}">{{.PrevPage.Text}}</a>{{end}}
-                {{if .NextPage}}<a class="next" rel="next" href="{{.NextPage.URL}}">{{.NextPage.Text}}</a>{{end}}
+                {{if .PrevPage -}}
+                    <a class="prev" rel="prev" href="{{.PrevPage.URL}}">
+                        <i class="fa fa-angle-double-left"></i>
+                        {{.PrevPage.Text}}
+                    </a>
+                {{- end}}
+                {{if .NextPage -}}
+                    <a class="next" rel="next" href="{{.NextPage.URL}}">
+                        {{.NextPage.Text}}
+                        <i class="fa fa-angle-double-right"></i>
+                    </a>
+                {{- end}}
                 <div class="clearfix"></div>
             </div>
         </div>
-        {{end}}
+        {{- end}}
 
         <footer id="footer">
             <div class="container">
@@ -29,7 +39,7 @@
                 </p>
             </div>
         </footer>
-        <a id="top" href="#">TOP</a>
+        <a id="top" href="#" class="fa fa-chevron-circle-up fa-3x"></a>
         <script src="{{"default/app.js"|themeURL}}"></script>
     </body>
 </html>
