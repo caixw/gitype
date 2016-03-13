@@ -34,15 +34,15 @@ func (d *Data) loadTags(p string) error {
 	}
 	for index, tag := range tags {
 		if len(tag.Slug) == 0 {
-			return fmt.Errorf("第[%v]个标签未指slug", index)
+			return fmt.Errorf("文件[tags.yaml]的[%v].Slug错误:不能为空", index)
 		}
 
 		if len(tag.Title) == 0 {
-			return fmt.Errorf("第[%v]个标签未指title", index)
+			return fmt.Errorf("文件[tags.yaml]的[%v].Title错误:不能为空", index)
 		}
 
 		if len(tag.Content) == 0 {
-			return fmt.Errorf("第[%v]个标签未指content", index)
+			return fmt.Errorf("文件[tags.yaml]的[%v].Content错误:不能为空", index)
 		}
 
 		tag.Posts = make([]*Post, 0, 10)
