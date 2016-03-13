@@ -31,6 +31,29 @@ func (d *Data) loadURLS(path string) error {
 	if err = yaml.Unmarshal(data, urls); err != nil {
 		return err
 	}
+	if err = checkURLS(urls); err != nil {
+		return err
+	}
+
 	d.URLS = urls
 	return nil
+}
+
+func checkURLS(u *URLS) error {
+	switch {
+	case len(u.Suffix) >= 0 && u.Suffix[0] != '.':
+		return confError("urls.yaml", "Suffix", "必须以.开头")
+	case len(u.Posts) == 0:
+		return confError("urls.yaml", "Posts", "不能为空")
+	case len(u.Post) == 0:
+		return confError("urls.yaml", "Post", "不能为空")
+	case len(u.Tags) == 0:
+		return confError("urls.yaml", "Tags", "不能为空")
+	case len(u.Tag) == 0:
+		return confError("urls.yaml", "Tag", "不能为空")
+	case len(u.Themes) == 0:
+		return confError("urls.yaml", "Themes", "不能为空")
+	default:
+		return nil
+	}
 }

@@ -75,7 +75,6 @@ func (d *Data) loadConfig(path string) error {
 
 	conf := &Config{
 		PageSize:        20,
-		Beian:           "备案中...",
 		LongDateFormat:  "2006-01-02 15:04:05",
 		ShortDateFormat: "2006-01-02",
 		Theme:           "default",
