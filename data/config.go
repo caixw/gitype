@@ -55,9 +55,9 @@ type Sitemap struct {
 	PostChangefreq string  `yaml:"postChangefreq"`
 }
 
-// 生成一条config字段值错误的error实例
-func confError(field, message string) error {
-	return fmt.Errorf("字段[%v]错误:[%v]", field, message)
+// meta下配置文件错误
+func confError(file, field, message string) error {
+	return fmt.Errorf("文件[%v]的[%v]字段错误:%v", file, field, message)
 }
 
 // 加载配置文件。
@@ -106,7 +106,7 @@ func fixedConfig(conf *Config) error {
 	} else {
 		t, err := time.Parse(parseDateFormat, conf.UptimeFormat)
 		if err != nil {
-			return confError("UptimeFormat", err.Error())
+			return confError("config.yaml", "UptimeFormat", err.Error())
 		}
 		conf.Uptime = t.Unix()
 	}
@@ -123,36 +123,36 @@ func fixedConfig(conf *Config) error {
 // path data的路径名。
 func checkConfig(conf *Config, path string) error {
 	if conf.PageSize <= 0 {
-		return confError("pageSize", "必须为大于零的整数")
+		return confError("config.yaml", "pageSize", "必须为大于零的整数")
 	}
 
 	if len(conf.LongDateFormat) == 0 {
-		return confError("LongDateFormat", "不能为空")
+		return confError("config.yaml", "LongDateFormat", "不能为空")
 	}
 
 	if len(conf.ShortDateFormat) == 0 {
-		return confError("ShortDateFormat", "不能为空")
+		return confError("config.yaml", "ShortDateFormat", "不能为空")
 	}
 
 	// Author
 	if conf.Author == nil {
-		return confError("Author", "必须指定作者")
+		return confError("config.yaml", "Author", "必须指定作者")
 	}
 	if len(conf.Author.Name) == 0 {
-		return confError("Author.Name", "不能为空")
+		return confError("config.yaml", "Author.Name", "不能为空")
 	}
 
 	if len(conf.Title) == 0 {
-		return confError("Title", "不能为空")
+		return confError("config.yaml", "Title", "不能为空")
 	}
 
 	if !is.URL(conf.URL) {
-		return confError("URL", "不是一个合法的域名或IP")
+		return confError("config.yaml", "URL", "不是一个合法的域名或IP")
 	}
 
 	// theme
 	if len(conf.Theme) == 0 {
-		return confError("Theme", "不能为空")
+		return confError("config.yaml", "Theme", "不能为空")
 	}
 	themes, err := getThemesName(filepath.Join(path, "themes"))
 	if err != nil {
@@ -166,7 +166,7 @@ func checkConfig(conf *Config, path string) error {
 		}
 	}
 	if !found {
-		return confError("Theme", "该主题并不存在")
+		return confError("config.yaml", "Theme", "该主题并不存在")
 	}
 
 	if err = checkRSS("RSS", conf.RSS); err != nil {
@@ -181,7 +181,7 @@ func checkConfig(conf *Config, path string) error {
 		return err
 	}
 
-	if err = checkLinks(conf.Menus); err != nil {
+	if err = checkLinks("config.yaml", "Menus", conf.Menus); err != nil {
 		return err
 	}
 
@@ -192,13 +192,13 @@ func checkConfig(conf *Config, path string) error {
 func checkRSS(typ string, rss *RSS) error {
 	if rss != nil {
 		if len(rss.Title) == 0 {
-			return confError(typ+".Title", "不能为空")
+			return confError("config.yaml", typ+".Title", "不能为空")
 		}
 		if rss.Size <= 0 {
-			return confError(typ+".Size", "必须大于0")
+			return confError("config.yaml", typ+".Size", "必须大于0")
 		}
 		if len(rss.URL) == 0 {
-			return confError(typ+".URL", "不能为空")
+			return confError("config.yaml", typ+".URL", "不能为空")
 		}
 	}
 
@@ -210,15 +210,15 @@ func checkSitemap(s *Sitemap) error {
 	if s != nil {
 		switch {
 		case len(s.URL) == 0:
-			return confError("Sitemap.URL", "不能为空")
+			return confError("config.yaml", "Sitemap.URL", "不能为空")
 		case s.TagPriority > 1 || s.TagPriority < 0:
-			return confError("Sitemap.TagPriority", "介于[0,1]之间的浮点数")
+			return confError("config.yaml", "Sitemap.TagPriority", "介于[0,1]之间的浮点数")
 		case s.PostPriority > 1 || s.PostPriority < 0:
-			return confError("Sitemap.PostPriority", "介于[0,1]之间的浮点数")
+			return confError("config.yaml", "Sitemap.PostPriority", "介于[0,1]之间的浮点数")
 		case !isChangereq(s.TagChangefreq):
-			return confError("Sitemap.TagChangefreq", "取值不正确")
+			return confError("config.yaml", "Sitemap.TagChangefreq", "取值不正确")
 		case !isChangereq(s.PostChangefreq):
-			return confError("Sitemap.PostChangefreq", "取值不正确")
+			return confError("config.yaml", "Sitemap.PostChangefreq", "取值不正确")
 		}
 	}
 	return nil

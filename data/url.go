@@ -12,13 +12,13 @@ import (
 
 // 自定义URL
 type URLS struct {
-	Root   string `yaml:"root,omitempty"`   // 根地址
-	Suffix string `yaml:"suffix,omitempty"` // 地址后缀
-	Posts  string `yaml:"posts,omitempty"`  // 列表页地址
-	Post   string `yaml:"post,omitempty"`   // 文章详细页地址
-	Tags   string `yaml:"tags,omitempty"`   // 标签列表页地址
-	Tag    string `yaml:"tag,omitempty"`    // 标签详细页地址
-	Themes string `yaml:"themes,omitempty"` // 主题地址
+	Root   string `yaml:"root"`   // 根地址
+	Suffix string `yaml:"suffix"` // 地址后缀
+	Posts  string `yaml:"posts"`  // 列表页地址
+	Post   string `yaml:"post"`   // 文章详细页地址
+	Tags   string `yaml:"tags"`   // 标签列表页地址
+	Tag    string `yaml:"tag"`    // 标签详细页地址
+	Themes string `yaml:"themes"` // 主题地址
 }
 
 func (d *Data) loadURLS(path string) error {

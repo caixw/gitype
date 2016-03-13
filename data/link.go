@@ -5,7 +5,6 @@
 package data
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 
@@ -31,35 +30,22 @@ func (d *Data) loadLinks(p string) error {
 		return err
 	}
 
-	if err = checkLinks(links); err != nil {
+	if err = checkLinks("links.yaml", "", links); err != nil {
 		return err
 	}
 	d.Links = links
 	return nil
 }
 
-// 检测单个链接是否符合要求
-func checkLink(l *Link) error {
-	if len(l.Text) == 0 {
-		return errors.New("未指text")
-	}
-
-	if len(l.URL) == 0 {
-		return errors.New("链接未指url")
-	}
-
-	return nil
-}
-
 // 检测一组链接是否符合要求
-func checkLinks(links []*Link) error {
+func checkLinks(file, field string, links []*Link) error {
 	for index, link := range links {
 		if len(link.Text) == 0 {
-			return fmt.Errorf("第[%v]个链接未指text", index)
+			return fmt.Errorf("文件[%v]的[%v[%v]].Text错误:不能为空", file, field, index)
 		}
 
 		if len(link.URL) == 0 {
-			return fmt.Errorf("第[%v]个链接未指url", index)
+			return fmt.Errorf("文件[%v]的[%v[%v]].URL错误:不能为空", file, field, index)
 		}
 	}
 
