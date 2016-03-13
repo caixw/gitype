@@ -18,18 +18,18 @@ import (
 
 // 一些基本配置项。
 type Config struct {
-	Title           string `yaml:"title"`                     // 网站标题
-	Subtitle        string `yaml:"subtitle,omitempty"`        // 网站副标题
-	URL             string `yaml:"url"`                       // 网站的地址
-	Keywords        string `yaml:"keywords,omitempty"`        // 默认情况下的keyword内容
-	Description     string `yaml:"description,omitempty"`     // 默认情况下的descrription内容
-	Beian           string `yaml:"beian,omitempty"`           // 备案号
-	Uptime          int64  `yaml:"-"`                         // 上线时间，unix时间戳，由UptimeFormat转换而来
-	UptimeFormat    string `yaml:"uptime"`                    // 上线时间，字符串表示
-	PageSize        int    `yaml:"pagesize,omitempty"`        // 每页显示的数量
-	LongDateFormat  string `yaml:"longDateFormat,omitempty"`  // 长时间的显示格式
-	ShortDateFormat string `yaml:"shortDateFormat,omitempty"` // 短时间的显示格式
-	Theme           string `yaml:"theme,omitempty"`           // 默认主题
+	Title           string `yaml:"title"`                 // 网站标题
+	Subtitle        string `yaml:"subtitle,omitempty"`    // 网站副标题
+	URL             string `yaml:"url"`                   // 网站的地址
+	Keywords        string `yaml:"keywords,omitempty"`    // 默认情况下的keyword内容
+	Description     string `yaml:"description,omitempty"` // 默认情况下的descrription内容
+	Beian           string `yaml:"beian,omitempty"`       // 备案号
+	Uptime          int64  `yaml:"-"`                     // 上线时间，unix时间戳，由UptimeFormat转换而来
+	UptimeFormat    string `yaml:"uptime"`                // 上线时间，字符串表示
+	PageSize        int    `yaml:"pagesize"`              // 每页显示的数量
+	LongDateFormat  string `yaml:"longDateFormat"`        // 长时间的显示格式
+	ShortDateFormat string `yaml:"shortDateFormat"`       // 短时间的显示格式
+	Theme           string `yaml:"theme"`                 // 默认主题
 
 	Menus  []*Link `yaml:"menus,omitempty"` // 菜单内容
 	Author *Author `yaml:"author"`          // 默认的作者信息
@@ -73,11 +73,12 @@ func (d *Data) loadConfig(path string) error {
 		return err
 	}
 
-	// 合并默认值,TODO 以安装的方式提供默认数据，而不是采有合并的方式
 	conf := &Config{
 		PageSize:        20,
+		Beian:           "备案中...",
 		LongDateFormat:  "2006-01-02 15:04:05",
 		ShortDateFormat: "2006-01-02",
+		Theme:           "default",
 	}
 	if err = utils.Merge(true, conf, config); err != nil {
 		return err
@@ -123,6 +124,14 @@ func fixedConfig(conf *Config) error {
 func checkConfig(conf *Config, path string) error {
 	if conf.PageSize <= 0 {
 		return confError("pageSize", "必须为大于零的整数")
+	}
+
+	if len(conf.LongDateFormat) == 0 {
+		return confError("LongDateFormat", "不能为空")
+	}
+
+	if len(conf.ShortDateFormat) == 0 {
+		return confError("ShortDateFormat", "不能为空")
 	}
 
 	// Author

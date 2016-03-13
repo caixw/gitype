@@ -43,6 +43,14 @@ func TestCheckConfig(t *testing.T) {
 	}
 	a.Error(checkConfig(conf, "./testdata"))
 
+	// LongDateFormat
+	conf.LongDateFormat = "2006"
+	a.Error(checkConfig(conf, "./testdata"))
+
+	// ShortDateFormat
+	conf.ShortDateFormat = "2006"
+	a.Error(checkConfig(conf, "./testdata"))
+
 	// Author
 	conf.PageSize = 1
 	a.Error(checkConfig(conf, "./testdata"))
