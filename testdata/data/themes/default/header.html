@@ -5,7 +5,9 @@
         <meta charset="utf-8" itemprop="encoding" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title itemprop="name">{{if .Title}}{{.Title}} &#8250; {{end}}{{.SiteName}}</title>
+        <title>{{if .Title}}{{.Title}} &#8250; {{end}}{{.SiteName}}</title>
+        <meta itemprop="headline" content="{{.Subtitle}}" />
+        <meta itemprop="name" content="{{.SiteName}}" />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="zh-cmn-Hans" />
         <meta property="og:title" content="{{if .Title}}{{.Title}} &#8250; {{end}}{{.SiteName}}"/>
@@ -28,7 +30,7 @@
     <body>
     <header id="header">
         <nav class="container">
-            <a class="item title" title="{{.Subtitle}}" href="{{.URL}}">
+            <a class="item title" title="{{.Subtitle}}" href="{{.Root}}">
                 <span itemprop="name">{{.SiteName}}</span>
             </a>
             <meta itemprop="headline" content="{{.Subtitle}}" />

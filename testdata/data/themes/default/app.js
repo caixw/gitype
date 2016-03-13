@@ -9,3 +9,9 @@ $(window).on('scroll', function(){
         button.fadeOut();
     }
 }).trigger('scroll'); // end $(window).onscroll
+
+// 滚动到顶部
+$('#top').on('click', function(){
+    window.scrollTo(0, 0);
+    return false;
+});

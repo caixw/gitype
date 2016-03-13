@@ -75,6 +75,10 @@ code, pre{
     word-break: break-all;
 }
 
+#content .post{
+    margin:2rem 0rem;
+}
+
 #content .post .title{
     font-size:2rem;
     margin-bottom:0.2rem;
@@ -84,7 +88,7 @@ code, pre{
     margin-right:1rem;
 }
 
-#content .post section p{
+#content .post section>p{
     text-indent: 2em;
 }
 
@@ -95,11 +99,10 @@ code, pre{
 
 /************* #page-nav ***********/
 
-#pages-nav{
+#pages-nav .container{
     border-top: 1px solid #699cc8;
     padding:2rem 0rem;
 }
-
 
 /************ #top ************/
 #top{

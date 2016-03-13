@@ -22,6 +22,7 @@ type page struct {
 	SiteName    string       // 网站名称
 	Subtitle    string       // 副标题
 	URL         string       // 网站主域名
+	Root        string       // 网站的根目录
 	Canonical   string       // 当前页的唯一链接
 	Keywords    string       // meta.keywords的值
 	Description string       // meta.description的值
@@ -53,6 +54,7 @@ func (a *app) newPage() *page {
 		SiteName:    conf.Title,
 		Subtitle:    conf.Subtitle,
 		URL:         conf.URL,
+		Root:        a.data.URLS.Root,
 		Canonical:   conf.URL,
 		Keywords:    conf.Keywords,
 		Description: conf.Description,
