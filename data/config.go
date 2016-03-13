@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/issue9/is"
-	"github.com/issue9/utils"
 	"gopkg.in/yaml.v2"
 )
 
@@ -26,7 +25,7 @@ type Config struct {
 	Beian           string `yaml:"beian,omitempty"`       // 备案号
 	Uptime          int64  `yaml:"-"`                     // 上线时间，unix时间戳，由UptimeFormat转换而来
 	UptimeFormat    string `yaml:"uptime"`                // 上线时间，字符串表示
-	PageSize        int    `yaml:"pagesize"`              // 每页显示的数量
+	PageSize        int    `yaml:"pageSize"`              // 每页显示的数量
 	LongDateFormat  string `yaml:"longDateFormat"`        // 长时间的显示格式
 	ShortDateFormat string `yaml:"shortDateFormat"`       // 短时间的显示格式
 	Theme           string `yaml:"theme"`                 // 默认主题
@@ -73,27 +72,17 @@ func (d *Data) loadConfig(path string) error {
 		return err
 	}
 
-	conf := &Config{
-		PageSize:        20,
-		LongDateFormat:  "2006-01-02 15:04:05",
-		ShortDateFormat: "2006-01-02",
-		Theme:           "default",
-	}
-	if err = utils.Merge(true, conf, config); err != nil {
-		return err
-	}
-
 	// 检测变量是否正确
-	if err = checkConfig(conf, d.path.Data); err != nil {
+	if err = checkConfig(config, d.path.Data); err != nil {
 		return err
 	}
 
 	// 做一些修正，比如时间格式转换成int64等。
-	if err = fixedConfig(conf); err != nil {
+	if err = fixedConfig(config); err != nil {
 		return err
 	}
 
-	d.Config = conf
+	d.Config = config
 	return nil
 }
 
