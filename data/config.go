@@ -160,15 +160,19 @@ func checkConfig(conf *Config, path string) error {
 		return confError("Theme", "该主题并不存在")
 	}
 
-	if err := checkRSS("RSS", conf.RSS); err != nil {
+	if err = checkRSS("RSS", conf.RSS); err != nil {
 		return err
 	}
 
-	if err := checkRSS("Atom", conf.Atom); err != nil {
+	if err = checkRSS("Atom", conf.Atom); err != nil {
 		return err
 	}
 
-	if err := checkSitemap(conf.Sitemap); err != nil {
+	if err = checkSitemap(conf.Sitemap); err != nil {
+		return err
+	}
+
+	if err = checkLinks(conf.Menus); err != nil {
 		return err
 	}
 

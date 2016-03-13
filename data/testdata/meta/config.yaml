@@ -15,9 +15,8 @@ menus:
 
   - url: url2
     title: title2
-    icon: icon2
+    text: text2
 atom:
     title: atom
     size: 20
     url: /atom.xml
-
