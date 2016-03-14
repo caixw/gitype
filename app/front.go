@@ -195,7 +195,9 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 func (a *app) pre(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if a.isDebug() { // 调试状态，则每次都重新加载数据
-			a.reload()
+			if err := a.reload(); err != nil {
+				logs.Error("app.pre:", err)
+			}
 		}
 
 		// 输出访问日志
