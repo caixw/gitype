@@ -56,7 +56,7 @@ logs.xml定义了日志的输出形式和保存路径，具体配置可参考[lo
 
 ##### app.json
 
-值        | 类型        | 描述
+名称      | 类型        | 描述
 :---------|:------------|:------
 https     | bool        | 是否启用https
 certFile  | string      | 当https为true时，此值为必填
@@ -66,7 +66,43 @@ headers   | map         | 附加的头信息，头信息可能在其它地方被
 pprof     | string      | 指定pprof地址，输出net/pprof中指定的一些信息
 
 
-##### 自定义路由
+
+
+### 网站内容
+
+
+##### links.yaml
+
+links.yaml用于指定友情链接。目前包含以下字段：
+
+名称      | 类型        | 描述
+:---------|:------------|:----------
+text      | string      | 字面文字，可以不唯一
+url       | string      | 对应的链接地址
+title     | string      | a标签的title属性。可以为空
+icon      | string      | 图标名称，目前图标名称可以是http://fontawesome.io/下的图标名称
+
+
+##### tags.yaml
+
+tags.yaml用于指定所有的标签内容。为一个数组，每个元素包含以下字段：
+
+名称      | 类型        | 描述
+:---------|:------------|:----------
+slug      | string      | 唯一名称，文章引用此值，地址中也使用此值
+title     | string      | 字面文字，可以不唯一
+color     | string      | 颜色值，在展示所有标签的页面，会以此颜色显示
+content   | string      | 用于描述该标签的详细内容，可以是**HTML**
+
+
+##### urls.yaml
+
+用于自定义URL。
+
+
+##### 主题
+
+主题
 
 
  
