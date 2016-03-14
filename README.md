@@ -1,4 +1,4 @@
-typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=master)](https://travis-ci.org/caixw/typing)
+typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](https://travis-ci.org/caixw/typing)
 ======
  
 简单的半静态博客系统，具有以下特性：
@@ -145,6 +145,10 @@ data/themes下为主题文件，可定义多个主题，通过config中的theme�
 
 单一主题下，可以为文章详细页定义多个模板，通过meta.yaml可以自定义当前文章使用的模板，
 默认情况下，使用post模板。
+
+
+400及以上的错误信息，均可以自定义，方式为在当前主题目录下，新一个与错误代码相对应的html文件，
+比如400错误，会读取400.html文件，以此类推。
 
  
  
