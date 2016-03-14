@@ -6,7 +6,7 @@
 package vars
 
 // 版本号
-const Version = "0.1.12.20160309"
+const Version = "0.1.13.20160314"
 
 const (
 	// 媒体文件的地址前缀，之所以不配置在data/URLS中，是因为
