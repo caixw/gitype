@@ -62,12 +62,12 @@ logs.xml定义了日志的输出形式和保存路径，具体配置可参考[lo
 adminURL      | string      | 后台的管理地址
 adminPassword | string      | 管理密码
 core          | web.Core
- https        | bool        | 是否启用https
- certFile     | string      | 当https为true时，此值为必填
- keyFile      | string      | 当https为true时，此值为必填
- port         | string      | 端口，不指定，默认为80或是443
- headers      | map         | 附加的头信息，头信息可能在其它地方被修改
- pprof        | string      | 指定pprof地址，输出net/pprof中指定的一些信息
+core.https    | bool        | 是否启用https
+core.certFile | string      | 当https为true时，此值为必填
+core.keyFile  | string      | 当https为true时，此值为必填
+core.port     | string      | 端口，不指定，默认为80或是443
+core.headers  | map         | 附加的头信息，头信息可能在其它地方被修改
+core.pprof    | string      | 指定pprof地址，输出net/pprof中指定的一些信息
 
 
 
