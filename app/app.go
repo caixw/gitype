@@ -108,6 +108,8 @@ func (a *app) isDebug() bool {
 }
 
 func Run(p *vars.Path) error {
+	logs.Info("数据路径为:", p.Root)
+
 	m, err := web.NewModule("front")
 	if err != nil {
 		return err
