@@ -25,7 +25,15 @@ type Path struct {
 	DataRaws   string // data/raws
 }
 
-func NewPath(root string) *Path {
+func NewPath(root string) (*Path, error) {
+	if !filepath.IsAbs(root) {
+		var err error
+		root, err = filepath.Abs(root)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	conf := filepath.Join(root, "conf")
 	data := filepath.Join(root, "data")
 	meta := filepath.Join(data, "meta")
@@ -44,5 +52,5 @@ func NewPath(root string) *Path {
 		DataPosts:  filepath.Join(data, "posts"),
 		DataThemes: filepath.Join(data, "themes"),
 		DataRaws:   filepath.Join(data, "raws"),
-	}
+	}, nil
 }

@@ -41,10 +41,13 @@ func main() {
 		return
 	}
 
-	p := vars.NewPath(*appdir)
+	p, err := vars.NewPath(*appdir)
+	if err != nil {
+		panic(err)
+	}
 
 	// 初始化日志
-	err := logs.InitFromXMLFile(p.ConfLogs)
+	err = logs.InitFromXMLFile(p.ConfLogs)
 	if err != nil {
 		panic(err)
 	}

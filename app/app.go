@@ -15,6 +15,7 @@ import (
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/feeds"
 	"github.com/caixw/typing/vars"
+	"github.com/issue9/logs"
 	"github.com/issue9/web"
 )
 
@@ -131,7 +132,7 @@ func Run(p *vars.Path) error {
 
 	// 加载数据
 	if err = a.reload(); err != nil {
-		return err
+		logs.Error("app.Run:", err)
 	}
 
 	return web.Run(a.conf.Core)
