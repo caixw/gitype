@@ -22,8 +22,8 @@ type app struct {
 	path     *vars.Path
 	front    *web.Module
 	conf     *config
-	updated  int64 // 更新时间，一般为重新加载数据的时间
-	etag     string
+	updated  int64  // 更新时间，一般为重新加载数据的时间
+	etag     string // 所有页面都采用相同的etag
 	adminTpl *template.Template
 	data     *data.Data
 }

@@ -7,9 +7,11 @@ package app
 import (
 	"html/template"
 	"net/http"
+	"os/exec"
 	"time"
 
 	"github.com/issue9/logs"
+	"github.com/issue9/utils"
 	"github.com/issue9/web"
 )
 
@@ -26,8 +28,37 @@ func (a *app) initAdmin() (err error) {
 	}
 
 	admin.GetFunc(a.conf.AdminURL, a.getAdminPage).
-		PostFunc(a.conf.AdminURL, a.postAdminPage)
+		PostFunc(a.conf.AdminURL, a.postAdminPage).
+		PostFunc(a.conf.WebhooksURL, a.postWebhooks)
 	return nil
+}
+
+func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
+	now := time.Now().Unix()
+
+	if now-a.conf.WebhooksUpdateFreq < a.updated { // 时间太短，不接受更新
+		logs.Info("更新过于频繁，被中止！")
+		return
+	}
+
+	cmd := &exec.Cmd{
+		Path: "git",
+		Dir:  a.path.Data,
+	}
+
+	if utils.FileExists(cmd.Dir) {
+		cmd.Args = []string{"pull"}
+	} else {
+		cmd.Args = []string{"clone", a.conf.RepoURL}
+	}
+
+	if err := cmd.Run(); err != nil {
+		logs.Error("a.postWebhooks:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (a *app) postAdminPage(w http.ResponseWriter, r *http.Request) {
