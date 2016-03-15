@@ -33,19 +33,16 @@ func loadConfig(path string) (*config, error) {
 		return nil, err
 	}
 
-	if len(conf.WebhooksURL) == 0 || conf.WebhooksURL == "/" {
+	switch {
+	case len(conf.WebhooksURL) == 0 || conf.WebhooksURL == "/":
 		return nil, errors.New("配置文件必须指定webhooksURL的值且不能为/")
-	}
-	if conf.WebhooksUpdateFreq < 0 {
+	case conf.WebhooksUpdateFreq < 0:
 		return nil, errors.New("webhooksUpdateFreq不能小于0")
-	}
-	if len(conf.RepoURL) == 0 || conf.RepoURL == "/" {
+	case len(conf.RepoURL) == 0 || conf.RepoURL == "/":
 		return nil, errors.New("配置文件必须指定repoURL的值且不能为/")
-	}
-	if len(conf.AdminURL) == 0 || conf.AdminURL == "/" {
+	case len(conf.AdminURL) == 0 || conf.AdminURL == "/":
 		return nil, errors.New("配置文件必须指定adminURL的值且不能为/")
-	}
-	if len(conf.AdminPassword) == 0 {
+	case len(conf.AdminPassword) == 0:
 		return nil, errors.New("配置文件必须指定adminPassword")
 	}
 
