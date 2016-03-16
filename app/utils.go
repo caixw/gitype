@@ -16,10 +16,12 @@ import (
 // ParamString 获取路径匹配中的参数，并以字符串的格式返回。
 // 若不能找到该参数，返回false
 func paramString(w http.ResponseWriter, r *http.Request, key string) (string, bool) {
-	if val, found := web.ParamString(r, key); found {
+	val, found := web.ParamString(r, key)
+	if found {
 		return val, true
 	}
 
+	logs.Infof("app.paramString:并未在路径中找到相匹配的参数[%v]\n", val)
 	w.WriteHeader(http.StatusNotFound)
 	return "", false
 }

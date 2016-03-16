@@ -31,7 +31,7 @@ func (a *app) getPagePost(p *page, posts []*data.Post, page int, w http.Response
 	size := a.data.Config.PageSize
 	start := size * (page - 1) // 系统从零开始计数
 	if start > len(posts) {
-		logs.Debugf("请示页码为[%v]，实际文章数量为[%v]", page, len(posts))
+		logs.Debugf("请示页码为[%v]，实际文章数量为[%v]\n", page, len(posts))
 		w.WriteHeader(http.StatusNotFound) // 页码超出范围，不存在
 		return false
 	}
@@ -75,6 +75,7 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if page < 1 {
+		logs.Debugf("请求的页码[%v]小于1\n", page)
 		w.WriteHeader(http.StatusNotFound) // 页码为负数的表示不存在
 		return
 	}
@@ -110,7 +111,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if tag == nil {
-		logs.Debugf("查找的标签[%v]不存在", slug)
+		logs.Debugf("查找的标签[%v]不存在\n", slug)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -121,7 +122,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if page < 1 {
-		logs.Debugf("请求的页码[%v]小于1", page)
+		logs.Debugf("请求的页码[%v]小于1\n", page)
 		w.WriteHeader(http.StatusNotFound) // 页码为负数的页码不存在
 		return
 	}
@@ -178,6 +179,7 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 	} // end for a.data.Posts
 
 	if post == nil {
+		logs.Debugf("并未找到与之相对应的文章\n", slug)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
