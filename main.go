@@ -23,7 +23,7 @@ const usage = `typing 一个简单博客程序。
  options:
   -h      显示帮助信息；
   -v      显示程序版本信息；
-  -appdir 指定程序的数据存放路径，未指定，则为当前运行目录。`
+  -appdir 指定程序的数据存放路径，未指定，则为./testdata。`
 
 func main() {
 	help := flag.Bool("h", false, "显示当前信息")
