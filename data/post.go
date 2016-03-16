@@ -76,7 +76,8 @@ func (d *Data) loadPosts(dir string) error {
 	return nil
 }
 
-// 加载某一文章的元数据。不包含实际内容。
+// 加载某一文章。
+//
 // postsDir 表示data/posts目录的绝对地址，必须经过filepath.Clean()处理；
 // path 表示具体文章的meta.yaml文章，必须经过filepath.Clean()处理；
 func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
@@ -91,11 +92,11 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 
 	p := &Post{}
 	if err := yaml.Unmarshal(data, p); err != nil {
-		return nil, fmt.Errorf("[%v]解板yaml出错:%v", slug, err)
+		return nil, fmt.Errorf("[%v]解板yaml出错:%v\n", slug, err)
 	}
 
 	if len(p.Title) == 0 {
-		return nil, fmt.Errorf("[%v]:文章标题不能为空", slug)
+		return nil, fmt.Errorf("[%v]:文章标题不能为空\n", slug)
 	}
 	p.Slug = slug
 
@@ -105,37 +106,40 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 
 	// content
 	if len(p.Path) == 0 {
-		return nil, fmt.Errorf("[%v]:未指定内容文件", slug)
+		return nil, fmt.Errorf("[%v]:未指定内容文件\n", slug)
 	}
 	data, err = ioutil.ReadFile(filepath.Join(dir, p.Path))
 	if err != nil {
-		return nil, fmt.Errorf("[%v]:读取文章内容出错：[%v]", slug, err)
+		return nil, fmt.Errorf("[%v]:读取文章内容出错：[%v]\n", slug, err)
 	}
 	p.Content = string(data)
 
 	// tags
 	ts := strings.Split(p.TagsString, ",")
+	if len(ts) == 0 {
+		return nil, fmt.Errorf("文章[%v]未指定任何关联标签信息\n", slug)
+	}
 	for _, tag := range tags {
 		for _, tagName := range ts {
 			if tag.Slug == tagName {
 				p.Tags = append(p.Tags, tag)
 				tag.Posts = append(tag.Posts, p)
 				break
-			}
-		}
-	}
+			} // end if
+		} // end for ts
+	} // end for tags
 
 	// created
 	t, err := time.Parse(parseDateFormat, p.CreatedFormat)
 	if err != nil {
-		return nil, fmt.Errorf("[%v]:解析其创建时间是出错：[%v]", slug, err)
+		return nil, fmt.Errorf("[%v]:解析其创建时间是出错：[%v]\n", slug, err)
 	}
 	p.Created = t.Unix()
 
 	// modified
 	t, err = time.Parse(parseDateFormat, p.ModifiedFormat)
 	if err != nil {
-		return nil, fmt.Errorf("[%v]:解析其修改时间是出错：[%v]", slug, err)
+		return nil, fmt.Errorf("[%v]:解析其修改时间是出错：[%v]\n", slug, err)
 	}
 	p.Modified = t.Unix()
 

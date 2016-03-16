@@ -56,7 +56,7 @@ type Sitemap struct {
 
 // meta下配置文件错误
 func confError(file, field, message string) error {
-	return fmt.Errorf("文件[%v]的[%v]字段错误:%v", file, field, message)
+	return fmt.Errorf("文件[%v]的[%v]字段错误:%v\n", file, field, message)
 }
 
 // 加载配置文件。
