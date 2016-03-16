@@ -19,6 +19,7 @@ type Path struct {
 
 	DataConf   string // data/meta/config.yaml
 	DataTags   string // data/meta/tags.yaml
+	DataLinks  string // data/meta/links.yaml
 	DataURLS   string // data/meta/urls.yaml
 	DataPosts  string // data/posts
 	DataThemes string // data/themes
@@ -46,9 +47,10 @@ func NewPath(root string) (*Path, error) {
 		ConfApp:  filepath.Join(conf, "app.json"),
 		ConfLogs: filepath.Join(conf, "logs.xml"),
 
-		DataConf: filepath.Join(meta, "config.yaml"),
-		DataTags: filepath.Join(meta, "tags.yaml"),
-		DataURLS: filepath.Join(meta, "urls.yaml"),
+		DataConf:  filepath.Join(meta, "config.yaml"),
+		DataTags:  filepath.Join(meta, "tags.yaml"),
+		DataLinks: filepath.Join(meta, "links.yaml"),
+		DataURLS:  filepath.Join(meta, "urls.yaml"),
 
 		DataPosts:  filepath.Join(data, "posts"),
 		DataThemes: filepath.Join(data, "themes"),

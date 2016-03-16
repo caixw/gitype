@@ -35,6 +35,7 @@ func TestNew(t *testing.T) {
 		True(eq(p.ConfLogs, "testdata/conf/logs.xml")).
 		True(eq(p.DataConf, "testdata/data/meta/config.yaml")).
 		True(eq(p.DataTags, "testdata/data/meta/tags.yaml")).
+		True(eq(p.DataLinks, "testdata/data/meta/links.yaml")).
 		True(eq(p.DataURLS, "testdata/data/meta/urls.yaml")).
 		True(eq(p.DataPosts, "testdata/data/posts")).
 		True(eq(p.DataThemes, "testdata/data/themes")).

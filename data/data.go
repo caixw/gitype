@@ -51,6 +51,11 @@ func Load(path *vars.Path) (*Data, error) {
 		return nil, err
 	}
 
+	// links
+	if err := d.loadLinks(path.DataLinks); err != nil {
+		return nil, err
+	}
+
 	// 加载文章
 	if err := d.loadPosts(path.DataPosts); err != nil {
 		return nil, err
