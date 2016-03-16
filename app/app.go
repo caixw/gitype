@@ -102,11 +102,6 @@ func (a *app) initFeeds() error {
 	return nil
 }
 
-// 是否处于调试模式
-func (a *app) isDebug() bool {
-	return len(a.conf.Core.Pprof) > 0
-}
-
 func Run(p *vars.Path) error {
 	logs.Info("数据路径为:", p.Root)
 

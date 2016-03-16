@@ -9,6 +9,7 @@ import (
 	"errors"
 	"io/ioutil"
 
+	"github.com/issue9/handlers"
 	"github.com/issue9/web"
 )
 
@@ -20,6 +21,11 @@ type config struct {
 	RepoURL            string      `json:"repoURL"`            // 远程仓库的地址
 	AdminURL           string      `json:"adminURL"`           // 后台管理地址
 	AdminPassword      string      `json:"adminPassword"`      // 后台管理登录地址
+}
+
+// 是否处于调试状态
+func (conf *config) isDebug() bool {
+	return len(conf.Core.Pprof) == 0
 }
 
 func loadConfig(path string) (*config, error) {
@@ -44,6 +50,10 @@ func loadConfig(path string) (*config, error) {
 		return nil, errors.New("配置文件必须指定adminURL的值且不能为/")
 	case len(conf.AdminPassword) == 0:
 		return nil, errors.New("配置文件必须指定adminPassword")
+	}
+
+	if conf.isDebug() {
+		conf.Core.ErrHandler = handlers.PrintDebug
 	}
 
 	return conf, nil

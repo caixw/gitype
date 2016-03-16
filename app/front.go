@@ -205,7 +205,7 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 // 每次访问前需要做的预处理工作。
 func (a *app) pre(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if a.isDebug() { // 调试状态，则每次都重新加载数据
+		if a.conf.isDebug() { // 调试状态，则每次都重新加载数据
 			if err := a.reload(); err != nil {
 				logs.Error("app.pre:", err)
 			}
