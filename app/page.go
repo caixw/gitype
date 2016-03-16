@@ -50,7 +50,6 @@ func (a *app) newPage() *page {
 	conf := a.data.Config
 
 	page := &page{
-		Title:       conf.Title,
 		SiteName:    conf.Title,
 		Subtitle:    conf.Subtitle,
 		URL:         conf.URL,

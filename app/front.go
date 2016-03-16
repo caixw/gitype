@@ -5,6 +5,7 @@
 package app
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/caixw/typing/data"
@@ -42,7 +43,6 @@ func (a *app) getPagePost(p *page, posts []*data.Post, page int, w http.Response
 	}
 
 	p.Posts = posts[start:end]
-	p.Canonical = a.postsURL(uint(page))
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
@@ -81,9 +81,14 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p := a.newPage()
+	if page > 1 { // 非首页，标题显示页码数
+		p.Title = fmt.Sprintf("第%v页", page)
+	}
+	p.Canonical = a.postsURL(uint(page))
 	if !a.getPagePost(p, a.data.Posts, page, w) {
 		return
 	}
+
 	p.render(w, r, "posts", map[string]string{"Content-Type": "text/html"})
 }
 
@@ -129,6 +134,8 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 
 	p := a.newPage()
 	p.Tag = tag
+	p.Title = tag.Title
+	p.Canonical = a.tagURL(slug, uint(page))
 	if !a.getPagePost(p, tag.Posts, page, w) {
 		return
 	}
@@ -141,6 +148,7 @@ func (a *app) getTags(w http.ResponseWriter, r *http.Request) {
 	p := a.newPage()
 	p.Title = "标签"
 	p.Canonical = a.tagsURL()
+
 	p.render(w, r, "tags", map[string]string{"Content-Type": "text/html"})
 }
 
@@ -189,6 +197,7 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 	p.NextPage = next
 	p.PrevPage = prev
 	p.Canonical = post.Permalink
+	p.Title = post.Title
 
 	p.render(w, r, post.Template, map[string]string{"Content-Type": "text/html"})
 }
