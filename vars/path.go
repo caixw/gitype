@@ -46,9 +46,10 @@ func NewPath(root string) (*Path, error) {
 		ConfApp:  filepath.Join(conf, "app.json"),
 		ConfLogs: filepath.Join(conf, "logs.xml"),
 
-		DataConf:   filepath.Join(meta, "config.yaml"),
-		DataTags:   filepath.Join(meta, "tags.yaml"),
-		DataURLS:   filepath.Join(meta, "urls.yaml"),
+		DataConf: filepath.Join(meta, "config.yaml"),
+		DataTags: filepath.Join(meta, "tags.yaml"),
+		DataURLS: filepath.Join(meta, "urls.yaml"),
+
 		DataPosts:  filepath.Join(data, "posts"),
 		DataThemes: filepath.Join(data, "themes"),
 		DataRaws:   filepath.Join(data, "raws"),

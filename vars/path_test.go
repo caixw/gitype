@@ -6,6 +6,7 @@ package vars
 
 import (
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -20,17 +21,22 @@ func TestNew(t *testing.T) {
 
 	a := assert.New(t)
 
-	p := NewPath("./testdata")
+	p, err := NewPath("./testdata")
+	a.NotError(err).NotNil(p)
 
-	a.Equal(p.Root, "./testdata").
-		Equal(p.Data, "testdata/data").
-		Equal(p.Conf, "testdata/conf").
-		Equal(p.ConfApp, "testdata/conf/app.json").
-		Equal(p.ConfLogs, "testdata/conf/logs.xml").
-		Equal(p.DataConf, "testdata/data/meta/config.yaml").
-		Equal(p.DataTags, "testdata/data/meta/tags.yaml").
-		Equal(p.DataURLS, "testdata/data/meta/urls.yaml").
-		Equal(p.DataPosts, "testdata/data/posts").
-		Equal(p.DataThemes, "testdata/data/themes").
-		Equal(p.DataRaws, "testdata/data/raws")
+	eq := func(p1, p2 string) bool {
+		return strings.HasSuffix(p1, p2)
+	}
+
+	a.True(eq(p.Root, "testdata")).
+		True(eq(p.Data, "testdata/data")).
+		True(eq(p.Conf, "testdata/conf")).
+		True(eq(p.ConfApp, "testdata/conf/app.json")).
+		True(eq(p.ConfLogs, "testdata/conf/logs.xml")).
+		True(eq(p.DataConf, "testdata/data/meta/config.yaml")).
+		True(eq(p.DataTags, "testdata/data/meta/tags.yaml")).
+		True(eq(p.DataURLS, "testdata/data/meta/urls.yaml")).
+		True(eq(p.DataPosts, "testdata/data/posts")).
+		True(eq(p.DataThemes, "testdata/data/themes")).
+		True(eq(p.DataRaws, "testdata/data/raws"))
 }
