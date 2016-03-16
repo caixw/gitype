@@ -14,7 +14,7 @@ import (
 
 const (
 	sitemapHeader = `<?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>`
+<urlset>`
 
 	sitemapFooter = `</urlset>`
 )
