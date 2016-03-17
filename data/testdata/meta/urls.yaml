@@ -5,5 +5,3 @@ post: /posts
 tags: /tags
 tag: /tags
 themes: /themes
-atom: /atom.xml
-rss: /rss.xml
