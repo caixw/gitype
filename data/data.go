@@ -32,6 +32,7 @@ func Load(path *vars.Path) (*Data, error) {
 		path: path,
 	}
 
+	// urls
 	if err := d.loadURLS(path.DataURLS); err != nil {
 		return nil, err
 	}

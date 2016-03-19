@@ -1,0 +1,16 @@
+{{define "search"}}
+{{template "header" .}}
+
+
+<div id="search">
+    <form action="action" method="GET">
+        <input type="search" name="q" value="{{.Keywords}}" />
+        <button type="submit">提交</button>
+    </form>
+</div>
+
+{{template "post-list" .}}
+
+
+{{template "footer" .}}
+{{end}}

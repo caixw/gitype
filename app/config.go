@@ -25,7 +25,7 @@ type config struct {
 
 // 是否处于调试状态
 func (conf *config) isDebug() bool {
-	return len(conf.Core.Pprof) == 0
+	return len(conf.Core.Pprof) > 0
 }
 
 func loadConfig(path string) (*config, error) {

@@ -58,6 +58,7 @@ func (a *app) initFrontRoute() error {
 		GetFunc(urls.Tag+"/{slug}"+urls.Suffix, a.pre(a.getTag)).
 		GetFunc(urls.Tags+urls.Suffix+"{:.*}", a.pre(a.getTags)).
 		GetFunc(urls.Themes+"/", a.pre(a.getThemes)).
+		GetFunc(urls.Search+urls.Suffix+"{:.*}", a.pre(a.getSearch)).
 		GetFunc("/", a.pre(a.getRaws))
 	return nil
 }

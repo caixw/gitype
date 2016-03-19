@@ -102,6 +102,26 @@ code, pre{
     border-bottom: 1px solid #f5f5f5;
 }
 
+
+/************** #search *************/
+#search{
+    margin-bottom:1rem;
+    font-size:2rem;
+    position:relative;
+}
+
+#search input{
+    outline:none;
+    width:100%;
+    margin-right:5rem;
+}
+
+#search button{
+    width:4rem;
+    position:absolute;
+}
+
+
 /************* #page-nav ***********/
 
 #pages-nav .container{

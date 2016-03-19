@@ -18,6 +18,7 @@ type URLS struct {
 	Post   string `yaml:"post"`   // 文章详细页地址
 	Tags   string `yaml:"tags"`   // 标签列表页地址
 	Tag    string `yaml:"tag"`    // 标签详细页地址
+	Search string `yaml:"search"` // 搜索URL，会加上Suffix作为后缀
 	Themes string `yaml:"themes"` // 主题地址
 }
 
@@ -51,6 +52,8 @@ func checkURLS(u *URLS) error {
 		return confError("urls.yaml", "Tags", "不能为空")
 	case len(u.Tag) == 0:
 		return confError("urls.yaml", "Tag", "不能为空")
+	case len(u.Search) == 0:
+		return confError("urls.yaml", "Search", "不能为空")
 	case len(u.Themes) == 0:
 		return confError("urls.yaml", "Themes", "不能为空")
 	default:

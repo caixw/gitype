@@ -72,3 +72,13 @@ func (a *app) tagsURL() string {
 	u := a.data.URLS
 	return path.Join(u.Root, u.Tags+u.Suffix)
 }
+
+func (a *app) searchURL(q string, page int) string {
+	u := a.data.URLS
+
+	base := path.Join(u.Root, u.Search+u.Suffix)
+	if page <= 1 {
+		return base
+	}
+	return base + "?page=" + strconv.Itoa(page)
+}

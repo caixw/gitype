@@ -7,6 +7,7 @@ package app
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
@@ -24,6 +25,38 @@ func (a *app) getRaws(w http.ResponseWriter, r *http.Request) {
 	root := http.Dir(a.path.DataRaws)
 	prefix := a.data.URLS.Root + "/"
 	http.StripPrefix(prefix, http.FileServer(root)).ServeHTTP(w, r)
+}
+
+// /search.html?q=key&page=2
+func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
+	p := a.newPage()
+
+	key := r.FormValue("q")
+	if len(key) == 0 {
+		p.render(w, r, "search", map[string]string{"Content-Type": "text/html"})
+		return
+	}
+
+	page, ok := queryInt(w, r, "page", 1)
+	if !ok {
+		return
+	}
+
+	posts := make([]*data.Post, 0, 10)
+	for _, v := range a.data.Posts {
+		if strings.Index(v.Title, key) >= 0 || strings.Index(v.Content, key) >= 0 {
+			posts = append(posts, v)
+		}
+	}
+
+	if !a.getPagePost(p, posts, page, w) {
+		return
+	}
+	p.Title = "搜索:" + key
+	p.Keywords = key
+	p.Description = "搜索关键字" + key + "的结果集"
+
+	p.render(w, r, "search", map[string]string{"Content-Type": "text/html"})
 }
 
 // 从posts中摘取指定页码的文章存入到p中。
