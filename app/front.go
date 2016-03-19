@@ -41,6 +41,11 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
+	if page < 1 {
+		logs.Debugf("请求的页码[%v]小于1\n", page)
+		w.WriteHeader(http.StatusNotFound) // 页码为负数的表示不存在
+		return
+	}
 
 	posts := make([]*data.Post, 0, 10)
 	for _, v := range a.data.Posts {
@@ -49,47 +54,46 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if !a.getPagePost(p, posts, page, w) {
-		return
-	}
 	p.Title = "搜索:" + key
 	p.Keywords = key
 	p.Description = "搜索关键字" + key + "的结果集"
-
-	p.render(w, r, "search", map[string]string{"Content-Type": "text/html"})
-}
-
-// 从posts中摘取指定页码的文章存入到p中。
-// posts用于筛选的所有文章列表；page当前显示的页码，从1开始。
-func (a *app) getPagePost(p *page, posts []*data.Post, page int, w http.ResponseWriter) (ok bool) {
-	size := a.data.Config.PageSize
-	start := size * (page - 1) // 系统从零开始计数
-	if start > len(posts) {
-		logs.Debugf("请示页码为[%v]，实际文章数量为[%v]\n", page, len(posts))
-		w.WriteHeader(http.StatusNotFound) // 页码超出范围，不存在
-		return false
+	start, end, ok := a.getPostsRange(len(posts), page, w)
+	if !ok {
+		return
 	}
-
-	end := start + size
-	if len(posts) < end {
-		end = len(posts)
-	}
-
 	p.Posts = posts[start:end]
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  a.postsURL(uint(page - 1)), // 页码从1开始计数
+			URL:  a.searchURL(key, uint(page-1)), // 页码从1开始计数
 		}
 	}
 	if end < len(posts) {
 		p.PrevPage = &data.Link{
 			Text: "下一页",
-			URL:  a.postsURL(uint(page + 1)), // 页码从1开始计数
+			URL:  a.searchURL(key, uint(page+1)), // 页码从1开始计数
 		}
 	}
 
-	return true
+	p.render(w, r, "search", map[string]string{"Content-Type": "text/html"})
+}
+
+// 确认当前文章列表页选择范围。
+func (a *app) getPostsRange(postsSize, page int, w http.ResponseWriter) (start, end int, ok bool) {
+	size := a.data.Config.PageSize
+	start = size * (page - 1) // 系统从零开始计数
+	if start > postsSize {
+		logs.Debugf("请求页码为[%v]，实际文章数量为[%v]\n", page, postsSize)
+		w.WriteHeader(http.StatusNotFound) // 页码超出范围，不存在
+		return 0, 0, false
+	}
+
+	end = start + size
+	if postsSize < end {
+		end = postsSize
+	}
+
+	return start, end, true
 }
 
 // 获取媒体文件
@@ -118,8 +122,22 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 		p.Title = fmt.Sprintf("第%v页", page)
 	}
 	p.Canonical = a.postsURL(uint(page))
-	if !a.getPagePost(p, a.data.Posts, page, w) {
+	start, end, ok := a.getPostsRange(len(a.data.Posts), page, w)
+	if !ok {
 		return
+	}
+	p.Posts = a.data.Posts[start:end]
+	if page > 1 {
+		p.PrevPage = &data.Link{
+			Text: "前一页",
+			URL:  a.postsURL(uint(page - 1)), // 页码从1开始计数
+		}
+	}
+	if end < len(a.data.Posts) {
+		p.PrevPage = &data.Link{
+			Text: "下一页",
+			URL:  a.postsURL(uint(page + 1)), // 页码从1开始计数
+		}
 	}
 
 	p.render(w, r, "posts", map[string]string{"Content-Type": "text/html"})
@@ -158,7 +176,6 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-
 	if page < 1 {
 		logs.Debugf("请求的页码[%v]小于1\n", page)
 		w.WriteHeader(http.StatusNotFound) // 页码为负数的页码不存在
@@ -169,8 +186,22 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	p.Tag = tag
 	p.Title = tag.Title
 	p.Canonical = a.tagURL(slug, uint(page))
-	if !a.getPagePost(p, tag.Posts, page, w) {
+	start, end, ok := a.getPostsRange(len(tag.Posts), page, w)
+	if !ok {
 		return
+	}
+	p.Posts = tag.Posts[start:end]
+	if page > 1 {
+		p.PrevPage = &data.Link{
+			Text: "前一页",
+			URL:  a.tagURL(slug, uint(page-1)), // 页码从1开始计数
+		}
+	}
+	if end < len(tag.Posts) {
+		p.PrevPage = &data.Link{
+			Text: "下一页",
+			URL:  a.tagURL(slug, uint(page+1)), // 页码从1开始计数
+		}
 	}
 	p.render(w, r, "tag", map[string]string{"Content-Type": "text/html"})
 }
