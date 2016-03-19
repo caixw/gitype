@@ -128,6 +128,9 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 			} // end if
 		} // end for ts
 	} // end for tags
+	if len(p.Tags) == 0 {
+		return nil, fmt.Errorf("文章[%v]未指定任何有效的关联标签信息\n", slug)
+	}
 
 	// created
 	t, err := time.Parse(parseDateFormat, p.CreatedFormat)

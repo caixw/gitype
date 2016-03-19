@@ -187,6 +187,8 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	p.Tag = tag
 	p.Title = tag.Title
 	p.Canonical = a.tagURL(slug, page)
+	p.Description = "标签" + tag.Title + "的介绍"
+
 	start, end, ok := a.getPostsRange(len(tag.Posts), page, w)
 	if !ok {
 		return
@@ -262,7 +264,15 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 	p.NextPage = next
 	p.PrevPage = prev
 	p.Canonical = post.Permalink
+	p.Description = post.Summary
 	p.Title = post.Title
+	if len(p.Tags) > 0 {
+		keywords := make([]string, 0, len(p.Tags))
+		for _, v := range p.Tags {
+			keywords = append(keywords, v.Title)
+		}
+		p.Keywords = strings.Join(keywords, ",")
+	}
 
 	p.render(w, r, post.Template, map[string]string{"Content-Type": "text/html"})
 }
