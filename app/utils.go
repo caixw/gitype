@@ -48,16 +48,16 @@ func (a *app) postURL(slug string) string {
 	return path.Join(u.Root, u.Post, slug+u.Suffix)
 }
 
-func (a *app) postsURL(page uint) string {
+func (a *app) postsURL(page int) string {
 	u := a.data.URLS
 
 	if page <= 1 {
 		return u.Root
 	}
-	return path.Join(u.Root, u.Posts+u.Suffix) + "?page=" + strconv.Itoa(int(page))
+	return path.Join(u.Root, u.Posts+u.Suffix) + "?page=" + strconv.Itoa(page)
 }
 
-func (a *app) tagURL(slug string, page uint) string {
+func (a *app) tagURL(slug string, page int) string {
 	u := a.data.URLS
 
 	base := path.Join(u.Root, u.Tag, slug+u.Suffix)
@@ -65,7 +65,7 @@ func (a *app) tagURL(slug string, page uint) string {
 		return base
 	}
 
-	return base + "?page=" + strconv.Itoa(int(page))
+	return base + "?page=" + strconv.Itoa(page)
 }
 
 func (a *app) tagsURL() string {
@@ -73,12 +73,12 @@ func (a *app) tagsURL() string {
 	return path.Join(u.Root, u.Tags+u.Suffix)
 }
 
-func (a *app) searchURL(q string, page uint) string {
+func (a *app) searchURL(q string, page int) string {
 	u := a.data.URLS
 
 	base := path.Join(u.Root, u.Search+u.Suffix)
 	if page <= 1 {
 		return base
 	}
-	return base + "?page=" + strconv.Itoa(int(page))
+	return base + "?page=" + strconv.Itoa(page)
 }

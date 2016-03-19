@@ -47,6 +47,7 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 查找标题和内容
 	posts := make([]*data.Post, 0, 10)
 	for _, v := range a.data.Posts {
 		if strings.Index(v.Title, key) >= 0 || strings.Index(v.Content, key) >= 0 {
@@ -65,13 +66,13 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  a.searchURL(key, uint(page-1)), // 页码从1开始计数
+			URL:  a.searchURL(key, page-1), // 页码从1开始计数
 		}
 	}
 	if end < len(posts) {
 		p.PrevPage = &data.Link{
 			Text: "下一页",
-			URL:  a.searchURL(key, uint(page+1)), // 页码从1开始计数
+			URL:  a.searchURL(key, page+1),
 		}
 	}
 
@@ -121,7 +122,7 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	if page > 1 { // 非首页，标题显示页码数
 		p.Title = fmt.Sprintf("第%v页", page)
 	}
-	p.Canonical = a.postsURL(uint(page))
+	p.Canonical = a.postsURL(page)
 	start, end, ok := a.getPostsRange(len(a.data.Posts), page, w)
 	if !ok {
 		return
@@ -130,13 +131,13 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  a.postsURL(uint(page - 1)), // 页码从1开始计数
+			URL:  a.postsURL(page - 1), // 页码从1开始计数
 		}
 	}
 	if end < len(a.data.Posts) {
 		p.PrevPage = &data.Link{
 			Text: "下一页",
-			URL:  a.postsURL(uint(page + 1)), // 页码从1开始计数
+			URL:  a.postsURL(page + 1),
 		}
 	}
 
@@ -185,7 +186,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	p := a.newPage()
 	p.Tag = tag
 	p.Title = tag.Title
-	p.Canonical = a.tagURL(slug, uint(page))
+	p.Canonical = a.tagURL(slug, page)
 	start, end, ok := a.getPostsRange(len(tag.Posts), page, w)
 	if !ok {
 		return
@@ -194,13 +195,13 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  a.tagURL(slug, uint(page-1)), // 页码从1开始计数
+			URL:  a.tagURL(slug, page-1), // 页码从1开始计数
 		}
 	}
 	if end < len(tag.Posts) {
 		p.PrevPage = &data.Link{
 			Text: "下一页",
-			URL:  a.tagURL(slug, uint(page+1)), // 页码从1开始计数
+			URL:  a.tagURL(slug, page+1), // 页码从1开始计数
 		}
 	}
 	p.render(w, r, "tag", map[string]string{"Content-Type": "text/html"})
