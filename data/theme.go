@@ -15,7 +15,7 @@ import (
 )
 
 // 加载主题目录下的所有主题。
-// path主题所在的目录。
+// path 主题所在的目录。
 func getThemesName(path string) ([]string, error) {
 	fs, err := ioutil.ReadDir(path)
 	if err != nil {

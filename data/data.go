@@ -17,8 +17,6 @@ const parseDateFormat = "2006-01-02T15:04:05-0700"
 
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
-	path *vars.Path
-
 	Config   *Config            // 配置内容
 	URLS     *URLS              // 自定义URL
 	Tags     []*Tag             // map对顺序是未定的，所以使用slice
@@ -29,11 +27,9 @@ type Data struct {
 
 // Load 函数用于加载一份新的数据。
 func Load(path *vars.Path) (*Data, error) {
-	d := &Data{
-		path: path,
-	}
+	d := &Data{}
 
-	if err := d.loadMeta(); err != nil {
+	if err := d.loadMeta(path); err != nil {
 		return nil, err
 	}
 
@@ -45,27 +41,43 @@ func Load(path *vars.Path) (*Data, error) {
 	return d, nil
 }
 
-func (d *Data) loadMeta() error {
+func (d *Data) loadMeta(path *vars.Path) error {
 	// urls
-	if err := d.loadURLS(d.path.DataURLS); err != nil {
+	if err := d.loadURLS(path.DataURLS); err != nil {
 		return err
 	}
 
 	// tags
-	if err := d.loadTags(d.path.DataTags); err != nil {
-		return err
-	}
-
-	// config
-	if err := d.loadConfig(d.path.DataConf); err != nil {
-		return err
-	}
-
-	// 加载主题的模板
-	if err := d.loadTemplate(d.path.DataThemes); err != nil {
+	if err := d.loadTags(path.DataTags); err != nil {
 		return err
 	}
 
 	// links
-	return d.loadLinks(d.path.DataLinks)
+	if err := d.loadLinks(path.DataLinks); err != nil {
+		return err
+	}
+
+	// config
+	if err := d.loadConfig(path.DataConf); err != nil {
+		return err
+	}
+
+	// theme
+	themes, err := getThemesName(path.DataThemes)
+	if err != nil {
+		return err
+	}
+	found := false
+	for _, theme := range themes {
+		if theme == d.Config.Theme {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return &MetaError{File: "config.yaml", Message: "该主题并不存在", Field: "Theme"}
+	}
+
+	// 加载主题的模板
+	return d.loadTemplate(path.DataThemes)
 }

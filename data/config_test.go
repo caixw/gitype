@@ -7,14 +7,13 @@ package data
 import (
 	"testing"
 
-	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
 
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
-	d := &Data{path: &vars.Path{Data: "./testdata"}} // loadConfig 用到path.Data变量
+	d := &Data{} // loadConfig 用到path.Data变量
 	a.NotError(d.loadConfig("./testdata/meta/config.yaml")).NotNil(d.Config)
 	conf := d.Config
 	a.Equal(conf.Title, "title")
@@ -41,44 +40,44 @@ func TestCheckConfig(t *testing.T) {
 	conf := &Config{
 		PageSize: -1,
 	}
-	a.Error(checkConfig(conf, "./testdata"))
+	a.Error(checkConfig(conf))
 
 	// LongDateFormat
 	conf.LongDateFormat = "2006"
-	a.Error(checkConfig(conf, "./testdata"))
+	a.Error(checkConfig(conf))
 
 	// ShortDateFormat
 	conf.ShortDateFormat = "2006"
-	a.Error(checkConfig(conf, "./testdata"))
+	a.Error(checkConfig(conf))
 
 	// Author
 	conf.PageSize = 1
-	a.Error(checkConfig(conf, "./testdata"))
+	a.Error(checkConfig(conf))
 
 	// Author.Name
 	conf.Author = &Author{}
-	a.Error(checkConfig(conf, "./testdata"))
+	a.Error(checkConfig(conf))
 
 	// Title
 	conf.Author.Name = "abc"
-	a.Error(checkConfig(conf, "./testdata"))
+	a.Error(checkConfig(conf))
 
 	// URL
 	conf.Title = "title"
-	a.Error(checkConfig(conf, "./testdata"))
+	a.Error(checkConfig(conf))
 	// URL 格式错误
 	conf.URL = "URL"
-	a.Error(checkConfig(conf, "./testdata"))
+	a.Error(checkConfig(conf))
 
 	// themes
 	conf.URL = "https://caixw.io"
-	a.Error(checkConfig(conf, "./testdata"))
+	a.Error(checkConfig(conf))
 
 	// RSS.Title
 	conf.Theme = "t1"
 	conf.RSS = &RSS{Title: "1", URL: "/", Size: 5}
 	// conf.Atom = nil  // 当conf.Atom为nil时，不检测
-	a.NotError(checkConfig(conf, "./testdata"))
+	a.NotError(checkConfig(conf))
 }
 
 func TestCheckRSS(t *testing.T) {

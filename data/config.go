@@ -6,7 +6,6 @@ package data
 
 import (
 	"io/ioutil"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -68,7 +67,7 @@ func (d *Data) loadConfig(path string) error {
 	}
 
 	// 检测变量是否正确
-	if err = checkConfig(config, d.path.Data); err != nil {
+	if err = checkConfig(config); err != nil {
 		return err
 	}
 
@@ -103,8 +102,7 @@ func fixedConfig(conf *Config) error {
 }
 
 // 检测config所有变量是否合法。不合法返回error
-// path data的路径名。
-func checkConfig(conf *Config, path string) error {
+func checkConfig(conf *Config) error {
 	if conf.PageSize <= 0 {
 		return &MetaError{File: "config.yaml", Message: "必须为大于零的整数", Field: "pageSize"}
 	}
@@ -137,30 +135,16 @@ func checkConfig(conf *Config, path string) error {
 	if len(conf.Theme) == 0 {
 		return &MetaError{File: "config.yaml", Message: "不能为空", Field: "Theme"}
 	}
-	themes, err := getThemesName(filepath.Join(path, "themes"))
-	if err != nil {
-		return err
-	}
-	found := false
-	for _, theme := range themes {
-		if theme == conf.Theme {
-			found = true
-			break
-		}
-	}
-	if !found {
-		return &MetaError{File: "config.yaml", Message: "该主题并不存在", Field: "Theme"}
-	}
 
-	if err = checkRSS("RSS", conf.RSS); err != nil {
+	if err := checkRSS("RSS", conf.RSS); err != nil {
 		return err
 	}
 
-	if err = checkRSS("Atom", conf.Atom); err != nil {
+	if err := checkRSS("Atom", conf.Atom); err != nil {
 		return err
 	}
 
-	if err = checkSitemap(conf.Sitemap); err != nil {
+	if err := checkSitemap(conf.Sitemap); err != nil {
 		return err
 	}
 
