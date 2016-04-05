@@ -123,6 +123,7 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 		p.Title = fmt.Sprintf("第%v页", page)
 	}
 	p.Canonical = a.postsURL(page)
+
 	start, end, ok := a.getPostsRange(len(a.data.Posts), page, w)
 	if !ok {
 		return
