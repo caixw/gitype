@@ -16,7 +16,7 @@ type Link struct {
 	Icon  string `yaml:"icon,omitempty"`  // 链接对应的图标名称，fontawesome图标名称，不用带fa-前缀。
 	Title string `yaml:"title,omitempty"` // 链接的title属性
 	URL   string `yaml:"url"`             // 链接地址
-	Text  string `yaml:"text'`            // 链接的广西
+	Text  string `yaml:"text'`            // 链接的文本
 }
 
 func (d *Data) loadLinks(p string) error {

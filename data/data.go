@@ -15,6 +15,7 @@ import (
 // 客户保存的时间格式。
 const parseDateFormat = "2006-01-02T15:04:05-0700"
 
+// Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
 	path *vars.Path
 
@@ -26,7 +27,7 @@ type Data struct {
 	Posts    []*Post            // 所有的文章列表
 }
 
-// 加载一份新的数据。
+// Load 函数用于加载一份新的数据。
 func Load(path *vars.Path) (*Data, error) {
 	d := &Data{
 		path: path,
