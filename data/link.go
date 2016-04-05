@@ -5,8 +5,8 @@
 package data
 
 import (
-	"fmt"
 	"io/ioutil"
+	"strconv"
 
 	"gopkg.in/yaml.v2"
 )
@@ -30,23 +30,26 @@ func (d *Data) loadLinks(p string) error {
 		return err
 	}
 
-	if err = checkLinks("links.yaml", "", links); err != nil {
-		return err
+	// 检测错误
+	for index, link := range links {
+		if err := link.check(); err != nil {
+			err.File = "links.yaml"
+			err.Field = "[" + strconv.Itoa(index) + "]." + err.Field
+			return err
+		}
 	}
+
 	d.Links = links
 	return nil
 }
 
-// 检测一组链接是否符合要求
-func checkLinks(file, field string, links []*Link) error {
-	for index, link := range links {
-		if len(link.Text) == 0 {
-			return fmt.Errorf("文件[%v]的[%v[%v]].Text错误:不能为空", file, field, index)
-		}
+func (link *Link) check() *MetaError {
+	if len(link.Text) == 0 {
+		return &MetaError{Field: "Text", Message: "不能为空"}
+	}
 
-		if len(link.URL) == 0 {
-			return fmt.Errorf("文件[%v]的[%v[%v]].URL错误:不能为空", file, field, index)
-		}
+	if len(link.URL) == 0 {
+		return &MetaError{Field: "URL", Message: "不能为空"}
 	}
 
 	return nil

@@ -33,28 +33,7 @@ func Load(path *vars.Path) (*Data, error) {
 		path: path,
 	}
 
-	// urls
-	if err := d.loadURLS(path.DataURLS); err != nil {
-		return nil, err
-	}
-
-	// tags
-	if err := d.loadTags(path.DataTags); err != nil {
-		return nil, err
-	}
-
-	// config
-	if err := d.loadConfig(path.DataConf); err != nil {
-		return nil, err
-	}
-
-	// 加载主题的模板
-	if err := d.loadTemplate(path.DataThemes); err != nil {
-		return nil, err
-	}
-
-	// links
-	if err := d.loadLinks(path.DataLinks); err != nil {
+	if err := d.loadMeta(); err != nil {
 		return nil, err
 	}
 
@@ -64,4 +43,29 @@ func Load(path *vars.Path) (*Data, error) {
 	}
 
 	return d, nil
+}
+
+func (d *Data) loadMeta() error {
+	// urls
+	if err := d.loadURLS(d.path.DataURLS); err != nil {
+		return err
+	}
+
+	// tags
+	if err := d.loadTags(d.path.DataTags); err != nil {
+		return err
+	}
+
+	// config
+	if err := d.loadConfig(d.path.DataConf); err != nil {
+		return err
+	}
+
+	// 加载主题的模板
+	if err := d.loadTemplate(d.path.DataThemes); err != nil {
+		return err
+	}
+
+	// links
+	return d.loadLinks(d.path.DataLinks)
 }

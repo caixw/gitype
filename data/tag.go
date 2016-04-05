@@ -5,9 +5,9 @@
 package data
 
 import (
-	"fmt"
 	"io/ioutil"
 	"path"
+	"strconv"
 
 	"gopkg.in/yaml.v2"
 )
@@ -34,15 +34,15 @@ func (d *Data) loadTags(p string) error {
 	}
 	for index, tag := range tags {
 		if len(tag.Slug) == 0 {
-			return fmt.Errorf("文件[tags.yaml]的[%v].Slug错误:不能为空", index)
+			return &MetaError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Slug"}
 		}
 
 		if len(tag.Title) == 0 {
-			return fmt.Errorf("文件[tags.yaml]的[%v].Title错误:不能为空", index)
+			return &MetaError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Title"}
 		}
 
 		if len(tag.Content) == 0 {
-			return fmt.Errorf("文件[tags.yaml]的[%v].Content错误:不能为空", index)
+			return &MetaError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Content"}
 		}
 
 		tag.Posts = make([]*Post, 0, 10)
