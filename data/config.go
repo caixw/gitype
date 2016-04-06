@@ -67,12 +67,7 @@ func (d *Data) loadConfig(path string) error {
 	}
 
 	// 检测变量是否正确
-	if err = checkConfig(config); err != nil {
-		return err
-	}
-
-	// 做一些修正，比如时间格式转换成int64等。
-	if err = fixedConfig(config); err != nil {
+	if err = initConfig(config); err != nil {
 		return err
 	}
 
@@ -80,25 +75,8 @@ func (d *Data) loadConfig(path string) error {
 	return nil
 }
 
-// 对Config实例做一些修正，比如时间格式转换成int64等。
-func fixedConfig(conf *Config) error {
-	// 时间转换
-	t, err := time.Parse(parseDateFormat, conf.UptimeFormat)
-	if err != nil {
-		return &MetaError{File: "config.yaml", Message: err.Error(), Field: "UptimeFormat"}
-	}
-	conf.Uptime = t.Unix()
-
-	// 确保conf.URL不能/结尾
-	if strings.HasSuffix(conf.URL, "/") {
-		conf.URL = conf.URL[:len(conf.URL)-1]
-	}
-
-	return nil
-}
-
-// 检测config所有变量是否合法。不合法返回error
-func checkConfig(conf *Config) error {
+// initConfig 初始化config的内容，负责检测数据的合法性和格式的转换。
+func initConfig(conf *Config) error {
 	if conf.PageSize <= 0 {
 		return &MetaError{File: "config.yaml", Message: "必须为大于零的整数", Field: "pageSize"}
 	}
@@ -110,6 +88,12 @@ func checkConfig(conf *Config) error {
 	if len(conf.ShortDateFormat) == 0 {
 		return &MetaError{File: "config.yaml", Message: "不能为空", Field: "ShortDateFormat"}
 	}
+
+	t, err := time.Parse(parseDateFormat, conf.UptimeFormat)
+	if err != nil {
+		return &MetaError{File: "config.yaml", Message: err.Error(), Field: "UptimeFormat"}
+	}
+	conf.Uptime = t.Unix()
 
 	// Author
 	if conf.Author == nil {
@@ -125,6 +109,9 @@ func checkConfig(conf *Config) error {
 
 	if !is.URL(conf.URL) {
 		return &MetaError{File: "config.yaml", Message: "不是一个合法的域名或IP", Field: "URL"}
+	}
+	if strings.HasSuffix(conf.URL, "/") {
+		conf.URL = conf.URL[:len(conf.URL)-1]
 	}
 
 	// theme
@@ -144,7 +131,7 @@ func checkConfig(conf *Config) error {
 		return err
 	}
 
-	// 检测错误
+	// Menus
 	for index, link := range conf.Menus {
 		if err := link.check(); err != nil {
 			err.File = "config.yaml"

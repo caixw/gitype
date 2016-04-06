@@ -22,17 +22,6 @@ func TestLoadConfig(t *testing.T) {
 	a.Equal(conf.Menus[1].Title, "title2")
 }
 
-func TestFixedConfig(t *testing.T) {
-	a := assert.New(t)
-
-	conf := &Config{
-		UptimeFormat: "1970-01-01T08:00:00+0800",
-		URL:          "https://caixw.io/",
-	}
-	a.NotError(fixedConfig(conf))
-	a.Equal(conf.Uptime, 0).Equal(conf.URL, "https://caixw.io")
-}
-
 func TestCheckConfig(t *testing.T) {
 	a := assert.New(t)
 
@@ -40,44 +29,48 @@ func TestCheckConfig(t *testing.T) {
 	conf := &Config{
 		PageSize: -1,
 	}
-	a.Error(checkConfig(conf))
+	a.Error(initConfig(conf))
 
 	// LongDateFormat
 	conf.LongDateFormat = "2006"
-	a.Error(checkConfig(conf))
+	a.Error(initConfig(conf))
 
 	// ShortDateFormat
 	conf.ShortDateFormat = "2006"
-	a.Error(checkConfig(conf))
+	a.Error(initConfig(conf))
+
+	// UptimeFormat
+	conf.UptimeFormat = "2006-01-02T17:01:22+0800"
+	a.Error(initConfig(conf))
 
 	// Author
 	conf.PageSize = 1
-	a.Error(checkConfig(conf))
+	a.Error(initConfig(conf))
 
 	// Author.Name
 	conf.Author = &Author{}
-	a.Error(checkConfig(conf))
+	a.Error(initConfig(conf))
 
 	// Title
 	conf.Author.Name = "abc"
-	a.Error(checkConfig(conf))
+	a.Error(initConfig(conf))
 
 	// URL
 	conf.Title = "title"
-	a.Error(checkConfig(conf))
+	a.Error(initConfig(conf))
 	// URL 格式错误
 	conf.URL = "URL"
-	a.Error(checkConfig(conf))
+	a.Error(initConfig(conf))
 
 	// themes
 	conf.URL = "https://caixw.io"
-	a.Error(checkConfig(conf))
+	a.Error(initConfig(conf))
 
 	// RSS.Title
 	conf.Theme = "t1"
 	conf.RSS = &RSS{Title: "1", URL: "/", Size: 5}
 	// conf.Atom = nil  // 当conf.Atom为nil时，不检测
-	a.NotError(checkConfig(conf))
+	a.NotError(initConfig(conf))
 }
 
 func TestCheckRSS(t *testing.T) {
