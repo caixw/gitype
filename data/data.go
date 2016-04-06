@@ -12,9 +12,6 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// 客户保存的时间格式。
-const parseDateFormat = "2006-01-02T15:04:05-0700"
-
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
 	Config   *Config            // 配置内容

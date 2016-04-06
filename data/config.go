@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/is"
 	"gopkg.in/yaml.v2"
 )
@@ -89,7 +90,7 @@ func initConfig(conf *Config) error {
 		return &MetaError{File: "config.yaml", Message: "不能为空", Field: "ShortDateFormat"}
 	}
 
-	t, err := time.Parse(parseDateFormat, conf.UptimeFormat)
+	t, err := time.Parse(vars.DateFormat, conf.UptimeFormat)
 	if err != nil {
 		return &MetaError{File: "config.yaml", Message: err.Error(), Field: "UptimeFormat"}
 	}

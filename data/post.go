@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"gopkg.in/yaml.v2"
 )
@@ -133,14 +134,14 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 	}
 
 	// created
-	t, err := time.Parse(parseDateFormat, p.CreatedFormat)
+	t, err := time.Parse(vars.DateFormat, p.CreatedFormat)
 	if err != nil {
 		return nil, fmt.Errorf("[%v]:解析其创建时间是出错：[%v]\n", slug, err)
 	}
 	p.Created = t.Unix()
 
 	// modified
-	t, err = time.Parse(parseDateFormat, p.ModifiedFormat)
+	t, err = time.Parse(vars.DateFormat, p.ModifiedFormat)
 	if err != nil {
 		return nil, fmt.Errorf("[%v]:解析其修改时间是出错：[%v]\n", slug, err)
 	}
