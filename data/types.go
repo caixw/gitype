@@ -31,13 +31,13 @@ type posts []*Post
 func (p posts) Less(i, j int) bool {
 	switch {
 	case p[i].Top && p[j].Top:
-		return p[i].Created < p[j].Created
+		return p[i].Created >= p[j].Created
 	case p[i].Top:
-		return true
-	case p[j].Top:
 		return false
+	case p[j].Top:
+		return true
 	default:
-		return p[i].Created < p[j].Created
+		return p[i].Created >= p[j].Created
 	}
 }
 

@@ -11,6 +11,8 @@ import (
 	"github.com/issue9/assert"
 )
 
+var _ error = &MetaError{}
+
 func TestPostSort(t *testing.T) {
 	a := assert.New(t)
 
@@ -23,9 +25,9 @@ func TestPostSort(t *testing.T) {
 	}
 
 	sort.Sort(posts(ps))
-	a.Equal(ps[0].Slug, "0")
-	a.Equal(ps[1].Slug, "1")
+	a.Equal(ps[0].Slug, "4")
+	a.Equal(ps[1].Slug, "3")
 	a.Equal(ps[2].Slug, "2")
-	a.Equal(ps[3].Slug, "3")
-	a.Equal(ps[4].Slug, "4")
+	a.Equal(ps[3].Slug, "1")
+	a.Equal(ps[4].Slug, "0")
 }
