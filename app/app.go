@@ -103,22 +103,22 @@ func (a *app) initFeeds() error {
 	return nil
 }
 
-func Run(p *vars.Path) error {
-	logs.Info("数据路径为:", p.Root)
+func Run(path *vars.Path) error {
+	logs.Info("数据路径为:", path.Root)
 
-	m, err := web.NewModule("front")
+	front, err := web.NewModule("front")
 	if err != nil {
 		return err
 	}
 
-	conf, err := loadConfig(p.ConfApp)
+	conf, err := loadConfig(path.ConfApp)
 	if err != nil {
 		return err
 	}
 
 	a := &app{
-		path:    p,
-		front:   m,
+		path:    path,
+		front:   front,
 		updated: time.Now().Unix(),
 		conf:    conf,
 	}
