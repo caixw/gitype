@@ -83,15 +83,11 @@ func (d *Data) loadConfig(path string) error {
 // 对Config实例做一些修正，比如时间格式转换成int64等。
 func fixedConfig(conf *Config) error {
 	// 时间转换
-	if len(conf.UptimeFormat) == 0 {
-		conf.Uptime = 0
-	} else {
-		t, err := time.Parse(parseDateFormat, conf.UptimeFormat)
-		if err != nil {
-			return &MetaError{File: "config.yaml", Message: err.Error(), Field: "UptimeFormat"}
-		}
-		conf.Uptime = t.Unix()
+	t, err := time.Parse(parseDateFormat, conf.UptimeFormat)
+	if err != nil {
+		return &MetaError{File: "config.yaml", Message: err.Error(), Field: "UptimeFormat"}
 	}
+	conf.Uptime = t.Unix()
 
 	// 确保conf.URL不能/结尾
 	if strings.HasSuffix(conf.URL, "/") {

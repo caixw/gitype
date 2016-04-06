@@ -26,7 +26,7 @@ func TestFixedConfig(t *testing.T) {
 	a := assert.New(t)
 
 	conf := &Config{
-		UptimeFormat: "",
+		UptimeFormat: "1970-01-01T08:00:00+0800",
 		URL:          "https://caixw.io/",
 	}
 	a.NotError(fixedConfig(conf))
