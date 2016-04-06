@@ -45,17 +45,17 @@ func checkURLS(u *URLS) error {
 	case len(u.Suffix) >= 0 && u.Suffix[0] != '.':
 		return &MetaError{File: "urls.yaml", Field: "Suffix", Message: "必须以.开头"}
 	case len(u.Posts) == 0:
-		return &MetaError{File: "urls.yaml", Field: "Posts", Message: "必须以.开头"}
+		return &MetaError{File: "urls.yaml", Field: "Posts", Message: "不能为空"}
 	case len(u.Post) == 0:
-		return &MetaError{File: "urls.yaml", Field: "Post", Message: "必须以.开头"}
+		return &MetaError{File: "urls.yaml", Field: "Post", Message: "不能为空"}
 	case len(u.Tags) == 0:
-		return &MetaError{File: "urls.yaml", Field: "Tags", Message: "必须以.开头"}
+		return &MetaError{File: "urls.yaml", Field: "Tags", Message: "不能为空"}
 	case len(u.Tag) == 0:
-		return &MetaError{File: "urls.yaml", Field: "Tag", Message: "必须以.开头"}
+		return &MetaError{File: "urls.yaml", Field: "Tag", Message: "不能为空"}
 	case len(u.Search) == 0:
-		return &MetaError{File: "urls.yaml", Field: "Search", Message: "必须以.开头"}
+		return &MetaError{File: "urls.yaml", Field: "Search", Message: "不能为空"}
 	case len(u.Themes) == 0:
-		return &MetaError{File: "urls.yaml", Field: "Themes", Message: "必须以.开头"}
+		return &MetaError{File: "urls.yaml", Field: "Themes", Message: "不能为空"}
 	default:
 		return nil
 	}
