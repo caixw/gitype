@@ -93,7 +93,8 @@ func (p *page) render(w http.ResponseWriter, r *http.Request, name string, heade
 	}
 }
 
-// 输出一个特定状态码下的错误页面。若该页面模板不存在，则panic。
+// 输出一个特定状态码下的错误页面。若该页面模板不存在，则输出状态码对应的文本内容。
+//
 // 只查找当前主题目录下的相关文件。
 // 只对状态码大于等于400的起作用。
 func (p *page) renderStatusCode(w http.ResponseWriter, r *http.Request, code int) {
@@ -101,12 +102,15 @@ func (p *page) renderStatusCode(w http.ResponseWriter, r *http.Request, code int
 		return
 	}
 
+	w.WriteHeader(code)
+
+	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	filename := strconv.Itoa(code) + ".html"
 	path := filepath.Join(p.app.path.DataThemes, p.app.data.Config.Theme, filename)
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		panic(err)
+		logs.Error("page.renderStatusCode:", err)
+		data = []byte(http.StatusText(code))
 	}
-	w.WriteHeader(code)
 	w.Write(data)
 }
