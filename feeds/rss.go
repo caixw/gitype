@@ -20,7 +20,7 @@ const (
 </rss>`
 )
 
-// 生成一个符合rss规范的xml广西buffer。
+// BuildRSS 生成一个符合rss规范的xml文本buffer。
 func BuildRSS(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
 	if _, err := buf.WriteString(rssHeader); err != nil {

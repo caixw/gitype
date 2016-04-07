@@ -20,7 +20,7 @@ const (
 	sitemapFooter = `</urlset>`
 )
 
-// 生成一个符合sitemap规范的xml广西buffer。
+// BuildSitemap 生成一个符合sitemap规范的xml文本buffer。
 func BuildSitemap(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
 	if _, err := buf.WriteString(sitemapHeader); err != nil {
