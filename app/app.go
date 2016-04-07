@@ -21,12 +21,12 @@ import (
 
 type app struct {
 	path     *vars.Path
-	front    *web.Module
-	conf     *config
-	updated  int64  // 更新时间，一般为重新加载数据的时间
-	etag     string // 所有页面都采用相同的etag
-	adminTpl *template.Template
-	data     *data.Data
+	front    *web.Module        // 前台页面的模块
+	conf     *config            // 配置内容
+	updated  int64              // 更新时间，一般为重新加载数据的时间
+	etag     string             // 所有页面都采用相同的etag
+	adminTpl *template.Template // 后台管理的模板页面。
+	data     *data.Data         // 加载的数据，每次加载都会被重置
 }
 
 // 重新加载数据
@@ -104,7 +104,7 @@ func (a *app) initFeeds() error {
 }
 
 func Run(path *vars.Path) error {
-	logs.Info("数据路径为:", path.Root)
+	logs.Info("程序工作路径为:", path.Root)
 
 	front, err := web.NewModule("front")
 	if err != nil {

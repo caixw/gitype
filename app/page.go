@@ -40,7 +40,7 @@ type page struct {
 	Links       []*data.Link // 友情链接
 	Tag         *data.Tag    // 标签详细页面，非标签详细页，则为空
 	Menus       []*data.Link // 菜单
-	Posts       []*data.Post // 文章列表，文章列表页用到。
+	Posts       []*data.Post // 文章列表，文章列表页、是标签详情页和搜索页用到。
 	Post        *data.Post   // 文章详细内容，单文章页面用到。
 
 	app *app

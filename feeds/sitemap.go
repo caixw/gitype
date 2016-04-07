@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
+// feeds 包提供了根据数据生成 sitemap，atom，rss 的功能。
 package feeds
 
 import (
@@ -69,7 +70,7 @@ func addItemToSitemap(buf *bytes.Buffer, loc, changefreq string, lastmod int64, 
 
 	t := time.Unix(lastmod, 0)
 	buf.WriteString("<lastmod>")
-	buf.WriteString(t.Format("2006-01-02T15:04:05+08:00"))
+	buf.WriteString(t.Format("2006-01-02T15:04:05-07:00"))
 	buf.WriteString("</lastmod>\n")
 
 	buf.WriteString("<changefreq>")

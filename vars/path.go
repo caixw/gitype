@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// 定义了需要用到的一些路径信息
 package vars
 
 import "path/filepath"

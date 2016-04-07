@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// 定义一些全局变量、常量。
+// vars 包定义一些全局变量、常量。
 package vars
 
 const (
