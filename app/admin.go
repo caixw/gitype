@@ -41,7 +41,7 @@ type logW struct {
 
 func (w *logW) Write(bs []byte) (int, error) {
 	w.l.Print(string(bs))
-	return 0, nil
+	return len(bs), nil
 }
 
 // 通过webhooks来更新内容
