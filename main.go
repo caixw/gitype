@@ -55,5 +55,4 @@ func main() {
 
 	logs.Critical(app.Run(path))
 	logs.Flush()
-	return
 }
