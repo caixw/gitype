@@ -5,11 +5,8 @@
 package app
 
 import (
-	"io/ioutil"
 	"net/http"
-	"path/filepath"
 	"runtime"
-	"strconv"
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
@@ -80,7 +77,7 @@ func (a *app) newPage() *page {
 }
 
 // 输出当前内容到指定模板
-func (p *page) render(w http.ResponseWriter, r *http.Request, name string, headers map[string]string) {
+func (p *page) render(w http.ResponseWriter, name string, headers map[string]string) {
 	for key, val := range headers {
 		w.Header().Set(key, val)
 	}
@@ -88,29 +85,7 @@ func (p *page) render(w http.ResponseWriter, r *http.Request, name string, heade
 	err := p.app.data.Template.ExecuteTemplate(w, name, p)
 	if err != nil {
 		logs.Error("page.render:", err)
-		p.renderStatusCode(w, r, http.StatusInternalServerError)
+		p.app.renderStatusCode(w, http.StatusInternalServerError)
 		return
 	}
-}
-
-// 输出一个特定状态码下的错误页面。若该页面模板不存在，则输出状态码对应的文本内容。
-//
-// 只查找当前主题目录下的相关文件。
-// 只对状态码大于等于400的起作用。
-func (p *page) renderStatusCode(w http.ResponseWriter, r *http.Request, code int) {
-	if code < 400 {
-		return
-	}
-
-	w.WriteHeader(code)
-
-	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
-	filename := strconv.Itoa(code) + ".html"
-	path := filepath.Join(p.app.path.DataThemes, p.app.data.Config.Theme, filename)
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		logs.Error("page.renderStatusCode:", err)
-		data = []byte(http.StatusText(code))
-	}
-	w.Write(data)
 }

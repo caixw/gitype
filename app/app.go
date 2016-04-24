@@ -8,7 +8,9 @@ package app
 
 import (
 	"html/template"
+	"io/ioutil"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -134,4 +136,30 @@ func Run(path *vars.Path) error {
 	}
 
 	return web.Run(a.conf.Core)
+}
+
+// 输出一个特定状态码下的错误页面。若该页面模板不存在，则输出状态码对应的文本内容。
+//
+// 只查找当前主题目录下的相关文件。
+// 只对状态码大于等于400的起作用。
+func (a *app) renderStatusCode(w http.ResponseWriter, code int) {
+	logs.Debug("输出非正常状态码：", code)
+	if code < 400 {
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html") // 需在 WriteHeader 之前设置
+	w.WriteHeader(code)
+
+	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
+	filename := strconv.Itoa(code) + ".html"
+	path := filepath.Join(a.path.DataThemes, a.data.Config.Theme, filename)
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		logs.Errorf("page.renderStatusCode:查找模板文件[%v]时出现以下错误[%v]\n", path, err)
+
+		// 若读取模板出错，则只输出与状态码相对应的基本文字描述
+		data = []byte(http.StatusText(code))
+	}
+	w.Write(data)
 }

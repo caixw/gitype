@@ -7,12 +7,14 @@ package app
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/handlers"
 	"github.com/issue9/logs"
+	"github.com/issue9/utils"
 )
 
 // /
@@ -23,6 +25,10 @@ func (a *app) getRaws(w http.ResponseWriter, r *http.Request) {
 	}
 
 	root := http.Dir(a.path.DataRaws)
+	if !utils.FileExists(filepath.Join(a.path.DataRaws, r.URL.Path)) {
+		a.renderStatusCode(w, http.StatusNotFound)
+		return
+	}
 	prefix := a.data.URLS.Root + "/"
 	http.StripPrefix(prefix, http.FileServer(root)).ServeHTTP(w, r)
 }
@@ -33,7 +39,7 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 
 	key := r.FormValue("q")
 	if len(key) == 0 {
-		p.render(w, r, "search", map[string]string{"Content-Type": "text/html"})
+		p.render(w, "search", map[string]string{"Content-Type": "text/html"})
 		return
 	}
 
@@ -42,8 +48,8 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if page < 1 {
-		logs.Debugf("请求的页码[%v]小于1\n", page)
-		a.getRaws(w, r) // 页码为负数的表示不存在，跳转到404页面
+		logs.Debugf("getSearch:参数page[%v]小于1\n", page)
+		a.renderStatusCode(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到404页面
 		return
 	}
 
@@ -76,7 +82,7 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	p.render(w, r, "search", map[string]string{"Content-Type": "text/html"})
+	p.render(w, "search", map[string]string{"Content-Type": "text/html"})
 }
 
 // 确认当前文章列表页选择范围。
@@ -85,7 +91,7 @@ func (a *app) getPostsRange(postsSize, page int, w http.ResponseWriter) (start, 
 	start = size * (page - 1) // 系统从零开始计数
 	if start > postsSize {
 		logs.Debugf("请求页码为[%v]，实际文章数量为[%v]\n", page, postsSize)
-		w.WriteHeader(http.StatusNotFound) // 页码超出范围，不存在
+		a.renderStatusCode(w, http.StatusNotFound) // 页码超出范围，不存在
 		return 0, 0, false
 	}
 
@@ -114,7 +120,7 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	}
 	if page < 1 {
 		logs.Debugf("请求的页码[%v]小于1\n", page)
-		a.getRaws(w, r) // 页码为负数的表示不存在，跳转到404页面
+		a.renderStatusCode(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到404页面
 		return
 	}
 
@@ -126,7 +132,6 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 
 	start, end, ok := a.getPostsRange(len(a.data.Posts), page, w)
 	if !ok {
-		a.getRaws(w, r)
 		return
 	}
 	p.Posts = a.data.Posts[start:end]
@@ -143,7 +148,7 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	p.render(w, r, "posts", map[string]string{"Content-Type": "text/html"})
+	p.render(w, "posts", map[string]string{"Content-Type": "text/html"})
 }
 
 // 主题文件
@@ -171,7 +176,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	}
 	if tag == nil {
 		logs.Debugf("查找的标签[%v]不存在\n", slug)
-		a.getRaws(w, r) // 页码为负数的表示不存在，跳转到404页面
+		a.getRaws(w, r) // 标签不存在，则查找该文件是否存在于 raws目录下。
 		return
 	}
 
@@ -181,7 +186,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	}
 	if page < 1 {
 		logs.Debugf("请求的页码[%v]小于1\n", page)
-		a.getRaws(w, r) // 页码为负数的表示不存在，跳转到404页面
+		a.renderStatusCode(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到404页面
 		return
 	}
 
@@ -193,7 +198,6 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 
 	start, end, ok := a.getPostsRange(len(tag.Posts), page, w)
 	if !ok {
-		a.getRaws(w, r)
 		return
 	}
 	p.Posts = tag.Posts[start:end]
@@ -209,7 +213,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 			URL:  a.tagURL(slug, page+1), // 页码从1开始计数
 		}
 	}
-	p.render(w, r, "tag", map[string]string{"Content-Type": "text/html"})
+	p.render(w, "tag", map[string]string{"Content-Type": "text/html"})
 }
 
 // 标签列表页
@@ -219,7 +223,7 @@ func (a *app) getTags(w http.ResponseWriter, r *http.Request) {
 	p.Title = "标签"
 	p.Canonical = a.tagsURL()
 
-	p.render(w, r, "tags", map[string]string{"Content-Type": "text/html"})
+	p.render(w, "tags", map[string]string{"Content-Type": "text/html"})
 }
 
 // 文章详细页
@@ -258,7 +262,7 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 
 	if post == nil {
 		logs.Debugf("并未找到与之相对应的文章:%v\n", slug)
-		a.getRaws(w, r)
+		a.getRaws(w, r) // 文章不存在，则查找raws目录下是否存在同名文件
 		return
 	}
 
@@ -277,7 +281,7 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 		p.Keywords = strings.Join(keywords, ",")
 	}
 
-	p.render(w, r, post.Template, map[string]string{"Content-Type": "text/html"})
+	p.render(w, post.Template, map[string]string{"Content-Type": "text/html"})
 }
 
 // 每次访问前需要做的预处理工作。
