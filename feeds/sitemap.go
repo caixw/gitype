@@ -15,7 +15,7 @@ import (
 
 const (
 	sitemapHeader = `<?xml version="1.0" encoding="utf-8"?>
-<urlset>`
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`
 
 	sitemapFooter = `</urlset>`
 )
@@ -47,7 +47,8 @@ func BuildSitemap(d *data.Data) (*bytes.Buffer, error) {
 func addPostsToSitemap(buf *bytes.Buffer, d *data.Data) error {
 	sitemap := d.Config.Sitemap
 	for _, p := range d.Posts {
-		addItemToSitemap(buf, p.Permalink, sitemap.PostChangefreq, p.Modified, sitemap.PostPriority)
+		loc := d.Config.URL + p.Permalink
+		addItemToSitemap(buf, loc, sitemap.PostChangefreq, p.Modified, sitemap.PostPriority)
 	}
 	return nil
 }
@@ -55,8 +56,13 @@ func addPostsToSitemap(buf *bytes.Buffer, d *data.Data) error {
 func addTagsToSitemap(buf *bytes.Buffer, d *data.Data) error {
 	now := time.Now().Unix()
 	sitemap := d.Config.Sitemap
+
+	loc := d.Config.URL + d.URLS.Tags + d.URLS.Suffix
+	addItemToSitemap(buf, loc, sitemap.TagChangefreq, now, sitemap.TagPriority)
+
 	for _, tag := range d.Tags {
-		addItemToSitemap(buf, tag.Permalink, sitemap.TagChangefreq, now, sitemap.TagPriority)
+		loc = d.Config.URL + tag.Permalink
+		addItemToSitemap(buf, loc, sitemap.TagChangefreq, now, sitemap.TagPriority)
 	}
 	return nil
 }

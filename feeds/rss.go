@@ -27,6 +27,18 @@ func BuildRSS(d *data.Data) (*bytes.Buffer, error) {
 		return nil, err
 	}
 
+	buf.WriteString("<title>")
+	buf.WriteString(d.Config.Title)
+	buf.WriteString("</title>")
+
+	buf.WriteString("<description>")
+	buf.WriteString(d.Config.Subtitle)
+	buf.WriteString("</description>")
+
+	buf.WriteString("<link>")
+	buf.WriteString(d.Config.URL)
+	buf.WriteString("</link>")
+
 	addPostsToRSS(buf, d)
 
 	if _, err := buf.WriteString(rssFooter); err != nil {

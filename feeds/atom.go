@@ -29,9 +29,9 @@ func BuildAtom(d *data.Data) (*bytes.Buffer, error) {
 	buf.WriteString(d.Config.URL)
 	buf.WriteString("</id>\n")
 
-	buf.WriteString("<link>")
+	buf.WriteString(`<link href="`)
 	buf.WriteString(d.Config.URL)
-	buf.WriteString("</link>\n")
+	buf.WriteString("\" />\n")
 
 	buf.WriteString("<title>")
 	buf.WriteString(d.Config.Title)
@@ -62,9 +62,9 @@ func addPostsToAtom(buf *bytes.Buffer, d *data.Data) {
 		buf.WriteString(p.Permalink)
 		buf.WriteString("</id>\n")
 
-		buf.WriteString("<link>")
+		buf.WriteString(`<link href="`)
 		buf.WriteString(p.Permalink)
-		buf.WriteString("</link>\n")
+		buf.WriteString("\" />\n")
 
 		buf.WriteString("<title>")
 		buf.WriteString(p.Title)
