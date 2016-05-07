@@ -7,7 +7,7 @@ package vars
 
 const (
 	// 版本号
-	Version = "0.2.31.160507"
+	Version = "0.2.32.160508"
 
 	// 媒体文件的地址前缀，相对于URLS.Root地址。
 	// 之所以不配置在data/URLS中，是因为如果修改该值，
