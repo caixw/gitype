@@ -66,7 +66,7 @@ func TestCheckConfig(t *testing.T) {
 	conf.URL = "https://caixw.io"
 	a.Error(initConfig(conf))
 
-	// RSS.Title
+	// RSS
 	conf.Theme = "t1"
 	conf.RSS = &RSS{Title: "1", URL: "/", Size: 5}
 	// conf.Atom = nil  // 当conf.Atom为nil时，不检测
@@ -77,10 +77,6 @@ func TestCheckRSS(t *testing.T) {
 	a := assert.New(t)
 
 	rss := &RSS{}
-	a.Error(checkRSS("RSS", rss))
-
-	// Size 错误
-	rss.Title = "title"
 	a.Error(checkRSS("RSS", rss))
 
 	// Size 错误

@@ -123,9 +123,15 @@ func initConfig(conf *Config) error {
 	if err := checkRSS("RSS", conf.RSS); err != nil {
 		return err
 	}
+	if conf.RSS != nil && len(conf.RSS.Title) == 0 {
+		conf.RSS.Title = conf.Title
+	}
 
 	if err := checkRSS("Atom", conf.Atom); err != nil {
 		return err
+	}
+	if conf.Atom != nil && len(conf.Atom.Title) == 0 {
+		conf.Atom.Title = conf.Title
 	}
 
 	if err := checkSitemap(conf.Sitemap); err != nil {
@@ -147,9 +153,6 @@ func initConfig(conf *Config) error {
 // 检测RSS是否正常
 func checkRSS(typ string, rss *RSS) error {
 	if rss != nil {
-		if len(rss.Title) == 0 {
-			return &MetaError{File: "config.yaml", Message: "不能为空", Field: typ + ".Title"}
-		}
 		if rss.Size <= 0 {
 			return &MetaError{File: "config.yaml", Message: "必须大于0", Field: typ + ".Size"}
 		}
