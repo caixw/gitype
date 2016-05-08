@@ -2,7 +2,6 @@ language: go
 go:
     - tip
     - 1.6
-    - 1.5
 install:
     - go get gopkg.in/yaml.v2
     - go get github.com/issue9/assert
