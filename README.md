@@ -1,16 +1,16 @@
 typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](https://travis-ci.org/caixw/typing)
 ======
- 
+
 简单的半静态博客系统，具有以下特性：
- 
+
 1. 无数据库，通过 git 管理发布的内容；
 1. 无分类，通过标签来归类；
 1. 不区分页面和普通文章；
- 
- 
- 
+
+
+
 ### 安装
- 
+
 1. 下载代码:`go get github.com/caixw/typing`；
 1. 运行程序，使用 appdir 参数指定程序的工作目录；
 
@@ -53,11 +53,11 @@ data 为博客的实际内容，包含了文章，标签，友链以及网站名
             |
             |--- default 默认的主题
 ```
- 
- 
- 
+
+
+
 #### conf
- 
+
 conf 目录下的为程序级别的配置文件，在程序加载之后，无法再次更改。其中
 app.json 定义了诸如端口，证书等基本数据；
 logs.xml 定义了日志的输出形式和保存路径，具体配置可参考[logs](https://github.com/issue9/logs)的相关文档。
@@ -158,19 +158,19 @@ data/themes 下为主题文件，可定义多个主题，通过 config 中的 th
 400 及以上的错误信息，均可以自定义，方式为在当前主题目录下，新一个与错误代码相对应的 html 文件，
 比如 400 错误，会读取 400.html 文件，以此类推。
 
- 
- 
- 
- 
+
+
+
+
 ### 开发
- 
+
 typing 以自用为主，暂时*不支持新功能的 PR*。
 BUG 可在[此处](https://github.com/caixw/typing/issues)提交或是直接 PR。
- 
+
 详细的开发文档可在[DEV](DEV.md)中找到。
- 
- 
- 
+
+
+
 ### 版权
- 
+
 本项目采用[MIT](https://opensource.org/licenses/MIT)开源授权许可证，完整的授权说明可在[LICENSE](LICENSE)文件中找到。
