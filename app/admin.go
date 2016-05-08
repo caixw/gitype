@@ -71,6 +71,12 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := a.reload(); err != nil {
+		logs.Error("app.postWebhooks:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusCreated)
 }
 
