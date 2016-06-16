@@ -41,7 +41,7 @@ func getThemesName(path string) ([]string, error) {
 // 加载主题的模板。
 // dir 模板所在的目录。
 func (d *Data) loadTemplate(dir string) error {
-	var funcMap = template.FuncMap{
+	funcMap := template.FuncMap{
 		"strip":    stripTags,
 		"html":     htmlEscaped,
 		"ldate":    d.longDateFormat,
