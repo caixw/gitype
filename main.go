@@ -8,6 +8,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"runtime"
 
 	"github.com/caixw/typing/app"
@@ -15,25 +16,15 @@ import (
 	"github.com/issue9/logs"
 )
 
-const usage = `typing 一个简单博客程序。
-源代码以MIT开源许可，并发布于 github: https://github.com/caixw/typing
-
-命令行语法：
- typing [options]
-
- options:
-  -h      显示帮助信息；
-  -v      显示程序版本信息；
-  -appdir 指定程序的工作路径，未指定则为./testdata。`
-
 func main() {
 	help := flag.Bool("h", false, "显示当前信息")
 	version := flag.Bool("v", false, "显示程序的版本信息")
 	appdir := flag.String("appdir", "./testdata", "指定运行的数据目录")
+	flag.Usage = usage
 	flag.Parse()
 
 	if *help {
-		fmt.Println(usage)
+		flag.Usage()
 		return
 	}
 
@@ -55,4 +46,13 @@ func main() {
 
 	logs.Critical(app.Run(path))
 	logs.Flush()
+}
+
+func usage() {
+	fmt.Fprintf(os.Stdout, "%v 一个简单博客程序。\n", vars.AppName)
+	fmt.Fprintln(os.Stdout, "源代码以MIT开源许可，并发布于 Github: https://github.com/caixw/typing")
+
+	fmt.Fprintln(os.Stdout, "\n参数:")
+	flag.CommandLine.SetOutput(os.Stdout)
+	flag.PrintDefaults()
 }
