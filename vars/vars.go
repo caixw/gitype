@@ -10,7 +10,7 @@ const (
 	AppName = "typing"
 
 	// 版本号，符合 semver 规范
-	Version = "0.2.34+160703"
+	Version = "0.2.35+20160703"
 
 	// 媒体文件的地址前缀，相对于URLS.Root地址。
 	// 之所以不配置在data/URLS中，是因为如果修改该值，

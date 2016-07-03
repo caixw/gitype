@@ -30,7 +30,7 @@ func (d *Data) loadTags(p string) error {
 
 	tags := make([]*Tag, 0, 100)
 	if err = yaml.Unmarshal(data, &tags); err != nil {
-		return err
+		return &MetaError{File: "tags.yaml", Message: err.Error()}
 	}
 	for index, tag := range tags {
 		if len(tag.Slug) == 0 {

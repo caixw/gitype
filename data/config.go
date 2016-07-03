@@ -64,7 +64,7 @@ func (d *Data) loadConfig(path string) error {
 
 	config := &Config{}
 	if err = yaml.Unmarshal(data, config); err != nil {
-		return err
+		return &MetaError{File: "config.yaml", Message: err.Error()}
 	}
 
 	// 检测变量是否正确
@@ -76,7 +76,7 @@ func (d *Data) loadConfig(path string) error {
 	return nil
 }
 
-// initConfig 初始化config的内容，负责检测数据的合法性和格式的转换。
+// initConfig 初始化 config 的内容，负责检测数据的合法性和格式的转换。
 func initConfig(conf *Config) error {
 	if conf.PageSize <= 0 {
 		return &MetaError{File: "config.yaml", Message: "必须为大于零的整数", Field: "pageSize"}
@@ -150,7 +150,7 @@ func initConfig(conf *Config) error {
 	return nil
 }
 
-// 检测RSS是否正常
+// 检测 RSS 是否正常
 func checkRSS(typ string, rss *RSS) error {
 	if rss != nil {
 		if rss.Size <= 0 {
@@ -164,7 +164,7 @@ func checkRSS(typ string, rss *RSS) error {
 	return nil
 }
 
-// 检测sitemap取值是否正确
+// 检测 sitemap 取值是否正确
 func checkSitemap(s *Sitemap) error {
 	if s != nil {
 		switch {

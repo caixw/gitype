@@ -27,7 +27,7 @@ func (d *Data) loadLinks(p string) error {
 
 	links := make([]*Link, 0, 20)
 	if err = yaml.Unmarshal(data, &links); err != nil {
-		return err
+		return &MetaError{File: "links.yaml", Message: err.Error()}
 	}
 
 	// 检测错误
