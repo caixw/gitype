@@ -13,7 +13,7 @@ import (
 	"github.com/issue9/web"
 )
 
-// ParamString 获取路径匹配中的参数，并以字符串的格式返回。
+// paramString 获取路径匹配中的参数，并以字符串的格式返回。
 // 若不能找到该参数，返回false
 func paramString(w http.ResponseWriter, r *http.Request, key string) (string, bool) {
 	val, found := web.ParamString(r, key)
@@ -26,7 +26,7 @@ func paramString(w http.ResponseWriter, r *http.Request, key string) (string, bo
 	return "", false
 }
 
-// QueryInt 用于获取查询参数key的值，并将其转换成Int类型，若该值不存在返回def作为其默认值，
+// queryInt 用于获取查询参数key的值，并将其转换成Int类型，若该值不存在返回def作为其默认值，
 // 若是类型不正确，则返回一个false，并向客户端输出一个400错误。
 func queryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int, bool) {
 	val := r.FormValue(key)

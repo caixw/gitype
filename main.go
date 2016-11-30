@@ -23,13 +23,12 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	if *help {
+	switch {
+	case *help:
 		flag.Usage()
 		return
-	}
-
-	if *version {
-		fmt.Println(vars.Version, "build with", runtime.Version())
+	case *version:
+		printVersion()
 		return
 	}
 
@@ -50,9 +49,16 @@ func main() {
 
 func usage() {
 	fmt.Fprintf(os.Stdout, "%v 一个简单博客程序。\n", vars.AppName)
-	fmt.Fprintln(os.Stdout, "源代码以MIT开源许可，并发布于 Github: https://github.com/caixw/typing")
+	fmt.Fprintf(os.Stdout, "源代码以MIT开源许可，并发布于 Github: %v\n", vars.URL)
 
 	fmt.Fprintln(os.Stdout, "\n参数:")
 	flag.CommandLine.SetOutput(os.Stdout)
 	flag.PrintDefaults()
+}
+
+func printVersion() {
+	fmt.Fprintf(os.Stdout, "%v:%v build with %v\n", vars.AppName, vars.Version(), runtime.Version())
+	if len(vars.CommitHash()) > 0 {
+		fmt.Fprintf(os.Stdout, "git commit hash:%v\n", vars.CommitHash())
+	}
 }

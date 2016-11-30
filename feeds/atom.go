@@ -18,7 +18,7 @@ const (
 	atomFooter = `</feed>`
 )
 
-// BuildAtom 用于生成一个符合atom规范的xml文本buffer。
+// BuildAtom 用于生成一个符合 atom 规范的 XML 文本 buffer。
 func BuildAtom(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
 	if _, err := buf.WriteString(atomHeader); err != nil {

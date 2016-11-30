@@ -25,6 +25,7 @@ type Path struct {
 	DataRaws   string // data/raws
 }
 
+// NewPath 声明 Path 实例
 func NewPath(root string) (*Path, error) {
 	if !filepath.IsAbs(root) {
 		var err error

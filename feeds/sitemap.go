@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// feeds 包提供了根据数据生成 sitemap，atom，rss 的功能。
+// Package feeds 包提供了根据数据生成 sitemap，atom，rss 的功能。
 package feeds
 
 import (
@@ -20,7 +20,7 @@ const (
 	sitemapFooter = `</urlset>`
 )
 
-// BuildSitemap 生成一个符合sitemap规范的xml文本buffer。
+// BuildSitemap 生成一个符合 sitemap 规范的 XML 文本 buffer。
 func BuildSitemap(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
 	if _, err := buf.WriteString(sitemapHeader); err != nil {
