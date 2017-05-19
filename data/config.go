@@ -15,45 +15,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// 一些基本配置项。
-type Config struct {
-	Title           string `yaml:"title"`                 // 网站标题
-	Subtitle        string `yaml:"subtitle,omitempty"`    // 网站副标题
-	URL             string `yaml:"url"`                   // 网站的地址
-	Keywords        string `yaml:"keywords,omitempty"`    // 默认情况下的keyword内容
-	Description     string `yaml:"description,omitempty"` // 默认情况下的descrription内容
-	Beian           string `yaml:"beian,omitempty"`       // 备案号
-	Uptime          int64  `yaml:"-"`                     // 上线时间，unix时间戳，由UptimeFormat转换而来
-	UptimeFormat    string `yaml:"uptime"`                // 上线时间，字符串表示
-	PageSize        int    `yaml:"pageSize"`              // 每页显示的数量
-	LongDateFormat  string `yaml:"longDateFormat"`        // 长时间的显示格式
-	ShortDateFormat string `yaml:"shortDateFormat"`       // 短时间的显示格式
-	Theme           string `yaml:"theme"`                 // 默认主题
-
-	Menus  []*Link `yaml:"menus,omitempty"` // 菜单内容
-	Author *Author `yaml:"author"`          // 默认的作者信息
-
-	// feeds
-	RSS     *RSS     `yaml:"rss,omitempty"`
-	Atom    *RSS     `yaml:"atom,omitempty"`
-	Sitemap *Sitemap `yaml:"sitemap,omitempty"`
-}
-
-type RSS struct {
-	Title string `yaml:"title"` // 标题
-	Size  int    `yaml:"size"`  // 显示数量
-	URL   string `yaml:"url"`   // 地址
-}
-
-type Sitemap struct {
-	URL            string  `yaml:"url"`
-	EnableTag      bool    `yaml:"enableTag,omitempty"`
-	TagPriority    float64 `yaml:"tagPriority"`
-	PostPriority   float64 `yaml:"postPriority"`
-	TagChangefreq  string  `yaml:"tagChangefreq"`
-	PostChangefreq string  `yaml:"postChangefreq"`
-}
-
 // 加载配置文件。
 // path 配置文件的地址。
 func (d *Data) loadConfig(path string) error {
@@ -64,7 +25,7 @@ func (d *Data) loadConfig(path string) error {
 
 	config := &Config{}
 	if err = yaml.Unmarshal(data, config); err != nil {
-		return &MetaError{File: "config.yaml", Message: err.Error()}
+		return &FieldError{File: "config.yaml", Message: err.Error()}
 	}
 
 	// 检测变量是否正确
@@ -79,37 +40,37 @@ func (d *Data) loadConfig(path string) error {
 // initConfig 初始化 config 的内容，负责检测数据的合法性和格式的转换。
 func initConfig(conf *Config) error {
 	if conf.PageSize <= 0 {
-		return &MetaError{File: "config.yaml", Message: "必须为大于零的整数", Field: "pageSize"}
+		return &FieldError{File: "config.yaml", Message: "必须为大于零的整数", Field: "pageSize"}
 	}
 
 	if len(conf.LongDateFormat) == 0 {
-		return &MetaError{File: "config.yaml", Message: "不能为空", Field: "LongDateFormat"}
+		return &FieldError{File: "config.yaml", Message: "不能为空", Field: "LongDateFormat"}
 	}
 
 	if len(conf.ShortDateFormat) == 0 {
-		return &MetaError{File: "config.yaml", Message: "不能为空", Field: "ShortDateFormat"}
+		return &FieldError{File: "config.yaml", Message: "不能为空", Field: "ShortDateFormat"}
 	}
 
 	t, err := time.Parse(vars.DateFormat, conf.UptimeFormat)
 	if err != nil {
-		return &MetaError{File: "config.yaml", Message: err.Error(), Field: "UptimeFormat"}
+		return &FieldError{File: "config.yaml", Message: err.Error(), Field: "UptimeFormat"}
 	}
 	conf.Uptime = t.Unix()
 
 	// Author
 	if conf.Author == nil {
-		return &MetaError{File: "config.yaml", Message: "必须指定作者", Field: "Author"}
+		return &FieldError{File: "config.yaml", Message: "必须指定作者", Field: "Author"}
 	}
 	if len(conf.Author.Name) == 0 {
-		return &MetaError{File: "config.yaml", Message: "不能为空", Field: "Author.Name"}
+		return &FieldError{File: "config.yaml", Message: "不能为空", Field: "Author.Name"}
 	}
 
 	if len(conf.Title) == 0 {
-		return &MetaError{File: "config.yaml", Message: "不能为空", Field: "Title"}
+		return &FieldError{File: "config.yaml", Message: "不能为空", Field: "Title"}
 	}
 
 	if !is.URL(conf.URL) {
-		return &MetaError{File: "config.yaml", Message: "不是一个合法的域名或IP", Field: "URL"}
+		return &FieldError{File: "config.yaml", Message: "不是一个合法的域名或 IP", Field: "URL"}
 	}
 	if strings.HasSuffix(conf.URL, "/") {
 		conf.URL = conf.URL[:len(conf.URL)-1]
@@ -117,7 +78,7 @@ func initConfig(conf *Config) error {
 
 	// theme
 	if len(conf.Theme) == 0 {
-		return &MetaError{File: "config.yaml", Message: "不能为空", Field: "Theme"}
+		return &FieldError{File: "config.yaml", Message: "不能为空", Field: "Theme"}
 	}
 
 	if err := checkRSS("RSS", conf.RSS); err != nil {
@@ -138,6 +99,10 @@ func initConfig(conf *Config) error {
 		return err
 	}
 
+	if err := checkURLS(conf.URLS); err != nil {
+		return err
+	}
+
 	// Menus
 	for index, link := range conf.Menus {
 		if err := link.check(); err != nil {
@@ -154,14 +119,35 @@ func initConfig(conf *Config) error {
 func checkRSS(typ string, rss *RSS) error {
 	if rss != nil {
 		if rss.Size <= 0 {
-			return &MetaError{File: "config.yaml", Message: "必须大于0", Field: typ + ".Size"}
+			return &FieldError{File: "config.yaml", Message: "必须大于0", Field: typ + ".Size"}
 		}
 		if len(rss.URL) == 0 {
-			return &MetaError{File: "config.yaml", Message: "不能为空", Field: typ + ".URL"}
+			return &FieldError{File: "config.yaml", Message: "不能为空", Field: typ + ".URL"}
 		}
 	}
 
 	return nil
+}
+
+func checkURLS(u *URLS) error {
+	switch {
+	case len(u.Suffix) >= 0 && u.Suffix[0] != '.':
+		return &FieldError{File: "config.yaml", Field: "Suffix", Message: "必须以.开头"}
+	case len(u.Posts) == 0:
+		return &FieldError{File: "config.yaml", Field: "Posts", Message: "不能为空"}
+	case len(u.Post) == 0:
+		return &FieldError{File: "config.yaml", Field: "Post", Message: "不能为空"}
+	case len(u.Tags) == 0:
+		return &FieldError{File: "config.yaml", Field: "Tags", Message: "不能为空"}
+	case len(u.Tag) == 0:
+		return &FieldError{File: "config.yaml", Field: "Tag", Message: "不能为空"}
+	case len(u.Search) == 0:
+		return &FieldError{File: "config.yaml", Field: "Search", Message: "不能为空"}
+	case len(u.Themes) == 0:
+		return &FieldError{File: "config.yaml", Field: "Themes", Message: "不能为空"}
+	default:
+		return nil
+	}
 }
 
 // 检测 sitemap 取值是否正确
@@ -169,15 +155,15 @@ func checkSitemap(s *Sitemap) error {
 	if s != nil {
 		switch {
 		case len(s.URL) == 0:
-			return &MetaError{File: "config.yaml", Message: "不能为空", Field: "Sitemap.URL"}
+			return &FieldError{File: "config.yaml", Message: "不能为空", Field: "Sitemap.URL"}
 		case s.TagPriority > 1 || s.TagPriority < 0:
-			return &MetaError{File: "config.yaml", Message: "介于[0,1]之间的浮点数", Field: "Sitemap.TagPriority"}
+			return &FieldError{File: "config.yaml", Message: "介于[0,1]之间的浮点数", Field: "Sitemap.TagPriority"}
 		case s.PostPriority > 1 || s.PostPriority < 0:
-			return &MetaError{File: "config.yaml", Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
+			return &FieldError{File: "config.yaml", Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
 		case !isChangereq(s.TagChangefreq):
-			return &MetaError{File: "config.yaml", Message: "取值不正确", Field: "Sitemap.TagChangefreq"}
+			return &FieldError{File: "config.yaml", Message: "取值不正确", Field: "Sitemap.TagChangefreq"}
 		case !isChangereq(s.PostChangefreq):
-			return &MetaError{File: "config.yaml", Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
+			return &FieldError{File: "config.yaml", Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
 		}
 	}
 	return nil

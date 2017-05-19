@@ -4,6 +4,8 @@
 
 package data
 
+import "fmt"
+
 // Author 描述作者信息
 type Author struct {
 	Name   string `yaml:"name"`
@@ -103,4 +105,15 @@ type URLS struct {
 	Tag    string `yaml:"tag"`    // 标签详细页地址
 	Search string `yaml:"search"` // 搜索URL，会加上 Suffix 作为后缀
 	Themes string `yaml:"themes"` // 主题地址
+}
+
+// FieldError 表示加载文件出错时，具体的错误信息
+type FieldError struct {
+	File    string // 所在文件
+	Message string // 错误信息
+	Field   string // 所在的字段
+}
+
+func (err *FieldError) Error() string {
+	return fmt.Sprintf("在文件 %v 中的 %v 字段发生错误： %v", err.File, err.Field, err.Message)
 }
