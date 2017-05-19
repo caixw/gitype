@@ -7,6 +7,7 @@ package data
 import (
 	"io/ioutil"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -15,6 +16,46 @@ import (
 	"github.com/issue9/is"
 	"gopkg.in/yaml.v2"
 )
+
+func (d *Data) loadMeta(path string) error {
+	// tags
+	if err := d.loadTags(d.metaPath("tags.yaml")); err != nil {
+		return err
+	}
+
+	// links
+	if err := d.loadLinks(d.metaPath("links.yaml")); err != nil {
+		return err
+	}
+
+	// config
+	if err := d.loadConfig(d.metaPath("config.yaml")); err != nil {
+		return err
+	}
+
+	// theme
+	themes, err := getThemesName(filepath.Join(d.Root, "themes", d.Config.Theme))
+	if err != nil {
+		return err
+	}
+	found := false
+	for _, theme := range themes {
+		if theme == d.Config.Theme {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return &FieldError{File: "config.yaml", Message: "该主题并不存在", Field: "Theme"}
+	}
+
+	// 加载主题的模板
+	return d.loadTemplate(filepath.Join(d.Root, "themes"))
+}
+
+func (d *Data) metaPath(file string) string {
+	return filepath.Join(d.Root, "meta", file)
+}
 
 func (d *Data) loadTags(p string) error {
 	data, err := ioutil.ReadFile(p)
