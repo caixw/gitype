@@ -47,7 +47,7 @@ func (d *Data) loadTemplate(dir string) error {
 		"ldate":    d.longDateFormat,
 		"sdate":    d.shortDateFormat,
 		"rfc3339":  rfc3339DateFormat,
-		"themeURL": func(p string) string { return path.Join(d.URLS.Themes, p) },
+		"themeURL": func(p string) string { return path.Join(d.Config.URLS.Themes, p) },
 	}
 
 	var err error

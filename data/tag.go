@@ -20,23 +20,23 @@ func (d *Data) loadTags(p string) error {
 
 	tags := make([]*Tag, 0, 100)
 	if err = yaml.Unmarshal(data, &tags); err != nil {
-		return &MetaError{File: "tags.yaml", Message: err.Error()}
+		return &FieldError{File: "tags.yaml", Message: err.Error()}
 	}
 	for index, tag := range tags {
 		if len(tag.Slug) == 0 {
-			return &MetaError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Slug"}
+			return &FieldError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Slug"}
 		}
 
 		if len(tag.Title) == 0 {
-			return &MetaError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Title"}
+			return &FieldError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Title"}
 		}
 
 		if len(tag.Content) == 0 {
-			return &MetaError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Content"}
+			return &FieldError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Content"}
 		}
 
 		tag.Posts = make([]*Post, 0, 10)
-		tag.Permalink = path.Join(d.URLS.Root, d.URLS.Tag, tag.Slug+d.URLS.Suffix)
+		tag.Permalink = path.Join(d.Config.URLS.Root, d.Config.URLS.Tag, tag.Slug+d.Config.URLS.Suffix)
 	}
 	d.Tags = tags
 	return nil

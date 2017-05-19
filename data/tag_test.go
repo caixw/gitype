@@ -13,7 +13,7 @@ import (
 func TestData_loadTags(t *testing.T) {
 	a := assert.New(t)
 
-	data := &Data{URLS: &URLS{Root: "/root", Tag: "tags", Suffix: ".html"}}
+	data := &Data{Config: &Config{URLS: &URLS{Root: "/root", Tag: "tags", Suffix: ".html"}}}
 	a.NotError(data.loadTags("./testdata/meta/tags.yaml"))
 	a.NotNil(data.Tags)
 	a.Equal(data.Tags[0].Slug, "default1")

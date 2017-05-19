@@ -6,7 +6,6 @@ package data
 
 import (
 	"path/filepath"
-	"sort"
 	"testing"
 
 	"github.com/issue9/assert"
@@ -44,42 +43,23 @@ func TestData_loadPosts(t *testing.T) {
 		&Tag{Slug: "default1"},
 		&Tag{Slug: "default2"},
 	}
-	conf := &Config{
-		Theme: "t1",
-	}
 	urls := &URLS{
 		Root:   "/root",
 		Suffix: ".html",
 		Post:   "posts",
 	}
+	conf := &Config{
+		Theme: "t1",
+		URLS:  urls,
+	}
 
 	d := &Data{
 		Tags:   tags,
 		Config: conf,
-		URLS:   urls,
 	}
 	a.NotError(d.loadPosts("./testdata/posts"))
 	a.Equal(len(d.Posts), 2)
 	p2 := d.Posts[0]
 	a.Equal(p2.Tags[0].Slug, "default1")
 	a.Equal(p2.Permalink, "/root/posts/post1.html")
-}
-
-func TestPostSort(t *testing.T) {
-	a := assert.New(t)
-
-	ps := []*Post{
-		&Post{Slug: "4", Top: false, Created: 4},
-		&Post{Slug: "2", Top: false, Created: 2},
-		&Post{Slug: "3", Top: false, Created: 3},
-		&Post{Slug: "1", Top: true, Created: 1},
-		&Post{Slug: "0", Top: true, Created: 0},
-	}
-
-	sort.Sort(posts(ps))
-	a.Equal(ps[0].Slug, "4")
-	a.Equal(ps[1].Slug, "3")
-	a.Equal(ps[2].Slug, "2")
-	a.Equal(ps[3].Slug, "1")
-	a.Equal(ps[4].Slug, "0")
 }

@@ -31,7 +31,7 @@ func Load(root string) (*Data, error) {
 	}
 
 	// 加载文章
-	if err := d.loadPosts(path.DataPosts); err != nil {
+	if err := d.loadPosts(filepath.Join(d.Root, "posts")); err != nil {
 		return nil, err
 	}
 
@@ -67,11 +67,11 @@ func (d *Data) loadMeta(path string) error {
 		}
 	}
 	if !found {
-		return &FiledError{File: "config.yaml", Message: "该主题并不存在", Field: "Theme"}
+		return &FieldError{File: "config.yaml", Message: "该主题并不存在", Field: "Theme"}
 	}
 
 	// 加载主题的模板
-	return d.loadTemplate(path.DataThemes)
+	return d.loadTemplate(filepath.Join(d.Root, "themes"))
 }
 
 func (d *Data) metaPath(file string) string {
