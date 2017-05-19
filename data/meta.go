@@ -17,67 +17,49 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func (d *Data) loadMeta(path string) error {
-	// tags
-	if err := d.loadTags(d.metaPath("tags.yaml")); err != nil {
+const (
+	tagsFile  = "tags.yaml"
+	confFile  = "config.yaml"
+	linksFile = "links.yaml"
+)
+
+func (d *Data) loadMeta() error {
+	if err := d.loadTags(); err != nil {
 		return err
 	}
 
-	// links
-	if err := d.loadLinks(d.metaPath("links.yaml")); err != nil {
+	if err := d.loadLinks(); err != nil {
 		return err
 	}
 
-	// config
-	if err := d.loadConfig(d.metaPath("config.yaml")); err != nil {
-		return err
-	}
-
-	// theme
-	themes, err := getThemesName(filepath.Join(d.Root, "themes", d.Config.Theme))
-	if err != nil {
-		return err
-	}
-	found := false
-	for _, theme := range themes {
-		if theme == d.Config.Theme {
-			found = true
-			break
-		}
-	}
-	if !found {
-		return &FieldError{File: "config.yaml", Message: "该主题并不存在", Field: "Theme"}
-	}
-
-	// 加载主题的模板
-	return d.loadTemplate(filepath.Join(d.Root, "themes"))
+	return d.loadConfig()
 }
 
 func (d *Data) metaPath(file string) string {
 	return filepath.Join(d.Root, "meta", file)
 }
 
-func (d *Data) loadTags(p string) error {
-	data, err := ioutil.ReadFile(p)
+func (d *Data) loadTags() error {
+	data, err := ioutil.ReadFile(d.metaPath(tagsFile))
 	if err != nil {
 		return err
 	}
 
 	tags := make([]*Tag, 0, 100)
 	if err = yaml.Unmarshal(data, &tags); err != nil {
-		return &FieldError{File: "tags.yaml", Message: err.Error()}
+		return &FieldError{File: tagsFile, Message: err.Error()}
 	}
 	for index, tag := range tags {
 		if len(tag.Slug) == 0 {
-			return &FieldError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Slug"}
+			return &FieldError{File: tagsFile, Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Slug"}
 		}
 
 		if len(tag.Title) == 0 {
-			return &FieldError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Title"}
+			return &FieldError{File: tagsFile, Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Title"}
 		}
 
 		if len(tag.Content) == 0 {
-			return &FieldError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Content"}
+			return &FieldError{File: tagsFile, Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Content"}
 		}
 
 		tag.Posts = make([]*Post, 0, 10)
@@ -87,21 +69,21 @@ func (d *Data) loadTags(p string) error {
 	return nil
 }
 
-func (d *Data) loadLinks(p string) error {
-	data, err := ioutil.ReadFile(p)
+func (d *Data) loadLinks() error {
+	data, err := ioutil.ReadFile(d.metaPath(linksFile))
 	if err != nil {
 		return err
 	}
 
 	links := make([]*Link, 0, 20)
 	if err = yaml.Unmarshal(data, &links); err != nil {
-		return &FieldError{File: "links.yaml", Message: err.Error()}
+		return &FieldError{File: linksFile, Message: err.Error()}
 	}
 
 	// 检测错误
 	for index, link := range links {
 		if err := link.check(); err != nil {
-			err.File = "links.yaml"
+			err.File = linksFile
 			err.Field = "[" + strconv.Itoa(index) + "]." + err.Field
 			return err
 		}
@@ -113,15 +95,15 @@ func (d *Data) loadLinks(p string) error {
 
 // 加载配置文件。
 // path 配置文件的地址。
-func (d *Data) loadConfig(path string) error {
-	data, err := ioutil.ReadFile(path)
+func (d *Data) loadConfig() error {
+	data, err := ioutil.ReadFile(d.metaPath(confFile))
 	if err != nil {
 		return err
 	}
 
 	config := &Config{}
 	if err = yaml.Unmarshal(data, config); err != nil {
-		return &FieldError{File: "config.yaml", Message: err.Error()}
+		return &FieldError{File: confFile, Message: err.Error()}
 	}
 
 	// 检测变量是否正确
@@ -136,37 +118,37 @@ func (d *Data) loadConfig(path string) error {
 // initConfig 初始化 config 的内容，负责检测数据的合法性和格式的转换。
 func initConfig(conf *Config) error {
 	if conf.PageSize <= 0 {
-		return &FieldError{File: "config.yaml", Message: "必须为大于零的整数", Field: "pageSize"}
+		return &FieldError{File: confFile, Message: "必须为大于零的整数", Field: "pageSize"}
 	}
 
 	if len(conf.LongDateFormat) == 0 {
-		return &FieldError{File: "config.yaml", Message: "不能为空", Field: "LongDateFormat"}
+		return &FieldError{File: confFile, Message: "不能为空", Field: "LongDateFormat"}
 	}
 
 	if len(conf.ShortDateFormat) == 0 {
-		return &FieldError{File: "config.yaml", Message: "不能为空", Field: "ShortDateFormat"}
+		return &FieldError{File: confFile, Message: "不能为空", Field: "ShortDateFormat"}
 	}
 
 	t, err := time.Parse(vars.DateFormat, conf.UptimeFormat)
 	if err != nil {
-		return &FieldError{File: "config.yaml", Message: err.Error(), Field: "UptimeFormat"}
+		return &FieldError{File: confFile, Message: err.Error(), Field: "UptimeFormat"}
 	}
 	conf.Uptime = t.Unix()
 
 	// Author
 	if conf.Author == nil {
-		return &FieldError{File: "config.yaml", Message: "必须指定作者", Field: "Author"}
+		return &FieldError{File: confFile, Message: "必须指定作者", Field: "Author"}
 	}
 	if len(conf.Author.Name) == 0 {
-		return &FieldError{File: "config.yaml", Message: "不能为空", Field: "Author.Name"}
+		return &FieldError{File: confFile, Message: "不能为空", Field: "Author.Name"}
 	}
 
 	if len(conf.Title) == 0 {
-		return &FieldError{File: "config.yaml", Message: "不能为空", Field: "Title"}
+		return &FieldError{File: confFile, Message: "不能为空", Field: "Title"}
 	}
 
 	if !is.URL(conf.URL) {
-		return &FieldError{File: "config.yaml", Message: "不是一个合法的域名或 IP", Field: "URL"}
+		return &FieldError{File: confFile, Message: "不是一个合法的域名或 IP", Field: "URL"}
 	}
 	if strings.HasSuffix(conf.URL, "/") {
 		conf.URL = conf.URL[:len(conf.URL)-1]
@@ -174,7 +156,7 @@ func initConfig(conf *Config) error {
 
 	// theme
 	if len(conf.Theme) == 0 {
-		return &FieldError{File: "config.yaml", Message: "不能为空", Field: "Theme"}
+		return &FieldError{File: confFile, Message: "不能为空", Field: "Theme"}
 	}
 
 	if err := checkRSS("RSS", conf.RSS); err != nil {
@@ -202,7 +184,7 @@ func initConfig(conf *Config) error {
 	// Menus
 	for index, link := range conf.Menus {
 		if err := link.check(); err != nil {
-			err.File = "config.yaml"
+			err.File = confFile
 			err.Field = "Menus[" + strconv.Itoa(index) + "]." + err.Field
 			return err
 		}
@@ -215,10 +197,10 @@ func initConfig(conf *Config) error {
 func checkRSS(typ string, rss *RSS) error {
 	if rss != nil {
 		if rss.Size <= 0 {
-			return &FieldError{File: "config.yaml", Message: "必须大于0", Field: typ + ".Size"}
+			return &FieldError{File: confFile, Message: "必须大于0", Field: typ + ".Size"}
 		}
 		if len(rss.URL) == 0 {
-			return &FieldError{File: "config.yaml", Message: "不能为空", Field: typ + ".URL"}
+			return &FieldError{File: confFile, Message: "不能为空", Field: typ + ".URL"}
 		}
 	}
 
@@ -228,19 +210,19 @@ func checkRSS(typ string, rss *RSS) error {
 func checkURLS(u *URLS) error {
 	switch {
 	case len(u.Suffix) >= 0 && u.Suffix[0] != '.':
-		return &FieldError{File: "config.yaml", Field: "Suffix", Message: "必须以.开头"}
+		return &FieldError{File: confFile, Field: "Suffix", Message: "必须以.开头"}
 	case len(u.Posts) == 0:
-		return &FieldError{File: "config.yaml", Field: "Posts", Message: "不能为空"}
+		return &FieldError{File: confFile, Field: "Posts", Message: "不能为空"}
 	case len(u.Post) == 0:
-		return &FieldError{File: "config.yaml", Field: "Post", Message: "不能为空"}
+		return &FieldError{File: confFile, Field: "Post", Message: "不能为空"}
 	case len(u.Tags) == 0:
-		return &FieldError{File: "config.yaml", Field: "Tags", Message: "不能为空"}
+		return &FieldError{File: confFile, Field: "Tags", Message: "不能为空"}
 	case len(u.Tag) == 0:
-		return &FieldError{File: "config.yaml", Field: "Tag", Message: "不能为空"}
+		return &FieldError{File: confFile, Field: "Tag", Message: "不能为空"}
 	case len(u.Search) == 0:
-		return &FieldError{File: "config.yaml", Field: "Search", Message: "不能为空"}
+		return &FieldError{File: confFile, Field: "Search", Message: "不能为空"}
 	case len(u.Themes) == 0:
-		return &FieldError{File: "config.yaml", Field: "Themes", Message: "不能为空"}
+		return &FieldError{File: confFile, Field: "Themes", Message: "不能为空"}
 	default:
 		return nil
 	}
@@ -251,15 +233,15 @@ func checkSitemap(s *Sitemap) error {
 	if s != nil {
 		switch {
 		case len(s.URL) == 0:
-			return &FieldError{File: "config.yaml", Message: "不能为空", Field: "Sitemap.URL"}
+			return &FieldError{File: confFile, Message: "不能为空", Field: "Sitemap.URL"}
 		case s.TagPriority > 1 || s.TagPriority < 0:
-			return &FieldError{File: "config.yaml", Message: "介于[0,1]之间的浮点数", Field: "Sitemap.TagPriority"}
+			return &FieldError{File: confFile, Message: "介于[0,1]之间的浮点数", Field: "Sitemap.TagPriority"}
 		case s.PostPriority > 1 || s.PostPriority < 0:
-			return &FieldError{File: "config.yaml", Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
+			return &FieldError{File: confFile, Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
 		case !isChangereq(s.TagChangefreq):
-			return &FieldError{File: "config.yaml", Message: "取值不正确", Field: "Sitemap.TagChangefreq"}
+			return &FieldError{File: confFile, Message: "取值不正确", Field: "Sitemap.TagChangefreq"}
 		case !isChangereq(s.PostChangefreq):
-			return &FieldError{File: "config.yaml", Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
+			return &FieldError{File: confFile, Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
 		}
 	}
 	return nil

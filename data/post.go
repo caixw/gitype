@@ -19,12 +19,17 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+func (d *Data) postPath(path string) string {
+	return filepath.Join(d.Root, "posts", path)
+}
+
 // 加载所有的文章内容。
 // dir data/posts目录。
-func (d *Data) loadPosts(dir string) error {
+func (d *Data) loadPosts() error {
+	dir := d.postPath("")
 	paths := make([]string, 0, 100)
 
-	// 遍历data/posts目录，查找所有的meta.yaml文章。
+	// 遍历data/posts目录，查找所有的 meta.yaml 文章。
 	walk := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err

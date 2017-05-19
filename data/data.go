@@ -153,12 +153,32 @@ func Load(root string) (*Data, error) {
 		Root: root,
 	}
 
-	if err := d.loadMeta(root); err != nil {
+	if err := d.loadMeta(); err != nil {
+		return nil, err
+	}
+
+	themes, err := getThemesName(filepath.Join(d.Root, "themes", d.Config.Theme))
+	if err != nil {
+		return nil, err
+	}
+	found := false
+	for _, theme := range themes {
+		if theme == d.Config.Theme {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return nil, &FieldError{File: confFile, Message: "该主题并不存在", Field: "Theme"}
+	}
+
+	// 加载主题的模板
+	if err = d.loadTemplate(filepath.Join(d.Root, "themes")); err != nil {
 		return nil, err
 	}
 
 	// 加载文章
-	if err := d.loadPosts(filepath.Join(d.Root, "posts")); err != nil {
+	if err := d.loadPosts(); err != nil {
 		return nil, err
 	}
 
