@@ -6,6 +6,7 @@ package data
 
 import (
 	"io/ioutil"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -14,6 +15,60 @@ import (
 	"github.com/issue9/is"
 	"gopkg.in/yaml.v2"
 )
+
+func (d *Data) loadTags(p string) error {
+	data, err := ioutil.ReadFile(p)
+	if err != nil {
+		return err
+	}
+
+	tags := make([]*Tag, 0, 100)
+	if err = yaml.Unmarshal(data, &tags); err != nil {
+		return &FieldError{File: "tags.yaml", Message: err.Error()}
+	}
+	for index, tag := range tags {
+		if len(tag.Slug) == 0 {
+			return &FieldError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Slug"}
+		}
+
+		if len(tag.Title) == 0 {
+			return &FieldError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Title"}
+		}
+
+		if len(tag.Content) == 0 {
+			return &FieldError{File: "tags.yaml", Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Content"}
+		}
+
+		tag.Posts = make([]*Post, 0, 10)
+		tag.Permalink = path.Join(d.Config.URLS.Root, d.Config.URLS.Tag, tag.Slug+d.Config.URLS.Suffix)
+	}
+	d.Tags = tags
+	return nil
+}
+
+func (d *Data) loadLinks(p string) error {
+	data, err := ioutil.ReadFile(p)
+	if err != nil {
+		return err
+	}
+
+	links := make([]*Link, 0, 20)
+	if err = yaml.Unmarshal(data, &links); err != nil {
+		return &FieldError{File: "links.yaml", Message: err.Error()}
+	}
+
+	// 检测错误
+	for index, link := range links {
+		if err := link.check(); err != nil {
+			err.File = "links.yaml"
+			err.Field = "[" + strconv.Itoa(index) + "]." + err.Field
+			return err
+		}
+	}
+
+	d.Links = links
+	return nil
+}
 
 // 加载配置文件。
 // path 配置文件的地址。

@@ -47,10 +47,11 @@ type Post struct {
 // Theme 表示主题信息
 type Theme struct {
 	Name        string  `yaml:"name"`        // 主题名称
-	Path        string  `yaml:"-"`           // 主题所在的目录
 	Version     string  `yaml:"version"`     // 主题的版本号
 	Description string  `yaml:"description"` // 主题的描述信息
 	Author      *Author `yaml:"author"`      // 作者
+	Path        string  `yaml:"-"`           // 主题所在的目录
+	Actived     bool    `yaml:"-"`           // 是否当前正在使用的主题
 }
 
 // Link 描述链接的内容
