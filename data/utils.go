@@ -15,3 +15,11 @@ func (link *Link) check() *FieldError {
 
 	return nil
 }
+
+func (author *Author) check() *FieldError {
+	if len(author.Name) == 0 {
+		return &FieldError{Field: "Name", Message: "不能为空"}
+	}
+
+	return nil
+}
