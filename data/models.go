@@ -26,21 +26,30 @@ type Tag struct {
 
 // Post 表示文章的信息
 type Post struct {
-	Slug           string  `yaml:"-"`        // 唯一名称
-	Title          string  `yaml:"title"`    // 标题
-	Created        int64   `yaml:"-"`        // 创建时间
-	Modified       int64   `yaml:"-"`        // 修改时间
-	Tags           []*Tag  `yaml:"-"`        // 关联的标签
-	Author         *Author `yaml:"author"`   // 作者
-	Template       string  `yaml:"template"` // 使用的模板。未指定，则使用系统默认的
-	Top            bool    `yaml:"top"`      // 是否置顶，多个置顶，则按时间排序
-	Summary        string  `yaml:"summary"`  // 摘要
-	Content        string  `yaml:"-"`        // 内容
-	CreatedFormat  string  `yaml:"created"`  // 创建时间的字符串表示形式
-	ModifiedFormat string  `yaml:"modified"` // 修改时间的字符串表示形式
-	TagsString     string  `yaml:"tags"`     // 关联标签的列表
-	Path           string  `yaml:"path"`     // 正文的文件名，相对于 meta.yaml 所在的目录
-	Permalink      string  `yaml:"-"`        // 文章的唯一链接
+	Slug           string  `yaml:"-"`                  // 唯一名称
+	Title          string  `yaml:"title"`              // 标题
+	Created        int64   `yaml:"-"`                  // 创建时间
+	Modified       int64   `yaml:"-"`                  // 修改时间
+	Tags           []*Tag  `yaml:"-"`                  // 关联的标签
+	Keywords       string  `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
+	Author         *Author `yaml:"author"`             // 作者
+	Template       string  `yaml:"template"`           // 使用的模板。未指定，则使用系统默认的
+	Top            bool    `yaml:"top"`                // 是否置顶，多个置顶，则按时间排序
+	Summary        string  `yaml:"summary"`            // 摘要
+	Content        string  `yaml:"-"`                  // 内容
+	CreatedFormat  string  `yaml:"created"`            // 创建时间的字符串表示形式
+	ModifiedFormat string  `yaml:"modified"`           // 修改时间的字符串表示形式
+	TagsString     string  `yaml:"tags"`               // 关联标签的列表
+	Path           string  `yaml:"path"`               // 正文的文件名，相对于 meta.yaml 所在的目录
+	Permalink      string  `yaml:"-"`                  // 文章的唯一链接
+}
+
+// Theme 表示主题信息
+type Theme struct {
+	Name        string  `yaml:"name"`
+	Version     string  `yaml:"version"`
+	Description string  `yaml:"description"`
+	Author      *Author `yaml:"author"`
 }
 
 // Link 描述链接的内容

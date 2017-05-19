@@ -19,7 +19,7 @@ func (d *Data) loadLinks(p string) error {
 
 	links := make([]*Link, 0, 20)
 	if err = yaml.Unmarshal(data, &links); err != nil {
-		return &MetaError{File: "links.yaml", Message: err.Error()}
+		return &FieldError{File: "links.yaml", Message: err.Error()}
 	}
 
 	// 检测错误
@@ -35,13 +35,13 @@ func (d *Data) loadLinks(p string) error {
 	return nil
 }
 
-func (link *Link) check() *MetaError {
+func (link *Link) check() *FieldError {
 	if len(link.Text) == 0 {
-		return &MetaError{Field: "Text", Message: "不能为空"}
+		return &FieldError{Field: "Text", Message: "不能为空"}
 	}
 
 	if len(link.URL) == 0 {
-		return &MetaError{Field: "URL", Message: "不能为空"}
+		return &FieldError{Field: "URL", Message: "不能为空"}
 	}
 
 	return nil
