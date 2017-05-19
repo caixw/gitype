@@ -2,8 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// 负责加data目录下的数据。
-// 会调用github.com/issue9/logs包的内容，调用之前需要初始化该包。
+// Package data 负责加载 data 目录下的数据。
+// 会调用 github.com/issue9/logs 包的内容，调用之前需要初始化该包。
 package data
 
 import "html/template"
@@ -13,10 +13,11 @@ import "path/filepath"
 type Data struct {
 	Root     string             // Data 数据所在的根目录
 	Config   *Config            // 配置内容
-	Tags     []*Tag             // map对顺序是未定的，所以使用slice
+	Tags     []*Tag             // map 对顺序是未定的，所以使用 slice
 	Links    []*Link            // 友情链接
-	Template *template.Template // 当前主题模板
 	Posts    []*Post            // 所有的文章列表
+	Themes   map[string]*Theme  // 主题
+	Template *template.Template // 当前主题模板，TODO 移到其它地方，当前包只负责加载数据？
 }
 
 // Load 函数用于加载一份新的数据。
