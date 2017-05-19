@@ -6,16 +6,13 @@
 // 会调用github.com/issue9/logs包的内容，调用之前需要初始化该包。
 package data
 
-import (
-	"html/template"
-
-	"github.com/caixw/typing/vars"
-)
+import "html/template"
+import "path/filepath"
 
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
+	Root     string             // Data 数据所在的根目录
 	Config   *Config            // 配置内容
-	URLS     *URLS              // 自定义URL
 	Tags     []*Tag             // map对顺序是未定的，所以使用slice
 	Links    []*Link            // 友情链接
 	Template *template.Template // 当前主题模板
@@ -23,10 +20,13 @@ type Data struct {
 }
 
 // Load 函数用于加载一份新的数据。
-func Load(path *vars.Path) (*Data, error) {
-	d := &Data{}
+// root 表示数据在的根目录。
+func Load(root string) (*Data, error) {
+	d := &Data{
+		Root: root,
+	}
 
-	if err := d.loadMeta(path); err != nil {
+	if err := d.loadMeta(root); err != nil {
 		return nil, err
 	}
 
@@ -38,29 +38,24 @@ func Load(path *vars.Path) (*Data, error) {
 	return d, nil
 }
 
-func (d *Data) loadMeta(path *vars.Path) error {
-	// urls
-	if err := d.loadURLS(path.DataURLS); err != nil {
-		return err
-	}
-
+func (d *Data) loadMeta(path string) error {
 	// tags
-	if err := d.loadTags(path.DataTags); err != nil {
+	if err := d.loadTags(d.metaPath("tags.yaml")); err != nil {
 		return err
 	}
 
 	// links
-	if err := d.loadLinks(path.DataLinks); err != nil {
+	if err := d.loadLinks(d.metaPath("links.yaml")); err != nil {
 		return err
 	}
 
 	// config
-	if err := d.loadConfig(path.DataConf); err != nil {
+	if err := d.loadConfig(d.metaPath("config.yaml")); err != nil {
 		return err
 	}
 
 	// theme
-	themes, err := getThemesName(path.DataThemes)
+	themes, err := getThemesName(filepath.Join(d.Root, "themes", d.Config.Theme))
 	if err != nil {
 		return err
 	}
@@ -72,9 +67,13 @@ func (d *Data) loadMeta(path *vars.Path) error {
 		}
 	}
 	if !found {
-		return &MetaError{File: "config.yaml", Message: "该主题并不存在", Field: "Theme"}
+		return &FiledError{File: "config.yaml", Message: "该主题并不存在", Field: "Theme"}
 	}
 
 	// 加载主题的模板
 	return d.loadTemplate(path.DataThemes)
+}
+
+func (d *Data) metaPath(file string) string {
+	return filepath.Join(d.Root, "meta", file)
 }

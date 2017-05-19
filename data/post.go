@@ -19,24 +19,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type Post struct {
-	Slug           string  `yaml:"-"`        // 唯一名称
-	Title          string  `yaml:"title"`    // 标题
-	Created        int64   `yaml:"-"`        // 创建时间
-	Modified       int64   `yaml:"-"`        // 修改时间
-	Tags           []*Tag  `yaml:"-"`        // 关联的标签
-	Author         *Author `yaml:"author"`   // 作者
-	Template       string  `yaml:"template"` // 使用的模板。未指定，则使用系统默认的
-	Top            bool    `yaml:"top"`      // 是否置顶，多个置顶，则按时间排序
-	Summary        string  `yaml:"summary"`  // 摘要
-	Content        string  `yaml:"-"`        // 内容
-	CreatedFormat  string  `yaml:"created"`  // 创建时间的字符串表示形式
-	ModifiedFormat string  `yaml:"modified"` // 修改时间的字符串表示形式
-	TagsString     string  `yaml:"tags"`     // 关联标签的列表
-	Path           string  `yaml:"path"`     // 正文的文件名，相对于meta.yaml所在的目录
-	Permalink      string  `yaml:"-"`        // 文章的唯一链接
-}
-
 // 加载所有的文章内容。
 // dir data/posts目录。
 func (d *Data) loadPosts(dir string) error {
@@ -68,11 +50,24 @@ func (d *Data) loadPosts(dir string) error {
 			logs.Error(err)
 			continue
 		}
-		post.Permalink = path.Join(d.URLS.Root, d.URLS.Post, post.Slug+d.URLS.Suffix)
+		post.Permalink = path.Join(d.Config.URLS.Root, d.Config.URLS.Post, post.Slug+d.Config.URLS.Suffix)
 
 		d.Posts = append(d.Posts, post)
 	}
-	sort.Sort(posts(d.Posts))
+
+	sort.SliceStable(d.Posts, func(i, j int) bool {
+		switch {
+		case d.Posts[i].Top && d.Posts[j].Top:
+			return d.Posts[i].Created >= d.Posts[j].Created
+		case d.Posts[i].Top:
+			return false
+		case d.Posts[j].Top:
+			return true
+		default:
+			return d.Posts[i].Created >= d.Posts[j].Created
+		}
+
+	})
 
 	return nil
 }
@@ -93,11 +88,11 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 
 	p := &Post{}
 	if err := yaml.Unmarshal(data, p); err != nil {
-		return nil, fmt.Errorf("[%v]解板yaml出错:%v\n", slug, err)
+		return nil, fmt.Errorf("[%v]解板yaml出错:%v", slug, err)
 	}
 
 	if len(p.Title) == 0 {
-		return nil, fmt.Errorf("[%v]:文章标题不能为空\n", slug)
+		return nil, fmt.Errorf("[%v]:文章标题不能为空", slug)
 	}
 	p.Slug = slug
 
@@ -107,18 +102,18 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 
 	// content
 	if len(p.Path) == 0 {
-		return nil, fmt.Errorf("[%v]:未指定内容文件\n", slug)
+		return nil, fmt.Errorf("[%v]:未指定内容文件", slug)
 	}
 	data, err = ioutil.ReadFile(filepath.Join(dir, p.Path))
 	if err != nil {
-		return nil, fmt.Errorf("[%v]:读取文章内容出错：[%v]\n", slug, err)
+		return nil, fmt.Errorf("[%v]:读取文章内容出错：[%v]", slug, err)
 	}
 	p.Content = string(data)
 
 	// tags
 	ts := strings.Split(p.TagsString, ",")
 	if len(ts) == 0 {
-		return nil, fmt.Errorf("文章[%v]未指定任何关联标签信息\n", slug)
+		return nil, fmt.Errorf("文章[%v]未指定任何关联标签信息", slug)
 	}
 	for _, tag := range tags {
 		for _, tagName := range ts {
@@ -130,20 +125,20 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 		} // end for ts
 	} // end for tags
 	if len(p.Tags) == 0 {
-		return nil, fmt.Errorf("文章[%v]未指定任何有效的关联标签信息\n", slug)
+		return nil, fmt.Errorf("文章[%v]未指定任何有效的关联标签信息", slug)
 	}
 
 	// created
 	t, err := time.Parse(vars.DateFormat, p.CreatedFormat)
 	if err != nil {
-		return nil, fmt.Errorf("[%v]:解析其创建时间是出错：[%v]\n", slug, err)
+		return nil, fmt.Errorf("[%v]:解析其创建时间是出错：[%v]", slug, err)
 	}
 	p.Created = t.Unix()
 
 	// modified
 	t, err = time.Parse(vars.DateFormat, p.ModifiedFormat)
 	if err != nil {
-		return nil, fmt.Errorf("[%v]:解析其修改时间是出错：[%v]\n", slug, err)
+		return nil, fmt.Errorf("[%v]:解析其修改时间是出错：[%v]", slug, err)
 	}
 	p.Modified = t.Unix()
 
