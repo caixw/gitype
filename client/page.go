@@ -2,15 +2,19 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package app
+package client
 
 import (
+	"io/ioutil"
 	"net/http"
+	"path/filepath"
 	"runtime"
+	"strconv"
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
+	"github.com/issue9/utils"
 )
 
 // 用于描述一个页面的所有无素
@@ -40,30 +44,30 @@ type page struct {
 	Posts       []*data.Post // 文章列表，文章列表页、是标签详情页和搜索页用到。
 	Post        *data.Post   // 文章详细内容，单文章页面用到。
 
-	app *app
+	client *Client
 }
 
-func (a *app) newPage() *page {
-	conf := a.data.Config
+func (c *Client) newPage() *page {
+	conf := c.data.Config
 
 	page := &page{
 		SiteName:    conf.Title,
 		Subtitle:    conf.Subtitle,
 		URL:         conf.URL,
-		Root:        a.data.URLS.Root,
+		Root:        c.data.Config.URLS.Root,
 		Canonical:   conf.URL,
 		Keywords:    conf.Keywords,
 		Description: conf.Description,
-		AppVersion:  vars.Version,
+		AppVersion:  vars.Version(),
 		GoVersion:   runtime.Version(),
-		PostSize:    len(a.data.Posts),
+		PostSize:    len(c.data.Posts),
 		Beian:       conf.Beian,
 		Uptime:      conf.Uptime,
-		LastUpdated: a.updated,
-		Tags:        a.data.Tags,
-		Links:       a.data.Links,
+		LastUpdated: c.updated,
+		Tags:        c.data.Tags,
+		Links:       c.data.Links,
 		Menus:       conf.Menus,
-		app:         a,
+		client:      c,
 	}
 	if conf.RSS != nil {
 		page.RSS = &data.Link{Title: conf.RSS.Title, URL: conf.RSS.URL}
@@ -82,10 +86,41 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 		w.Header().Set(key, val)
 	}
 
-	err := p.app.data.Template.ExecuteTemplate(w, name, p)
+	err := p.client.tpl.ExecuteTemplate(w, name, p)
 	if err != nil {
 		logs.Error(err)
-		p.app.renderStatusCode(w, http.StatusInternalServerError)
+		p.client.renderStatusCode(w, http.StatusInternalServerError)
 		return
 	}
+}
+
+// 输出一个特定状态码下的错误页面。
+// 若该页面模板不存在，则输出状态码对应的文本内容。
+// 只查找当前主题目录下的相关文件。
+// 只对状态码大于等于 400 的起作用。
+func (c *Client) renderStatusCode(w http.ResponseWriter, code int) {
+	if code < 400 {
+		return
+	}
+	logs.Debug("输出非正常状态码：", code)
+
+	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
+	filename := strconv.Itoa(code) + ".html"
+	path := filepath.Join(data.ThemesDir, c.data.Config.Theme, filename)
+	if !utils.FileExists(path) {
+		logs.Errorf("模板文件[%v]不存在\n", path)
+		http.Error(w, http.StatusText(code), code)
+		return
+	}
+
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		logs.Errorf("读取模板文件[%v]时出现以下错误[%v]\n", path, err)
+		http.Error(w, http.StatusText(code), code)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(code)
+	w.Write(data)
 }

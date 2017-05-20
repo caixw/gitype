@@ -14,7 +14,7 @@ import (
 
 // 表示数据目录下的三个文件夹名称
 const (
-	themesDir = "themes"
+	ThemesDir = "themes"
 	postsDir  = "posts"
 	metaDir   = "meta"
 )
