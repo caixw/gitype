@@ -12,6 +12,13 @@ import (
 	"path/filepath"
 )
 
+// 表示数据目录下的三个文件夹名称
+const (
+	themesDir = "themes"
+	postsDir  = "posts"
+	metaDir   = "meta"
+)
+
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
 	Root     string             // Data 数据所在的根目录

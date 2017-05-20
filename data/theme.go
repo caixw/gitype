@@ -21,8 +21,6 @@ import (
 	"github.com/issue9/logs"
 )
 
-const themesDir = "themes"
-
 func (d *Data) loadThemes() error {
 	dir := filepath.Join(d.Root, "themes")
 	paths := make([]string, 0, 100)

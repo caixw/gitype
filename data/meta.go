@@ -36,7 +36,7 @@ func (d *Data) loadMeta() error {
 }
 
 func (d *Data) metaPath(file string) string {
-	return filepath.Join(d.Root, "meta", file)
+	return filepath.Join(d.Root, metaDir, file)
 }
 
 func (d *Data) loadTags() error {
