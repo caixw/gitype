@@ -14,7 +14,6 @@ import (
 	"github.com/caixw/typing/app/static"
 	"github.com/issue9/logs"
 	"github.com/issue9/utils"
-	"github.com/issue9/web"
 )
 
 // 初始化控制台相关内容
@@ -24,12 +23,7 @@ func (a *app) initAdmin() (err error) {
 		return
 	}
 
-	admin, err := web.NewModule("admin")
-	if err != nil {
-		return err
-	}
-
-	admin.GetFunc(a.conf.AdminURL, a.getAdminPage).
+	a.mux.GetFunc(a.conf.AdminURL, a.getAdminPage).
 		PostFunc(a.conf.AdminURL, a.postAdminPage).
 		PostFunc(a.conf.WebhooksURL, a.postWebhooks)
 	return nil

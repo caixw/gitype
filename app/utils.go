@@ -10,20 +10,25 @@ import (
 	"strconv"
 
 	"github.com/issue9/logs"
-	"github.com/issue9/web"
+	"github.com/issue9/mux"
 )
 
 // paramString 获取路径匹配中的参数，并以字符串的格式返回。
 // 若不能找到该参数，返回false
 func paramString(w http.ResponseWriter, r *http.Request, key string) (string, bool) {
-	val, found := web.ParamString(r, key)
-	if found {
-		return val, true
+	ps := mux.GetParams(r)
+	val, err := ps.String(r, key)
+	if err == mux.ErrParamNotExists {
+		return "", false
+	} else if err != nil {
+		logs.Error(err)
+		return "", false
+	} else if len(val) == 0 {
+		http.Error(http.StatusText(http.StatusNotFound))
+		return "", false
 	}
 
-	logs.Infof("app.paramString:并未在路径中找到相匹配的参数[%v]\n", val)
-	w.WriteHeader(http.StatusNotFound)
-	return "", false
+	return val, true
 }
 
 // queryInt 用于获取查询参数key的值，并将其转换成Int类型，若该值不存在返回def作为其默认值，

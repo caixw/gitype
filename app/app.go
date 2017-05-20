@@ -18,12 +18,12 @@ import (
 	"github.com/caixw/typing/feeds"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
-	"github.com/issue9/web"
+	"github.com/issue9/mux"
 )
 
 type app struct {
-	path     *vars.Path
-	front    *web.Module        // 前台页面的模块
+	root     string // 程序的根目录
+	mux      *mux.Mux
 	conf     *config            // 配置内容
 	updated  int64              // 更新时间，一般为重新加载数据的时间
 	etag     string             // 所有页面都采用相同的etag
@@ -105,13 +105,8 @@ func (a *app) initFeeds() error {
 	return nil
 }
 
-func Run(path *vars.Path) error {
-	logs.Info("程序工作路径为:", path.Root)
-
-	front, err := web.NewModule("front")
-	if err != nil {
-		return err
-	}
+func Run(root string) error {
+	logs.Info("程序工作路径为:", root)
 
 	conf, err := loadConfig(path.ConfApp)
 	if err != nil {
@@ -119,8 +114,8 @@ func Run(path *vars.Path) error {
 	}
 
 	a := &app{
-		path:    path,
-		front:   front,
+		root:    root,
+		mux:     mux.New(false, false, nil, nil),
 		updated: time.Now().Unix(),
 		conf:    conf,
 	}
@@ -135,7 +130,7 @@ func Run(path *vars.Path) error {
 		logs.Error("app.Run:", err)
 	}
 
-	return web.Run(a.conf.Core)
+	return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, a.mux)
 }
 
 // 输出一个特定状态码下的错误页面。若该页面模板不存在，则输出状态码对应的文本内容。
