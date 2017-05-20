@@ -42,6 +42,10 @@ func loadConfig(path string) (*config, error) {
 	switch {
 	case !utils.FileExists(conf.CertFile):
 		return nil, errors.New("配置文件必须指定 certFile")
+	case !utils.FileExists(conf.KeyFile):
+		return nil, errors.New("配置文件必须指定 keyFile")
+	case len(conf.Pprof) > 0 && conf.Pprof[0] != '/':
+		return nil, errors.New("配置文件 pprof 必须以 / 开头")
 	case len(conf.WebhooksURL) == 0 || conf.WebhooksURL == "/":
 		return nil, errors.New("配置文件必须指定 webhooksURL 的值且不能为 /")
 	case conf.WebhooksUpdateFreq < 0:

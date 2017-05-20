@@ -1,13 +1,10 @@
 {
-    "core":{
-        "https":    false,
-        "certFile": "",
-        "keyFile":  "",
-        "port":     ":8080",
-        "pprof":    "/debug/pprof",
-        "headers": {
-            "server": "typing"
-        }
+    "certFile": "",
+    "keyFile":  "",
+    "port":     ":8080",
+    "pprof":    "/debug/pprof",
+    "headers": {
+        "server": "typing"
     },
     "adminURL": "/admin",
     "adminPassword": "123456",
