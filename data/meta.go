@@ -177,6 +177,9 @@ func initConfig(conf *Config) error {
 		return err
 	}
 
+	if conf.URLS == nil {
+		return &FieldError{File: confFile, Field: "urls", Message: "不能为空"}
+	}
 	if err := checkURLS(conf.URLS); err != nil {
 		return err
 	}

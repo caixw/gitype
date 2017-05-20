@@ -54,10 +54,11 @@ func TestData_loadPosts(t *testing.T) {
 	}
 
 	d := &Data{
+		Root:   "./testdata",
 		Tags:   tags,
 		Config: conf,
 	}
-	a.NotError(d.loadPosts("./testdata/posts"))
+	a.NotError(d.loadPosts())
 	a.Equal(len(d.Posts), 2)
 	p2 := d.Posts[0]
 	a.Equal(p2.Tags[0].Slug, "default1")

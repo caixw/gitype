@@ -13,8 +13,11 @@ import (
 func TestData_loadTags(t *testing.T) {
 	a := assert.New(t)
 
-	data := &Data{Config: &Config{URLS: &URLS{Root: "/root", Tag: "tags", Suffix: ".html"}}}
-	a.NotError(data.loadTags("./testdata/meta/tags.yaml"))
+	data := &Data{
+		Root:   "./testdata",
+		Config: &Config{URLS: &URLS{Root: "/root", Tag: "tags", Suffix: ".html"}},
+	}
+	a.NotError(data.loadTags())
 	a.NotNil(data.Tags)
 	a.Equal(data.Tags[0].Slug, "default1")
 	a.Equal(data.Tags[0].Color, "efefef")
@@ -28,8 +31,8 @@ func TestData_loadTags(t *testing.T) {
 func TestData_loadLinks(t *testing.T) {
 	a := assert.New(t)
 
-	data := &Data{}
-	a.NotError(data.loadLinks("./testdata/meta/links.yaml"))
+	data := &Data{Root: "./testdata"}
+	a.NotError(data.loadLinks())
 	a.True(len(data.Links) > 0)
 	a.Equal(data.Links[0].Text, "text0")
 	a.Equal(data.Links[0].URL, "url0")
@@ -42,64 +45,13 @@ func TestData_loadLinks(t *testing.T) {
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
-	d := &Data{} // loadConfig 用到path.Data变量
-	a.NotError(d.loadConfig("./testdata/meta/config.yaml")).NotNil(d.Config)
+	d := &Data{Root: "./testdata"}
+	a.NotError(d.loadConfig()).NotNil(d.Config)
 	conf := d.Config
 	a.Equal(conf.Title, "title")
 	a.Equal(conf.URL, "https://caixw.io")
 	a.Equal(conf.Menus[0].URL, "url1")
 	a.Equal(conf.Menus[1].Title, "title2")
-}
-
-func TestCheckConfig(t *testing.T) {
-	a := assert.New(t)
-
-	// PageSize
-	conf := &Config{
-		PageSize: -1,
-	}
-	a.Error(initConfig(conf))
-
-	// LongDateFormat
-	conf.LongDateFormat = "2006"
-	a.Error(initConfig(conf))
-
-	// ShortDateFormat
-	conf.ShortDateFormat = "2006"
-	a.Error(initConfig(conf))
-
-	// UptimeFormat
-	conf.UptimeFormat = "2006-01-02T17:01:22+0800"
-	a.Error(initConfig(conf))
-
-	// Author
-	conf.PageSize = 1
-	a.Error(initConfig(conf))
-
-	// Author.Name
-	conf.Author = &Author{}
-	a.Error(initConfig(conf))
-
-	// Title
-	conf.Author.Name = "abc"
-	a.Error(initConfig(conf))
-
-	// URL
-	conf.Title = "title"
-	a.Error(initConfig(conf))
-	// URL 格式错误
-	conf.URL = "URL"
-	a.Error(initConfig(conf))
-
-	// themes
-	conf.URL = "https://caixw.io"
-	a.Error(initConfig(conf))
-
-	// RSS
-	conf.Theme = "t1"
-	conf.RSS = &RSS{Title: "1", URL: "/", Size: 5}
-	// conf.Atom = nil  // 当conf.Atom为nil时，不检测
-	a.NotError(initConfig(conf))
 }
 
 func TestCheckRSS(t *testing.T) {

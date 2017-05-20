@@ -28,7 +28,6 @@ atom:
     url: /atom.xml
     title: atom
     size: 20
-
 urls:
     root:
     suffix: .html
