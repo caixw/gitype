@@ -57,7 +57,7 @@ func addTagsToSitemap(buf *bytes.Buffer, d *data.Data) error {
 	now := time.Now().Unix()
 	sitemap := d.Config.Sitemap
 
-	loc := d.Config.URL + d.URLS.Tags + d.URLS.Suffix
+	loc := d.Config.URL + d.Config.URLS.Tags + d.Config.URLS.Suffix
 	addItemToSitemap(buf, loc, sitemap.TagChangefreq, now, sitemap.TagPriority)
 
 	for _, tag := range d.Tags {

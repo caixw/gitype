@@ -9,6 +9,7 @@ import (
 	"errors"
 	"io/ioutil"
 
+	"github.com/caixw/typing/data"
 	"github.com/issue9/handlers"
 	"github.com/issue9/utils"
 )
@@ -41,25 +42,22 @@ func loadConfig(path string) (*config, error) {
 
 	switch {
 	case !utils.FileExists(conf.CertFile):
-		return nil, errors.New("配置文件必须指定 certFile")
+		return nil, &data.FieldError(File:"config.json",Field:"certFile","不能为空")
 	case !utils.FileExists(conf.KeyFile):
-		return nil, errors.New("配置文件必须指定 keyFile")
+		return nil, &data.FieldError(File:"config.json",Field:"keyFile","不能为空")
 	case len(conf.Pprof) > 0 && conf.Pprof[0] != '/':
-		return nil, errors.New("配置文件 pprof 必须以 / 开头")
+		return nil, &data.FieldError(File:"config.json",Field:"pprof","必须以 / 开头")
 	case len(conf.WebhooksURL) == 0 || conf.WebhooksURL == "/":
-		return nil, errors.New("配置文件必须指定 webhooksURL 的值且不能为 /")
+		return nil, &data.FieldError(File:"config.json",Field:"webhooksURL","不能为空且必须以 / 开头")
 	case conf.WebhooksUpdateFreq < 0:
-		return nil, errors.New("webhooksUpdateFreq 不能小于 0")
+		return nil, &data.FieldError(File:"config.json",Field:"webhooksUpdateFreq","不能小于 0")
 	case len(conf.RepoURL) == 0 || conf.RepoURL == "/":
-		return nil, errors.New("配置文件必须指定 repoURL 的值且不能为 /")
+		return nil, &data.FieldError(File:"config.json",Field:"repoURL","不能为空且必须以 / 开头")
 	case len(conf.AdminURL) == 0 || conf.AdminURL == "/":
-		return nil, errors.New("配置文件必须指定 adminURL 的值且不能为 /")
+		return nil, &data.FieldError(File:"config.json",Field:"adminURL","不能为空且必须以 / 开头")
 	case len(conf.AdminPassword) == 0:
 		return nil, errors.New("配置文件必须指定 adminPassword")
-	}
-
-	if conf.isDebug() {
-		conf.Core.ErrHandler = handlers.PrintDebug
+		return nil, &data.FieldError(File:"config.json",Field:"adminPassword","不能为空")
 	}
 
 	return conf, nil
