@@ -10,46 +10,48 @@ import (
 	"io/ioutil"
 
 	"github.com/issue9/handlers"
-	"github.com/issue9/web"
+	"github.com/issue9/utils"
 )
 
 // 配置文件
 type config struct {
-	Core               *web.Config `json:"core"`
-	WebhooksURL        string      `json:"webhooksURL"`        // webhooks接收地址
-	WebhooksUpdateFreq int64       `json:"webhooksUpdateFreq"` // webhooks的最小更新频率，秒数
-	RepoURL            string      `json:"repoURL"`            // 远程仓库的地址
-	AdminURL           string      `json:"adminURL"`           // 后台管理地址
-	AdminPassword      string      `json:"adminPassword"`      // 后台管理登录地址
-}
+	CertFile string `json:"certFile"`
+	KeyFile  string `json:"keyFile"`
+	Port     string `json:"port"`
+	Pprof    string `json:"pprof"`
+	Headers  string `json:"headers"`
 
-// 是否处于调试状态
-func (conf *config) isDebug() bool {
-	return len(conf.Core.Pprof) > 0
+	WebhooksURL        string `json:"webhooksURL"`        // webhooks接收地址
+	WebhooksUpdateFreq int64  `json:"webhooksUpdateFreq"` // webhooks的最小更新频率，秒数
+	RepoURL            string `json:"repoURL"`            // 远程仓库的地址
+	AdminURL           string `json:"adminURL"`           // 后台管理地址
+	AdminPassword      string `json:"adminPassword"`      // 后台管理登录地址
 }
 
 func loadConfig(path string) (*config, error) {
-	// 加载程序配置
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
+
 	conf := &config{}
 	if err = json.Unmarshal(data, conf); err != nil {
 		return nil, err
 	}
 
 	switch {
+	case !utils.FileExists(conf.CertFile):
+		return nil, errors.New("配置文件必须指定 certFile")
 	case len(conf.WebhooksURL) == 0 || conf.WebhooksURL == "/":
-		return nil, errors.New("配置文件必须指定webhooksURL的值且不能为/")
+		return nil, errors.New("配置文件必须指定 webhooksURL 的值且不能为 /")
 	case conf.WebhooksUpdateFreq < 0:
-		return nil, errors.New("webhooksUpdateFreq不能小于0")
+		return nil, errors.New("webhooksUpdateFreq 不能小于 0")
 	case len(conf.RepoURL) == 0 || conf.RepoURL == "/":
-		return nil, errors.New("配置文件必须指定repoURL的值且不能为/")
+		return nil, errors.New("配置文件必须指定 repoURL 的值且不能为 /")
 	case len(conf.AdminURL) == 0 || conf.AdminURL == "/":
-		return nil, errors.New("配置文件必须指定adminURL的值且不能为/")
+		return nil, errors.New("配置文件必须指定 adminURL 的值且不能为 /")
 	case len(conf.AdminPassword) == 0:
-		return nil, errors.New("配置文件必须指定adminPassword")
+		return nil, errors.New("配置文件必须指定 adminPassword")
 	}
 
 	if conf.isDebug() {
