@@ -55,8 +55,8 @@ func (a *app) initFrontRoute() error {
 	urls := a.data.Config.URLS
 	p := a.mux.Prefix(urls.Root)
 
-	p.GetFunc(urls.Post+"/{slug:.+}"+urls.Suffix, a.pre(a.getPost)).
-		GetFunc(vars.MediaURL+"/", a.pre(a.getMedia)).
+	p.GetFunc(urls.Post+"/{slug}"+urls.Suffix, a.pre(a.getPost)).
+		GetFunc(vars.MediaURL+"/*", a.pre(a.getMedia)).
 		GetFunc(urls.Posts+urls.Suffix, a.pre(a.getPosts)).
 		GetFunc(urls.Tag+"/{slug}"+urls.Suffix, a.pre(a.getTag)).
 		GetFunc(urls.Tags+urls.Suffix+"{:.*}", a.pre(a.getTags)).
@@ -152,7 +152,7 @@ func (a *app) renderStatusCode(w http.ResponseWriter, code int) {
 	path := filepath.Join(a.path.DataThemes, a.data.Config.Theme, filename)
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		logs.Errorf("page.renderStatusCode:查找模板文件[%v]时出现以下错误[%v]\n", path, err)
+		logs.Errorf("查找模板文件[%v]时出现以下错误[%v]\n", path, err)
 
 		// 若读取模板出错，则只输出与状态码相对应的基本文字描述
 		data = []byte(http.StatusText(code))

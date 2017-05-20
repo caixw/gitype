@@ -84,7 +84,7 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 
 	err := p.app.data.Template.ExecuteTemplate(w, name, p)
 	if err != nil {
-		logs.Error("page.render:", err)
+		logs.Error(err)
 		p.app.renderStatusCode(w, http.StatusInternalServerError)
 		return
 	}
