@@ -26,7 +26,7 @@ type app struct {
 	mux      *mux.Mux
 	conf     *config            // 配置内容
 	updated  int64              // 更新时间，一般为重新加载数据的时间
-	etag     string             // 所有页面都采用相同的etag
+	etag     string             // 所有页面都采用相同的 etag
 	adminTpl *template.Template // 后台管理的模板页面。
 	data     *data.Data         // 加载的数据，每次加载都会被重置
 }
