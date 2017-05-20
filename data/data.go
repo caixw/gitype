@@ -157,6 +157,10 @@ func Load(root string) (*Data, error) {
 		return nil, err
 	}
 
+	if err := d.loadThemes(); err != nil {
+		return nil, err
+	}
+
 	themes, err := getThemesName(filepath.Join(d.Root, "themes", d.Config.Theme))
 	if err != nil {
 		return nil, err

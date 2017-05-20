@@ -6,13 +6,95 @@ package data
 
 import (
 	"errors"
+	"fmt"
 	"html/template"
 	"io/ioutil"
+	"os"
 	"path"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"time"
+
+	yaml "gopkg.in/yaml.v2"
+
+	"github.com/issue9/logs"
 )
+
+const themesDir = "themes"
+
+func (d *Data) loadThemes() error {
+	dir := filepath.Join(d.Root, "themes")
+	paths := make([]string, 0, 100)
+
+	// 遍历 data/themes 目录，查找所有的 theme.yaml 文章。
+	walk := func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.Name() == "theme.yaml" {
+			paths = append(paths, path)
+		}
+		return nil
+	}
+
+	if err := filepath.Walk(dir, walk); err != nil {
+		return err
+	}
+
+	// 开始加载文章的具体内容。
+	dir = filepath.Clean(dir)
+	d.Themes = make([]*Theme, 0, len(paths))
+	for _, p := range paths {
+		p = filepath.Clean(p)
+		theme, err := loadTheme(p)
+		if err != nil {
+			logs.Error(err)
+			continue
+		}
+
+		d.Themes = append(d.Themes, theme)
+	}
+
+	sort.SliceStable(d.Themes, func(i, j int) bool {
+		switch {
+		case d.Themes[i].Actived:
+			return true
+		case d.Themes[j].Actived:
+			return true
+		default:
+			return d.Themes[i].Name >= d.Themes[j].Name
+		}
+	})
+
+	return nil
+}
+
+func loadTheme(path string) (*Theme, error) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	theme := &Theme{}
+	if err := yaml.Unmarshal(data, theme); err != nil {
+		return nil, fmt.Errorf("解板[%v]出错:%v", path, err)
+	}
+
+	if len(theme.Name) == 0 {
+		return nil, &FieldError{File: path, Message: "不能为空", Field: "name"}
+	}
+	if theme.Author != nil {
+		if err = theme.Author.check(); err != nil {
+			return nil, err
+		}
+	}
+
+	theme.Path = path
+
+	return theme, nil
+}
 
 // 加载主题目录下的所有主题。
 // path 主题所在的目录。

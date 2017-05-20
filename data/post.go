@@ -71,7 +71,6 @@ func (d *Data) loadPosts() error {
 		default:
 			return d.Posts[i].Created >= d.Posts[j].Created
 		}
-
 	})
 
 	return nil

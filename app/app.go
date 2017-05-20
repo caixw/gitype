@@ -33,14 +33,15 @@ type app struct {
 
 // 重新加载数据
 func (a *app) reload() error {
-	data, err := data.Load(a.path)
+	data, err := data.Load(filepath.Join(a.root, "data"))
 	if err != nil {
 		return err
 	}
+
 	a.data = data
 	a.updated = time.Now().Unix()
 	a.etag = strconv.FormatInt(a.updated, 10)
-	a.front.Clean() // 清除路由项
+	a.mux.Clean()
 
 	if err := a.initFrontRoute(); err != nil {
 		return err
@@ -51,8 +52,8 @@ func (a *app) reload() error {
 
 // 重新初始化路由项
 func (a *app) initFrontRoute() error {
-	urls := a.data.URLS
-	p := a.front.Prefix(urls.Root)
+	urls := a.data.Config.URLS
+	p := a.mux.Prefix(urls.Root)
 
 	p.GetFunc(urls.Post+"/{slug:.+}"+urls.Suffix, a.pre(a.getPost)).
 		GetFunc(vars.MediaURL+"/", a.pre(a.getMedia)).
@@ -67,7 +68,7 @@ func (a *app) initFrontRoute() error {
 
 func (a *app) initFeeds() error {
 	conf := a.data.Config
-	p := a.front.Prefix(a.data.URLS.Root)
+	p := a.mux.Prefix(a.data.Config.URLS.Root)
 
 	if conf.RSS != nil {
 		rss, err := feeds.BuildRSS(a.data)
@@ -108,7 +109,7 @@ func (a *app) initFeeds() error {
 func Run(root string) error {
 	logs.Info("程序工作路径为:", root)
 
-	conf, err := loadConfig(path.ConfApp)
+	conf, err := loadConfig(filepath.Join(root, "conf", "app.json"))
 	if err != nil {
 		return err
 	}

@@ -11,7 +11,6 @@ import (
 	"github.com/issue9/utils"
 )
 
-// 配置文件
 type config struct {
 	CertFile string `json:"certFile"`
 	KeyFile  string `json:"keyFile"`
