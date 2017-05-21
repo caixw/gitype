@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
-	"os"
 	"path"
 	"path/filepath"
 	"regexp"
@@ -17,42 +16,30 @@ import (
 	"time"
 
 	yaml "gopkg.in/yaml.v2"
-
-	"github.com/issue9/logs"
 )
 
 func (d *Data) loadThemes() error {
-	dir := filepath.Join(d.Root, "themes")
-	paths := make([]string, 0, 100)
+	dir := filepath.Join(d.Root, ThemesDir)
 
-	// 遍历 data/themes 目录，查找所有的 theme.yaml 文章。
-	walk := func(path string, info os.FileInfo, err error) error {
+	fs, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+	if len(fs) == 0 {
+		return errors.New("未找到任何主题文件")
+	}
+
+	themes := make([]*Theme, 0, len(fs))
+
+	for _, file := range fs {
+		if !file.IsDir() {
+			continue
+		}
+		theme, err := loadTheme(dir, file.Name())
 		if err != nil {
 			return err
 		}
-
-		if info.Name() == "theme.yaml" {
-			paths = append(paths, path)
-		}
-		return nil
-	}
-
-	if err := filepath.Walk(dir, walk); err != nil {
-		return err
-	}
-
-	// 开始加载文章的具体内容。
-	dir = filepath.Clean(dir)
-	d.Themes = make([]*Theme, 0, len(paths))
-	for _, p := range paths {
-		p = filepath.Clean(p)
-		theme, err := loadTheme(p)
-		if err != nil {
-			logs.Error(err)
-			continue
-		}
-
-		d.Themes = append(d.Themes, theme)
+		themes = append(themes, theme)
 	}
 
 	sort.SliceStable(d.Themes, func(i, j int) bool {
@@ -69,14 +56,17 @@ func (d *Data) loadThemes() error {
 	return nil
 }
 
-func loadTheme(path string) (*Theme, error) {
+// dir 主题所在的目录
+// id 主题当前目录名称
+func loadTheme(dir, id string) (*Theme, error) {
+	path := filepath.Join(dir, id, "theme.yaml")
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
 	theme := &Theme{}
-	if err := yaml.Unmarshal(data, theme); err != nil {
+	if err = yaml.Unmarshal(data, theme); err != nil {
 		return nil, fmt.Errorf("解板[%v]出错:%v", path, err)
 	}
 
@@ -84,12 +74,14 @@ func loadTheme(path string) (*Theme, error) {
 		return nil, &FieldError{File: path, Message: "不能为空", Field: "name"}
 	}
 	if theme.Author != nil {
-		if err = theme.Author.check(); err != nil {
+		// err 必须是一个新变量，否则判断会一直是 true
+		if err := theme.Author.check(); err != nil {
 			return nil, err
 		}
 	}
 
 	theme.Path = path
+	theme.ID = id
 
 	return theme, nil
 }

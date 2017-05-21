@@ -11,6 +11,16 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestLoadTheme(t *testing.T) {
+	a := assert.New(t)
+
+	theme, err := loadTheme("./testdata/themes", "t1")
+	a.NotError(err).NotNil(theme)
+
+	a.Equal(theme.Name, "name")
+	a.Equal(theme.Author.Name, "name")
+}
+
 func TestLoadTemplate(t *testing.T) {
 	a := assert.New(t)
 

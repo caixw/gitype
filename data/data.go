@@ -70,6 +70,7 @@ type Post struct {
 
 // Theme 表示主题信息
 type Theme struct {
+	ID          string  `yaml:"-"`           // 主题的唯一 ID
 	Name        string  `yaml:"name"`        // 主题名称
 	Version     string  `yaml:"version"`     // 主题的版本号
 	Description string  `yaml:"description"` // 主题的描述信息
