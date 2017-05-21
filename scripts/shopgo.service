@@ -1,0 +1,14 @@
+[Unit]
+Description=typing daemon
+After=network.target
+
+[Service]
+PIDFile=/tmp/typing.pid-404
+User=root
+Group=root
+WorkingDirectory=/data/www/typing
+ExecStart=/data/www/typing/typing
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
