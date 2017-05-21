@@ -7,18 +7,13 @@ package vars
 
 const (
 	// 主版本号，符合 semver 规范
-	mainVersion = "0.2.35"
+	mainVersion = "0.3.0"
 
 	// AppName 程序名称
 	AppName = "typing"
 
 	// URL 项目的地址
 	URL = "https://github.com/caixw/typing"
-
-	// MediaURL 媒体文件的地址前缀，相对于URLS.Root地址。
-	// 之所以不配置在data/URLS中，是因为如果修改该值，
-	// 会造成所有文章中对这些文件的引用都要修改，造成不必要的麻烦。
-	MediaURL = "/media"
 
 	// DateFormat 客户配置文件中所使用的的时间格式。
 	// 所有的时间字符串，都将使用此格式去解析。

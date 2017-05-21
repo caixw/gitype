@@ -8,13 +8,12 @@ package client
 import (
 	"html/template"
 	"net/http"
-	"path/filepath"
 	"strconv"
 	"time"
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/feeds"
-	"github.com/caixw/typing/vars"
+	"github.com/issue9/handlers"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 )
@@ -22,6 +21,7 @@ import (
 // Client 表示一个客户端渲染的相关集合
 type Client struct {
 	mux     *mux.Mux
+	debug   bool       // 是否为调试状态
 	updated int64      // 更新时间，一般为重新加载数据的时间
 	etag    string     // 所有页面都采用相同的 etag
 	data    *data.Data // 加载的数据，每次加载都会被重置
@@ -29,72 +29,69 @@ type Client struct {
 }
 
 // New 声明一个新的 Client 实例
-func New(datadir string, mux *mux.Mux) (*Client, error) {
-	data, err := data.Load(datadir)
+func New(datadir string, mux *mux.Mux, debug bool) (*Client, error) {
+	d, err := data.Load(datadir)
 	if err != nil {
 		return nil, err
 	}
 
 	now := time.Now().Unix()
-	return &Client{
+	c := &Client{
 		mux:     mux,
-		data:    data,
+		debug:   debug,
+		data:    d,
 		updated: now,
 		etag:    strconv.FormatInt(now, 10),
-	}, nil
+	}
 
-	// init router
+	if err = c.initTemplate(); err != nil {
+		return nil, err
+	}
+
+	if err = c.initRoutes(); err != nil {
+		return nil, err
+	}
+
+	if err = c.initFeeds(); err != nil {
+		return nil, err
+	}
+
+	return c, nil
 }
 
-// 重新初始化路由项
-func (a *app) initFrontRoute() error {
-	urls := a.data.Config.URLS
-	p := a.mux.Prefix(urls.Root)
-
-	p.GetFunc(urls.Post+"/{slug}"+urls.Suffix, a.pre(a.getPost)).
-		GetFunc(vars.MediaURL+"/*", a.pre(a.getMedia)).
-		GetFunc(urls.Posts+urls.Suffix, a.pre(a.getPosts)).
-		GetFunc(urls.Tag+"/{slug}"+urls.Suffix, a.pre(a.getTag)).
-		GetFunc(urls.Tags+urls.Suffix+"{:.*}", a.pre(a.getTags)).
-		GetFunc(urls.Themes+"/", a.pre(a.getThemes)).
-		GetFunc(urls.Search+urls.Suffix+"{:.*}", a.pre(a.getSearch)).
-		GetFunc("/", a.pre(a.getRaws))
-	return nil
-}
-
-func (a *app) initFeeds() error {
-	conf := a.data.Config
-	p := a.mux.Prefix(a.data.Config.URLS.Root)
+func (c *Client) initFeeds() error {
+	conf := c.data.Config
+	p := c.mux.Prefix(conf.URLS.Root)
 
 	if conf.RSS != nil {
-		rss, err := feeds.BuildRSS(a.data)
+		rss, err := feeds.BuildRSS(c.data)
 		if err != nil {
 			return err
 		}
 
-		p.GetFunc(conf.RSS.URL, a.pre(func(w http.ResponseWriter, r *http.Request) {
+		p.GetFunc(conf.RSS.URL, c.pre(func(w http.ResponseWriter, r *http.Request) {
 			w.Write(rss.Bytes())
 		}))
 	}
 
 	if conf.Atom != nil {
-		atom, err := feeds.BuildAtom(a.data)
+		atom, err := feeds.BuildAtom(c.data)
 		if err != nil {
 			return err
 		}
 
-		p.GetFunc(conf.Atom.URL, a.pre(func(w http.ResponseWriter, r *http.Request) {
+		p.GetFunc(conf.Atom.URL, c.pre(func(w http.ResponseWriter, r *http.Request) {
 			w.Write(atom.Bytes())
 		}))
 	}
 
 	if conf.Sitemap != nil {
-		sitemap, err := feeds.BuildSitemap(a.data)
+		sitemap, err := feeds.BuildSitemap(c.data)
 		if err != nil {
 			return err
 		}
 
-		p.GetFunc(conf.Sitemap.URL, a.pre(func(w http.ResponseWriter, r *http.Request) {
+		p.GetFunc(conf.Sitemap.URL, c.pre(func(w http.ResponseWriter, r *http.Request) {
 			w.Write(sitemap.Bytes())
 		}))
 	}
@@ -102,30 +99,32 @@ func (a *app) initFeeds() error {
 	return nil
 }
 
-func Run(root string) error {
-	logs.Info("程序工作路径为:", root)
+// 每次访问前需要做的预处理工作。
+func (c *Client) pre(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if c.debug { // 调试状态，则每次都重新加载数据
+			if err := c.Reload(); err != nil {
+				logs.Error(err)
+			}
+		}
 
-	conf, err := loadConfig(filepath.Join(root, "conf", "app.json"))
-	if err != nil {
-		return err
+		// 输出访问日志
+		logs.Infof("%v：%v", r.UserAgent(), r.URL)
+
+		// 直接根据整个博客的最后更新时间来确认etag
+		if r.Header.Get("If-None-Match") == c.etag {
+			logs.Infof("304:%v", r.URL)
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Set("Etag", c.etag)
+		handlers.CompressFunc(f).ServeHTTP(w, r)
 	}
+}
 
-	a := &app{
-		root:    root,
-		mux:     mux.New(false, false, nil, nil),
-		updated: time.Now().Unix(),
-		conf:    conf,
-	}
+// Reload 重新加载数据
+func (c *Client) Reload() error {
+	// TODO
 
-	// 初始化控制台相关操作
-	if err := a.initAdmin(); err != nil {
-		return err
-	}
-
-	// 加载数据
-	if err = a.reload(); err != nil {
-		logs.Error("app.Run:", err)
-	}
-
-	return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, a.mux)
+	return nil
 }

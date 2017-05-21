@@ -27,6 +27,7 @@ urls:
     root:
     suffix: .html
     posts: /posts
+    media: /media
     post: /posts
     tags: /tags
     tag: /tags

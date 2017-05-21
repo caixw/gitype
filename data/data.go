@@ -130,6 +130,7 @@ type Sitemap struct {
 // URLS 自定义 URL
 type URLS struct {
 	Root   string `yaml:"root"`   // 根地址
+	Media  string `yaml:"media"`  // 媒体文件
 	Suffix string `yaml:"suffix"` // 地址后缀
 	Posts  string `yaml:"posts"`  // 列表页地址
 	Post   string `yaml:"post"`   // 文章详细页地址

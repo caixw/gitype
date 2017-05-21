@@ -216,6 +216,8 @@ func checkURLS(u *URLS) error {
 		return &FieldError{File: confFile, Field: "Suffix", Message: "必须以.开头"}
 	case len(u.Posts) == 0:
 		return &FieldError{File: confFile, Field: "Posts", Message: "不能为空"}
+	case len(u.Media) == 0:
+		return &FieldError{File: confFile, Field: "Media", Message: "不能为空"}
 	case len(u.Post) == 0:
 		return &FieldError{File: confFile, Field: "Post", Message: "不能为空"}
 	case len(u.Tags) == 0:
