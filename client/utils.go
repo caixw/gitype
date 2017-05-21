@@ -2,13 +2,14 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package app
+package client
 
 import (
 	"net/http"
 	"path"
 	"strconv"
 
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 )
@@ -17,14 +18,14 @@ import (
 // 若不能找到该参数，返回false
 func paramString(w http.ResponseWriter, r *http.Request, key string) (string, bool) {
 	ps := mux.GetParams(r)
-	val, err := ps.String(r, key)
+	val, err := ps.String(key)
+
 	if err == mux.ErrParamNotExists {
 		return "", false
 	} else if err != nil {
 		logs.Error(err)
 		return "", false
 	} else if len(val) == 0 {
-		http.Error(http.StatusText(http.StatusNotFound))
 		return "", false
 	}
 
@@ -48,42 +49,40 @@ func queryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int,
 	return ret, true
 }
 
-func (a *app) postURL(slug string) string {
-	u := a.data.URLS
-	return path.Join(u.Root, u.Post, slug+u.Suffix)
+func (c *Client) postURL(slug string) string {
+	return path.Join(vars.Post, slug+vars.Suffix)
 }
 
-func (a *app) postsURL(page int) string {
-	u := a.data.URLS
-
+func (c *Client) postsURL(page int) string {
 	if page <= 1 {
-		return u.Root
+		return "/"
 	}
-	return path.Join(u.Root, u.Posts+u.Suffix) + "?page=" + strconv.Itoa(page)
+	return vars.Posts + vars.Suffix + "?page=" + strconv.Itoa(page)
 }
 
-func (a *app) tagURL(slug string, page int) string {
-	u := a.data.URLS
-
-	base := path.Join(u.Root, u.Tag, slug+u.Suffix)
+func (c *Client) tagURL(slug string, page int) string {
+	url := path.Join(vars.Tag, slug+vars.Suffix)
 	if page <= 1 {
-		return base
+		return url
 	}
 
-	return base + "?page=" + strconv.Itoa(page)
+	return url + "?page=" + strconv.Itoa(page)
 }
 
-func (a *app) tagsURL() string {
-	u := a.data.URLS
-	return path.Join(u.Root, u.Tags+u.Suffix)
-}
-
-func (a *app) searchURL(q string, page int) string {
-	u := a.data.URLS
-
-	base := path.Join(u.Root, u.Search+u.Suffix)
-	if page <= 1 {
-		return base
+func (c *Client) searchURL(q string, page int) string {
+	url := vars.Search + vars.Suffix
+	if len(q) > 0 {
+		url += "?q=" + q
 	}
-	return base + "?page=" + strconv.Itoa(page)
+
+	if page > 1 {
+		if len(q) > 0 {
+			url += "&"
+		} else {
+			url += "?"
+		}
+		url += "page=" + strconv.Itoa(page)
+	}
+
+	return url
 }

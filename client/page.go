@@ -17,6 +17,8 @@ import (
 	"github.com/issue9/utils"
 )
 
+const contentType = "text/html"
+
 // 用于描述一个页面的所有无素
 type page struct {
 	Title       string       // 文章标题，可以为空
@@ -82,6 +84,10 @@ func (c *Client) newPage() *page {
 
 // 输出当前内容到指定模板
 func (p *page) render(w http.ResponseWriter, name string, headers map[string]string) {
+	if _, exists := headers["Content-Type"]; !exists {
+		headers["Content-Type"] = contentType
+	}
+
 	for key, val := range headers {
 		w.Header().Set(key, val)
 	}
@@ -89,7 +95,7 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 	err := p.client.tpl.ExecuteTemplate(w, name, p)
 	if err != nil {
 		logs.Error(err)
-		p.client.renderStatusCode(w, http.StatusInternalServerError)
+		p.client.renderError(w, http.StatusInternalServerError)
 		return
 	}
 }
@@ -98,7 +104,7 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 // 若该页面模板不存在，则输出状态码对应的文本内容。
 // 只查找当前主题目录下的相关文件。
 // 只对状态码大于等于 400 的起作用。
-func (c *Client) renderStatusCode(w http.ResponseWriter, code int) {
+func (c *Client) renderError(w http.ResponseWriter, code int) {
 	if code < 400 {
 		return
 	}
