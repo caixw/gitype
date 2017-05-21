@@ -85,6 +85,9 @@ func (c *Client) newPage() *page {
 // 输出当前内容到指定模板
 func (p *page) render(w http.ResponseWriter, name string, headers map[string]string) {
 	if _, exists := headers["Content-Type"]; !exists {
+		if headers == nil {
+			headers = make(map[string]string, 1)
+		}
 		headers["Content-Type"] = contentType
 	}
 
