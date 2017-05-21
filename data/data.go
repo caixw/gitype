@@ -6,11 +6,7 @@
 // 会调用 github.com/issue9/logs 包的内容，调用之前需要初始化该包。
 package data
 
-import (
-	"fmt"
-	"html/template"
-	"path/filepath"
-)
+import "fmt"
 
 // 表示数据目录下的三个文件夹名称
 const (
@@ -21,13 +17,12 @@ const (
 
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
-	Root     string             // Data 数据所在的根目录
-	Config   *Config            // 配置内容
-	Tags     []*Tag             // map 对顺序是未定的，所以使用 slice
-	Links    []*Link            // 友情链接
-	Posts    []*Post            // 所有的文章列表
-	Themes   []*Theme           // 主题，使用 slice，方便排序
-	Template *template.Template // 当前主题模板，TODO 移到其它地方，当前包只负责加载数据？
+	Root   string   // Data 数据所在的根目录
+	Config *Config  // 配置内容
+	Tags   []*Tag   // map 对顺序是未定的，所以使用 slice
+	Links  []*Link  // 友情链接
+	Posts  []*Post  // 所有的文章列表
+	Themes []*Theme // 主题，使用 slice，方便排序
 }
 
 // Author 描述作者信息
@@ -170,24 +165,15 @@ func Load(root string) (*Data, error) {
 		return nil, err
 	}
 
-	themes, err := getThemesName(filepath.Join(d.Root, "themes", d.Config.Theme))
-	if err != nil {
-		return nil, err
-	}
 	found := false
-	for _, theme := range themes {
-		if theme == d.Config.Theme {
+	for _, theme := range d.Themes {
+		if theme.ID == d.Config.Theme {
 			found = true
 			break
 		}
 	}
 	if !found {
 		return nil, &FieldError{File: confFile, Message: "该主题并不存在", Field: "Theme"}
-	}
-
-	// 加载主题的模板
-	if err = d.loadTemplate(filepath.Join(d.Root, "themes")); err != nil {
-		return nil, err
 	}
 
 	// 加载文章
