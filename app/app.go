@@ -60,6 +60,9 @@ func Run(path *vars.Path) error {
 		conf:    conf,
 	}
 
+	// 初始化 webhooks
+	a.mux.PostFunc(a.conf.WebhooksURL, a.postWebhooks)
+
 	// 初始化控制台相关操作
 	if err := a.initAdmin(); err != nil {
 		return err
