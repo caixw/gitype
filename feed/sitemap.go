@@ -2,8 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package feeds 包提供了根据数据生成 sitemap，atom，rss 的功能。
-package feeds
+// Package feed 包提供了根据数据生成 sitemap，atom，rss 的功能。
+package feed
 
 import (
 	"bytes"

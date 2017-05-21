@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/caixw/typing/data"
-	"github.com/caixw/typing/feeds"
+	"github.com/caixw/typing/feed"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/mux"
 )
@@ -71,7 +71,7 @@ func (c *Client) initFeeds() error {
 	conf := c.data.Config
 
 	if conf.RSS != nil {
-		rss, err := feeds.BuildRSS(c.data)
+		rss, err := feed.BuildRSS(c.data)
 		if err != nil {
 			return err
 		}
@@ -82,7 +82,7 @@ func (c *Client) initFeeds() error {
 	}
 
 	if conf.Atom != nil {
-		atom, err := feeds.BuildAtom(c.data)
+		atom, err := feed.BuildAtom(c.data)
 		if err != nil {
 			return err
 		}
@@ -93,7 +93,7 @@ func (c *Client) initFeeds() error {
 	}
 
 	if conf.Sitemap != nil {
-		sitemap, err := feeds.BuildSitemap(c.data)
+		sitemap, err := feed.BuildSitemap(c.data)
 		if err != nil {
 			return err
 		}
