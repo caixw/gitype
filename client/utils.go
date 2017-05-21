@@ -15,26 +15,29 @@ import (
 )
 
 // paramString 获取路径匹配中的参数，并以字符串的格式返回。
-// 若不能找到该参数，返回false
-func paramString(w http.ResponseWriter, r *http.Request, key string) (string, bool) {
+// 若不能找到该参数，返回 false
+func (c *Client) paramString(w http.ResponseWriter, r *http.Request, key string) (string, bool) {
 	ps := mux.GetParams(r)
 	val, err := ps.String(key)
 
 	if err == mux.ErrParamNotExists {
+		c.renderError(w, http.StatusBadRequest)
 		return "", false
 	} else if err != nil {
 		logs.Error(err)
+		c.renderError(w, http.StatusBadRequest)
 		return "", false
 	} else if len(val) == 0 {
+		c.renderError(w, http.StatusBadRequest)
 		return "", false
 	}
 
 	return val, true
 }
 
-// queryInt 用于获取查询参数key的值，并将其转换成Int类型，若该值不存在返回def作为其默认值，
-// 若是类型不正确，则返回一个false，并向客户端输出一个400错误。
-func queryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int, bool) {
+// 获取查询参数 key 的值，并将其转换成 Int 类型，若该值不存在返回 def 作为其默认值，
+// 若是类型不正确，则返回一个 false，并向客户端输出一个 400 错误。
+func (c *Client) queryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int, bool) {
 	val := r.FormValue(key)
 	if len(val) == 0 {
 		return def, true
@@ -42,8 +45,8 @@ func queryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int,
 
 	ret, err := strconv.Atoi(val)
 	if err != nil {
-		logs.Error("app.queryInt:", err)
-		w.WriteHeader(http.StatusBadRequest)
+		logs.Error(err)
+		c.renderError(w, http.StatusBadRequest)
 		return 0, false
 	}
 	return ret, true

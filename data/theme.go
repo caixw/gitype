@@ -15,9 +15,7 @@ import (
 )
 
 func (d *Data) loadThemes() error {
-	dir := d.path.ThemesDir
-
-	fs, err := ioutil.ReadDir(dir)
+	fs, err := ioutil.ReadDir(d.path.ThemesDir)
 	if err != nil {
 		return err
 	}
@@ -31,7 +29,7 @@ func (d *Data) loadThemes() error {
 		if !file.IsDir() {
 			continue
 		}
-		theme, err := loadTheme(dir, file.Name())
+		theme, err := loadTheme(d.path.ThemesDir, file.Name())
 		if err != nil {
 			return err
 		}

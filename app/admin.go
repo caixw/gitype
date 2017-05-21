@@ -29,7 +29,7 @@ func (a *app) initAdmin() (err error) {
 	return nil
 }
 
-// 将一个log.Logger封装成io.Writer
+// 将一个 log.Logger 封装成 io.Writer
 type logW struct {
 	l *log.Logger
 }

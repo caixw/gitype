@@ -20,7 +20,6 @@ import (
 )
 
 // 加载所有的文章内容。
-// dir data/posts目录。
 func (d *Data) loadPosts() error {
 	dir := d.path.PostsDir
 	paths := make([]string, 0, 100)
@@ -74,8 +73,8 @@ func (d *Data) loadPosts() error {
 
 // 加载某一文章。
 //
-// postsDir 表示data/posts目录的绝对地址，必须经过filepath.Clean()处理；
-// path 表示具体文章的meta.yaml文章，必须经过filepath.Clean()处理；
+// postsDir 表示 data/posts 目录的绝对地址，必须经过 filepath.Clean() 处理；
+// path 表示具体文章的 meta.yaml 文章，必须经过 filepath.Clean() 处理。
 func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 	dir := filepath.Dir(path)                        // 获取路径部分
 	slug := strings.TrimPrefix(dir, postsDir)        // 获取相对于data/posts的名称

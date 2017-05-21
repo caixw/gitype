@@ -17,7 +17,7 @@ import (
 	"github.com/issue9/mux"
 )
 
-// Client 表示一个客户端渲染的相关集合
+// Client 展示给用户的前端页面相关操作。
 type Client struct {
 	mux     *mux.Mux
 	path    *vars.Path
@@ -106,7 +106,6 @@ func (c *Client) initFeeds() error {
 	return nil
 }
 
-// removeFeeds
 func (c *Client) removeFeeds() {
 	conf := c.data.Config
 

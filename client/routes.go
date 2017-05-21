@@ -17,8 +17,6 @@ import (
 	"github.com/issue9/utils"
 )
 
-var ()
-
 func (c *Client) removeRoutes() {
 	for _, route := range c.routes {
 		c.mux.Remove(route)
@@ -60,7 +58,7 @@ func (c *Client) initRoutes() {
 // 文章详细页
 // /posts/{slug}.html
 func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
-	slug, ok := paramString(w, r, "slug")
+	slug, ok := c.paramString(w, r, "slug")
 	if !ok {
 		return
 	}
@@ -120,7 +118,7 @@ func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
 // /
 // /posts.html?page=2
 func (c *Client) getPosts(w http.ResponseWriter, r *http.Request) {
-	page, ok := queryInt(w, r, "page", 1)
+	page, ok := c.queryInt(w, r, "page", 1)
 	if !ok {
 		return
 	}
@@ -161,7 +159,7 @@ func (c *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 // 标签详细页
 // /tags/tag1.html?page=2
 func (c *Client) getTag(w http.ResponseWriter, r *http.Request) {
-	slug, ok := paramString(w, r, "slug")
+	slug, ok := c.paramString(w, r, "slug")
 	if !ok {
 		return
 	}
@@ -180,7 +178,7 @@ func (c *Client) getTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page, ok := queryInt(w, r, "page", 1)
+	page, ok := c.queryInt(w, r, "page", 1)
 	if !ok {
 		return
 	}
@@ -243,7 +241,7 @@ func (c *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page, ok := queryInt(w, r, "page", 1)
+	page, ok := c.queryInt(w, r, "page", 1)
 	if !ok {
 		return
 	}
