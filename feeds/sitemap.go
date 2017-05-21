@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/caixw/typing/data"
+	"github.com/caixw/typing/vars"
 )
 
 const (
@@ -57,7 +58,7 @@ func addTagsToSitemap(buf *bytes.Buffer, d *data.Data) error {
 	now := time.Now().Unix()
 	sitemap := d.Config.Sitemap
 
-	loc := d.Config.URL + d.Config.URLS.Tags + d.Config.URLS.Suffix
+	loc := d.Config.URL + vars.Tags + vars.Suffix
 	addItemToSitemap(buf, loc, sitemap.TagChangefreq, now, sitemap.TagPriority)
 
 	for _, tag := range d.Tags {

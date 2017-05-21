@@ -11,7 +11,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/caixw/typing/data"
+	"github.com/caixw/typing/vars"
 )
 
 // 加载主题的模板。
@@ -23,12 +23,12 @@ func (c *Client) initTemplate() error {
 		"ldate":    c.longDateFormat,
 		"sdate":    c.shortDateFormat,
 		"rfc3339":  rfc3339DateFormat,
-		"themeURL": func(p string) string { return path.Join(c.data.Config.URLS.Themes, p) },
+		"themeURL": func(p string) string { return path.Join(vars.Themes, p) },
 	}
 
 	tpl, err := template.New("").
 		Funcs(funcMap).
-		ParseGlob(filepath.Join(data.ThemesDir, c.data.Config.Theme, "*.html"))
+		ParseGlob(filepath.Join(c.path.ThemesDir, c.data.Config.Theme, "*.html"))
 	if err != nil {
 		return err
 	}

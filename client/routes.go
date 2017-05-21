@@ -8,22 +8,49 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/mux"
 	"github.com/issue9/utils"
 )
 
-func (c *Client) initRoutes() error {
-	urls := c.data.Config.URLS
+var ()
 
-	c.mux.Prefix(urls.Root).GetFunc(urls.Post+"/{slug}"+urls.Suffix, c.pre(c.getPost)).
-		GetFunc(urls.Posts+urls.Suffix, c.pre(c.getPosts)).
-		GetFunc(urls.Tag+"/{slug}"+urls.Suffix, c.pre(c.getTag)).
-		GetFunc(urls.Tags+urls.Suffix, c.pre(c.getTags)).
-		GetFunc(urls.Search+urls.Suffix, c.pre(c.getSearch)).
-		GetFunc(urls.Media+"/*", c.pre(c.getMedia)).
-		GetFunc(urls.Themes+"/*", c.pre(c.getThemes)).
-		GetFunc("/*", c.pre(c.getRaws))
-	return nil
+func (c *Client) removeRoutes() {
+	for _, route := range c.routes {
+		c.mux.Remove(route)
+	}
+
+	c.routes = nil
+}
+
+func (c *Client) initRoutes() {
+	pattern := vars.Post + "/{slug}" + vars.Suffix
+	c.routes = append(c.routes, pattern)
+	c.mux.GetFunc(pattern, c.pre(c.getPost))
+
+	pattern = vars.Posts + vars.Suffix
+	c.routes = append(c.routes, pattern)
+	c.mux.GetFunc(pattern, c.pre(c.getPosts))
+
+	pattern = vars.Tag + "/{slug}" + vars.Suffix
+	c.routes = append(c.routes, pattern)
+	c.mux.GetFunc(pattern, c.pre(c.getTag))
+
+	pattern = vars.Tags + vars.Suffix
+	c.routes = append(c.routes, pattern)
+	c.mux.GetFunc(pattern, c.pre(c.getTags))
+
+	pattern = vars.Search + vars.Suffix
+	c.routes = append(c.routes, pattern)
+	c.mux.GetFunc(pattern, c.pre(c.getSearch))
+
+	pattern = vars.Themes + "/*"
+	c.routes = append(c.routes, pattern)
+	c.mux.GetFunc(pattern, c.pre(c.getThemes))
+
+	pattern = "/*"
+	c.routes = append(c.routes, pattern)
+	c.mux.GetFunc(pattern, c.pre(c.getRaws))
 }
 
 func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
@@ -53,29 +80,19 @@ func (c *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	//
 }
 
-// 获取媒体文件
-//
-// /media/2015/intro-php/content.html ==> /posts/2015/intro-php/content.html
-func (c *Client) getMedia(w http.ResponseWriter, r *http.Request) {
-	media := c.data.Config.URLS.Media
-	dir := http.Dir(c.data.PostsPath(""))
-	http.StripPrefix(media, http.FileServer(dir)).ServeHTTP(w, r)
-}
-
 // 读取根下的文件
 func (c *Client) getRaws(w http.ResponseWriter, r *http.Request) {
-	urls := c.data.Config.URLS
-	if r.URL.Path == urls.Root || r.URL.Path == urls.Root+"/" {
+	if r.URL.Path == "/" {
 		c.getPosts(w, r)
 		return
 	}
 
-	root := http.Dir(a.path.DataRaws)
-	if !utils.FileExists(filepath.Join(a.path.DataRaws, r.URL.Path)) {
-		a.renderStatusCode(w, http.StatusNotFound)
+	root := http.Dir(c.path.RawsDir)
+	if !utils.FileExists(filepath.Join(c.path.RawsDir, r.URL.Path)) {
+		c.renderStatusCode(w, http.StatusNotFound)
 		return
 	}
-	prefix := a.data.URLS.Root + "/"
+	prefix := "/"
 	http.StripPrefix(prefix, http.FileServer(root)).ServeHTTP(w, r)
 
 }

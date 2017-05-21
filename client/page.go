@@ -54,7 +54,7 @@ func (c *Client) newPage() *page {
 		SiteName:    conf.Title,
 		Subtitle:    conf.Subtitle,
 		URL:         conf.URL,
-		Root:        c.data.Config.URLS.Root,
+		Root:        "/",
 		Canonical:   conf.URL,
 		Keywords:    conf.Keywords,
 		Description: conf.Description,
@@ -106,7 +106,7 @@ func (c *Client) renderStatusCode(w http.ResponseWriter, code int) {
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	filename := strconv.Itoa(code) + ".html"
-	path := filepath.Join(data.ThemesDir, c.data.Config.Theme, filename)
+	path := filepath.Join(c.path.ThemesDir, c.data.Config.Theme, filename)
 	if !utils.FileExists(path) {
 		logs.Errorf("模板文件[%v]不存在\n", path)
 		http.Error(w, http.StatusText(code), code)

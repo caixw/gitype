@@ -13,6 +13,7 @@ import (
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/feeds"
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/handlers"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
@@ -21,16 +22,17 @@ import (
 // Client 表示一个客户端渲染的相关集合
 type Client struct {
 	mux     *mux.Mux
-	debug   bool       // 是否为调试状态
+	path    *vars.Path
 	updated int64      // 更新时间，一般为重新加载数据的时间
 	etag    string     // 所有页面都采用相同的 etag
 	data    *data.Data // 加载的数据，每次加载都会被重置
 	tpl     *template.Template
+	routes  []string // 记录路由项，释放时，需要删除这些路由项
 }
 
 // New 声明一个新的 Client 实例
-func New(datadir string, mux *mux.Mux, debug bool) (*Client, error) {
-	d, err := data.Load(datadir)
+func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
+	d, err := data.Load(path)
 	if err != nil {
 		return nil, err
 	}
@@ -38,19 +40,18 @@ func New(datadir string, mux *mux.Mux, debug bool) (*Client, error) {
 	now := time.Now().Unix()
 	c := &Client{
 		mux:     mux,
-		debug:   debug,
+		path:    path,
 		data:    d,
 		updated: now,
 		etag:    strconv.FormatInt(now, 10),
+		routes:  make([]string, 0, 10),
 	}
 
 	if err = c.initTemplate(); err != nil {
 		return nil, err
 	}
 
-	if err = c.initRoutes(); err != nil {
-		return nil, err
-	}
+	c.initRoutes()
 
 	if err = c.initFeeds(); err != nil {
 		return nil, err
@@ -59,9 +60,17 @@ func New(datadir string, mux *mux.Mux, debug bool) (*Client, error) {
 	return c, nil
 }
 
+// Free 释放所有的数据
+func (c *Client) Free() {
+	c.removeFeeds()
+	c.removeRoutes()
+
+	c.tpl = nil
+	c.data = nil
+}
+
 func (c *Client) initFeeds() error {
 	conf := c.data.Config
-	p := c.mux.Prefix(conf.URLS.Root)
 
 	if conf.RSS != nil {
 		rss, err := feeds.BuildRSS(c.data)
@@ -69,7 +78,7 @@ func (c *Client) initFeeds() error {
 			return err
 		}
 
-		p.GetFunc(conf.RSS.URL, c.pre(func(w http.ResponseWriter, r *http.Request) {
+		c.mux.GetFunc(conf.RSS.URL, c.pre(func(w http.ResponseWriter, r *http.Request) {
 			w.Write(rss.Bytes())
 		}))
 	}
@@ -80,7 +89,7 @@ func (c *Client) initFeeds() error {
 			return err
 		}
 
-		p.GetFunc(conf.Atom.URL, c.pre(func(w http.ResponseWriter, r *http.Request) {
+		c.mux.GetFunc(conf.Atom.URL, c.pre(func(w http.ResponseWriter, r *http.Request) {
 			w.Write(atom.Bytes())
 		}))
 	}
@@ -91,7 +100,7 @@ func (c *Client) initFeeds() error {
 			return err
 		}
 
-		p.GetFunc(conf.Sitemap.URL, c.pre(func(w http.ResponseWriter, r *http.Request) {
+		c.mux.GetFunc(conf.Sitemap.URL, c.pre(func(w http.ResponseWriter, r *http.Request) {
 			w.Write(sitemap.Bytes())
 		}))
 	}
@@ -99,15 +108,26 @@ func (c *Client) initFeeds() error {
 	return nil
 }
 
+// removeFeeds
+func (c *Client) removeFeeds() {
+	conf := c.data.Config
+
+	if conf.RSS != nil {
+		c.mux.Remove(conf.RSS.URL)
+	}
+
+	if conf.Atom != nil {
+		c.mux.Remove(conf.Atom.URL)
+	}
+
+	if conf.Sitemap != nil {
+		c.mux.Remove(conf.Sitemap.URL)
+	}
+}
+
 // 每次访问前需要做的预处理工作。
 func (c *Client) pre(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if c.debug { // 调试状态，则每次都重新加载数据
-			if err := c.Reload(); err != nil {
-				logs.Error(err)
-			}
-		}
-
 		// 输出访问日志
 		logs.Infof("%v：%v", r.UserAgent(), r.URL)
 
@@ -120,11 +140,4 @@ func (c *Client) pre(f http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Etag", c.etag)
 		handlers.CompressFunc(f).ServeHTTP(w, r)
 	}
-}
-
-// Reload 重新加载数据
-func (c *Client) Reload() error {
-	// TODO
-
-	return nil
 }
