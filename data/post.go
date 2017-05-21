@@ -22,7 +22,7 @@ import (
 // 加载所有的文章内容。
 // dir data/posts目录。
 func (d *Data) loadPosts() error {
-	dir := filepath.Join(d.Root, postsDir)
+	dir := d.path.PostsDir
 	paths := make([]string, 0, 100)
 
 	// 遍历data/posts目录，查找所有的 meta.yaml 文章。

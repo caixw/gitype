@@ -15,7 +15,7 @@ import (
 )
 
 func (d *Data) loadThemes() error {
-	dir := filepath.Join(d.Root, ThemesDir)
+	dir := d.path.ThemesDir
 
 	fs, err := ioutil.ReadDir(dir)
 	if err != nil {

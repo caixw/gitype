@@ -6,18 +6,15 @@
 // 会调用 github.com/issue9/logs 包的内容，调用之前需要初始化该包。
 package data
 
-import "fmt"
+import (
+	"fmt"
 
-// 表示数据目录下的三个文件夹名称
-const (
-	ThemesDir = "themes"
-	postsDir  = "posts"
-	metaDir   = "meta"
+	"github.com/caixw/typing/vars"
 )
 
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
-	Root   string   // Data 数据所在的根目录
+	path   *vars.Path
 	Config *Config  // 配置内容
 	Tags   []*Tag   // map 对顺序是未定的，所以使用 slice
 	Links  []*Link  // 友情链接
@@ -152,10 +149,9 @@ func (err *FieldError) Error() string {
 }
 
 // Load 函数用于加载一份新的数据。
-// root 表示数据在的根目录。
-func Load(root string) (*Data, error) {
+func Load(path *vars.Path) (*Data, error) {
 	d := &Data{
-		Root: root,
+		path: path,
 	}
 
 	if err := d.loadMeta(); err != nil {

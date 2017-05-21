@@ -7,6 +7,7 @@ package data
 import (
 	"testing"
 
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
 
@@ -14,7 +15,7 @@ func TestData_loadTags(t *testing.T) {
 	a := assert.New(t)
 
 	data := &Data{
-		Root:   "./testdata",
+		path:   vars.NewPath("./testdata"),
 		Config: &Config{URLS: &URLS{Root: "/root", Tag: "tags", Suffix: ".html"}},
 	}
 	a.NotError(data.loadTags())
@@ -31,7 +32,7 @@ func TestData_loadTags(t *testing.T) {
 func TestData_loadLinks(t *testing.T) {
 	a := assert.New(t)
 
-	data := &Data{Root: "./testdata"}
+	data := &Data{path: vars.NewPath("./testdata")}
 	a.NotError(data.loadLinks())
 	a.True(len(data.Links) > 0)
 	a.Equal(data.Links[0].Text, "text0")
@@ -45,7 +46,7 @@ func TestData_loadLinks(t *testing.T) {
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
-	d := &Data{Root: "./testdata"}
+	d := &Data{path: vars.NewPath("./testdata")}
 	a.NotError(d.loadConfig()).NotNil(d.Config)
 	conf := d.Config
 	a.Equal(conf.Title, "title")

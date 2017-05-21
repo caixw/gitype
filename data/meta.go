@@ -7,7 +7,6 @@ package data
 import (
 	"io/ioutil"
 	"path"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -35,12 +34,8 @@ func (d *Data) loadMeta() error {
 	return d.loadConfig()
 }
 
-func (d *Data) metaPath(file string) string {
-	return filepath.Join(d.Root, metaDir, file)
-}
-
 func (d *Data) loadTags() error {
-	data, err := ioutil.ReadFile(d.metaPath(tagsFile))
+	data, err := ioutil.ReadFile(d.path.MetaPath(tagsFile))
 	if err != nil {
 		return err
 	}
@@ -70,7 +65,7 @@ func (d *Data) loadTags() error {
 }
 
 func (d *Data) loadLinks() error {
-	data, err := ioutil.ReadFile(d.metaPath(linksFile))
+	data, err := ioutil.ReadFile(d.path.MetaPath(linksFile))
 	if err != nil {
 		return err
 	}
@@ -96,7 +91,7 @@ func (d *Data) loadLinks() error {
 // 加载配置文件。
 // path 配置文件的地址。
 func (d *Data) loadConfig() error {
-	data, err := ioutil.ReadFile(d.metaPath(confFile))
+	data, err := ioutil.ReadFile(d.path.MetaPath(confFile))
 	if err != nil {
 		return err
 	}

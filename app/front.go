@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/caixw/typing/data"
-	"github.com/caixw/typing/vars"
 	"github.com/issue9/handlers"
 	"github.com/issue9/logs"
 	"github.com/issue9/utils"
@@ -101,13 +100,6 @@ func (a *app) getPostsRange(postsSize, page int, w http.ResponseWriter) (start, 
 	}
 
 	return start, end, true
-}
-
-// 获取媒体文件
-//
-// /media/2015/intro-php/content.html ==> /posts/2015/intro-php/content.html
-func (a *app) getMedia(w http.ResponseWriter, r *http.Request) {
-	http.StripPrefix(vars.MediaURL, http.FileServer(http.Dir(a.path.DataPosts))).ServeHTTP(w, r)
 }
 
 // 首页及文章列表页

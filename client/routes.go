@@ -4,7 +4,13 @@
 
 package client
 
-import "net/http"
+import (
+	"net/http"
+	"path/filepath"
+
+	"github.com/issue9/mux"
+	"github.com/issue9/utils"
+)
 
 func (c *Client) initRoutes() error {
 	urls := c.data.Config.URLS
@@ -21,7 +27,10 @@ func (c *Client) initRoutes() error {
 }
 
 func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
-	//
+	ps := mux.GetParams(r)
+	if ps == nil {
+		// TODO
+	}
 }
 
 func (c *Client) getPosts(w http.ResponseWriter, r *http.Request) {
@@ -44,10 +53,29 @@ func (c *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	//
 }
 
+// 获取媒体文件
+//
+// /media/2015/intro-php/content.html ==> /posts/2015/intro-php/content.html
 func (c *Client) getMedia(w http.ResponseWriter, r *http.Request) {
-	//
+	media := c.data.Config.URLS.Media
+	dir := http.Dir(c.data.PostsPath(""))
+	http.StripPrefix(media, http.FileServer(dir)).ServeHTTP(w, r)
 }
 
+// 读取根下的文件
 func (c *Client) getRaws(w http.ResponseWriter, r *http.Request) {
-	//
+	urls := c.data.Config.URLS
+	if r.URL.Path == urls.Root || r.URL.Path == urls.Root+"/" {
+		c.getPosts(w, r)
+		return
+	}
+
+	root := http.Dir(a.path.DataRaws)
+	if !utils.FileExists(filepath.Join(a.path.DataRaws, r.URL.Path)) {
+		a.renderStatusCode(w, http.StatusNotFound)
+		return
+	}
+	prefix := a.data.URLS.Root + "/"
+	http.StripPrefix(prefix, http.FileServer(root)).ServeHTTP(w, r)
+
 }
