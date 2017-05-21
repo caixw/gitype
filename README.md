@@ -68,11 +68,11 @@ logs.xml 定义了日志的输出形式和保存路径，具体配置可参考 [
 adminURL      | string      | 后台管理的地址
 adminPassword | string      | 后台管理密码
 https         | bool        | 是否启用https
-certFile      | string      | 当https为true时，此值为必填
-keyFile       | string      | 当https为true时，此值为必填
-port          | string      | 端口，不指定，默认为80或是443
+certFile      | string      | 当 https 为 true 时，此值为必填
+keyFile       | string      | 当 https 为 true 时，此值为必填
+port          | string      | 端口，不指定，默认为 80 或是 443
 headers       | map         | 附加的头信息，头信息可能在其它地方被修改
-pprof         | string      | 指定pprof地址，输出net/pprof中指定的一些信息
+pprof         | string      | 指定 pprof 地址，输出 net/pprof 中指定的一些信息
 
 
 
@@ -152,4 +152,4 @@ BUG 可在[此处](https://github.com/caixw/typing/issues)提交或是直接 PR�
 
 ### 版权
 
-本项目采用[MIT](https://opensource.org/licenses/MIT)开源授权许可证，完整的授权说明可在[LICENSE](LICENSE)文件中找到。
+本项目采用 [MIT](https://opensource.org/licenses/MIT) 开源授权许可证，完整的授权说明可在 [LICENSE](LICENSE) 文件中找到。
