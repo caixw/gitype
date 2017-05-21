@@ -1,11 +1,11 @@
 // 这是自动产生的文件，不需要修改
 
-package static
+package admin
 
 var AdminHTML = `<!DOCTYPE html>
 <html lang="zh-cmn-Hans">
 	<meta charset="utf-8" />
-	<title>typing控制面板</title>
+	<title>typing 控制面板</title>
     <style>
         body{text-align:center}
         .container{

@@ -3,4 +3,4 @@
 // license that can be found in the LICENSE file.
 
 //go:generate go run make.go
-package static
+package admin

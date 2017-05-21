@@ -44,6 +44,7 @@ func (a *app) reload() error {
 	return nil
 }
 
+// Run 运行程序
 func Run(path *vars.Path) error {
 	logs.Info("程序工作路径为:", path.Root)
 

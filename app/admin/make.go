@@ -13,7 +13,7 @@ import (
 
 const (
 	file    = "./static.go" // 模板文件编译后保存的文件名
-	pkgName = "static"      // 包的名称
+	pkgName = "admin"       // 包的名称
 )
 
 // 模板文件名，及与其对应的可导出变量名

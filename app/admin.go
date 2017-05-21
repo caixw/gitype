@@ -11,14 +11,14 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/caixw/typing/app/static"
+	"github.com/caixw/typing/app/admin"
 	"github.com/issue9/logs"
 	"github.com/issue9/utils"
 )
 
 // 初始化控制台相关内容
 func (a *app) initAdmin() (err error) {
-	a.adminTpl, err = template.New("admin").Parse(static.AdminHTML)
+	a.adminTpl, err = template.New("admin").Parse(admin.AdminHTML)
 	if err != nil {
 		return
 	}
