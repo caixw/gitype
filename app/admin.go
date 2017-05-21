@@ -39,7 +39,7 @@ func (w *logW) Write(bs []byte) (int, error) {
 	return len(bs), nil
 }
 
-// 通过webhooks来更新内容
+// 通过 webhooks 来更新内容
 func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 	now := time.Now().Unix()
 
@@ -49,24 +49,24 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var cmd *exec.Cmd
-	if utils.FileExists(a.path.Data) {
+	if utils.FileExists(a.path.DataDir) {
 		cmd = exec.Command("git", "pull")
-		cmd.Dir = a.path.Data
+		cmd.Dir = a.path.DataDir
 	} else {
-		cmd = exec.Command("git", "clone", a.conf.RepoURL, a.path.Data)
+		cmd = exec.Command("git", "clone", a.conf.RepoURL, a.path.DataDir)
 		cmd.Dir = a.path.Root
 	}
 
 	cmd.Stderr = &logW{l: logs.ERROR()}
 	cmd.Stdout = &logW{l: logs.INFO()}
 	if err := cmd.Run(); err != nil {
-		logs.Error("a.postWebhooks:", err)
+		logs.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	if err := a.reload(); err != nil {
-		logs.Error("app.postWebhooks:", err)
+		logs.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -77,7 +77,7 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 func (a *app) postAdminPage(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("password") == a.conf.AdminPassword {
 		if err := a.reload(); err != nil {
-			logs.Error("app.postAdminPage:", err)
+			logs.Error(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -93,16 +93,17 @@ func (a *app) getAdminPage(w http.ResponseWriter, r *http.Request) {
 	var homeURL string
 
 	// data 有可能加载失败
-	if a.data != nil {
-		homeURL = a.data.Config.URL
+	data := a.client.Data()
+	if data != nil {
+		homeURL = data.Config.URL
 	}
-	data := map[string]interface{}{
+	s := map[string]interface{}{
 		"lastUpdate": time.Unix(a.updated, 0).Format("2006-01-02 15:04:05-0700"),
 		"homeURL":    homeURL,
 	}
 
-	if err := a.adminTpl.Execute(w, data); err != nil {
-		logs.Error("app.getAdminPage:", err)
+	if err := a.adminTpl.Execute(w, s); err != nil {
+		logs.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }

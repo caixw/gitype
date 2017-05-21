@@ -12,6 +12,7 @@ import (
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
+	"github.com/issue9/handlers"
 	"github.com/issue9/logs"
 	"github.com/issue9/utils"
 )
@@ -317,4 +318,21 @@ func (c *Client) getPostsRange(postsSize, page int, w http.ResponseWriter) (star
 	}
 
 	return start, end, true
+}
+
+// 每次访问前需要做的预处理工作。
+func (c *Client) pre(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// 输出访问日志
+		logs.Infof("%v：%v", r.UserAgent(), r.URL)
+
+		// 直接根据整个博客的最后更新时间来确认etag
+		if r.Header.Get("If-None-Match") == c.etag {
+			logs.Infof("304:%v", r.URL)
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Set("Etag", c.etag)
+		handlers.CompressFunc(f).ServeHTTP(w, r)
+	}
 }

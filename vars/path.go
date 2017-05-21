@@ -18,7 +18,7 @@ const (
 
 // Path 表示的文件路径信息
 type Path struct {
-	root string
+	Root string
 
 	DataDir string
 	ConfDir string
@@ -35,7 +35,7 @@ func NewPath(root string) *Path {
 	confDir := filepath.Join(root, confDir)
 
 	return &Path{
-		root: root,
+		Root: root,
 
 		DataDir: dataDir,
 		ConfDir: confDir,
