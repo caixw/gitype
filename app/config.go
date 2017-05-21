@@ -13,11 +13,12 @@ import (
 )
 
 type config struct {
-	CertFile string `json:"certFile"`
-	KeyFile  string `json:"keyFile"`
-	Port     string `json:"port"`
-	Pprof    string `json:"pprof"`
-	Headers  string `json:"headers"`
+	HTTPS    bool              `json:"https"`
+	CertFile string            `json:"certFile"`
+	KeyFile  string            `json:"keyFile"`
+	Port     string            `json:"port"`
+	Pprof    string            `json:"pprof"`
+	Headers  map[string]string `json:"headers"`
 
 	WebhooksURL        string `json:"webhooksURL"`        // webhooks接收地址
 	WebhooksUpdateFreq int64  `json:"webhooksUpdateFreq"` // webhooks的最小更新频率，秒数
@@ -38,20 +39,20 @@ func loadConfig(path string) (*config, error) {
 	}
 
 	switch {
-	case !utils.FileExists(conf.CertFile):
+	case conf.HTTPS && !utils.FileExists(conf.CertFile):
 		return nil, &data.FieldError{File: "config.json", Field: "certFile", Message: "不能为空"}
-	case !utils.FileExists(conf.KeyFile):
+	case conf.HTTPS && !utils.FileExists(conf.KeyFile):
 		return nil, &data.FieldError{File: "config.json", Field: "keyFile", Message: "不能为空"}
 	case len(conf.Pprof) > 0 && conf.Pprof[0] != '/':
 		return nil, &data.FieldError{File: "config.json", Field: "pprof", Message: "必须以 / 开头"}
-	case len(conf.WebhooksURL) == 0 || conf.WebhooksURL == "/":
-		return nil, &data.FieldError{File: "config.json", Field: "webhooksURL", Message: "不能为空且必须以 / 开头"}
+	case len(conf.WebhooksURL) == 0 || conf.WebhooksURL[0] != '/':
+		return nil, &data.FieldError{File: "config.json", Field: "webhooksURL", Message: "不能为空且只能以 / 开头"}
 	case conf.WebhooksUpdateFreq < 0:
 		return nil, &data.FieldError{File: "config.json", Field: "webhooksUpdateFreq", Message: "不能小于 0"}
-	case len(conf.RepoURL) == 0 || conf.RepoURL == "/":
-		return nil, &data.FieldError{File: "config.json", Field: "repoURL", Message: "不能为空且必须以 / 开头"}
-	case len(conf.AdminURL) == 0 || conf.AdminURL == "/":
-		return nil, &data.FieldError{File: "config.json", Field: "adminURL", Message: "不能为空且必须以 / 开头"}
+	case len(conf.RepoURL) == 0:
+		return nil, &data.FieldError{File: "config.json", Field: "repoURL", Message: "不能为空"}
+	case len(conf.AdminURL) == 0 || conf.AdminURL[0] != '/':
+		return nil, &data.FieldError{File: "config.json", Field: "adminURL", Message: "不能为空只能以 / 开头"}
 	case len(conf.AdminPassword) == 0:
 		return nil, &data.FieldError{File: "config.json", Field: "adminPassword", Message: "不能为空"}
 	}

@@ -1,4 +1,5 @@
 {
+    "https": false,
     "certFile": "",
     "keyFile":  "",
     "port":     ":8080",

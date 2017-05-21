@@ -69,5 +69,8 @@ func Run(path *vars.Path) error {
 		logs.Error(err)
 	}
 
-	return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, a.mux)
+	if a.conf.HTTPS {
+		return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, a.mux)
+	}
+	return http.ListenAndServe(a.conf.Port, a.mux)
 }

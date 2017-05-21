@@ -25,7 +25,7 @@ func (d *Data) loadThemes() error {
 		return errors.New("未找到任何主题文件")
 	}
 
-	themes := make([]*Theme, 0, len(fs))
+	d.Themes = make([]*Theme, 0, len(fs))
 
 	for _, file := range fs {
 		if !file.IsDir() {
@@ -35,7 +35,7 @@ func (d *Data) loadThemes() error {
 		if err != nil {
 			return err
 		}
-		themes = append(themes, theme)
+		d.Themes = append(d.Themes, theme)
 	}
 
 	sort.SliceStable(d.Themes, func(i, j int) bool {

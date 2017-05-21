@@ -2,23 +2,17 @@
 <logs>
     <info prefix="[INFO]" flag="">
         <console output="stderr" foreground="green" background="black" />
-        <buffer size="100">
-            <rotate prefix="info-" dir="./testdata/logs/" size="5M" />
-        </buffer>
+        <rotate prefix="info-" dir="./testdata/logs/" size="5M" />
     </info>
  
     <debug prefix="[DEBUG]">
         <console output="stderr" foreground="yellow" background="blue" />
-        <buffer size="50">
-            <rotate prefix="debug-" dir="./testdata/logs/" size="5M" />
-        </buffer>
+        <rotate prefix="debug-" dir="./testdata/logs/" size="5M" />
     </debug>
  
     <trace prefix="[TRACE]">
         <console output="stderr" foreground="yellow" background="blue" />
-        <buffer size="50">
-            <rotate prefix="trace-" dir="./testdata/logs/" size="5M" />
-        </buffer>
+        <rotate prefix="trace-" dir="./testdata/logs/" size="5M" />
     </trace>
  
     <warn prefix="[WARNNING]">
@@ -26,12 +20,12 @@
         <rotate prefix="info-" dir="./testdata/logs/" size="5M" />
     </warn>
  
-    <error prefix="[ERROR]">
+    <error prefix="[ERROR]" flag="log.llongfile">
         <console output="stderr" foreground="red" background="blue" />
         <rotate prefix="error-" dir="./testdata/logs/" size="5M" />
     </error>
  
-    <critical prefix="[CRITICAL]">
+    <critical prefix="[CRITICAL]" flag="log.llongfile">
         <console output="stderr" foreground="red" background="blue" />
         <rotate prefix="critical-" dir="./testdata/logs/" size="5M" />
     </critical>
