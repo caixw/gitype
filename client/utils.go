@@ -14,7 +14,7 @@ import (
 	"github.com/issue9/mux"
 )
 
-// paramString 获取路径匹配中的参数，并以字符串的格式返回。
+// 获取路径匹配中的参数，并以字符串的格式返回。
 // 若不能找到该参数，返回 false
 func (c *Client) paramString(w http.ResponseWriter, r *http.Request, key string) (string, bool) {
 	ps := mux.GetParams(r)
