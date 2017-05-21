@@ -44,14 +44,8 @@ func TestData_loadPosts(t *testing.T) {
 		&Tag{Slug: "default1"},
 		&Tag{Slug: "default2"},
 	}
-	urls := &URLS{
-		Root:   "/root",
-		Suffix: ".html",
-		Post:   "posts",
-	}
 	conf := &Config{
 		Theme: "t1",
-		URLS:  urls,
 	}
 
 	d := &Data{
@@ -63,5 +57,5 @@ func TestData_loadPosts(t *testing.T) {
 	a.Equal(len(d.Posts), 2)
 	p2 := d.Posts[0]
 	a.Equal(p2.Tags[0].Slug, "default1")
-	a.Equal(p2.Permalink, "/root/posts/post1.html")
+	a.Equal(p2.Permalink, "/posts/post1.html")
 }

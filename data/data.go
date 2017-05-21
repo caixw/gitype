@@ -99,8 +99,6 @@ type Config struct {
 
 	Menus []*Link `yaml:"menus,omitempty"` // 菜单内容
 
-	URLS *URLS `yaml:"urls"` // 自定义的路径内容
-
 	// feeds
 	RSS     *RSS     `yaml:"rss,omitempty"`
 	Atom    *RSS     `yaml:"atom,omitempty"`
@@ -122,19 +120,6 @@ type Sitemap struct {
 	PostPriority   float64 `yaml:"postPriority"`
 	TagChangefreq  string  `yaml:"tagChangefreq"`
 	PostChangefreq string  `yaml:"postChangefreq"`
-}
-
-// URLS 自定义 URL
-type URLS struct {
-	Root   string `yaml:"root"`   // 根地址
-	Media  string `yaml:"media"`  // 媒体文件
-	Suffix string `yaml:"suffix"` // 地址后缀
-	Posts  string `yaml:"posts"`  // 列表页地址
-	Post   string `yaml:"post"`   // 文章详细页地址
-	Tags   string `yaml:"tags"`   // 标签列表页地址
-	Tag    string `yaml:"tag"`    // 标签详细页地址
-	Search string `yaml:"search"` // 搜索URL，会加上 Suffix 作为后缀
-	Themes string `yaml:"themes"` // 主题地址
 }
 
 // FieldError 表示加载文件出错时，具体的错误信息

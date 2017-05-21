@@ -58,7 +58,7 @@ func (d *Data) loadTags() error {
 		}
 
 		tag.Posts = make([]*Post, 0, 10)
-		tag.Permalink = path.Join(d.Config.URLS.Root, d.Config.URLS.Tag, tag.Slug+d.Config.URLS.Suffix)
+		tag.Permalink = path.Join(vars.Tag, tag.Slug) + vars.Suffix
 	}
 	d.Tags = tags
 	return nil
@@ -172,13 +172,6 @@ func initConfig(conf *Config) error {
 		return err
 	}
 
-	if conf.URLS == nil {
-		return &FieldError{File: confFile, Field: "urls", Message: "不能为空"}
-	}
-	if err := checkURLS(conf.URLS); err != nil {
-		return err
-	}
-
 	// Menus
 	for index, link := range conf.Menus {
 		if err := link.check(); err != nil {
@@ -203,29 +196,6 @@ func checkRSS(typ string, rss *RSS) error {
 	}
 
 	return nil
-}
-
-func checkURLS(u *URLS) error {
-	switch {
-	case len(u.Suffix) >= 0 && u.Suffix[0] != '.':
-		return &FieldError{File: confFile, Field: "Suffix", Message: "必须以.开头"}
-	case len(u.Posts) == 0:
-		return &FieldError{File: confFile, Field: "Posts", Message: "不能为空"}
-	case len(u.Media) == 0:
-		return &FieldError{File: confFile, Field: "Media", Message: "不能为空"}
-	case len(u.Post) == 0:
-		return &FieldError{File: confFile, Field: "Post", Message: "不能为空"}
-	case len(u.Tags) == 0:
-		return &FieldError{File: confFile, Field: "Tags", Message: "不能为空"}
-	case len(u.Tag) == 0:
-		return &FieldError{File: confFile, Field: "Tag", Message: "不能为空"}
-	case len(u.Search) == 0:
-		return &FieldError{File: confFile, Field: "Search", Message: "不能为空"}
-	case len(u.Themes) == 0:
-		return &FieldError{File: confFile, Field: "Themes", Message: "不能为空"}
-	default:
-		return nil
-	}
 }
 
 // 检测 sitemap 取值是否正确

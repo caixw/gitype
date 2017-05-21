@@ -51,7 +51,7 @@ func (d *Data) loadPosts() error {
 			logs.Error(err)
 			continue
 		}
-		post.Permalink = path.Join(d.Config.URLS.Root, d.Config.URLS.Post, post.Slug+d.Config.URLS.Suffix)
+		post.Permalink = path.Join(vars.Post, post.Slug) + vars.Suffix
 
 		d.Posts = append(d.Posts, post)
 	}
