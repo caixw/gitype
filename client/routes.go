@@ -26,30 +26,37 @@ func (c *Client) removeRoutes() {
 }
 
 func (c *Client) initRoutes() {
-	pattern := vars.Post + "/{slug}" + vars.Suffix
+	// posts/2016/about.html
+	pattern := vars.Post + "/{year}/{id}" + vars.Suffix
 	c.routes = append(c.routes, pattern)
 	c.mux.GetFunc(pattern, c.pre(c.getPost))
 
+	// index.html
 	pattern = vars.Posts + vars.Suffix
 	c.routes = append(c.routes, pattern)
 	c.mux.GetFunc(pattern, c.pre(c.getPosts))
 
+	// tags/tag1.html
 	pattern = vars.Tag + "/{slug}" + vars.Suffix
 	c.routes = append(c.routes, pattern)
 	c.mux.GetFunc(pattern, c.pre(c.getTag))
 
+	// tags.html
 	pattern = vars.Tags + vars.Suffix
 	c.routes = append(c.routes, pattern)
 	c.mux.GetFunc(pattern, c.pre(c.getTags))
 
+	// search.html
 	pattern = vars.Search + vars.Suffix
 	c.routes = append(c.routes, pattern)
 	c.mux.GetFunc(pattern, c.pre(c.getSearch))
 
+	// themes/...
 	pattern = vars.Themes + "/*"
 	c.routes = append(c.routes, pattern)
 	c.mux.GetFunc(pattern, c.pre(c.getThemes))
 
+	// /...
 	pattern = "/*"
 	c.routes = append(c.routes, pattern)
 	c.mux.GetFunc(pattern, c.pre(c.getRaws))
@@ -58,15 +65,20 @@ func (c *Client) initRoutes() {
 // 文章详细页
 // /posts/{slug}.html
 func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
-	slug, ok := c.paramString(w, r, "slug")
+	year, ok := c.paramString(w, r, "year")
 	if !ok {
 		return
 	}
+	id, ok := c.paramString(w, r, "id")
+	if !ok {
+		return
+	}
+	id = year + "/" + id
 
 	var post *data.Post
 	var next, prev *data.Link
 	for index, p := range c.data.Posts {
-		if p.Slug != slug {
+		if p.Slug != id {
 			continue
 		}
 		post = p
@@ -90,7 +102,7 @@ func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	} // end for a.data.Posts
 
 	if post == nil {
-		logs.Debugf("并未找到与之相对应的文章:%v", slug)
+		logs.Debugf("并未找到与之相对应的文章:%v", id)
 		c.getRaws(w, r) // 文章不存在，则查找raws目录下是否存在同名文件
 		return
 	}
@@ -285,6 +297,7 @@ func (c *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 }
 
 // 读取根下的文件
+// /...
 func (c *Client) getRaws(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
 		c.getPosts(w, r)

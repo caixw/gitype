@@ -6,7 +6,7 @@ package vars
 
 // 与 URL 相关的一些定义，方便做一些自定义操作
 const (
-	Posts  = "/posts"  // 列表页地址
+	Posts  = "/index"  // 列表页地址
 	Post   = "/posts"  // 文章详细页地址
 	Tags   = "/tags"   // 标签列表页地址
 	Tag    = "/tags"   // 标签详细页地址
