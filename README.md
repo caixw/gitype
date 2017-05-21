@@ -39,8 +39,6 @@ data 为博客的实际内容，包含了文章，标签，友链以及网站名
       |     |
       |     |--- config.yaml 基本设置项，比如网站名称等
       |     |
-      |     |--- urls.yaml 自定义路由项的一些设置
-      |     |
       |     |--- tags.yaml 标签的定义
       |     |
       |     |--- links.yaml 友情链接
@@ -60,7 +58,7 @@ data 为博客的实际内容，包含了文章，标签，友链以及网站名
 
 conf 目录下的为程序级别的配置文件，在程序加载之后，无法再次更改。其中
 app.json 定义了诸如端口，证书等基本数据；
-logs.xml 定义了日志的输出形式和保存路径，具体配置可参考[logs](https://github.com/issue9/logs)的相关文档。
+logs.xml 定义了日志的输出形式和保存路径，具体配置可参考 [logs](https://github.com/issue9/logs) 的相关文档。
 
 
 ##### app.json
@@ -69,13 +67,12 @@ logs.xml 定义了日志的输出形式和保存路径，具体配置可参考[l
 :-------------|:------------|:------
 adminURL      | string      | 后台管理的地址
 adminPassword | string      | 后台管理密码
-core          | web.Core
-core.https    | bool        | 是否启用https
-core.certFile | string      | 当https为true时，此值为必填
-core.keyFile  | string      | 当https为true时，此值为必填
-core.port     | string      | 端口，不指定，默认为80或是443
-core.headers  | map         | 附加的头信息，头信息可能在其它地方被修改
-core.pprof    | string      | 指定pprof地址，输出net/pprof中指定的一些信息
+https         | bool        | 是否启用https
+certFile      | string      | 当https为true时，此值为必填
+keyFile       | string      | 当https为true时，此值为必填
+port          | string      | 端口，不指定，默认为80或是443
+headers       | map         | 附加的头信息，头信息可能在其它地方被修改
+pprof         | string      | 指定pprof地址，输出net/pprof中指定的一些信息
 
 
 
@@ -131,20 +128,6 @@ color     | string      | 颜色值，在展示所有标签的页面，会以此
 content   | string      | 用于描述该标签的详细内容，可以是**HTML**
 
 
-##### urls.yaml
-
-用于自定义URL
-
-名称      | 类型        | 描述
-:---------|:------------|:----------
-root      | string      | 根地址，可为空，表示使用根网址
-suffix    | string      | 地址后缀
-posts     | string      | 列表页地址
-post      | string      | 文章详细页地址
-tags      | string      | 标签列表页地址
-tag       | string      | 标签详细页地址
-themes    | string      | 主题地址
-
 
 ##### 主题
 
@@ -160,14 +143,10 @@ data/themes 下为主题文件，可定义多个主题，通过 config 中的 th
 
 
 
-
-
 ### 开发
 
 typing 以自用为主，暂时*不支持新功能的 PR*。
 BUG 可在[此处](https://github.com/caixw/typing/issues)提交或是直接 PR。
-
-详细的开发文档可在[DEV](DEV.md)中找到。
 
 
 

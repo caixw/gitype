@@ -33,13 +33,15 @@ func main() {
 		return
 	}
 
+	path := vars.NewPath(*appdir)
+
 	// 初始化日志
-	err = logs.InitFromXMLFile(filepath.Join("./", "conf", "logs.xml"))
+	err := logs.InitFromXMLFile(filepath.Join(path.ConfDir, "logs.xml"))
 	if err != nil {
 		panic(err)
 	}
 
-	logs.Critical(app.Run("./"))
+	logs.Critical(app.Run(path))
 	logs.Flush()
 }
 
