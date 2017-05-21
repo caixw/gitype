@@ -104,7 +104,8 @@ func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Canonical = post.Permalink
 	p.Description = post.Summary
 	p.Title = post.Title
-	if len(p.Tags) > 0 {
+	p.Keywords = post.Keywords
+	if len(p.Keywords) == 0 && len(p.Tags) > 0 {
 		keywords := make([]string, 0, len(p.Tags))
 		for _, v := range p.Tags {
 			keywords = append(keywords, v.Title)
