@@ -14,6 +14,7 @@ import (
 	"github.com/issue9/utils"
 )
 
+// 将一个 log.Logger 封装成 io.Writer
 type logW struct {
 	l *log.Logger
 }
@@ -45,13 +46,13 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 	cmd.Stdout = &logW{l: logs.INFO()}
 	if err := cmd.Run(); err != nil {
 		logs.Error(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
 	if err := a.reload(); err != nil {
 		logs.Error(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 

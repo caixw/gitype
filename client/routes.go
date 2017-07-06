@@ -110,13 +110,6 @@ func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Description = post.Summary
 	p.Title = post.Title
 	p.Keywords = post.Keywords
-	if len(p.Keywords) == 0 && len(p.Tags) > 0 {
-		keywords := make([]string, 0, len(p.Tags))
-		for _, v := range p.Tags {
-			keywords = append(keywords, v.Title)
-		}
-		p.Keywords = strings.Join(keywords, ",")
-	}
 
 	p.render(w, post.Template, nil)
 }
@@ -228,6 +221,7 @@ func (c *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	p := c.newPage()
 	p.Title = "标签"
 	p.Canonical = vars.Tags + vars.Suffix
+
 	p.render(w, "tags", nil)
 }
 

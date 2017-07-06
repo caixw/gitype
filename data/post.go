@@ -127,6 +127,15 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 		return nil, fmt.Errorf("文章[%v]未指定任何有效的关联标签信息", slug)
 	}
 
+	// keywords
+	if len(p.Keywords) == 0 && len(p.Tags) > 0 {
+		keywords := make([]string, 0, len(p.Tags))
+		for _, v := range p.Tags {
+			keywords = append(keywords, v.Title)
+		}
+		p.Keywords = strings.Join(keywords, ",")
+	}
+
 	// created
 	t, err := time.Parse(vars.DateFormat, p.CreatedFormat)
 	if err != nil {

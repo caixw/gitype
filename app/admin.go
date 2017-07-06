@@ -25,7 +25,6 @@ func (a *app) initAdmin() (err error) {
 	return nil
 }
 
-// 将一个 log.Logger 封装成 io.Writer
 func (a *app) postAdminPage(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("password") == a.conf.AdminPassword {
 		if err := a.reload(); err != nil {
