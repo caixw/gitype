@@ -12,6 +12,7 @@ import (
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
+	"github.com/issue9/mux/params"
 )
 
 // 获取路径匹配中的参数，并以字符串的格式返回。
@@ -20,15 +21,15 @@ func (c *Client) paramString(w http.ResponseWriter, r *http.Request, key string)
 	ps := mux.GetParams(r)
 	val, err := ps.String(key)
 
-	if err == mux.ErrParamNotExists {
-		c.renderError(w, http.StatusBadRequest)
+	if err == params.ErrParamNotExists {
+		c.renderError(w, http.StatusNotFound)
 		return "", false
 	} else if err != nil {
 		logs.Error(err)
-		c.renderError(w, http.StatusBadRequest)
+		c.renderError(w, http.StatusNotFound)
 		return "", false
 	} else if len(val) == 0 {
-		c.renderError(w, http.StatusBadRequest)
+		c.renderError(w, http.StatusNotFound)
 		return "", false
 	}
 

@@ -12,8 +12,8 @@ import (
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
-	"github.com/issue9/handlers"
 	"github.com/issue9/logs"
+	"github.com/issue9/middleware/compress"
 	"github.com/issue9/utils"
 )
 
@@ -27,7 +27,7 @@ func (c *Client) removeRoutes() {
 
 func (c *Client) initRoutes() {
 	// posts/2016/about.html
-	pattern := vars.Post + "/{year}/{id}" + vars.Suffix
+	pattern := vars.Post + "/{slug}" + vars.Suffix
 	c.routes = append(c.routes, pattern)
 	c.mux.GetFunc(pattern, c.pre(c.getPost))
 
@@ -52,12 +52,12 @@ func (c *Client) initRoutes() {
 	c.mux.GetFunc(pattern, c.pre(c.getSearch))
 
 	// themes/...
-	pattern = vars.Themes + "/*"
+	pattern = vars.Themes + "/{path}"
 	c.routes = append(c.routes, pattern)
 	c.mux.GetFunc(pattern, c.pre(c.getThemes))
 
 	// /...
-	pattern = "/*"
+	pattern = "/{path}"
 	c.routes = append(c.routes, pattern)
 	c.mux.GetFunc(pattern, c.pre(c.getRaws))
 }
@@ -65,15 +65,10 @@ func (c *Client) initRoutes() {
 // 文章详细页
 // /posts/{slug}.html
 func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
-	year, ok := c.paramString(w, r, "year")
-	if !ok {
+	id, found := c.paramString(w, r, "slug")
+	if !found {
 		return
 	}
-	id, ok := c.paramString(w, r, "id")
-	if !ok {
-		return
-	}
-	id = year + "/" + id
 
 	var post *data.Post
 	var next, prev *data.Link
@@ -345,6 +340,6 @@ func (c *Client) pre(f http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Etag", c.etag)
-		handlers.CompressFunc(f).ServeHTTP(w, r)
+		compress.New(f).ServeHTTP(w, r)
 	}
 }
