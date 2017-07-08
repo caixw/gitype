@@ -84,7 +84,7 @@ type Link struct {
 type Config struct {
 	Title           string `yaml:"title"`                 // 网站标题
 	Subtitle        string `yaml:"subtitle,omitempty"`    // 网站副标题
-	URL             string `yaml:"url"`                   // 网站的地址
+	URL             string `yaml:"url"`                   // 网站的地址，不包含最后的斜杠
 	Keywords        string `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
 	Description     string `yaml:"description,omitempty"` // 默认情况下的 descrription 内容
 	Beian           string `yaml:"beian,omitempty"`       // 备案号

@@ -27,7 +27,8 @@ type page struct {
 	URL         string       // 网站主域名
 	Root        string       // 网站的根目录
 	Canonical   string       // 当前页的唯一链接
-	Keywords    string       // meta.keywords 的值，对于搜索页，则为搜索关键字
+	Keywords    string       // meta.keywords 的值
+	Q           string       // 搜索关键字
 	Description string       // meta.description 的值
 	AppVersion  string       // 当前程序的版本号
 	GoVersion   string       // 编译的go版本号

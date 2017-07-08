@@ -261,6 +261,7 @@ func (c *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p.Title = "搜索:" + key
+	p.Q = key
 	p.Keywords = key
 	p.Description = "搜索关键字" + key + "的结果集"
 	start, end, ok := c.getPostsRange(len(posts), page, w)
