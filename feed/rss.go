@@ -53,7 +53,7 @@ func addPostsToRSS(buf *bytes.Buffer, d *data.Data) {
 		buf.WriteString("<item>\n")
 
 		buf.WriteString("<link>")
-		buf.WriteString(p.Permalink)
+		buf.WriteString(d.Config.URL + p.Permalink)
 		buf.WriteString("</link>\n")
 
 		buf.WriteString("<title>")

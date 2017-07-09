@@ -63,7 +63,7 @@ func addPostsToAtom(buf *bytes.Buffer, d *data.Data) {
 		buf.WriteString("</id>\n")
 
 		buf.WriteString(`<link href="`)
-		buf.WriteString(p.Permalink)
+		buf.WriteString(d.Config.URL + p.Permalink)
 		buf.WriteString("\" />\n")
 
 		buf.WriteString("<title>")
