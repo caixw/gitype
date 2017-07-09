@@ -76,7 +76,7 @@ func (c *Client) initFeeds() error {
 			return err
 		}
 
-		c.mux.GetFunc(conf.RSS.URL, c.pre(func(w http.ResponseWriter, r *http.Request) {
+		c.mux.GetFunc(conf.RSS.URL, c.prepare(func(w http.ResponseWriter, r *http.Request) {
 			w.Write(rss.Bytes())
 		}))
 	}
@@ -87,7 +87,7 @@ func (c *Client) initFeeds() error {
 			return err
 		}
 
-		c.mux.GetFunc(conf.Atom.URL, c.pre(func(w http.ResponseWriter, r *http.Request) {
+		c.mux.GetFunc(conf.Atom.URL, c.prepare(func(w http.ResponseWriter, r *http.Request) {
 			w.Write(atom.Bytes())
 		}))
 	}
@@ -98,7 +98,7 @@ func (c *Client) initFeeds() error {
 			return err
 		}
 
-		c.mux.GetFunc(conf.Sitemap.URL, c.pre(func(w http.ResponseWriter, r *http.Request) {
+		c.mux.GetFunc(conf.Sitemap.URL, c.prepare(func(w http.ResponseWriter, r *http.Request) {
 			w.Write(sitemap.Bytes())
 		}))
 	}

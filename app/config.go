@@ -13,12 +13,13 @@ import (
 )
 
 type config struct {
-	HTTPS    bool              `json:"https"`
-	CertFile string            `json:"certFile"`
-	KeyFile  string            `json:"keyFile"`
-	Port     string            `json:"port"`
-	Pprof    string            `json:"pprof"`
-	Headers  map[string]string `json:"headers"`
+	HTTPS     bool              `json:"https"`
+	HTTPState string            `json:"httpState"` // 对 80 端口的处理方式，可以 disable, redirect, default
+	CertFile  string            `json:"certFile"`
+	KeyFile   string            `json:"keyFile"`
+	Port      string            `json:"port"`
+	Pprof     string            `json:"pprof"`
+	Headers   map[string]string `json:"headers"`
 
 	WebhooksURL        string `json:"webhooksURL"`        // webhooks接收地址
 	WebhooksUpdateFreq int64  `json:"webhooksUpdateFreq"` // webhooks的最小更新频率，秒数
@@ -39,6 +40,8 @@ func loadConfig(path string) (*config, error) {
 	}
 
 	switch {
+	case conf.HTTPS && conf.HTTPState != "disable" && conf.HTTPState != "default" && conf.HTTPState != "redirect":
+		return nil, &data.FieldError{File: "config.json", Field: "httpState", Message: "无效的取值"}
 	case conf.HTTPS && !utils.FileExists(conf.CertFile):
 		return nil, &data.FieldError{File: "config.json", Field: "certFile", Message: "不能为空"}
 	case conf.HTTPS && !utils.FileExists(conf.KeyFile):

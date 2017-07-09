@@ -29,37 +29,37 @@ func (c *Client) initRoutes() {
 	// posts/2016/about.html
 	pattern := vars.Post + "/{slug}" + vars.Suffix
 	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.pre(c.getPost))
+	c.mux.GetFunc(pattern, c.prepare(c.getPost))
 
 	// index.html
 	pattern = vars.Posts + vars.Suffix
 	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.pre(c.getPosts))
+	c.mux.GetFunc(pattern, c.prepare(c.getPosts))
 
 	// tags/tag1.html
 	pattern = vars.Tag + "/{slug}" + vars.Suffix
 	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.pre(c.getTag))
+	c.mux.GetFunc(pattern, c.prepare(c.getTag))
 
 	// tags.html
 	pattern = vars.Tags + vars.Suffix
 	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.pre(c.getTags))
+	c.mux.GetFunc(pattern, c.prepare(c.getTags))
 
 	// search.html
 	pattern = vars.Search + vars.Suffix
 	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.pre(c.getSearch))
+	c.mux.GetFunc(pattern, c.prepare(c.getSearch))
 
 	// themes/...
 	pattern = vars.Themes + "/{path}"
 	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.pre(c.getThemes))
+	c.mux.GetFunc(pattern, c.prepare(c.getThemes))
 
 	// /...
 	pattern = "/{path}"
 	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.pre(c.getRaws))
+	c.mux.GetFunc(pattern, c.prepare(c.getRaws))
 }
 
 // 文章详细页
@@ -98,7 +98,7 @@ func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
 
 	if post == nil {
 		logs.Debugf("并未找到与之相对应的文章:%v", id)
-		c.getRaws(w, r) // 文章不存在，则查找raws目录下是否存在同名文件
+		c.getRaws(w, r) // 文章不存在，则查找 raws 目录下是否存在同名文件
 		return
 	}
 
@@ -106,10 +106,10 @@ func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Post = post
 	p.NextPage = next
 	p.PrevPage = prev
-	p.Canonical = post.Permalink
+	p.Keywords = post.Keywords
 	p.Description = post.Summary
 	p.Title = post.Title
-	p.Keywords = post.Keywords
+	p.Canonical = post.Permalink
 
 	p.render(w, post.Template, nil)
 }
@@ -323,18 +323,17 @@ func (c *Client) getPostsRange(postsSize, page int, w http.ResponseWriter) (star
 }
 
 // 每次访问前需要做的预处理工作。
-func (c *Client) pre(f http.HandlerFunc) http.HandlerFunc {
+func (c *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// 输出访问日志
-		logs.Infof("%v：%v", r.UserAgent(), r.URL)
+		logs.Infof("%v: %v", r.UserAgent(), r.URL) // 输出访问日志
 
-		// 直接根据整个博客的最后更新时间来确认etag
+		// 直接根据整个博客的最后更新时间来确认 etag
 		if r.Header.Get("If-None-Match") == c.etag {
-			logs.Infof("304:%v", r.URL)
+			logs.Infof("304: %v", r.URL)
 			w.WriteHeader(http.StatusNotModified)
 			return
 		}
 		w.Header().Set("Etag", c.etag)
-		compress.New(f).ServeHTTP(w, r)
+		compress.New(f, logs.ERROR()).ServeHTTP(w, r)
 	}
 }

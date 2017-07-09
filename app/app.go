@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/caixw/typing/client"
@@ -73,8 +74,30 @@ func Run(path *vars.Path) error {
 		logs.Error(err)
 	}
 
-	if a.conf.HTTPS {
-		return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, a.mux)
+	if !a.conf.HTTPS {
+		return http.ListenAndServe(a.conf.Port, a.mux)
 	}
-	return http.ListenAndServe(a.conf.Port, a.mux)
+
+	go func() { // 对 80 端口的处理方式
+		logs.Error(http.ListenAndServe(":80", a.mux))
+	}()
+	return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, a.mux)
+}
+
+func serveHTTP(a *app) {
+	switch a.conf.HTTPState {
+	case "default":
+		logs.Error(http.ListenAndServe(":80", a.mux))
+	case "redirect":
+		logs.Error(http.ListenAndServe(":80", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// 构建跳转链接
+			url := r.URL
+			url.Scheme = "HTTPS"
+			url.Host = strings.Split(r.Host, ":")[0] + a.conf.Port
+
+			http.Redirect(w, r, url.String(), http.StatusMovedPermanently)
+		})))
+	case "disable":
+		return
+	}
 }
