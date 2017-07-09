@@ -36,6 +36,11 @@ func (c *Client) initRoutes() {
 	c.routes = append(c.routes, pattern)
 	c.mux.GetFunc(pattern, c.prepare(c.getPosts))
 
+	// links.html
+	pattern = vars.Links + vars.Suffix
+	c.routes = append(c.routes, pattern)
+	c.mux.GetFunc(pattern, c.prepare(c.getLinks))
+
 	// tags/tag1.html
 	pattern = vars.Tag + "/{slug}" + vars.Suffix
 	c.routes = append(c.routes, pattern)
@@ -213,6 +218,16 @@ func (c *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p.render(w, "tag", nil)
+}
+
+// 友情链接页
+// /links.html
+func (c *Client) getLinks(w http.ResponseWriter, r *http.Request) {
+	p := c.newPage()
+	p.Title = "友情链接"
+	p.Canonical = vars.Links + vars.Suffix
+
+	p.render(w, "links", nil)
 }
 
 // 标签列表页
