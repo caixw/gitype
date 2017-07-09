@@ -79,7 +79,7 @@ func Run(path *vars.Path) error {
 	}
 
 	go func() { // 对 80 端口的处理方式
-		logs.Error(http.ListenAndServe(":80", a.mux))
+		serveHTTP(a)
 	}()
 	return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, a.mux)
 }

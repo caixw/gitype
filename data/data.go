@@ -74,7 +74,9 @@ type Theme struct {
 
 // Link 描述链接的内容
 type Link struct {
-	Icon  string `yaml:"icon,omitempty"`  // 链接对应的图标名称，fontawesome 图标名称，不用带 fa- 前缀。
+	// 链接对应的图标名称，fontawesome 图标名称，不用带 fa- 前缀。
+	// 也有可能是链接，模板根据情况自动选择。
+	Icon  string `yaml:"icon,omitempty"`
 	Title string `yaml:"title,omitempty"` // 链接的 title 属性
 	Rel   string `yaml:"rel,omitempty"`   // 链接的 rel 属性
 	URL   string `yaml:"url"`             // 链接地址
