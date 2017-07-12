@@ -9,6 +9,7 @@ package app
 import (
 	"html/template"
 	"net/http"
+	"net/http/pprof"
 	"path/filepath"
 	"strings"
 	"time"
@@ -74,16 +75,58 @@ func Run(path *vars.Path) error {
 		logs.Error(err)
 	}
 
+	h := a.buildHeader(a.buildPprof(a.mux))
+
 	if !a.conf.HTTPS {
-		return http.ListenAndServe(a.conf.Port, a.mux)
+		return http.ListenAndServe(a.conf.Port, h)
 	}
 
 	go func() { // 对 80 端口的处理方式
 		serveHTTP(a)
 	}()
-	return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, a.mux)
+	return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, h)
 }
 
+func (a *app) buildHeader(h http.Handler) http.Handler {
+	if len(a.conf.Headers) == 0 {
+		return h
+	}
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		for k, v := range a.conf.Headers {
+			w.Header().Set(k, v)
+		}
+		h.ServeHTTP(w, r)
+	})
+}
+
+// 根据 Config.Pprof 决定是否包装调试地址，调用前请确认是否已经开启 Pprof 选项
+func (a *app) buildPprof(h http.Handler) http.Handler {
+	logs.Debug("开启了调试功能，地址为：", a.conf.Pprof)
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !strings.HasPrefix(r.URL.Path, a.conf.Pprof) {
+			h.ServeHTTP(w, r)
+			return
+		}
+
+		path := r.URL.Path[len(a.conf.Pprof):]
+		switch path {
+		case "cmdline":
+			pprof.Cmdline(w, r)
+		case "profile":
+			pprof.Profile(w, r)
+		case "symbol":
+			pprof.Symbol(w, r)
+		case "trace":
+			pprof.Trace(w, r)
+		default:
+			pprof.Index(w, r)
+		}
+	}) // end return http.HandlerFunc
+}
+
+// 对 80 端口的处理方式
 func serveHTTP(a *app) {
 	switch a.conf.HTTPState {
 	case "default":
