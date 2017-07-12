@@ -55,7 +55,4 @@ func TestData_loadPosts(t *testing.T) {
 	}
 	a.NotError(d.loadPosts())
 	a.Equal(len(d.Posts), 2)
-	p2 := d.Posts[0]
-	a.Equal(p2.Tags[0].Slug, "default1")
-	a.Equal(p2.Permalink, "/posts/post1.html")
 }

@@ -166,6 +166,12 @@ func Load(path *vars.Path) (*Data, error) {
 		return nil, err
 	}
 
+	// 排序
+	sortPosts(d.Posts)
+	for _, tag := range d.Tags {
+		sortPosts(tag.Posts)
+	}
+
 	return d, nil
 }
 

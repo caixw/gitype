@@ -55,19 +55,6 @@ func (d *Data) loadPosts() error {
 		d.Posts = append(d.Posts, post)
 	}
 
-	sort.SliceStable(d.Posts, func(i, j int) bool {
-		switch {
-		case d.Posts[i].Top && d.Posts[j].Top:
-			return d.Posts[i].Created >= d.Posts[j].Created
-		case d.Posts[i].Top:
-			return false
-		case d.Posts[j].Top:
-			return true
-		default:
-			return d.Posts[i].Created >= d.Posts[j].Created
-		}
-	})
-
 	return nil
 }
 
@@ -156,4 +143,19 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 	}
 
 	return p, nil
+}
+
+func sortPosts(posts []*Post) {
+	sort.SliceStable(posts, func(i, j int) bool {
+		switch {
+		case posts[i].Top && posts[j].Top:
+			return posts[i].Created >= posts[j].Created
+		case posts[i].Top:
+			return false
+		case posts[j].Top:
+			return true
+		default:
+			return posts[i].Created >= posts[j].Created
+		}
+	})
 }
