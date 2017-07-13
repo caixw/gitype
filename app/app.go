@@ -19,6 +19,8 @@ import (
 	"github.com/issue9/mux"
 )
 
+const debugPprof = "/debug/pprof/"
+
 type app struct {
 	path     *vars.Path
 	mux      *mux.Mux
@@ -87,19 +89,19 @@ func (a *app) buildHeader(h http.Handler) http.Handler {
 
 // 根据 Config.Pprof 决定是否包装调试地址，调用前请确认是否已经开启 Pprof 选项
 func (a *app) buildPprof(h http.Handler) http.Handler {
-	if len(a.conf.Pprof) == 0 {
+	if !a.conf.Pprof {
 		return h
 	}
 
-	logs.Debug("开启了调试功能，地址为：", a.conf.Pprof)
+	logs.Debug("开启了调试功能，地址为：", debugPprof)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !strings.HasPrefix(r.URL.Path, a.conf.Pprof) {
+		if !strings.HasPrefix(r.URL.Path, debugPprof) {
 			h.ServeHTTP(w, r)
 			return
 		}
 
-		path := r.URL.Path[len(a.conf.Pprof):]
+		path := r.URL.Path[len(debugPprof):]
 		switch path {
 		case "cmdline":
 			pprof.Cmdline(w, r)

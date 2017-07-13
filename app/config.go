@@ -18,7 +18,7 @@ type config struct {
 	CertFile  string            `json:"certFile"`
 	KeyFile   string            `json:"keyFile"`
 	Port      string            `json:"port"`
-	Pprof     string            `json:"pprof"`
+	Pprof     bool              `json:"pprof"`
 	Headers   map[string]string `json:"headers"`
 
 	WebhooksURL        string `json:"webhooksURL"`        // webhooks接收地址
@@ -46,8 +46,6 @@ func loadConfig(path string) (*config, error) {
 		return nil, &data.FieldError{File: "config.json", Field: "certFile", Message: "不能为空"}
 	case conf.HTTPS && !utils.FileExists(conf.KeyFile):
 		return nil, &data.FieldError{File: "config.json", Field: "keyFile", Message: "不能为空"}
-	case len(conf.Pprof) > 0 && conf.Pprof[0] != '/':
-		return nil, &data.FieldError{File: "config.json", Field: "pprof", Message: "必须以 / 开头"}
 	case len(conf.WebhooksURL) == 0 || conf.WebhooksURL[0] != '/':
 		return nil, &data.FieldError{File: "config.json", Field: "webhooksURL", Message: "不能为空且只能以 / 开头"}
 	case conf.WebhooksUpdateFreq < 0:

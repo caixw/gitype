@@ -4,7 +4,7 @@
     "certFile": "",
     "keyFile":  "",
     "port":     ":8080",
-    "pprof":    "/debug/pprof",
+    "pprof":    false,
     "headers": {
         "server": "typing"
     },
