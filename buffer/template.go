@@ -6,7 +6,6 @@ package buffer
 
 import (
 	"html/template"
-	"path"
 	"path/filepath"
 	"regexp"
 	"time"
@@ -22,7 +21,7 @@ func (b *Buffer) compileTemplate() error {
 		"ldate":    b.longDateFormat,
 		"sdate":    b.shortDateFormat,
 		"rfc3339":  rfc3339DateFormat,
-		"themeURL": func(p string) string { return path.Join(vars.Themes, p) },
+		"themeURL": func(p string) string { return vars.ThemesURL(p) },
 	}
 
 	tpl, err := template.New("").

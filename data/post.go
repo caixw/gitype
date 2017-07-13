@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -48,7 +47,7 @@ func (d *Data) loadPosts() error {
 		if err != nil {
 			return err
 		}
-		post.Permalink = path.Join(vars.Post, post.Slug) + vars.Suffix
+		post.Permalink = vars.PostURL(post.Slug)
 
 		d.Posts = append(d.Posts, post)
 	}

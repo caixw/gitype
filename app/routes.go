@@ -28,14 +28,12 @@ func (a *app) initRoutes() error {
 	}
 
 	// index.html
-	pattern := vars.Posts + vars.Suffix
-	if err := handle(pattern, a.getPosts); err != nil {
+	if err := handle(vars.PostsURL(0), a.getPosts); err != nil {
 		return err
 	}
 
 	// links.html
-	pattern = vars.Links + vars.Suffix
-	if err := handle(pattern, a.getLinks); err != nil {
+	if err := handle(vars.LinksURL(), a.getLinks); err != nil {
 		return err
 	}
 
@@ -45,8 +43,7 @@ func (a *app) initRoutes() error {
 	}
 
 	// tags.html
-	pattern = vars.Tags + vars.Suffix
-	if err := handle(pattern, a.getTags); err != nil {
+	if err := handle(vars.TagsURL(), a.getTags); err != nil {
 		return err
 	}
 
@@ -56,14 +53,12 @@ func (a *app) initRoutes() error {
 	}
 
 	// themes/...
-	pattern = vars.Themes + "/{path}"
-	if err := handle(pattern, a.getThemes); err != nil {
+	if err := handle(vars.ThemesURL("{path}"), a.getThemes); err != nil {
 		return err
 	}
 
 	// /...
-	pattern = "/{path}"
-	return handle(pattern, a.getRaws)
+	return handle("/{path}", a.getRaws)
 }
 
 // 文章详细页
@@ -224,7 +219,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 func (a *app) getLinks(w http.ResponseWriter, r *http.Request) {
 	p := a.newPage()
 	p.Title = "友情链接"
-	p.Canonical = vars.Links + vars.Suffix
+	p.Canonical = vars.LinksURL()
 
 	p.render(w, "links", nil)
 }
@@ -234,7 +229,7 @@ func (a *app) getLinks(w http.ResponseWriter, r *http.Request) {
 func (a *app) getTags(w http.ResponseWriter, r *http.Request) {
 	p := a.newPage()
 	p.Title = "标签"
-	p.Canonical = vars.Tags + vars.Suffix
+	p.Canonical = vars.TagsURL()
 
 	p.render(w, "tags", nil)
 }
@@ -243,7 +238,7 @@ func (a *app) getTags(w http.ResponseWriter, r *http.Request) {
 // /themes/...
 func (a *app) getThemes(w http.ResponseWriter, r *http.Request) {
 	root := http.Dir(a.path.ThemesDir)
-	http.StripPrefix(vars.Themes, http.FileServer(root)).ServeHTTP(w, r)
+	http.StripPrefix(vars.ThemesURL(""), http.FileServer(root)).ServeHTTP(w, r)
 }
 
 // /search.html?q=key&page=2

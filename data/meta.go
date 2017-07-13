@@ -6,7 +6,6 @@ package data
 
 import (
 	"io/ioutil"
-	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -58,7 +57,7 @@ func (d *Data) loadTags() error {
 		}
 
 		tag.Posts = make([]*Post, 0, 10)
-		tag.Permalink = path.Join(vars.Tag, tag.Slug) + vars.Suffix
+		tag.Permalink = vars.TagURL(tag.Slug, 0)
 	}
 	d.Tags = tags
 	return nil
