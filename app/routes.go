@@ -23,13 +23,12 @@ func (a *app) initRoutes() error {
 	}
 
 	// posts/2016/about.html
-	pattern := vars.Post + "/{slug}" + vars.Suffix
-	if err := handle(pattern, a.getPost); err != nil {
+	if err := handle(vars.PostURL("{slug}"), a.getPost); err != nil {
 		return err
 	}
 
 	// index.html
-	pattern = vars.Posts + vars.Suffix
+	pattern := vars.Posts + vars.Suffix
 	if err := handle(pattern, a.getPosts); err != nil {
 		return err
 	}
@@ -41,8 +40,7 @@ func (a *app) initRoutes() error {
 	}
 
 	// tags/tag1.html
-	pattern = vars.Tag + "/{slug}" + vars.Suffix
-	if err := handle(pattern, a.getTag); err != nil {
+	if err := handle(vars.TagURL("{slug}", 1), a.getTag); err != nil {
 		return err
 	}
 
@@ -53,8 +51,7 @@ func (a *app) initRoutes() error {
 	}
 
 	// search.html
-	pattern = vars.Search + vars.Suffix
-	if err := handle(pattern, a.getSearch); err != nil {
+	if err := handle(vars.SearchURL("", 1), a.getSearch); err != nil {
 		return err
 	}
 
@@ -140,7 +137,7 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	if page > 1 { // 非首页，标题显示页码数
 		p.Title = fmt.Sprintf("第%v页", page)
 	}
-	p.Canonical = a.postsURL(page)
+	p.Canonical = vars.PostsURL(page)
 
 	start, end, ok := a.getPostsRange(len(a.buf.Data.Posts), page, w)
 	if !ok {
@@ -150,13 +147,13 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  a.postsURL(page - 1), // 页码从 1 开始计数
+			URL:  vars.PostsURL(page - 1), // 页码从 1 开始计数
 		}
 	}
 	if end < len(a.buf.Data.Posts) {
 		p.PrevPage = &data.Link{
 			Text: "下一页",
-			URL:  a.postsURL(page + 1),
+			URL:  vars.PostsURL(page + 1),
 		}
 	}
 
@@ -198,7 +195,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	p := a.newPage()
 	p.Tag = tag
 	p.Title = tag.Title
-	p.Canonical = a.tagURL(slug, page)
+	p.Canonical = vars.TagURL(slug, page)
 	p.Description = "标签" + tag.Title + "的介绍"
 
 	start, end, ok := a.getPostsRange(len(tag.Posts), page, w)
@@ -209,13 +206,13 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  a.tagURL(slug, page-1), // 页码从1开始计数
+			URL:  vars.TagURL(slug, page-1), // 页码从1开始计数
 		}
 	}
 	if end < len(tag.Posts) {
 		p.PrevPage = &data.Link{
 			Text: "下一页",
-			URL:  a.tagURL(slug, page+1), // 页码从1开始计数
+			URL:  vars.TagURL(slug, page+1), // 页码从1开始计数
 		}
 	}
 
@@ -289,13 +286,13 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  a.searchURL(key, page-1), // 页码从1开始计数
+			URL:  vars.SearchURL(key, page-1), // 页码从1开始计数
 		}
 	}
 	if end < len(posts) {
 		p.PrevPage = &data.Link{
 			Text: "下一页",
-			URL:  a.searchURL(key, page+1),
+			URL:  vars.SearchURL(key, page+1),
 		}
 	}
 

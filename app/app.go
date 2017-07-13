@@ -22,8 +22,8 @@ import (
 type app struct {
 	path     *vars.Path
 	mux      *mux.Mux
+	conf     *config
 	buf      *buffer.Buffer
-	conf     *config            // 配置内容
 	adminTpl *template.Template // 后台管理的模板页面。
 }
 

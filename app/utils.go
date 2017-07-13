@@ -6,10 +6,8 @@ package app
 
 import (
 	"net/http"
-	"path"
 	"strconv"
 
-	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 	"github.com/issue9/mux/params"
@@ -51,42 +49,4 @@ func (a *app) queryInt(w http.ResponseWriter, r *http.Request, key string, def i
 		return 0, false
 	}
 	return ret, true
-}
-
-func (a *app) postURL(slug string) string {
-	return path.Join(vars.Post, slug+vars.Suffix)
-}
-
-func (a *app) postsURL(page int) string {
-	if page <= 1 {
-		return "/"
-	}
-	return vars.Posts + vars.Suffix + "?page=" + strconv.Itoa(page)
-}
-
-func (a *app) tagURL(slug string, page int) string {
-	url := path.Join(vars.Tag, slug+vars.Suffix)
-	if page <= 1 {
-		return url
-	}
-
-	return url + "?page=" + strconv.Itoa(page)
-}
-
-func (a *app) searchURL(q string, page int) string {
-	url := vars.Search + vars.Suffix
-	if len(q) > 0 {
-		url += "?q=" + q
-	}
-
-	if page > 1 {
-		if len(q) > 0 {
-			url += "&"
-		} else {
-			url += "?"
-		}
-		url += "page=" + strconv.Itoa(page)
-	}
-
-	return url
 }
