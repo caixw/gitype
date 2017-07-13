@@ -57,10 +57,9 @@ func Run(path *vars.Path) error {
 	}
 
 	a := &app{
-		path:    path,
-		mux:     mux.New(false, false, nil, nil),
-		updated: time.Now().Unix(),
-		conf:    conf,
+		path: path,
+		mux:  mux.New(false, false, nil, nil),
+		conf: conf,
 	}
 
 	// 初始化 webhooks
