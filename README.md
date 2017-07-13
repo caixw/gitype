@@ -68,11 +68,12 @@ logs.xml 定义了日志的输出形式和保存路径，具体配置可参考 [
 adminURL      | string      | 后台管理的地址
 adminPassword | string      | 后台管理密码
 https         | bool        | 是否启用https
+httpState     | string      | 当 https 为 true 时，对 80 端口的处理方式，可以为 disable, redirect, default
 certFile      | string      | 当 https 为 true 时，此值为必填
 keyFile       | string      | 当 https 为 true 时，此值为必填
 port          | string      | 端口，不指定，默认为 80 或是 443
 headers       | map         | 附加的头信息，头信息可能在其它地方被修改
-pprof         | string      | 指定 pprof 地址，输出 net/pprof 中指定的一些信息
+pprof         | bool        | 指定 pprof 地址，输出 net/pprof 中指定的一些信息
 
 
 
@@ -113,7 +114,8 @@ links.yaml 用于指定友情链接。目前包含以下字段：
 text      | string      | 字面文字，可以不唯一
 url       | string      | 对应的链接地址
 title     | string      | a 标签的 title 属性。可以为空
-icon      | string      | 图标名称，图标名称为 [fontawesome](http://fontawesome.io) 下的图标
+icon      | string      | 一个 URL
+rel       | string      | 与该网站的关系，遵守 [XFN](https://gmpg.org/xfn/) 的相关定义
 
 
 ##### tags.yaml
