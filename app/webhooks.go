@@ -24,7 +24,7 @@ func (w *logW) Write(bs []byte) (int, error) {
 	return len(bs), nil
 }
 
-// 通过 webhooks 来更新内容
+// webhooks 的回调接口
 func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 	now := time.Now().Unix()
 

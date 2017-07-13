@@ -37,7 +37,7 @@ func (a *app) postAdminPage(w http.ResponseWriter, r *http.Request) {
 	a.getAdminPage(w, r)
 }
 
-// 一个简单的后台页面，可用来手动更新加载新数据。
+// 一个简单的后台页面，可用来手动更新数据。
 func (a *app) getAdminPage(w http.ResponseWriter, r *http.Request) {
 	s := map[string]interface{}{
 		"lastUpdate": time.Unix(a.updated, 0).Format("2006-01-02 15:04:05-0700"),
