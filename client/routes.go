@@ -25,46 +25,57 @@ func (c *Client) removeRoutes() {
 	c.routes = nil
 }
 
-func (c *Client) initRoutes() {
+func (c *Client) initRoutes() error {
+	handle := func(pattern string, h http.HandlerFunc) error {
+		c.routes = append(c.routes, pattern)
+		return c.mux.HandleFunc(pattern, c.prepare(h), http.MethodGet)
+	}
+
 	// posts/2016/about.html
 	pattern := vars.Post + "/{slug}" + vars.Suffix
-	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.prepare(c.getPost))
+	if err := handle(pattern, c.getPost); err != nil {
+		return err
+	}
 
 	// index.html
 	pattern = vars.Posts + vars.Suffix
-	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.prepare(c.getPosts))
+	if err := handle(pattern, c.getPosts); err != nil {
+		return err
+	}
 
 	// links.html
 	pattern = vars.Links + vars.Suffix
-	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.prepare(c.getLinks))
+	if err := handle(pattern, c.getLinks); err != nil {
+		return err
+	}
 
 	// tags/tag1.html
 	pattern = vars.Tag + "/{slug}" + vars.Suffix
-	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.prepare(c.getTag))
+	if err := handle(pattern, c.getTag); err != nil {
+		return err
+	}
 
 	// tags.html
 	pattern = vars.Tags + vars.Suffix
-	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.prepare(c.getTags))
+	if err := handle(pattern, c.getTags); err != nil {
+		return err
+	}
 
 	// search.html
 	pattern = vars.Search + vars.Suffix
-	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.prepare(c.getSearch))
+	if err := handle(pattern, c.getSearch); err != nil {
+		return err
+	}
 
 	// themes/...
 	pattern = vars.Themes + "/{path}"
-	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.prepare(c.getThemes))
+	if err := handle(pattern, c.getThemes); err != nil {
+		return err
+	}
 
 	// /...
 	pattern = "/{path}"
-	c.routes = append(c.routes, pattern)
-	c.mux.GetFunc(pattern, c.prepare(c.getRaws))
+	return handle(pattern, c.getRaws)
 }
 
 // 文章详细页
@@ -130,7 +141,7 @@ func (c *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 
 	if page < 1 {
 		logs.Debugf("请求的页码[%v]小于1\n", page)
-		c.renderError(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到404页面
+		c.renderError(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
 
@@ -148,7 +159,7 @@ func (c *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  c.postsURL(page - 1), // 页码从1开始计数
+			URL:  c.postsURL(page - 1), // 页码从 1 开始计数
 		}
 	}
 	if end < len(c.data.Posts) {
@@ -263,7 +274,7 @@ func (c *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	}
 	if page < 1 {
 		logs.Debugf("参数 page: %v 小于 1", page)
-		c.renderError(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到404页面
+		c.renderError(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
 

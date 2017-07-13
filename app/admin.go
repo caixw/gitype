@@ -38,8 +38,6 @@ func (a *app) postAdminPage(w http.ResponseWriter, r *http.Request) {
 }
 
 // 一个简单的后台页面，可用来手动更新加载新数据。
-//
-// 若数据不是通过github来管理的，可通过此方法来手动更新数据。
 func (a *app) getAdminPage(w http.ResponseWriter, r *http.Request) {
 	var homeURL string
 

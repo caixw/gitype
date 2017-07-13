@@ -17,7 +17,7 @@ import (
 	"github.com/issue9/mux"
 )
 
-// Client 展示给用户的前端页面相关操作。
+// Client 展示给用户的前端页面。
 type Client struct {
 	mux     *mux.Mux
 	path    *vars.Path
