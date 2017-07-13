@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package client
+package app
 
 import (
 	"io/ioutil"
@@ -47,11 +47,11 @@ type page struct {
 	Posts       []*data.Post // 文章列表，文章列表页、是标签详情页和搜索页用到。
 	Post        *data.Post   // 文章详细内容，单文章页面用到。
 
-	client *Client
+	a *app
 }
 
-func (c *Client) newPage() *page {
-	conf := c.buf.Data.Config
+func (a *app) newPage() *page {
+	conf := a.buf.Data.Config
 
 	page := &page{
 		SiteName:    conf.Title,
@@ -63,14 +63,14 @@ func (c *Client) newPage() *page {
 		Description: conf.Description,
 		AppVersion:  vars.Version(),
 		GoVersion:   runtime.Version(),
-		PostSize:    len(c.buf.Data.Posts),
+		PostSize:    len(a.buf.Data.Posts),
 		Beian:       conf.Beian,
 		Uptime:      conf.Uptime,
-		LastUpdated: c.buf.Updated,
-		Tags:        c.buf.Data.Tags,
-		Links:       c.buf.Data.Links,
+		LastUpdated: a.buf.Updated,
+		Tags:        a.buf.Data.Tags,
+		Links:       a.buf.Data.Links,
 		Menus:       conf.Menus,
-		client:      c,
+		a:           a,
 	}
 	if conf.RSS != nil {
 		page.RSS = &data.Link{Title: conf.RSS.Title, URL: conf.RSS.URL}
@@ -96,10 +96,10 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 		w.Header().Set(key, val)
 	}
 
-	err := p.client.buf.Template.ExecuteTemplate(w, name, p)
+	err := p.a.buf.Template.ExecuteTemplate(w, name, p)
 	if err != nil {
 		logs.Error(err)
-		p.client.renderError(w, http.StatusInternalServerError)
+		p.a.renderError(w, http.StatusInternalServerError)
 		return
 	}
 }
@@ -108,7 +108,7 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 // 若该页面模板不存在，则输出状态码对应的文本内容。
 // 只查找当前主题目录下的相关文件。
 // 只对状态码大于等于 400 的起作用。
-func (c *Client) renderError(w http.ResponseWriter, code int) {
+func (a *app) renderError(w http.ResponseWriter, code int) {
 	if code < 400 {
 		return
 	}
@@ -116,7 +116,7 @@ func (c *Client) renderError(w http.ResponseWriter, code int) {
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	filename := strconv.Itoa(code) + ".html"
-	path := filepath.Join(c.path.ThemesDir, c.buf.Data.Config.Theme, filename)
+	path := filepath.Join(a.path.ThemesDir, a.buf.Data.Config.Theme, filename)
 	if !utils.FileExists(path) {
 		logs.Errorf("模板文件[%v]不存在\n", path)
 		http.Error(w, http.StatusText(code), code)

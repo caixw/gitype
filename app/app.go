@@ -12,9 +12,8 @@ import (
 	"net/http/pprof"
 	"path/filepath"
 	"strings"
-	"time"
 
-	"github.com/caixw/typing/client"
+	"github.com/caixw/typing/buffer"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
@@ -23,26 +22,18 @@ import (
 type app struct {
 	path     *vars.Path
 	mux      *mux.Mux
-	conf     *config // 配置内容
-	updated  int64   // 更新时间，一般为重新加载数据的时间
-	client   *client.Client
+	buf      *buffer.Buffer
+	conf     *config            // 配置内容
 	adminTpl *template.Template // 后台管理的模板页面。
 }
 
 // 重新加载数据
 func (a *app) reload() error {
-	// 必须要先释放旧数据，否则会有路由冲突
-	if a.client != nil {
-		a.client.Free()
-	}
-
-	c, err := client.New(a.path, a.mux)
+	buf, err := buffer.New(a.path)
 	if err != nil {
 		return err
 	}
-
-	a.client = c
-	a.updated = time.Now().Unix()
+	a.buf = buf
 
 	return nil
 }
