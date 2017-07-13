@@ -31,14 +31,14 @@ type app struct {
 
 // 重新加载数据
 func (a *app) reload() error {
+	// 必须要先释放旧数据，否则会有路由冲突
+	if a.client != nil {
+		a.client.Free()
+	}
+
 	c, err := client.New(a.path, a.mux)
 	if err != nil {
 		return err
-	}
-
-	// 确何数据加载成功了，再释放老数据。
-	if a.client != nil {
-		a.client.Free()
 	}
 
 	a.client = c
