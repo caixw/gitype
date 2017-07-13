@@ -88,14 +88,14 @@ func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
 
 	var post *data.Post
 	var next, prev *data.Link
-	for index, p := range c.data.Posts {
+	for index, p := range c.buf.Data.Posts {
 		if p.Slug != id {
 			continue
 		}
 		post = p
 
 		if index > 0 {
-			p := c.data.Posts[index-1]
+			p := c.buf.Data.Posts[index-1]
 			prev = &data.Link{
 				Text: p.Title,
 				URL:  p.Permalink,
@@ -103,8 +103,8 @@ func (c *Client) getPost(w http.ResponseWriter, r *http.Request) {
 		}
 
 		index++
-		if index < len(c.data.Posts) {
-			p := c.data.Posts[index]
+		if index < len(c.buf.Data.Posts) {
+			p := c.buf.Data.Posts[index]
 			next = &data.Link{
 				Text: p.Title,
 				URL:  p.Permalink,
@@ -151,18 +151,18 @@ func (c *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Canonical = c.postsURL(page)
 
-	start, end, ok := c.getPostsRange(len(c.data.Posts), page, w)
+	start, end, ok := c.getPostsRange(len(c.buf.Data.Posts), page, w)
 	if !ok {
 		return
 	}
-	p.Posts = c.data.Posts[start:end]
+	p.Posts = c.buf.Data.Posts[start:end]
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
 			URL:  c.postsURL(page - 1), // 页码从 1 开始计数
 		}
 	}
-	if end < len(c.data.Posts) {
+	if end < len(c.buf.Data.Posts) {
 		p.PrevPage = &data.Link{
 			Text: "下一页",
 			URL:  c.postsURL(page + 1),
@@ -181,7 +181,7 @@ func (c *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var tag *data.Tag
-	for _, t := range c.data.Tags {
+	for _, t := range c.buf.Data.Tags {
 		if t.Slug == slug {
 			tag = t
 			break
@@ -279,8 +279,8 @@ func (c *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 查找标题和内容
-	posts := make([]*data.Post, 0, c.data.Config.PageSize)
-	for _, v := range c.data.Posts {
+	posts := make([]*data.Post, 0, c.buf.Data.Config.PageSize)
+	for _, v := range c.buf.Data.Posts {
 		if strings.Index(v.Title, key) >= 0 || strings.Index(v.Content, key) >= 0 {
 			posts = append(posts, v)
 		}
@@ -332,7 +332,7 @@ func (c *Client) getRaws(w http.ResponseWriter, r *http.Request) {
 
 // 确认当前文章列表页选择范围。
 func (c *Client) getPostsRange(postsSize, page int, w http.ResponseWriter) (start, end int, ok bool) {
-	size := c.data.Config.PageSize
+	size := c.buf.Data.Config.PageSize
 	start = size * (page - 1) // 系统从零开始计数
 	if start > postsSize {
 		logs.Debugf("请求页码为[%v]，实际文章数量为[%v]\n", page, postsSize)
@@ -354,12 +354,12 @@ func (c *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
 		logs.Infof("%v: %v", r.UserAgent(), r.URL) // 输出访问日志
 
 		// 直接根据整个博客的最后更新时间来确认 etag
-		if r.Header.Get("If-None-Match") == c.etag {
+		if r.Header.Get("If-None-Match") == c.buf.Etag {
 			logs.Infof("304: %v", r.URL)
 			w.WriteHeader(http.StatusNotModified)
 			return
 		}
-		w.Header().Set("Etag", c.etag)
+		w.Header().Set("Etag", c.buf.Etag)
 		compress.New(f, logs.ERROR()).ServeHTTP(w, r)
 	}
 }

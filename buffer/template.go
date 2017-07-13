@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package client
+package buffer
 
 import (
 	"html/template"
@@ -14,25 +14,25 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// 加载主题的模板。
-// dir 模板所在的目录。
-func (c *Client) initTemplate() error {
+// 编译主题的模板。
+func (b *Buffer) compileTemplate() error {
 	funcMap := template.FuncMap{
 		"strip":    stripTags,
 		"html":     htmlEscaped,
-		"ldate":    c.longDateFormat,
-		"sdate":    c.shortDateFormat,
+		"ldate":    b.longDateFormat,
+		"sdate":    b.shortDateFormat,
 		"rfc3339":  rfc3339DateFormat,
 		"themeURL": func(p string) string { return path.Join(vars.Themes, p) },
 	}
 
 	tpl, err := template.New("").
 		Funcs(funcMap).
-		ParseGlob(filepath.Join(c.path.ThemesDir, c.data.Config.Theme, "*.html"))
+		ParseGlob(filepath.Join(b.path.ThemesDir, b.Data.Config.Theme, "*.html"))
 	if err != nil {
 		return err
 	}
-	c.tpl = tpl
+	b.Template = tpl
+
 	return nil
 }
 
@@ -40,12 +40,12 @@ func rfc3339DateFormat(t int64) interface{} {
 	return time.Unix(t, 0).Format(time.RFC3339)
 }
 
-func (c *Client) longDateFormat(t int64) interface{} {
-	return time.Unix(t, 0).Format(c.data.Config.LongDateFormat)
+func (b *Buffer) longDateFormat(t int64) interface{} {
+	return time.Unix(t, 0).Format(b.Data.Config.LongDateFormat)
 }
 
-func (c *Client) shortDateFormat(t int64) interface{} {
-	return time.Unix(t, 0).Format(c.data.Config.ShortDateFormat)
+func (b *Buffer) shortDateFormat(t int64) interface{} {
+	return time.Unix(t, 0).Format(b.Data.Config.ShortDateFormat)
 }
 
 // 将内容显示为html内容

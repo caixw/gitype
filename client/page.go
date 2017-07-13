@@ -51,7 +51,7 @@ type page struct {
 }
 
 func (c *Client) newPage() *page {
-	conf := c.data.Config
+	conf := c.buf.Data.Config
 
 	page := &page{
 		SiteName:    conf.Title,
@@ -63,12 +63,12 @@ func (c *Client) newPage() *page {
 		Description: conf.Description,
 		AppVersion:  vars.Version(),
 		GoVersion:   runtime.Version(),
-		PostSize:    len(c.data.Posts),
+		PostSize:    len(c.buf.Data.Posts),
 		Beian:       conf.Beian,
 		Uptime:      conf.Uptime,
-		LastUpdated: c.updated,
-		Tags:        c.data.Tags,
-		Links:       c.data.Links,
+		LastUpdated: c.buf.Updated,
+		Tags:        c.buf.Data.Tags,
+		Links:       c.buf.Data.Links,
 		Menus:       conf.Menus,
 		client:      c,
 	}
@@ -96,7 +96,7 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 		w.Header().Set(key, val)
 	}
 
-	err := p.client.tpl.ExecuteTemplate(w, name, p)
+	err := p.client.buf.Template.ExecuteTemplate(w, name, p)
 	if err != nil {
 		logs.Error(err)
 		p.client.renderError(w, http.StatusInternalServerError)
@@ -116,7 +116,7 @@ func (c *Client) renderError(w http.ResponseWriter, code int) {
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	filename := strconv.Itoa(code) + ".html"
-	path := filepath.Join(c.path.ThemesDir, c.data.Config.Theme, filename)
+	path := filepath.Join(c.path.ThemesDir, c.buf.Data.Config.Theme, filename)
 	if !utils.FileExists(path) {
 		logs.Errorf("模板文件[%v]不存在\n", path)
 		http.Error(w, http.StatusText(code), code)

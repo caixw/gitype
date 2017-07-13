@@ -6,54 +6,40 @@
 package client
 
 import (
-	"html/template"
 	"net/http"
-	"strconv"
-	"time"
 
-	"github.com/caixw/typing/data"
-	"github.com/caixw/typing/feed"
+	"github.com/caixw/typing/buffer"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/mux"
 )
 
 // Client 展示给用户的前端页面。
 type Client struct {
-	mux     *mux.Mux
-	path    *vars.Path
-	updated int64      // 更新时间，一般为重新加载数据的时间
-	etag    string     // 所有页面都采用相同的 etag
-	data    *data.Data // 加载的数据，每次加载都会被重置
-	tpl     *template.Template
-	routes  []string // 记录路由项，释放时，需要删除这些路由项
+	mux    *mux.Mux
+	path   *vars.Path
+	buf    *buffer.Buffer
+	routes []string // 记录路由项，释放时，需要删除这些路由项
 }
 
 // New 声明一个新的 Client 实例
 func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
-	d, err := data.Load(path)
+	b, err := buffer.New(path)
 	if err != nil {
 		return nil, err
 	}
 
-	now := time.Now().Unix()
 	c := &Client{
-		mux:     mux,
-		path:    path,
-		data:    d,
-		updated: now,
-		etag:    strconv.FormatInt(now, 10),
-		routes:  make([]string, 0, 10),
+		mux:    mux,
+		path:   path,
+		buf:    b,
+		routes: make([]string, 0, 10),
 	}
 
-	if err = c.initTemplate(); err != nil {
+	if err = c.initRoutes(); err != nil {
 		return nil, err
 	}
 
-	c.initRoutes()
-
-	if err = c.initFeeds(); err != nil {
-		return nil, err
-	}
+	c.initFeeds()
 
 	return c, nil
 }
@@ -62,52 +48,32 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 func (c *Client) Free() {
 	c.removeFeeds()
 	c.removeRoutes()
-
-	c.tpl = nil
-	c.data = nil
 }
 
-func (c *Client) initFeeds() error {
-	conf := c.data.Config
+func (c *Client) initFeeds() {
+	conf := c.buf.Data.Config
 
 	if conf.RSS != nil {
-		rss, err := feed.BuildRSS(c.data)
-		if err != nil {
-			return err
-		}
-
 		c.mux.GetFunc(conf.RSS.URL, c.prepare(func(w http.ResponseWriter, r *http.Request) {
-			w.Write(rss.Bytes())
+			w.Write(c.buf.RSS)
 		}))
 	}
 
 	if conf.Atom != nil {
-		atom, err := feed.BuildAtom(c.data)
-		if err != nil {
-			return err
-		}
-
 		c.mux.GetFunc(conf.Atom.URL, c.prepare(func(w http.ResponseWriter, r *http.Request) {
-			w.Write(atom.Bytes())
+			w.Write(c.buf.Atom)
 		}))
 	}
 
 	if conf.Sitemap != nil {
-		sitemap, err := feed.BuildSitemap(c.data)
-		if err != nil {
-			return err
-		}
-
 		c.mux.GetFunc(conf.Sitemap.URL, c.prepare(func(w http.ResponseWriter, r *http.Request) {
-			w.Write(sitemap.Bytes())
+			w.Write(c.buf.Sitemap)
 		}))
 	}
-
-	return nil
 }
 
 func (c *Client) removeFeeds() {
-	conf := c.data.Config
+	conf := c.buf.Data.Config
 
 	if conf.RSS != nil {
 		c.mux.Remove(conf.RSS.URL)
