@@ -146,6 +146,8 @@ func (a *app) reload() error {
 	if err != nil {
 		return err
 	}
+
+	// 只有生成成功了，才替换老数据
 	a.buf = buf
 
 	// 重新生成 feed 路由

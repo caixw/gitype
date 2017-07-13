@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
+// Package buffer 加载数据以及对数据处理后的缓存内容。
 package buffer
 
 import (
@@ -18,14 +19,15 @@ import (
 type Buffer struct {
 	path *vars.Path
 
-	Updated  int64              // 更新时间，一般为重新加载数据的时间
-	Etag     string             // 所有页面都采用相同的 Etag，即时间戳字符串
-	Data     *data.Data         // 加载的数据，每次加载都会被重置
-	Template *template.Template // 主题编译后的模板
+	Updated int64      // 更新时间，一般为重新加载数据的时间
+	Etag    string     // 所有页面都采用相同的 Etag，即时间戳字符串
+	Data    *data.Data // 加载的数据，每次加载都会被重置
 
-	RSS     []byte
-	Atom    []byte
-	Sitemap []byte
+	// 缓存的数据
+	Template *template.Template // 主题编译后的模板
+	RSS      []byte
+	Atom     []byte
+	Sitemap  []byte
 }
 
 // New 声明一个新的 Buffer 实例
