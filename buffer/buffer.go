@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/caixw/typing/buffer/feed"
 	"github.com/caixw/typing/data"
-	"github.com/caixw/typing/feed"
 	"github.com/caixw/typing/vars"
 )
 
