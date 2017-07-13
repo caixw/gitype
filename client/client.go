@@ -121,8 +121,3 @@ func (c *Client) removeFeeds() {
 		c.mux.Remove(conf.Sitemap.URL)
 	}
 }
-
-// Data 与当前实例关联的 data.Data 实例
-func (c *Client) Data() *data.Data {
-	return c.data
-}

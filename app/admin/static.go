@@ -32,8 +32,6 @@ var AdminHTML = `<!DOCTYPE html>
 				<button type="submit">重新生成</button>
 			</p>
 		</form>
-
-        {{if .homeURL}}<p><a href="{{.homeURL}}">返回首页</a></p>{{end}}
 	</div>
 	</body>
 </html>
