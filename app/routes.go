@@ -28,7 +28,7 @@ func (a *app) initRoutes() error {
 	}
 
 	// index.html
-	if err := handle(vars.PostsURL(0), a.getPosts); err != nil {
+	if err := handle(vars.IndexURL(0), a.getPosts); err != nil {
 		return err
 	}
 
@@ -303,12 +303,13 @@ func (a *app) getRaws(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	root := http.Dir(a.path.RawsDir)
 	if !utils.FileExists(filepath.Join(a.path.RawsDir, r.URL.Path)) {
 		a.renderError(w, http.StatusNotFound)
 		return
 	}
+
 	prefix := "/"
+	root := http.Dir(a.path.RawsDir)
 	http.StripPrefix(prefix, http.FileServer(root)).ServeHTTP(w, r)
 
 }

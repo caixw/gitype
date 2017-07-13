@@ -11,7 +11,7 @@ import (
 
 // 与 URL 相关的一些定义，方便做一些自定义操作
 const (
-	posts  = "/index"  // 列表页地址
+	index  = "/index"  // 列表页地址
 	post   = "/posts"  // 文章详细页地址
 	tags   = "/tags"   // 标签列表页地址
 	tag    = "/tags"   // 标签详细页地址
@@ -32,11 +32,25 @@ func PostURL(slug string) string {
 }
 
 // PostsURL 构建文章列表的 URL
+// 首页为返回 /
+// 其它页面返回 /index.html?page=xx
 func PostsURL(page int) string {
 	if page <= 1 {
 		return "/"
 	}
-	return posts + suffix + "?page=" + strconv.Itoa(page)
+	return index + suffix + "?page=" + strconv.Itoa(page)
+}
+
+// IndexURL 构建索引首页的 URL
+// 首页为返回 /index.html
+// 其它页面返回 /index.html?page=xx
+func IndexURL(page int) string {
+	url := index + suffix
+	if page > 1 {
+		url += "?page=" + strconv.Itoa(page)
+	}
+
+	return url
 }
 
 // TagURL 构建标签的 URL
