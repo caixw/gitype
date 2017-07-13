@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/caixw/typing/vars"
-	"github.com/issue9/logs"
 	"gopkg.in/yaml.v2"
 )
 
@@ -47,8 +46,7 @@ func (d *Data) loadPosts() error {
 		p = filepath.Clean(p)
 		post, err := loadPost(dir, p, d.Config, d.Tags)
 		if err != nil {
-			logs.Error(err)
-			continue
+			return err
 		}
 		post.Permalink = path.Join(vars.Post, post.Slug) + vars.Suffix
 

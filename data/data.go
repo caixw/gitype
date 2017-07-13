@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 
 // Package data 负责加载 data 目录下的数据。
-// 会调用 github.com/issue9/logs 包的内容，调用之前需要初始化该包。
 package data
 
 import (
