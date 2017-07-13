@@ -27,17 +27,6 @@ type app struct {
 	adminTpl *template.Template // 后台管理的模板页面。
 }
 
-// 重新加载数据
-func (a *app) reload() error {
-	buf, err := buffer.New(a.path)
-	if err != nil {
-		return err
-	}
-	a.buf = buf
-
-	return nil
-}
-
 // Run 运行程序
 func Run(path *vars.Path) error {
 	logs.Info("程序工作路径为:", path.Root)
@@ -64,6 +53,11 @@ func Run(path *vars.Path) error {
 	// 加载数据
 	if err = a.reload(); err != nil {
 		logs.Error(err)
+	}
+
+	// 路由由代码定义，不会更改，所以不需要在 a.reload() 中重新加载。
+	if err = a.initRoutes(); err != nil {
+		return err
 	}
 
 	h := a.buildHeader(a.buildPprof(a.mux))
@@ -137,5 +131,63 @@ func serveHTTP(a *app) {
 		})))
 	case "disable":
 		return
+	}
+}
+
+// 重新加载数据
+func (a *app) reload() error {
+	// 移除 feed 路由
+	if a.buf != nil {
+		a.removeFeeds()
+	}
+
+	// 生成新的数据
+	buf, err := buffer.New(a.path)
+	if err != nil {
+		return err
+	}
+	a.buf = buf
+
+	// 重新生成 feed 路由
+	a.initFeeds()
+
+	return nil
+}
+
+func (a *app) initFeeds() {
+	conf := a.buf.Data.Config
+
+	if conf.RSS != nil {
+		a.mux.GetFunc(conf.RSS.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
+			w.Write(a.buf.RSS)
+		}))
+	}
+
+	if conf.Atom != nil {
+		a.mux.GetFunc(conf.Atom.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
+			w.Write(a.buf.Atom)
+		}))
+	}
+
+	if conf.Sitemap != nil {
+		a.mux.GetFunc(conf.Sitemap.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
+			w.Write(a.buf.Sitemap)
+		}))
+	}
+}
+
+func (a *app) removeFeeds() {
+	conf := a.buf.Data.Config
+
+	if conf.RSS != nil {
+		a.mux.Remove(conf.RSS.URL)
+	}
+
+	if conf.Atom != nil {
+		a.mux.Remove(conf.Atom.URL)
+	}
+
+	if conf.Sitemap != nil {
+		a.mux.Remove(conf.Sitemap.URL)
 	}
 }
