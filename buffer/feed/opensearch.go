@@ -44,7 +44,7 @@ func BuildOpensearch(d *data.Data) (*bytes.Buffer, error) {
 
 	buf.WriteString("<Description>")
 	buf.WriteString(o.Description)
-	buf.WriteString("</DescriptionhortName>\n")
+	buf.WriteString("</Description>\n")
 
 	if len(o.LongName) > 0 {
 		buf.WriteString("<LongName>")

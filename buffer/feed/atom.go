@@ -37,7 +37,7 @@ func BuildAtom(d *data.Data) (*bytes.Buffer, error) {
 	if d.Config.Opensearch != nil {
 		o := d.Config.Opensearch
 		buf.WriteString(`<link rel="search" type="application/opensearchdescription+xml" href="`)
-		buf.WriteString(o.URL)
+		buf.WriteString(d.Config.URL + o.URL)
 		buf.WriteString(`" title="`)
 		buf.WriteString(o.Title)
 		buf.WriteString("\" />\n")
