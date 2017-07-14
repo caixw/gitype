@@ -13,7 +13,8 @@ import (
 
 const (
 	atomHeader = `<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">`
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">`
 
 	atomFooter = `</feed>`
 )
@@ -32,6 +33,15 @@ func BuildAtom(d *data.Data) (*bytes.Buffer, error) {
 	buf.WriteString(`<link href="`)
 	buf.WriteString(d.Config.URL)
 	buf.WriteString("\" />\n")
+
+	if d.Config.Opensearch != nil {
+		o := d.Config.Opensearch
+		buf.WriteString(`<link rel="search" type="application/opensearchdescription+xml" href="`)
+		buf.WriteString(o.URL)
+		buf.WriteString(`" title="`)
+		buf.WriteString(o.Title)
+		buf.WriteString("\" />\n")
+	}
 
 	buf.WriteString("<title>")
 	buf.WriteString(d.Config.Title)

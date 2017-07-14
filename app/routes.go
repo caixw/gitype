@@ -344,6 +344,7 @@ func (a *app) prepare(f http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Etag", a.buf.Etag)
+		w.Header().Set("Content-Language", a.buf.Data.Config.Language)
 		compress.New(f, logs.ERROR()).ServeHTTP(w, r)
 	}
 }

@@ -171,6 +171,10 @@ func initConfig(conf *Config) error {
 		return err
 	}
 
+	if err := checkOpensearch(conf.Opensearch); err != nil {
+		return err
+	}
+
 	// Menus
 	for index, link := range conf.Menus {
 		if err := link.check(); err != nil {
@@ -211,6 +215,21 @@ func checkSitemap(s *Sitemap) error {
 			return &FieldError{File: confFile, Message: "取值不正确", Field: "Sitemap.TagChangefreq"}
 		case !isChangereq(s.PostChangefreq):
 			return &FieldError{File: confFile, Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
+		}
+	}
+	return nil
+}
+
+// 检测 opensearch 取值是否正确
+func checkOpensearch(s *Opensearch) error {
+	if s != nil {
+		switch {
+		case len(s.URL) == 0:
+			return &FieldError{File: confFile, Message: "不能为空", Field: "Opensearch.URL"}
+		case len(s.ShortName) == 0:
+			return &FieldError{File: confFile, Message: "不能为空", Field: "Opensearch.ShortName"}
+		case len(s.Description) == 0:
+			return &FieldError{File: confFile, Message: "不能为空", Field: "Opensearch.Description"}
 		}
 	}
 	return nil

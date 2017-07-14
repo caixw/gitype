@@ -25,6 +25,7 @@ type page struct {
 	SiteName    string       // 网站名称
 	Subtitle    string       // 副标题
 	URL         string       // 网站主域名
+	Language    string       // 页面语言
 	Root        string       // 网站的根目录
 	Canonical   string       // 当前页的唯一链接
 	Keywords    string       // meta.keywords 的值
@@ -38,6 +39,7 @@ type page struct {
 	LastUpdated int64        // 最后更新时间
 	RSS         *data.Link   // RSS，NOTICE:指针方便模板判断其值是否为空
 	Atom        *data.Link   // Atom
+	Opensearch  *data.Link   // Opensearch
 	PrevPage    *data.Link   // 前一页
 	NextPage    *data.Link   // 下一页
 	Tags        []*data.Tag  // 标签列表
@@ -78,6 +80,10 @@ func (a *app) newPage() *page {
 
 	if conf.Atom != nil {
 		page.Atom = &data.Link{Title: conf.Atom.Title, URL: conf.Atom.URL}
+	}
+
+	if conf.Opensearch != nil {
+		page.Opensearch = &data.Link{Title: conf.Opensearch.Title, URL: conf.Opensearch.URL}
 	}
 
 	return page

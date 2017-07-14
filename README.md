@@ -14,8 +14,8 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 1. 下载代码:`go get github.com/caixw/typing`；
 1. 运行程序，使用 appdir 参数指定程序的工作目录；
 
-*源码目录下的 testdata 为一个完整的工作目录内容，用户可根
-据自己的需求决定是否直接使用此目录，或是在其基础上作修改*
+*源码目录下的 testdata 为一个完整的工作目录内容，
+用户可根据自己的需求决定是否直接使用此目录，或是在其基础上作修改。*
 
 
 
@@ -67,7 +67,7 @@ logs.xml 定义了日志的输出形式和保存路径，具体配置可参考 [
 :-------------|:------------|:------
 adminURL      | string      | 后台管理的地址
 adminPassword | string      | 后台管理密码
-https         | bool        | 是否启用https
+https         | bool        | 是否启用 https
 httpState     | string      | 当 https 为 true 时，对 80 端口的处理方式，可以为 disable, redirect, default
 certFile      | string      | 当 https 为 true 时，此值为必填
 keyFile       | string      | 当 https 为 true 时，此值为必填
@@ -103,11 +103,12 @@ author          | Author      | 默认的作者信息
 rss             | RSS         | rss 配置，若不需要，则不指定该值即可
 atom            | RSS         | atom 配置，若不需要，则不指定该值即可
 sitemap         | Sitemap     | sitemap 相关配置，若不需要，则不指定该值即可
+opensearch      | Opensearch  | opensearch 相关配置，若不需要，则不指定该值即可
 
 
 ##### links.yaml
 
-links.yaml 用于指定友情链接。目前包含以下字段：
+links.yaml 用于指定友情链接，为一个数组。每个元素包含以下字段：
 
 名称      | 类型        | 描述
 :---------|:------------|:----------
@@ -115,7 +116,7 @@ text      | string      | 字面文字，可以不唯一
 url       | string      | 对应的链接地址
 title     | string      | a 标签的 title 属性。可以为空
 icon      | string      | 一个 URL
-rel       | string      | 与该网站的关系，遵守 [XFN](https://gmpg.org/xfn/) 的相关定义
+rel       | string      | 与该网站的关系，可用 [XFN](https://gmpg.org/xfn/) 的相关定义
 
 
 ##### tags.yaml
@@ -136,11 +137,11 @@ content   | string      | 用于描述该标签的详细内容，可以是**HTML
 data/themes 下为主题文件，可定义多个主题，通过 config 中的 theme 指定当前使用的主题。
 主题模板为 [Go 官方模板](https://golang.org/pkg/html/template/)。
 
-单一主题下，可以为文章详细页定义多个模板，通过 meta.yaml 可以自定义当前文章使用的模板，
+单一主题下，可以为文章详细页定义多个模板，通过每篇文章的 meta.yaml 可以自定义当前文章使用的模板，
 默认情况下，使用 post 模板。
 
 
-400 及以上的错误信息，均可以自定义，方式为在当前主题目录下，新一个与错误代码相对应的 html 文件，
+400 及以上的错误信息，均可以自定义，方式为在当前主题目录下，新建一个与错误代码相对应的 html 文件，
 比如 400 错误，会读取 400.html 文件，以此类推。
 
 

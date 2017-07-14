@@ -85,6 +85,7 @@ type Link struct {
 // Config 一些基本配置项。
 type Config struct {
 	Title           string `yaml:"title"`                 // 网站标题
+	Language        string `yaml:"language"`              // 语言标记，比如 zh-cmn-Hans
 	Subtitle        string `yaml:"subtitle,omitempty"`    // 网站副标题
 	URL             string `yaml:"url"`                   // 网站的地址，不包含最后的斜杠
 	Keywords        string `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
@@ -102,9 +103,21 @@ type Config struct {
 	Menus []*Link `yaml:"menus,omitempty"` // 菜单内容
 
 	// feeds
-	RSS     *RSS     `yaml:"rss,omitempty"`
-	Atom    *RSS     `yaml:"atom,omitempty"`
-	Sitemap *Sitemap `yaml:"sitemap,omitempty"`
+	RSS        *RSS        `yaml:"rss,omitempty"`
+	Atom       *RSS        `yaml:"atom,omitempty"`
+	Sitemap    *Sitemap    `yaml:"sitemap,omitempty"`
+	Opensearch *Opensearch `yaml:"opensearch,omitempty"`
+}
+
+// Opensearch 相关定义
+type Opensearch struct {
+	URL   string `yaml:"url"`             // opensearch 的地址
+	Title string `yaml:"title,omitempty"` // 出现于 html>head>link.title 属性中
+
+	ShortName   string `yaml:"shortName"`
+	Description string `yaml:"description"`
+	LongName    string `yaml:"longName,omitempty"`
+	Image       string `yaml:"image,omitempty"`
 }
 
 // RSS 表示 rss 或是 atom 等 feed 的信息

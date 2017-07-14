@@ -163,19 +163,29 @@ func (a *app) initFeeds() {
 
 	if conf.RSS != nil {
 		a.mux.GetFunc(conf.RSS.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/rss+xml")
 			w.Write(a.buf.RSS)
 		}))
 	}
 
 	if conf.Atom != nil {
 		a.mux.GetFunc(conf.Atom.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/atom+xml")
 			w.Write(a.buf.Atom)
 		}))
 	}
 
 	if conf.Sitemap != nil {
 		a.mux.GetFunc(conf.Sitemap.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "text/xml")
 			w.Write(a.buf.Sitemap)
+		}))
+	}
+
+	if conf.Opensearch != nil {
+		a.mux.GetFunc(conf.Opensearch.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/opensearchdescription+xml")
+			w.Write(a.buf.Opensearch)
 		}))
 	}
 }
@@ -193,5 +203,9 @@ func (a *app) removeFeeds() {
 
 	if conf.Sitemap != nil {
 		a.mux.Remove(conf.Sitemap.URL)
+	}
+
+	if conf.Opensearch != nil {
+		a.mux.Remove(conf.Opensearch.URL)
 	}
 }

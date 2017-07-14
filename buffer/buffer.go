@@ -24,10 +24,11 @@ type Buffer struct {
 	Data    *data.Data // 加载的数据，每次加载都会被重置
 
 	// 缓存的数据
-	Template *template.Template // 主题编译后的模板
-	RSS      []byte
-	Atom     []byte
-	Sitemap  []byte
+	Template   *template.Template // 主题编译后的模板
+	RSS        []byte
+	Atom       []byte
+	Sitemap    []byte
+	Opensearch []byte
 }
 
 // New 声明一个新的 Buffer 实例
@@ -83,6 +84,15 @@ func (b *Buffer) initFeeds() error {
 		}
 
 		b.Sitemap = sitemap.Bytes()
+	}
+
+	if conf.Opensearch != nil {
+		opensearch, err := feed.BuildOpensearch(b.Data)
+		if err != nil {
+			return err
+		}
+
+		b.Opensearch = opensearch.Bytes()
 	}
 
 	return nil

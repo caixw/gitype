@@ -23,3 +23,9 @@ atom:
     title: atom
     size: 20
     url: /atom.xml
+
+opensearch:
+    url: /opensearch.xml
+    title: web search
+    shortName: search
+    description: desc

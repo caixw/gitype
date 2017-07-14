@@ -13,7 +13,7 @@ import (
 
 const (
 	rssHeader = `<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>`
 
 	rssFooter = `</channel>
@@ -27,17 +27,26 @@ func BuildRSS(d *data.Data) (*bytes.Buffer, error) {
 		return nil, err
 	}
 
-	buf.WriteString("<title>")
+	buf.WriteString("\n<title>")
 	buf.WriteString(d.Config.Title)
-	buf.WriteString("</title>")
+	buf.WriteString("</title>\n")
 
 	buf.WriteString("<description>")
 	buf.WriteString(d.Config.Subtitle)
-	buf.WriteString("</description>")
+	buf.WriteString("</description>\n")
 
 	buf.WriteString("<link>")
 	buf.WriteString(d.Config.URL)
-	buf.WriteString("</link>")
+	buf.WriteString("</link>\n")
+
+	if d.Config.Opensearch != nil {
+		o := d.Config.Opensearch
+		buf.WriteString(`<atom:link rel="search" type="application/opensearchdescription+xml" href="`)
+		buf.WriteString(o.URL)
+		buf.WriteString(`" title="`)
+		buf.WriteString(o.Title)
+		buf.WriteString("\" />\n")
+	}
 
 	addPostsToRSS(buf, d)
 
