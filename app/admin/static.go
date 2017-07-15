@@ -31,6 +31,7 @@ var AdminHTML = `<!DOCTYPE html>
 				<input type="password" name="password" placeholder="密码" />
 				<button type="submit">重新生成</button>
 			</p>
+			<p><a href="{{.homeURL}}">返回首页</a></p>
 		</form>
 	</div>
 	</body>

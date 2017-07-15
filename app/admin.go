@@ -41,6 +41,7 @@ func (a *app) postAdminPage(w http.ResponseWriter, r *http.Request) {
 func (a *app) getAdminPage(w http.ResponseWriter, r *http.Request) {
 	s := map[string]interface{}{
 		"lastUpdate": time.Unix(a.buf.Updated, 0).Format(a.buf.Data.Config.LongDateFormat),
+		"homeURL":    a.buf.Data.Config.URL,
 	}
 
 	if err := a.adminTpl.Execute(w, s); err != nil {
