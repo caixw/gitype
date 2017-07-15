@@ -247,7 +247,7 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 
 	key := r.FormValue("q")
 	if len(key) == 0 {
-		p.render(w, "search", nil)
+		http.Redirect(w, r, vars.PostsURL(1), http.StatusPermanentRedirect)
 		return
 	}
 
@@ -262,7 +262,7 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 查找标题和内容
-	posts := make([]*data.Post, 0, a.buf.Data.Config.PageSize)
+	posts := make([]*data.Post, 0, len(a.buf.Data.Posts))
 	for _, v := range a.buf.Data.Posts {
 		if strings.Index(v.Title, key) >= 0 || strings.Index(v.Content, key) >= 0 {
 			posts = append(posts, v)
@@ -271,8 +271,8 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 
 	p.Title = "搜索:" + key
 	p.Q = key
-	p.Keywords = key
-	p.Description = "搜索关键字" + key + "的结果集"
+	p.Keywords = key + ",搜索,search"
+	p.Description = "搜索关键字" + key + "的结果"
 	start, end, ok := a.getPostsRange(len(posts), page, w)
 	if !ok {
 		return
@@ -292,7 +292,6 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p.render(w, "search", nil)
-
 }
 
 // 读取根下的文件
@@ -311,7 +310,6 @@ func (a *app) getRaws(w http.ResponseWriter, r *http.Request) {
 	prefix := "/"
 	root := http.Dir(a.path.RawsDir)
 	http.StripPrefix(prefix, http.FileServer(root)).ServeHTTP(w, r)
-
 }
 
 // 确认当前文章列表页选择范围。
