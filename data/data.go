@@ -47,9 +47,9 @@ type Post struct {
 	Modified       int64   `yaml:"-"`                  // 修改时间
 	Tags           []*Tag  `yaml:"-"`                  // 关联的标签
 	Keywords       string  `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
-	Author         *Author `yaml:"author"`             // 作者
-	Template       string  `yaml:"template"`           // 使用的模板。未指定，则使用系统默认的
-	Top            bool    `yaml:"top"`                // 是否置顶，多个置顶，则按时间排序
+	Author         *Author `yaml:"author,omitempty"`   // 作者
+	Template       string  `yaml:"template,omitempty"` // 使用的模板。未指定，则使用系统默认的
+	Top            bool    `yaml:"top,omitempty"`      // 是否置顶，多个置顶，则按时间排序
 	Summary        string  `yaml:"summary"`            // 摘要
 	Content        string  `yaml:"-"`                  // 内容
 	CreatedFormat  string  `yaml:"created"`            // 创建时间的字符串表示形式
