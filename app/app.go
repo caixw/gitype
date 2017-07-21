@@ -138,15 +138,15 @@ func serveHTTP(a *app) {
 
 // 重新加载数据
 func (a *app) reload() error {
-	// 移除 feed 路由
-	if a.buf != nil {
-		a.removeFeeds()
-	}
-
 	// 生成新的数据
 	buf, err := buffer.New(a.path)
 	if err != nil {
 		return err
+	}
+
+	// 移除旧的 feed 路由
+	if a.buf != nil {
+		a.removeFeeds()
 	}
 
 	// 只有生成成功了，才替换老数据

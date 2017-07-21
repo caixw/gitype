@@ -19,9 +19,9 @@ import (
 type Buffer struct {
 	path *vars.Path
 
-	Updated int64      // 更新时间，一般为重新加载数据的时间
-	Etag    string     // 所有页面都采用相同的 Etag，即时间戳字符串
-	Data    *data.Data // 加载的数据，每次加载都会被重置
+	Updated int64      // 更新时间，一般为数据的加载时间
+	Etag    string     // 响应头中的 Etag 字段，直接使用时间戳字符串表示
+	Data    *data.Data // 加载的数据
 
 	// 缓存的数据
 	Template   *template.Template // 主题编译后的模板

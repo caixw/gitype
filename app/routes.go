@@ -245,8 +245,8 @@ func (a *app) getThemes(w http.ResponseWriter, r *http.Request) {
 func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 	p := a.newPage()
 
-	key := r.FormValue("q")
-	if len(key) == 0 {
+	q := r.FormValue("q")
+	if len(q) == 0 {
 		http.Redirect(w, r, vars.PostsURL(1), http.StatusPermanentRedirect)
 		return
 	}
@@ -263,16 +263,17 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 
 	// 查找标题和内容
 	posts := make([]*data.Post, 0, len(a.buf.Data.Posts))
+	key := strings.ToLower(q)
 	for _, v := range a.buf.Data.Posts {
-		if strings.Index(v.Title, key) >= 0 || strings.Index(v.Content, key) >= 0 {
+		if strings.Contains(v.Title, key) || strings.Contains(v.Content, key) {
 			posts = append(posts, v)
 		}
 	}
 
-	p.Title = "搜索:" + key
-	p.Q = key
-	p.Keywords = key + ",搜索,search"
-	p.Description = "搜索关键字" + key + "的结果"
+	p.Title = "搜索:" + q
+	p.Q = q
+	p.Keywords = q + ",搜索,search"
+	p.Description = "搜索关键字" + q + "的结果"
 	start, end, ok := a.getPostsRange(len(posts), page, w)
 	if !ok {
 		return
@@ -281,13 +282,13 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  vars.SearchURL(key, page-1), // 页码从1开始计数
+			URL:  vars.SearchURL(q, page-1), // 页码从1开始计数
 		}
 	}
 	if end < len(posts) {
 		p.PrevPage = &data.Link{
 			Text: "下一页",
-			URL:  vars.SearchURL(key, page+1),
+			URL:  vars.SearchURL(q, page+1),
 		}
 	}
 
