@@ -24,6 +24,10 @@ const (
 
 // 用于描述一个页面的所有无素
 type page struct {
+	a *app
+
+	AppVersion  string       // 当前程序的版本号
+	GoVersion   string       // 编译的 Go 版本号
 	Title       string       // 文章标题，可以为空
 	SiteName    string       // 网站名称
 	Subtitle    string       // 副标题
@@ -34,8 +38,6 @@ type page struct {
 	Keywords    string       // meta.keywords 的值
 	Q           string       // 搜索关键字
 	Description string       // meta.description 的值
-	AppVersion  string       // 当前程序的版本号
-	GoVersion   string       // 编译的go版本号
 	PostSize    int          // 总文章数量
 	Beian       string       // 备案号
 	Uptime      int64        // 上线时间
@@ -51,14 +53,16 @@ type page struct {
 	Menus       []*data.Link // 菜单
 	Posts       []*data.Post // 文章列表，仅标签详情页和搜索页用到。
 	Post        *data.Post   // 文章详细内容，仅文章页面用到。
-
-	a *app
 }
 
 func (a *app) newPage() *page {
 	conf := a.buf.Data.Config
 
 	page := &page{
+		a:          a,
+		AppVersion: vars.Version(),
+		GoVersion:  runtime.Version(),
+
 		SiteName:    conf.Title,
 		Subtitle:    conf.Subtitle,
 		Language:    conf.Language,
@@ -67,8 +71,6 @@ func (a *app) newPage() *page {
 		Canonical:   conf.URL,
 		Keywords:    conf.Keywords,
 		Description: conf.Description,
-		AppVersion:  vars.Version(),
-		GoVersion:   runtime.Version(),
 		PostSize:    len(a.buf.Data.Posts),
 		Beian:       conf.Beian,
 		Uptime:      conf.Uptime,
@@ -76,8 +78,8 @@ func (a *app) newPage() *page {
 		Tags:        a.buf.Data.Tags,
 		Links:       a.buf.Data.Links,
 		Menus:       conf.Menus,
-		a:           a,
 	}
+
 	if conf.RSS != nil {
 		page.RSS = &data.Link{Title: conf.RSS.Title, URL: conf.RSS.URL}
 	}

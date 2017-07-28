@@ -256,7 +256,7 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if page < 1 {
-		logs.Debugf("参数 page: %v 小于 1", page)
+		logs.Debugf("参数 page: %d 小于 1", page)
 		a.renderError(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}

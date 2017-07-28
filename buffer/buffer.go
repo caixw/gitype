@@ -41,9 +41,9 @@ func New(path *vars.Path) (*Buffer, error) {
 	now := time.Now().Unix()
 	b := &Buffer{
 		path:    path,
-		Data:    d,
 		Updated: now,
 		Etag:    strconv.FormatInt(now, 10),
+		Data:    d,
 	}
 
 	if err = b.compileTemplate(); err != nil {

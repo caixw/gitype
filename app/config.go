@@ -21,8 +21,8 @@ type config struct {
 	Pprof     bool              `json:"pprof"`
 	Headers   map[string]string `json:"headers"`
 
-	WebhooksURL        string `json:"webhooksURL"`        // webhooks接收地址
-	WebhooksUpdateFreq int64  `json:"webhooksUpdateFreq"` // webhooks的最小更新频率，秒数
+	WebhooksURL        string `json:"webhooksURL"`        // webhooks 接收地址
+	WebhooksUpdateFreq int64  `json:"webhooksUpdateFreq"` // webhooks 的最小更新频率，秒数
 	RepoURL            string `json:"repoURL"`            // 远程仓库的地址
 	AdminURL           string `json:"adminURL"`           // 后台管理地址
 	AdminPassword      string `json:"adminPassword"`      // 后台管理登录地址
