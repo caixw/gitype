@@ -92,15 +92,16 @@ func (a *app) newPage() *page {
 
 // 输出当前内容到指定模板
 func (p *page) render(w http.ResponseWriter, name string, headers map[string]string) {
-	if _, exists := headers["Content-Type"]; !exists {
-		if headers == nil {
-			headers = make(map[string]string, 1)
+	if len(headers) == 0 {
+		w.Header().Set("Content-Type", contentType)
+	} else {
+		if _, exists := headers["Content-Type"]; !exists {
+			headers["Content-Type"] = contentType
 		}
-		headers["Content-Type"] = contentType
-	}
 
-	for key, val := range headers {
-		w.Header().Set(key, val)
+		for key, val := range headers {
+			w.Header().Set(key, val)
+		}
 	}
 
 	err := p.a.buf.Template.ExecuteTemplate(w, name, p)
@@ -125,7 +126,7 @@ func (a *app) renderError(w http.ResponseWriter, code int) {
 	filename := strconv.Itoa(code) + ".html"
 	path := filepath.Join(a.path.ThemesDir, a.buf.Data.Config.Theme, filename)
 	if !utils.FileExists(path) {
-		logs.Errorf("模板文件[%v]不存在\n", path)
+		logs.Errorf("模板文件[%s]不存在\n", path)
 		http.Error(w, http.StatusText(code), code)
 		return
 	}

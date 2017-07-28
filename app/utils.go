@@ -16,7 +16,7 @@ import (
 // 获取路径匹配中的参数，并以字符串的格式返回。
 // 若不能找到该参数，返回 false
 func (a *app) paramString(w http.ResponseWriter, r *http.Request, key string) (string, bool) {
-	ps := mux.GetParams(r)
+	ps := mux.Params(r)
 	val, err := ps.String(key)
 
 	if err == params.ErrParamNotExists {
