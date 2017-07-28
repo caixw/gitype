@@ -3,9 +3,10 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 
 简单的半静态博客系统，具有以下特性：
 
-1. 无数据库，通过 git 管理发布的内容；
+1. 无数据库，通过 Git 管理发布的内容；
 1. 无分类，通过标签来归类；
 1. 不区分页面和普通文章；
+1. 可以实时搜索内容。
 
 
 
@@ -104,6 +105,39 @@ rss             | RSS         | rss 配置，若不需要，则不指定该值�
 atom            | RSS         | atom 配置，若不需要，则不指定该值即可
 sitemap         | Sitemap     | sitemap 相关配置，若不需要，则不指定该值即可
 opensearch      | Opensearch  | opensearch 相关配置，若不需要，则不指定该值即可
+
+
+RSS
+
+名称      | 类型        | 描述
+:---------|:------------|:----------
+title     | string      | 标题
+size      | int         | 显示数量
+url       | string      | 地址
+
+
+Sitemap
+
+名称           | 类型        | 描述
+:--------------|:------------|:----------
+url            | string      | Sitemap 的地址
+enableTag      | bool        | 是否把标签放到 Sitemap 中
+tagPriority    | float64     | 标签页的权重
+postPriority   | float64     | 文章页的权重
+tagChangefreq  | string      | 标签页的修改频率
+postChangefreq | string      | 文章页的修改频率
+
+
+Opensearch
+
+名称      | 类型        | 描述
+:-----------|:------------|:----------
+url         | string      | opensearch 的地址
+title       | string      | 出现于 html>head>link.title 属性中
+shortName   | string      | shortName 值
+description | string      | description 值
+longName    | string      | longName 值
+image       | string      | image 值
 
 
 ##### links.yaml
