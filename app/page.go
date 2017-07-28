@@ -17,7 +17,10 @@ import (
 	"github.com/issue9/utils"
 )
 
-const contentType = "text/html"
+const (
+	contentTypeKey  = "Content-Type"
+	contentTypeHTML = "text/html"
+)
 
 // 用于描述一个页面的所有无素
 type page struct {
@@ -93,10 +96,10 @@ func (a *app) newPage() *page {
 // 输出当前内容到指定模板
 func (p *page) render(w http.ResponseWriter, name string, headers map[string]string) {
 	if len(headers) == 0 {
-		w.Header().Set("Content-Type", contentType)
+		w.Header().Set(contentTypeKey, contentTypeHTML)
 	} else {
-		if _, exists := headers["Content-Type"]; !exists {
-			headers["Content-Type"] = contentType
+		if _, exists := headers[contentTypeKey]; !exists {
+			headers[contentTypeKey] = contentTypeHTML
 		}
 
 		for key, val := range headers {
@@ -138,7 +141,7 @@ func (a *app) renderError(w http.ResponseWriter, code int) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set(contentTypeKey, contentTypeHTML)
 	w.WriteHeader(code)
 	w.Write(data)
 }
