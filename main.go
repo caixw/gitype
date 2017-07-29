@@ -46,8 +46,8 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stdout, "%v 一个简单博客程序。\n", vars.AppName)
-	fmt.Fprintf(os.Stdout, "源代码以MIT开源许可，并发布于 Github: %v\n", vars.URL)
+	fmt.Fprintf(os.Stdout, "%s 一个简单博客程序。\n", vars.AppName)
+	fmt.Fprintf(os.Stdout, "源代码以 MIT 开源许可，并发布于 Github: %s\n", vars.URL)
 
 	fmt.Fprintln(os.Stdout, "\n参数:")
 	flag.CommandLine.SetOutput(os.Stdout)
@@ -55,8 +55,8 @@ func usage() {
 }
 
 func printVersion() {
-	fmt.Fprintf(os.Stdout, "%v:%v build with %v\n", vars.AppName, vars.Version(), runtime.Version())
+	fmt.Fprintf(os.Stdout, "%s:%s build with %s\n", vars.AppName, vars.Version(), runtime.Version())
 	if len(vars.CommitHash()) > 0 {
-		fmt.Fprintf(os.Stdout, "git commit hash:%v\n", vars.CommitHash())
+		fmt.Fprintf(os.Stdout, "git commit hash:%s\n", vars.CommitHash())
 	}
 }

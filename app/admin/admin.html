@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans">
 	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<title>typing 控制面板</title>
     <style>
         body{text-align:center}
+
         .container{
             margin:auto;
             margin-top:5rem;
@@ -19,7 +22,7 @@
 	<div class="container">
 		<h1>控制面板</h1>
 		<p>
-			<span>最后更新时间:</span><time datetime="{{.lastUpdate}}"></time>
+			<span>最后更新时间:</span><time datetime="{{.lastUpdate}}">{{.lastUpdate}}</time>
 		</p>
 
 		<form action="" method="POST">
