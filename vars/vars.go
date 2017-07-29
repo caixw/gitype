@@ -7,7 +7,7 @@ package vars
 
 const (
 	// 主版本号，符合 semver 规范
-	mainVersion = "0.3.5"
+	mainVersion = "0.3.6"
 
 	// AppName 程序名称
 	AppName = "typing"

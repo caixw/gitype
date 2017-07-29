@@ -29,7 +29,7 @@ func (a *app) postAdminPage(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("password") == a.conf.AdminPassword {
 		if err := a.reload(); err != nil {
 			logs.Error(err)
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			statusError(w, http.StatusInternalServerError)
 			return
 		}
 	}
@@ -46,6 +46,6 @@ func (a *app) getAdminPage(w http.ResponseWriter, r *http.Request) {
 
 	if err := a.adminTpl.Execute(w, s); err != nil {
 		logs.Error(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		statusError(w, http.StatusInternalServerError)
 	}
 }

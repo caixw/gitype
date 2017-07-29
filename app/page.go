@@ -132,14 +132,14 @@ func (a *app) renderError(w http.ResponseWriter, code int) {
 	path := filepath.Join(a.path.ThemesDir, a.buf.Data.Config.Theme, filename)
 	if !utils.FileExists(path) {
 		logs.Errorf("模板文件[%s]不存在\n", path)
-		http.Error(w, http.StatusText(code), code)
+		statusError(w, code)
 		return
 	}
 
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		logs.Errorf("读取模板文件[%v]时出现以下错误[%v]\n", path, err)
-		http.Error(w, http.StatusText(code), code)
+		logs.Errorf("读取模板文件[%s]时出现以下错误[%v]\n", path, err)
+		statusError(w, code)
 		return
 	}
 

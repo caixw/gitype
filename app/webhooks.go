@@ -46,13 +46,13 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 	cmd.Stdout = &logW{l: logs.INFO()}
 	if err := cmd.Run(); err != nil {
 		logs.Error(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		statusError(w, http.StatusInternalServerError)
 		return
 	}
 
 	if err := a.reload(); err != nil {
 		logs.Error(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		statusError(w, http.StatusInternalServerError)
 		return
 	}
 

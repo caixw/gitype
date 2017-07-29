@@ -29,6 +29,11 @@ type app struct {
 	adminTpl *template.Template // 后台管理的模板页面。
 }
 
+// 标准的错误状态码输出函数，略作封装。
+func statusError(w http.ResponseWriter, status int) {
+	http.Error(w, http.StatusText(status), status)
+}
+
 // Run 运行程序
 func Run(path *vars.Path) error {
 	logs.Info("程序工作路径为:", path.Root)
