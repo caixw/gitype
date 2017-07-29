@@ -15,7 +15,8 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// Buffer 所有数据的缓存
+// Buffer 所有数据的缓存，每次更新数据时，
+// 直接声明一个新的 Buffer 实例，丢弃原来的 Buffer 即可。
 type Buffer struct {
 	path *vars.Path
 

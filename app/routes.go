@@ -334,11 +334,11 @@ func (a *app) getPostsRange(postsSize, page int, w http.ResponseWriter) (start, 
 // 每次访问前需要做的预处理工作。
 func (a *app) prepare(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		logs.Infof("%v: %v", r.UserAgent(), r.URL) // 输出访问日志
+		logs.Infof("%s: %s", r.UserAgent(), r.URL) // 输出访问日志
 
 		// 直接根据整个博客的最后更新时间来确认 etag
 		if r.Header.Get("If-None-Match") == a.buf.Etag {
-			logs.Infof("304: %v", r.URL)
+			logs.Infof("304: %s", r.URL)
 			w.WriteHeader(http.StatusNotModified)
 			return
 		}
