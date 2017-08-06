@@ -21,42 +21,33 @@ const (
 // BuildAtom 用于生成一个符合 atom 规范的 XML 文本 buffer。
 func BuildAtom(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
-	w := &errWriter{
+	w := &writer{
 		buf: buf,
 	}
 
 	w.writeString(xmlHeader)
-
 	w.writeString(atomHeader)
 
-	w.writeString("<id>")
-	w.writeString(d.Config.URL)
-	w.writeString("</id>\n")
+	w.writeElement("id", d.Config.URL, nil)
 
-	w.writeString(`<link href="`)
-	w.writeString(d.Config.URL)
-	w.writeString("\" />\n")
+	w.writeCloseElement("link", map[string]string{
+		"href": d.Config.URL,
+	})
 
 	if d.Config.Opensearch != nil {
 		o := d.Config.Opensearch
-		w.writeString(`<link rel="search" type="application/opensearchdescription+xml" href="`)
-		w.writeString(d.Config.URL + o.URL)
-		w.writeString(`" title="`)
-		w.writeString(o.Title)
-		w.writeString("\" />\n")
+
+		w.writeCloseElement("link", map[string]string{
+			"rel":   "search",
+			"type":  "application/opensearchdescription+xml",
+			"href":  d.Config.URL + o.URL,
+			"title": o.Title,
+		})
 	}
 
-	w.writeString("<title>")
-	w.writeString(d.Config.Title)
-	w.writeString("</title>\n")
-
-	w.writeString("<subtitle>")
-	w.writeString(d.Config.Subtitle)
-	w.writeString("</subtitle>\n")
-
-	w.writeString("<update>")
-	w.writeString(time.Now().Format("2006-01-02T15:04:05Z07:00"))
-	w.writeString("</update>\n")
+	w.writeElement("title", d.Config.Title, nil)
+	w.writeElement("subtitle", d.Config.Subtitle, nil)
+	w.writeElement("update", time.Now().Format("2006-01-02T15:04:05Z07:00"), nil)
 
 	addPostsToAtom(w, d)
 
@@ -68,30 +59,22 @@ func BuildAtom(d *data.Data) (*bytes.Buffer, error) {
 	return buf, nil
 }
 
-func addPostsToAtom(w *errWriter, d *data.Data) {
+func addPostsToAtom(w *writer, d *data.Data) {
 	for _, p := range d.Posts {
 		w.writeString("<entry>\n")
 
-		w.writeString("<id>")
-		w.writeString(p.Permalink)
-		w.writeString("</id>\n")
+		w.writeElement("id", p.Permalink, nil)
 
-		w.writeString(`<link href="`)
-		w.writeString(d.Config.URL + p.Permalink)
-		w.writeString("\" />\n")
+		w.writeCloseElement("link", map[string]string{
+			"href": d.Config.URL + p.Permalink,
+		})
 
-		w.writeString("<title>")
-		w.writeString(p.Title)
-		w.writeString("</title>\n")
+		w.writeElement("title", p.Title, nil)
 
 		t := time.Unix(p.Modified, 0)
-		w.writeString("<update>")
-		w.writeString(t.Format("2006-01-02T15:04:05Z07:00"))
-		w.writeString("</update>\n")
+		w.writeElement("update", t.Format("2006-01-02T15:04:05Z07:00"), nil)
 
-		w.writeString("<summary>")
-		w.writeString(p.Summary)
-		w.writeString("</summary>\n")
+		w.writeElement("summary", p.Summary, nil)
 
 		w.writeString("</entry>\n")
 	}

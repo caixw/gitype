@@ -19,8 +19,12 @@ type pi struct {
 
 func (pi *pi) test(a *assert.Assertion) {
 	buf := new(bytes.Buffer)
+	w := &writer{
+		buf: buf,
+	}
 
-	a.NotError(writePI(buf, pi.name, pi.kv))
+	w.writePI(pi.name, pi.kv)
+	a.NotError(w.err)
 	a.Equal(buf.String(), pi.want)
 }
 

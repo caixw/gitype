@@ -22,33 +22,26 @@ const (
 // BuildRSS 生成一个符合 rss 规范的 XML 文本 buffer。
 func BuildRSS(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
-	w := &errWriter{
+	w := &writer{
 		buf: buf,
 	}
 
 	w.writeString(xmlHeader)
-
 	w.writeString(rssHeader)
 
-	w.writeString("\n<title>")
-	w.writeString(d.Config.Title)
-	w.writeString("</title>\n")
-
-	w.writeString("<description>")
-	w.writeString(d.Config.Subtitle)
-	w.writeString("</description>\n")
-
-	w.writeString("<link>")
-	w.writeString(d.Config.URL)
-	w.writeString("</link>\n")
+	w.writeElement("title", d.Config.Title, nil)
+	w.writeElement("description", d.Config.Subtitle, nil)
+	w.writeElement("link", d.Config.URL, nil)
 
 	if d.Config.Opensearch != nil {
 		o := d.Config.Opensearch
-		w.writeString(`<atom:link rel="search" type="application/opensearchdescription+xml" href="`)
-		w.writeString(d.Config.URL + o.URL)
-		w.writeString(`" title="`)
-		w.writeString(o.Title)
-		w.writeString("\" />\n")
+
+		w.writeCloseElement("atom:link", map[string]string{
+			"rel":   "search",
+			"type":  "application/opensearchdescription+xml",
+			"title": o.Title,
+			"href":  d.Config.URL + o.URL,
+		})
 	}
 
 	addPostsToRSS(w, d)
@@ -61,26 +54,15 @@ func BuildRSS(d *data.Data) (*bytes.Buffer, error) {
 	return buf, nil
 }
 
-func addPostsToRSS(w *errWriter, d *data.Data) {
+func addPostsToRSS(w *writer, d *data.Data) {
 	for _, p := range d.Posts {
 		w.writeString("<item>\n")
 
-		w.writeString("<link>")
-		w.writeString(d.Config.URL + p.Permalink)
-		w.writeString("</link>\n")
-
-		w.writeString("<title>")
-		w.writeString(p.Title)
-		w.writeString("</title>\n")
-
+		w.writeElement("link", d.Config.URL+p.Permalink, nil)
+		w.writeElement("title", p.Title, nil)
 		t := time.Unix(p.Created, 0)
-		w.writeString("<pubDate>")
-		w.writeString(t.Format(time.RFC1123))
-		w.writeString("</pubDate>\n")
-
-		w.writeString("<description>")
-		w.writeString(p.Summary)
-		w.writeString("</description>\n")
+		w.writeElement("pubDate", t.Format(time.RFC1123), nil)
+		w.writeElement("description", p.Summary, nil)
 
 		w.writeString("</item>\n")
 	}

@@ -23,21 +23,17 @@ const (
 // BuildSitemap 生成一个符合 sitemap 规范的 XML 文本 buffer。
 func BuildSitemap(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
-	w := &errWriter{
+	w := &writer{
 		buf: buf,
 	}
 
 	w.writeString(xmlHeader)
 
 	if len(d.Config.Sitemap.XslURL) > 0 {
-		err := writePI(buf, "xml-stylesheet", map[string]string{
+		w.writePI("xml-stylesheet", map[string]string{
 			"type": "text/xsl",
 			"href": d.Config.Sitemap.XslURL,
 		})
-
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	w.writeString(sitemapHeader)
@@ -56,7 +52,7 @@ func BuildSitemap(d *data.Data) (*bytes.Buffer, error) {
 	return buf, nil
 }
 
-func addPostsToSitemap(w *errWriter, d *data.Data) {
+func addPostsToSitemap(w *writer, d *data.Data) {
 	sitemap := d.Config.Sitemap
 	for _, p := range d.Posts {
 		loc := d.Config.URL + p.Permalink
@@ -64,7 +60,7 @@ func addPostsToSitemap(w *errWriter, d *data.Data) {
 	}
 }
 
-func addTagsToSitemap(w *errWriter, d *data.Data) error {
+func addTagsToSitemap(w *writer, d *data.Data) error {
 	now := time.Now().Unix()
 	sitemap := d.Config.Sitemap
 
@@ -78,25 +74,14 @@ func addTagsToSitemap(w *errWriter, d *data.Data) error {
 	return nil
 }
 
-func addItemToSitemap(w *errWriter, loc, changefreq string, lastmod int64, priority float64) {
+func addItemToSitemap(w *writer, loc, changefreq string, lastmod int64, priority float64) {
 	w.writeString("<url>\n")
 
-	w.writeString("<loc>")
-	w.writeString(loc)
-	w.writeString("</loc>\n")
-
+	w.writeElement("loc", loc, nil)
 	t := time.Unix(lastmod, 0)
-	w.writeString("<lastmod>")
-	w.writeString(t.Format("2006-01-02T15:04:05-07:00"))
-	w.writeString("</lastmod>\n")
-
-	w.writeString("<changefreq>")
-	w.writeString(changefreq)
-	w.writeString("</changefreq>\n")
-
-	w.writeString("<priority>")
-	w.writeString(strconv.FormatFloat(priority, 'f', 1, 32))
-	w.writeString("</priority>\n")
+	w.writeElement("lastmod", t.Format("2006-01-02T15:04:05-07:00"), nil)
+	w.writeElement("changefreq", changefreq, nil)
+	w.writeElement("priority", strconv.FormatFloat(priority, 'f', 1, 32), nil)
 
 	w.writeString("</url>\n")
 }
