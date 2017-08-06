@@ -12,8 +12,7 @@ import (
 )
 
 const (
-	atomHeader = `<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"
+	atomHeader = `<feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">`
 
 	atomFooter = `</feed>`
@@ -22,6 +21,11 @@ const (
 // BuildAtom 用于生成一个符合 atom 规范的 XML 文本 buffer。
 func BuildAtom(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
+
+	if _, err := buf.WriteString(xmlHeader); err != nil {
+		return nil, err
+	}
+
 	if _, err := buf.WriteString(atomHeader); err != nil {
 		return nil, err
 	}

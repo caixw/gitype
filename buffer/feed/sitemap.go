@@ -15,8 +15,7 @@ import (
 )
 
 const (
-	sitemapHeader = `<?xml version="1.0" encoding="utf-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`
+	sitemapHeader = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`
 
 	sitemapFooter = `</urlset>`
 )
@@ -24,6 +23,22 @@ const (
 // BuildSitemap 生成一个符合 sitemap 规范的 XML 文本 buffer。
 func BuildSitemap(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
+
+	if _, err := buf.WriteString(xmlHeader); err != nil {
+		return nil, err
+	}
+
+	if len(d.Config.Sitemap.XslURL) > 0 {
+		err := writePI(buf, "xml-stylesheet", map[string]string{
+			"type": "text/xsl",
+			"href": d.Config.Sitemap.XslURL,
+		})
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	if _, err := buf.WriteString(sitemapHeader); err != nil {
 		return nil, err
 	}

@@ -12,8 +12,7 @@ import (
 )
 
 const (
-	rssHeader = `<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	rssHeader = `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>`
 
 	rssFooter = `</channel>
@@ -23,6 +22,11 @@ const (
 // BuildRSS 生成一个符合 rss 规范的 XML 文本 buffer。
 func BuildRSS(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
+
+	if _, err := buf.WriteString(xmlHeader); err != nil {
+		return nil, err
+	}
+
 	if _, err := buf.WriteString(rssHeader); err != nil {
 		return nil, err
 	}

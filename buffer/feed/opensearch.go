@@ -15,8 +15,7 @@ import (
 )
 
 const (
-	opensearchHeader = `<?xml version="1.0" encoding="utf-8"?>
-<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">`
+	opensearchHeader = `<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">`
 
 	opensearchFooter = `</OpenSearchDescription>`
 )
@@ -24,6 +23,11 @@ const (
 // BuildOpensearch 用于生成一个符合 atom 规范的 XML 文本 buffer。
 func BuildOpensearch(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
+
+	if _, err := buf.WriteString(xmlHeader); err != nil {
+		return nil, err
+	}
+
 	if _, err := buf.WriteString(opensearchHeader); err != nil {
 		return nil, err
 	}
