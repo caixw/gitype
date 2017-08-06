@@ -13,7 +13,7 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// BuildSitemap 生成一个符合 sitemap 规范的 XML 文本 buffer。
+// BuildSitemap 生成一个符合 sitemap 规范的 XML 文本。
 func BuildSitemap(d *data.Data) ([]byte, error) {
 	w := newWrite()
 

@@ -10,7 +10,7 @@ import (
 	"github.com/caixw/typing/data"
 )
 
-// BuildRSS 生成一个符合 rss 规范的 XML 文本 buffer。
+// BuildRSS 生成一个符合 rss 规范的 XML 文本。
 func BuildRSS(d *data.Data) ([]byte, error) {
 	w := newWrite()
 
