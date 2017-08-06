@@ -11,35 +11,60 @@ import (
 	"github.com/issue9/assert"
 )
 
-type pi struct {
-	name string
-	kv   map[string]string
-	want string
+func TestNewWriter(t *testing.T) {
+	a := assert.New(t)
+	w := newWrite()
+
+	bs, err := w.bytes()
+	a.NotError(err).Equal(bs, xmlHeader)
 }
 
-func (pi *pi) test(a *assert.Assertion) {
-	buf := new(bytes.Buffer)
-	w := &writer{
-		buf: buf,
+func TestWriter_writePI(t *testing.T) {
+	a := assert.New(t)
+	test := func(name string, kv map[string]string, want string) {
+		w := &writer{
+			buf: new(bytes.Buffer),
+		}
+
+		w.writePI(name, kv)
+		bs, err := w.bytes()
+		a.NotError(err).Equal(string(bs), want)
 	}
 
-	w.writePI(pi.name, pi.kv)
-	a.NotError(w.err)
-	a.Equal(buf.String(), pi.want)
+	test("xml-stylesheet", nil, "<?xml-stylesheet ?>\n")
+	test("xml-stylesheet", map[string]string{"type": "text/xsl"}, `<?xml-stylesheet type="text/xsl" ?>`+"\n")
 }
 
-func TestWritePI(t *testing.T) {
+func TestWriter_writeElement(t *testing.T) {
 	a := assert.New(t)
+	test := func(name, val string, kv map[string]string, want string) {
+		w := &writer{
+			buf: new(bytes.Buffer),
+		}
 
-	(&pi{
-		name: "xml-stylesheet",
-		kv:   map[string]string{"type": "text/xsl"},
-		want: `<?xml-stylesheet type="text/xsl" ?>`,
-	}).test(a)
+		w.writeElement(name, val, kv)
+		bs, err := w.bytes()
+		a.NotError(err).Equal(string(bs), want)
+	}
 
-	(&pi{
-		name: "xml-stylesheet",
-		kv:   map[string]string{},
-		want: `<?xml-stylesheet ?>`,
-	}).test(a)
+	test("xml", "text", nil, `<xml>text</xml>`+"\n")
+	test("xml", "", nil, `<xml></xml>`+"\n")
+	test("xml", "text", map[string]string{"type": "text/xsl"}, `<xml type="text/xsl">text</xml>`+"\n")
+}
+
+func TestWriter_writeCloseElement(t *testing.T) {
+	a := assert.New(t)
+	test := func(name string, kv map[string]string, want string) {
+		w := &writer{
+			buf: new(bytes.Buffer),
+		}
+
+		w.writeCloseElement(name, kv)
+		bs, err := w.bytes()
+		a.NotError(err).Equal(string(bs), want)
+	}
+
+	test("xml", nil, `<xml />`+"\n")
+	test("xml", nil, `<xml />`+"\n")
+	test("xml", map[string]string{"type": "text/xsl"}, `<xml type="text/xsl" />`+"\n")
 }
