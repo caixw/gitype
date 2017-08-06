@@ -23,10 +23,11 @@ const (
 // BuildSitemap 生成一个符合 sitemap 规范的 XML 文本 buffer。
 func BuildSitemap(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
-
-	if _, err := buf.WriteString(xmlHeader); err != nil {
-		return nil, err
+	w := &errWriter{
+		buf: buf,
 	}
+
+	w.writeString(xmlHeader)
 
 	if len(d.Config.Sitemap.XslURL) > 0 {
 		err := writePI(buf, "xml-stylesheet", map[string]string{
@@ -39,69 +40,63 @@ func BuildSitemap(d *data.Data) (*bytes.Buffer, error) {
 		}
 	}
 
-	if _, err := buf.WriteString(sitemapHeader); err != nil {
-		return nil, err
-	}
+	w.writeString(sitemapHeader)
 
-	if err := addPostsToSitemap(buf, d); err != nil {
-		return nil, err
-	}
+	addPostsToSitemap(w, d)
 
 	if d.Config.Sitemap.EnableTag {
-		if err := addTagsToSitemap(buf, d); err != nil {
-			return nil, err
-		}
+		addTagsToSitemap(w, d)
 	}
 
-	if _, err := buf.WriteString(sitemapFooter); err != nil {
-		return nil, err
-	}
+	w.writeString(sitemapFooter)
 
+	if w.err != nil {
+		return nil, w.err
+	}
 	return buf, nil
 }
 
-func addPostsToSitemap(buf *bytes.Buffer, d *data.Data) error {
+func addPostsToSitemap(w *errWriter, d *data.Data) {
 	sitemap := d.Config.Sitemap
 	for _, p := range d.Posts {
 		loc := d.Config.URL + p.Permalink
-		addItemToSitemap(buf, loc, sitemap.PostChangefreq, p.Modified, sitemap.PostPriority)
+		addItemToSitemap(w, loc, sitemap.PostChangefreq, p.Modified, sitemap.PostPriority)
 	}
-	return nil
 }
 
-func addTagsToSitemap(buf *bytes.Buffer, d *data.Data) error {
+func addTagsToSitemap(w *errWriter, d *data.Data) error {
 	now := time.Now().Unix()
 	sitemap := d.Config.Sitemap
 
 	loc := d.Config.URL + vars.TagsURL()
-	addItemToSitemap(buf, loc, sitemap.TagChangefreq, now, sitemap.TagPriority)
+	addItemToSitemap(w, loc, sitemap.TagChangefreq, now, sitemap.TagPriority)
 
 	for _, tag := range d.Tags {
 		loc = d.Config.URL + tag.Permalink
-		addItemToSitemap(buf, loc, sitemap.TagChangefreq, now, sitemap.TagPriority)
+		addItemToSitemap(w, loc, sitemap.TagChangefreq, now, sitemap.TagPriority)
 	}
 	return nil
 }
 
-func addItemToSitemap(buf *bytes.Buffer, loc, changefreq string, lastmod int64, priority float64) {
-	buf.WriteString("<url>\n")
+func addItemToSitemap(w *errWriter, loc, changefreq string, lastmod int64, priority float64) {
+	w.writeString("<url>\n")
 
-	buf.WriteString("<loc>")
-	buf.WriteString(loc)
-	buf.WriteString("</loc>\n")
+	w.writeString("<loc>")
+	w.writeString(loc)
+	w.writeString("</loc>\n")
 
 	t := time.Unix(lastmod, 0)
-	buf.WriteString("<lastmod>")
-	buf.WriteString(t.Format("2006-01-02T15:04:05-07:00"))
-	buf.WriteString("</lastmod>\n")
+	w.writeString("<lastmod>")
+	w.writeString(t.Format("2006-01-02T15:04:05-07:00"))
+	w.writeString("</lastmod>\n")
 
-	buf.WriteString("<changefreq>")
-	buf.WriteString(changefreq)
-	buf.WriteString("</changefreq>\n")
+	w.writeString("<changefreq>")
+	w.writeString(changefreq)
+	w.writeString("</changefreq>\n")
 
-	buf.WriteString("<priority>")
-	buf.WriteString(strconv.FormatFloat(priority, 'f', 1, 32))
-	buf.WriteString("</priority>\n")
+	w.writeString("<priority>")
+	w.writeString(strconv.FormatFloat(priority, 'f', 1, 32))
+	w.writeString("</priority>\n")
 
-	buf.WriteString("</url>\n")
+	w.writeString("</url>\n")
 }

@@ -171,6 +171,7 @@ content   | string      | 用于描述该标签的详细内容，可以是**HTML
 data/themes 下为主题文件，可定义多个主题，通过 config 中的 theme 指定当前使用的主题。
 主题模板为 [Go 官方模板](https://golang.org/pkg/html/template/)。
 
+
 单一主题下，可以为文章详细页定义多个模板，通过每篇文章的 meta.yaml 可以自定义当前文章使用的模板，
 默认情况下，使用 post 模板。
 

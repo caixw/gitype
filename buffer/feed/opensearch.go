@@ -23,62 +23,59 @@ const (
 // BuildOpensearch 用于生成一个符合 atom 规范的 XML 文本 buffer。
 func BuildOpensearch(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
-
-	if _, err := buf.WriteString(xmlHeader); err != nil {
-		return nil, err
+	w := &errWriter{
+		buf: buf,
 	}
 
-	if _, err := buf.WriteString(opensearchHeader); err != nil {
-		return nil, err
-	}
+	w.writeString(xmlHeader)
+
+	w.writeString(opensearchHeader)
 
 	o := d.Config.Opensearch
 
-	buf.WriteString("\n<InputEncoding>")
-	buf.WriteString("UTF-8")
-	buf.WriteString("</InputEncoding>\n")
+	w.writeString("\n<InputEncoding>")
+	w.writeString("UTF-8")
+	w.writeString("</InputEncoding>\n")
 
-	buf.WriteString("<OutputEncoding>")
-	buf.WriteString("UTF-8")
-	buf.WriteString("</OutputEncoding>\n")
+	w.writeString("<OutputEncoding>")
+	w.writeString("UTF-8")
+	w.writeString("</OutputEncoding>\n")
 
-	buf.WriteString("<ShortName>")
-	buf.WriteString(o.ShortName)
-	buf.WriteString("</ShortName>\n")
+	w.writeString("<ShortName>")
+	w.writeString(o.ShortName)
+	w.writeString("</ShortName>\n")
 
-	buf.WriteString("<Description>")
-	buf.WriteString(o.Description)
-	buf.WriteString("</Description>\n")
+	w.writeString("<Description>")
+	w.writeString(o.Description)
+	w.writeString("</Description>\n")
 
 	if len(o.LongName) > 0 {
-		buf.WriteString("<LongName>")
-		buf.WriteString(o.LongName)
-		buf.WriteString("</LongName>\n")
+		w.writeString("<LongName>")
+		w.writeString(o.LongName)
+		w.writeString("</LongName>\n")
 	}
 
 	if len(o.Image) > 0 {
-		buf.WriteString(`<Image type="`)
-		buf.WriteString(mime.TypeByExtension(filepath.Ext(o.Image)))
-		buf.WriteString(`">`)
-		buf.WriteString(o.Image)
-		buf.WriteString("</Image>\n")
+		w.writeString(`<Image type="`)
+		w.writeString(mime.TypeByExtension(filepath.Ext(o.Image)))
+		w.writeString(`">`)
+		w.writeString(o.Image)
+		w.writeString("</Image>\n")
 	}
 
-	buf.WriteString(`<Url type="text/html" template="`)
-	buf.WriteString(vars.SearchURL("{searchTerms}", 0))
-	buf.WriteString(`" />`)
+	w.writeString(`<Url type="text/html" template="`)
+	w.writeString(vars.SearchURL("{searchTerms}", 0))
+	w.writeString(`" />`)
 
-	buf.WriteString("<Developer>")
-	buf.WriteString(vars.AppName)
-	buf.WriteString("</Developer>\n")
+	w.writeString("<Developer>")
+	w.writeString(vars.AppName)
+	w.writeString("</Developer>\n")
 
-	buf.WriteString("<Language>")
-	buf.WriteString(d.Config.Language)
-	buf.WriteString("</Language>\n")
+	w.writeString("<Language>")
+	w.writeString(d.Config.Language)
+	w.writeString("</Language>\n")
 
-	if _, err := buf.WriteString(opensearchFooter); err != nil {
-		return nil, err
-	}
+	w.writeString(opensearchFooter)
 
 	return buf, nil
 }

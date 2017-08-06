@@ -129,8 +129,8 @@ type RSS struct {
 
 // Sitemap 表示 sitemap 的相关配置项
 type Sitemap struct {
-	URL            string  `yaml:"url"`    // 展示给用户的地址
-	XslURL         string  `yaml:"xslURL"` // 为 sitemap 指定一个 xsl 文件
+	URL            string  `yaml:"url"`              // 展示给用户的地址
+	XslURL         string  `yaml:"xslURL,omitempty"` // 为 sitemap 指定一个 xsl 文件
 	EnableTag      bool    `yaml:"enableTag,omitempty"`
 	TagPriority    float64 `yaml:"tagPriority"`
 	PostPriority   float64 `yaml:"postPriority"`

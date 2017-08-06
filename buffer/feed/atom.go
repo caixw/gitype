@@ -21,78 +21,78 @@ const (
 // BuildAtom 用于生成一个符合 atom 规范的 XML 文本 buffer。
 func BuildAtom(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
-
-	if _, err := buf.WriteString(xmlHeader); err != nil {
-		return nil, err
+	w := &errWriter{
+		buf: buf,
 	}
 
-	if _, err := buf.WriteString(atomHeader); err != nil {
-		return nil, err
-	}
+	w.writeString(xmlHeader)
 
-	buf.WriteString("<id>")
-	buf.WriteString(d.Config.URL)
-	buf.WriteString("</id>\n")
+	w.writeString(atomHeader)
 
-	buf.WriteString(`<link href="`)
-	buf.WriteString(d.Config.URL)
-	buf.WriteString("\" />\n")
+	w.writeString("<id>")
+	w.writeString(d.Config.URL)
+	w.writeString("</id>\n")
+
+	w.writeString(`<link href="`)
+	w.writeString(d.Config.URL)
+	w.writeString("\" />\n")
 
 	if d.Config.Opensearch != nil {
 		o := d.Config.Opensearch
-		buf.WriteString(`<link rel="search" type="application/opensearchdescription+xml" href="`)
-		buf.WriteString(d.Config.URL + o.URL)
-		buf.WriteString(`" title="`)
-		buf.WriteString(o.Title)
-		buf.WriteString("\" />\n")
+		w.writeString(`<link rel="search" type="application/opensearchdescription+xml" href="`)
+		w.writeString(d.Config.URL + o.URL)
+		w.writeString(`" title="`)
+		w.writeString(o.Title)
+		w.writeString("\" />\n")
 	}
 
-	buf.WriteString("<title>")
-	buf.WriteString(d.Config.Title)
-	buf.WriteString("</title>\n")
+	w.writeString("<title>")
+	w.writeString(d.Config.Title)
+	w.writeString("</title>\n")
 
-	buf.WriteString("<subtitle>")
-	buf.WriteString(d.Config.Subtitle)
-	buf.WriteString("</subtitle>\n")
+	w.writeString("<subtitle>")
+	w.writeString(d.Config.Subtitle)
+	w.writeString("</subtitle>\n")
 
-	buf.WriteString("<update>")
-	buf.WriteString(time.Now().Format("2006-01-02T15:04:05Z07:00"))
-	buf.WriteString("</update>\n")
+	w.writeString("<update>")
+	w.writeString(time.Now().Format("2006-01-02T15:04:05Z07:00"))
+	w.writeString("</update>\n")
 
-	addPostsToAtom(buf, d)
+	addPostsToAtom(w, d)
 
-	if _, err := buf.WriteString(atomFooter); err != nil {
-		return nil, err
+	w.writeString(atomFooter)
+
+	if w.err != nil {
+		return nil, w.err
 	}
-
 	return buf, nil
 }
 
-func addPostsToAtom(buf *bytes.Buffer, d *data.Data) {
+func addPostsToAtom(w *errWriter, d *data.Data) {
 	for _, p := range d.Posts {
-		buf.WriteString("<entry>\n")
+		w.writeString("<entry>\n")
 
-		buf.WriteString("<id>")
-		buf.WriteString(p.Permalink)
-		buf.WriteString("</id>\n")
+		w.writeString("<id>")
+		w.writeString(p.Permalink)
+		w.writeString("</id>\n")
 
-		buf.WriteString(`<link href="`)
-		buf.WriteString(d.Config.URL + p.Permalink)
-		buf.WriteString("\" />\n")
+		w.writeString(`<link href="`)
+		w.writeString(d.Config.URL + p.Permalink)
+		w.writeString("\" />\n")
 
-		buf.WriteString("<title>")
-		buf.WriteString(p.Title)
-		buf.WriteString("</title>\n")
+		w.writeString("<title>")
+		w.writeString(p.Title)
+		w.writeString("</title>\n")
 
 		t := time.Unix(p.Modified, 0)
-		buf.WriteString("<update>")
-		buf.WriteString(t.Format("2006-01-02T15:04:05Z07:00"))
-		buf.WriteString("</update>\n")
+		w.writeString("<update>")
+		w.writeString(t.Format("2006-01-02T15:04:05Z07:00"))
+		w.writeString("</update>\n")
 
-		buf.WriteString("<summary>")
-		buf.WriteString(p.Summary)
-		buf.WriteString("</summary>\n")
+		w.writeString("<summary>")
+		w.writeString(p.Summary)
+		w.writeString("</summary>\n")
 
-		buf.WriteString("</entry>\n")
+		w.writeString("</entry>\n")
 	}
 }

@@ -10,19 +10,44 @@ import (
 
 const xmlHeader = `<?xml version="1.0" encoding="utf-8" ?>`
 
-func writePI(buf *bytes.Buffer, name string, kv map[string]string) error {
-	buf.WriteString("<?")
-	buf.WriteString(name)
+type errWriter struct {
+	err error
+	buf *bytes.Buffer
+}
 
-	for k, v := range kv {
-		buf.WriteByte(' ')
-		buf.WriteString(k)
-		buf.WriteString(`="`)
-		buf.WriteString(v)
-		buf.WriteString(`"`)
+func (e *errWriter) writeString(str string) {
+	if e.err != nil {
+		return
 	}
 
-	buf.WriteString(" ?>")
+	_, e.err = e.buf.WriteString(str)
+}
 
-	return nil
+func (e *errWriter) writeByte(b byte) {
+	if e.err != nil {
+		return
+	}
+
+	e.err = e.buf.WriteByte(b)
+}
+
+func writePI(buf *bytes.Buffer, name string, kv map[string]string) error {
+	w := &errWriter{
+		buf: buf,
+	}
+
+	w.writeString("<?")
+	w.writeString(name)
+
+	for k, v := range kv {
+		w.writeByte(' ')
+		w.writeString(k)
+		w.writeString(`="`)
+		w.writeString(v)
+		w.writeString(`"`)
+	}
+
+	w.writeString(" ?>")
+
+	return w.err
 }

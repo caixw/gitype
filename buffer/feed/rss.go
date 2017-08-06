@@ -22,66 +22,66 @@ const (
 // BuildRSS 生成一个符合 rss 规范的 XML 文本 buffer。
 func BuildRSS(d *data.Data) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
-
-	if _, err := buf.WriteString(xmlHeader); err != nil {
-		return nil, err
+	w := &errWriter{
+		buf: buf,
 	}
 
-	if _, err := buf.WriteString(rssHeader); err != nil {
-		return nil, err
-	}
+	w.writeString(xmlHeader)
 
-	buf.WriteString("\n<title>")
-	buf.WriteString(d.Config.Title)
-	buf.WriteString("</title>\n")
+	w.writeString(rssHeader)
 
-	buf.WriteString("<description>")
-	buf.WriteString(d.Config.Subtitle)
-	buf.WriteString("</description>\n")
+	w.writeString("\n<title>")
+	w.writeString(d.Config.Title)
+	w.writeString("</title>\n")
 
-	buf.WriteString("<link>")
-	buf.WriteString(d.Config.URL)
-	buf.WriteString("</link>\n")
+	w.writeString("<description>")
+	w.writeString(d.Config.Subtitle)
+	w.writeString("</description>\n")
+
+	w.writeString("<link>")
+	w.writeString(d.Config.URL)
+	w.writeString("</link>\n")
 
 	if d.Config.Opensearch != nil {
 		o := d.Config.Opensearch
-		buf.WriteString(`<atom:link rel="search" type="application/opensearchdescription+xml" href="`)
-		buf.WriteString(d.Config.URL + o.URL)
-		buf.WriteString(`" title="`)
-		buf.WriteString(o.Title)
-		buf.WriteString("\" />\n")
+		w.writeString(`<atom:link rel="search" type="application/opensearchdescription+xml" href="`)
+		w.writeString(d.Config.URL + o.URL)
+		w.writeString(`" title="`)
+		w.writeString(o.Title)
+		w.writeString("\" />\n")
 	}
 
-	addPostsToRSS(buf, d)
+	addPostsToRSS(w, d)
 
-	if _, err := buf.WriteString(rssFooter); err != nil {
-		return nil, err
+	w.writeString(rssFooter)
+
+	if w.err != nil {
+		return nil, w.err
 	}
-
 	return buf, nil
 }
 
-func addPostsToRSS(buf *bytes.Buffer, d *data.Data) {
+func addPostsToRSS(w *errWriter, d *data.Data) {
 	for _, p := range d.Posts {
-		buf.WriteString("<item>\n")
+		w.writeString("<item>\n")
 
-		buf.WriteString("<link>")
-		buf.WriteString(d.Config.URL + p.Permalink)
-		buf.WriteString("</link>\n")
+		w.writeString("<link>")
+		w.writeString(d.Config.URL + p.Permalink)
+		w.writeString("</link>\n")
 
-		buf.WriteString("<title>")
-		buf.WriteString(p.Title)
-		buf.WriteString("</title>\n")
+		w.writeString("<title>")
+		w.writeString(p.Title)
+		w.writeString("</title>\n")
 
 		t := time.Unix(p.Created, 0)
-		buf.WriteString("<pubDate>")
-		buf.WriteString(t.Format(time.RFC1123))
-		buf.WriteString("</pubDate>\n")
+		w.writeString("<pubDate>")
+		w.writeString(t.Format(time.RFC1123))
+		w.writeString("</pubDate>\n")
 
-		buf.WriteString("<description>")
-		buf.WriteString(p.Summary)
-		buf.WriteString("</description>\n")
+		w.writeString("<description>")
+		w.writeString(p.Summary)
+		w.writeString("</description>\n")
 
-		buf.WriteString("</item>\n")
+		w.writeString("</item>\n")
 	}
 }
