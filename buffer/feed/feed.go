@@ -6,12 +6,14 @@ package feed
 
 import (
 	"bytes"
+	"strings"
 )
 
 // xml 操作类，简单地封装 bytes.Buffer。
 type writer struct {
-	err error
-	buf *bytes.Buffer
+	err    error
+	buf    *bytes.Buffer
+	indent int
 }
 
 func newWrite() *writer {
@@ -47,7 +49,15 @@ func (w *writer) writeNewline() {
 	w.writeByte('\n')
 }
 
-func (w *writer) writeStartElement(name string, attr map[string]string, newline bool) {
+func (w *writer) writeStartElement(name string, attr map[string]string) {
+	w.startElement(name, attr, true)
+}
+
+// newline 是否换行
+func (w *writer) startElement(name string, attr map[string]string, newline bool) {
+	w.writeString(strings.Repeat(" ", w.indent*4))
+	w.indent++
+
 	w.writeByte('<')
 	w.writeString(name)
 
@@ -67,6 +77,16 @@ func (w *writer) writeStartElement(name string, attr map[string]string, newline 
 }
 
 func (w *writer) writeEndElement(name string) {
+	w.endElement(name, true)
+}
+
+// indent 是否需要填上缩时的字符
+func (w *writer) endElement(name string, indent bool) {
+	w.indent--
+	if indent {
+		w.writeString(strings.Repeat(" ", w.indent*4))
+	}
+
 	w.writeString("</")
 	w.writeString(name)
 	w.writeByte('>')
@@ -95,9 +115,9 @@ func (w *writer) writeCloseElement(name string, attr map[string]string) {
 // val 元素内容；
 // attr 元素的属性。
 func (w *writer) writeElement(name, val string, attr map[string]string) {
-	w.writeStartElement(name, attr, false)
+	w.startElement(name, attr, false)
 	w.writeString(val)
-	w.writeEndElement(name)
+	w.endElement(name, false)
 }
 
 // 写入一个 PI 指令

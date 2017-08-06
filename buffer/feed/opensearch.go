@@ -18,7 +18,7 @@ func BuildOpensearch(d *data.Data) ([]byte, error) {
 
 	w.writeStartElement("OpenSearchDescription", map[string]string{
 		"xmlns": "http://a9.com/-/spec/opensearch/1.1/",
-	}, true)
+	})
 
 	o := d.Config.Opensearch
 
