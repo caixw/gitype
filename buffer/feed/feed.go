@@ -45,10 +45,6 @@ func (w *writer) writeByte(b byte) {
 	w.err = w.buf.WriteByte(b)
 }
 
-func (w *writer) writeNewline() {
-	w.writeByte('\n')
-}
-
 func (w *writer) writeStartElement(name string, attr map[string]string) {
 	w.startElement(name, attr, true)
 }
@@ -60,19 +56,11 @@ func (w *writer) startElement(name string, attr map[string]string, newline bool)
 
 	w.writeByte('<')
 	w.writeString(name)
-
-	for k, v := range attr {
-		w.writeByte(' ')
-		w.writeString(k)
-		w.writeString(`="`)
-		w.writeString(v)
-		w.writeString(`"`)
-	}
-
+	w.writeAttr(attr)
 	w.writeByte('>')
 
 	if newline {
-		w.writeNewline()
+		w.writeByte('\n')
 	}
 }
 
@@ -90,24 +78,22 @@ func (w *writer) endElement(name string, indent bool) {
 	w.writeString("</")
 	w.writeString(name)
 	w.writeByte('>')
-	w.writeNewline()
+
+	w.writeByte('\n')
 }
 
 // 写入一个自闭合的元素
 // name 元素标签名；
 // attr 元素的属性。
 func (w *writer) writeCloseElement(name string, attr map[string]string) {
+	w.writeString(strings.Repeat(" ", w.indent*4))
+
 	w.writeByte('<')
 	w.writeString(name)
-	for k, v := range attr {
-		w.writeByte(' ')
-		w.writeString(k)
-		w.writeString(`="`)
-		w.writeString(v)
-		w.writeString(`"`)
-	}
+	w.writeAttr(attr)
 	w.writeString(" />")
-	w.writeNewline()
+
+	w.writeByte('\n')
 }
 
 // 写入一个元素。
@@ -124,17 +110,20 @@ func (w *writer) writeElement(name, val string, attr map[string]string) {
 func (w *writer) writePI(name string, kv map[string]string) {
 	w.writeString("<?")
 	w.writeString(name)
+	w.writeAttr(kv)
+	w.writeString(" ?>")
 
-	for k, v := range kv {
+	w.writeByte('\n')
+}
+
+func (w *writer) writeAttr(attr map[string]string) {
+	for k, v := range attr {
 		w.writeByte(' ')
 		w.writeString(k)
 		w.writeString(`="`)
 		w.writeString(v)
-		w.writeString(`"`)
+		w.writeByte('"')
 	}
-
-	w.writeString(" ?>")
-	w.writeNewline()
 }
 
 // 将内容转换成 []byte 并返回
