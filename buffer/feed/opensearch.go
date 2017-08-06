@@ -12,17 +12,13 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-const (
-	opensearchHeader = `<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">`
-
-	opensearchFooter = `</OpenSearchDescription>`
-)
-
 // BuildOpensearch 用于生成一个符合 atom 规范的 XML 文本 buffer。
 func BuildOpensearch(d *data.Data) ([]byte, error) {
 	w := newWrite()
 
-	w.writeString(opensearchHeader)
+	w.writeStartElement("OpenSearchDescription", map[string]string{
+		"xmlns": "http://a9.com/-/spec/opensearch/1.1/",
+	})
 
 	o := d.Config.Opensearch
 
@@ -41,14 +37,15 @@ func BuildOpensearch(d *data.Data) ([]byte, error) {
 		})
 	}
 
-	w.writeString(`<Url type="text/html" template="`)
-	w.writeString(vars.SearchURL("{searchTerms}", 0))
-	w.writeString(`" />`)
+	w.writeCloseElement("Url", map[string]string{
+		"type":     "text/html",
+		"template": vars.SearchURL("{searchTerms}", 0),
+	})
 
 	w.writeElement("Developer", vars.AppName, nil)
 	w.writeElement("Language", d.Config.Language, nil)
 
-	w.writeString(opensearchFooter)
+	w.writeEndElement("OpenSearchDescription")
 
 	return w.bytes()
 }

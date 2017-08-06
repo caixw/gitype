@@ -13,12 +13,6 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-const (
-	sitemapHeader = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`
-
-	sitemapFooter = `</urlset>`
-)
-
 // BuildSitemap 生成一个符合 sitemap 规范的 XML 文本 buffer。
 func BuildSitemap(d *data.Data) ([]byte, error) {
 	w := newWrite()
@@ -30,7 +24,9 @@ func BuildSitemap(d *data.Data) ([]byte, error) {
 		})
 	}
 
-	w.writeString(sitemapHeader)
+	w.writeStartElement("urlset", map[string]string{
+		"xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
+	})
 
 	addPostsToSitemap(w, d)
 
@@ -38,7 +34,7 @@ func BuildSitemap(d *data.Data) ([]byte, error) {
 		addTagsToSitemap(w, d)
 	}
 
-	w.writeString(sitemapFooter)
+	w.writeEndElement("urlset")
 
 	return w.bytes()
 }
@@ -66,7 +62,7 @@ func addTagsToSitemap(w *writer, d *data.Data) error {
 }
 
 func addItemToSitemap(w *writer, loc, changefreq string, lastmod int64, priority float64) {
-	w.writeString("<url>\n")
+	w.writeStartElement("url", nil)
 
 	w.writeElement("loc", loc, nil)
 	t := time.Unix(lastmod, 0)
@@ -74,5 +70,5 @@ func addItemToSitemap(w *writer, loc, changefreq string, lastmod int64, priority
 	w.writeElement("changefreq", changefreq, nil)
 	w.writeElement("priority", strconv.FormatFloat(priority, 'f', 1, 32), nil)
 
-	w.writeString("</url>\n")
+	w.writeEndElement("url")
 }

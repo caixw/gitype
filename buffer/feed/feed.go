@@ -8,7 +8,8 @@ import (
 	"bytes"
 )
 
-const xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n"
+const xmlHeader = `<?xml version="1.0" encoding="utf-8" ?>
+`
 
 // xml 操作类，简单地封装 bytes.Buffer。
 type writer struct {
@@ -42,6 +43,28 @@ func (w *writer) writeNewline() {
 	w.writeByte('\n')
 }
 
+func (w *writer) writeStartElement(name string, attr map[string]string) {
+	w.writeByte('<')
+	w.writeString(name)
+
+	for k, v := range attr {
+		w.writeByte(' ')
+		w.writeString(k)
+		w.writeString(`="`)
+		w.writeString(v)
+		w.writeString(`"`)
+	}
+
+	w.writeByte('>')
+}
+
+func (w *writer) writeEndElement(name string) {
+	w.writeString("</")
+	w.writeString(name)
+	w.writeByte('>')
+	w.writeNewline()
+}
+
 // 写入一个自闭合的元素
 // name 元素标签名；
 // attr 元素的属性。
@@ -64,23 +87,9 @@ func (w *writer) writeCloseElement(name string, attr map[string]string) {
 // val 元素内容；
 // attr 元素的属性。
 func (w *writer) writeElement(name, val string, attr map[string]string) {
-	w.writeByte('<')
-	w.writeString(name)
-	for k, v := range attr {
-		w.writeByte(' ')
-		w.writeString(k)
-		w.writeString(`="`)
-		w.writeString(v)
-		w.writeString(`"`)
-	}
-	w.writeByte('>')
-
+	w.writeStartElement(name, attr)
 	w.writeString(val)
-
-	w.writeString("</")
-	w.writeString(name)
-	w.writeByte('>')
-	w.writeNewline()
+	w.writeEndElement(name)
 }
 
 // 写入一个 PI 指令
