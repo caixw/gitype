@@ -66,7 +66,7 @@ func (b *Buffer) initFeeds() error {
 		if err != nil {
 			return err
 		}
-		b.RSS = rss.Bytes()
+		b.RSS = rss
 	}
 
 	if conf.Atom != nil {
@@ -75,7 +75,7 @@ func (b *Buffer) initFeeds() error {
 			return err
 		}
 
-		b.Atom = atom.Bytes()
+		b.Atom = atom
 	}
 
 	if conf.Sitemap != nil {
@@ -84,7 +84,7 @@ func (b *Buffer) initFeeds() error {
 			return err
 		}
 
-		b.Sitemap = sitemap.Bytes()
+		b.Sitemap = sitemap
 	}
 
 	if conf.Opensearch != nil {
@@ -93,7 +93,7 @@ func (b *Buffer) initFeeds() error {
 			return err
 		}
 
-		b.Opensearch = opensearch.Bytes()
+		b.Opensearch = opensearch
 	}
 
 	return nil

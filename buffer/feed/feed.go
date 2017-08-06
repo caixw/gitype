@@ -15,6 +15,16 @@ type writer struct {
 	buf *bytes.Buffer
 }
 
+func newWrite() *writer {
+	w := &writer{
+		buf: new(bytes.Buffer),
+	}
+
+	w.writeString(xmlHeader)
+
+	return w
+}
+
 func (w *writer) writeString(str string) {
 	if w.err != nil {
 		return
@@ -76,4 +86,13 @@ func (w *writer) writePI(name string, kv map[string]string) {
 	}
 
 	w.writeString(" ?>")
+}
+
+// 将内容转换成 []byte 并返回
+func (w *writer) bytes() ([]byte, error) {
+	if w.err != nil {
+		return nil, w.err
+	}
+
+	return w.buf.Bytes(), nil
 }

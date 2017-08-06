@@ -5,7 +5,6 @@
 package feed
 
 import (
-	"bytes"
 	"time"
 
 	"github.com/caixw/typing/data"
@@ -19,13 +18,9 @@ const (
 )
 
 // BuildAtom 用于生成一个符合 atom 规范的 XML 文本 buffer。
-func BuildAtom(d *data.Data) (*bytes.Buffer, error) {
-	buf := new(bytes.Buffer)
-	w := &writer{
-		buf: buf,
-	}
+func BuildAtom(d *data.Data) ([]byte, error) {
+	w := newWrite()
 
-	w.writeString(xmlHeader)
 	w.writeString(atomHeader)
 
 	w.writeElement("id", d.Config.URL, nil)
@@ -53,10 +48,7 @@ func BuildAtom(d *data.Data) (*bytes.Buffer, error) {
 
 	w.writeString(atomFooter)
 
-	if w.err != nil {
-		return nil, w.err
-	}
-	return buf, nil
+	return w.bytes()
 }
 
 func addPostsToAtom(w *writer, d *data.Data) {
@@ -74,7 +66,9 @@ func addPostsToAtom(w *writer, d *data.Data) {
 		t := time.Unix(p.Modified, 0)
 		w.writeElement("update", t.Format("2006-01-02T15:04:05Z07:00"), nil)
 
-		w.writeElement("summary", p.Summary, nil)
+		w.writeElement("summary", p.Summary, map[string]string{
+			"type": "html",
+		})
 
 		w.writeString("</entry>\n")
 	}

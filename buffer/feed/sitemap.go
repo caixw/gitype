@@ -6,7 +6,6 @@
 package feed
 
 import (
-	"bytes"
 	"strconv"
 	"time"
 
@@ -21,13 +20,8 @@ const (
 )
 
 // BuildSitemap 生成一个符合 sitemap 规范的 XML 文本 buffer。
-func BuildSitemap(d *data.Data) (*bytes.Buffer, error) {
-	buf := new(bytes.Buffer)
-	w := &writer{
-		buf: buf,
-	}
-
-	w.writeString(xmlHeader)
+func BuildSitemap(d *data.Data) ([]byte, error) {
+	w := newWrite()
 
 	if len(d.Config.Sitemap.XslURL) > 0 {
 		w.writePI("xml-stylesheet", map[string]string{
@@ -46,10 +40,7 @@ func BuildSitemap(d *data.Data) (*bytes.Buffer, error) {
 
 	w.writeString(sitemapFooter)
 
-	if w.err != nil {
-		return nil, w.err
-	}
-	return buf, nil
+	return w.bytes()
 }
 
 func addPostsToSitemap(w *writer, d *data.Data) {

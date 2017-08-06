@@ -5,7 +5,6 @@
 package feed
 
 import (
-	"bytes"
 	"time"
 
 	"github.com/caixw/typing/data"
@@ -20,13 +19,9 @@ const (
 )
 
 // BuildRSS 生成一个符合 rss 规范的 XML 文本 buffer。
-func BuildRSS(d *data.Data) (*bytes.Buffer, error) {
-	buf := new(bytes.Buffer)
-	w := &writer{
-		buf: buf,
-	}
+func BuildRSS(d *data.Data) ([]byte, error) {
+	w := newWrite()
 
-	w.writeString(xmlHeader)
 	w.writeString(rssHeader)
 
 	w.writeElement("title", d.Config.Title, nil)
@@ -48,10 +43,7 @@ func BuildRSS(d *data.Data) (*bytes.Buffer, error) {
 
 	w.writeString(rssFooter)
 
-	if w.err != nil {
-		return nil, w.err
-	}
-	return buf, nil
+	return w.bytes()
 }
 
 func addPostsToRSS(w *writer, d *data.Data) {

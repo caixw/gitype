@@ -5,8 +5,6 @@
 package feed
 
 import (
-	"bytes"
-
 	"mime"
 	"path/filepath"
 
@@ -21,13 +19,9 @@ const (
 )
 
 // BuildOpensearch 用于生成一个符合 atom 规范的 XML 文本 buffer。
-func BuildOpensearch(d *data.Data) (*bytes.Buffer, error) {
-	buf := new(bytes.Buffer)
-	w := &writer{
-		buf: buf,
-	}
+func BuildOpensearch(d *data.Data) ([]byte, error) {
+	w := newWrite()
 
-	w.writeString(xmlHeader)
 	w.writeString(opensearchHeader)
 
 	o := d.Config.Opensearch
@@ -56,5 +50,5 @@ func BuildOpensearch(d *data.Data) (*bytes.Buffer, error) {
 
 	w.writeString(opensearchFooter)
 
-	return buf, nil
+	return w.bytes()
 }
