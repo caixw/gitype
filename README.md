@@ -74,7 +74,7 @@ certFile      | string      | 当 https 为 true 时，此值为必填
 keyFile       | string      | 当 https 为 true 时，此值为必填
 port          | string      | 端口，不指定，默认为 80 或是 443
 headers       | map         | 附加的头信息，头信息可能在其它地方被修改
-pprof         | bool        | 指定 pprof 地址，输出 net/pprof 中指定的一些信息
+pprof         | bool        | 是否需要 /debug/pprof
 
 
 

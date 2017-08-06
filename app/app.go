@@ -184,7 +184,7 @@ func (a *app) initFeeds() {
 
 	if conf.Sitemap != nil {
 		a.mux.GetFunc(conf.Sitemap.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set(contentTypeKey, contentTypeHTML)
+			w.Header().Set(contentTypeKey, "application/xml")
 			w.Write(a.buf.Sitemap)
 		}))
 	}
