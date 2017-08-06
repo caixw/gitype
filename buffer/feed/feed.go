@@ -8,9 +8,6 @@ import (
 	"bytes"
 )
 
-const xmlHeader = `<?xml version="1.0" encoding="utf-8" ?>
-`
-
 // xml 操作类，简单地封装 bytes.Buffer。
 type writer struct {
 	err error
@@ -18,9 +15,16 @@ type writer struct {
 }
 
 func newWrite() *writer {
-	return &writer{
-		buf: bytes.NewBufferString(xmlHeader),
+	w := &writer{
+		buf: new(bytes.Buffer),
 	}
+
+	w.writePI("xml", map[string]string{
+		"version":  "1.0",
+		"encoding": "utf-8",
+	})
+
+	return w
 }
 
 func (w *writer) writeString(str string) {
@@ -43,7 +47,7 @@ func (w *writer) writeNewline() {
 	w.writeByte('\n')
 }
 
-func (w *writer) writeStartElement(name string, attr map[string]string) {
+func (w *writer) writeStartElement(name string, attr map[string]string, newline bool) {
 	w.writeByte('<')
 	w.writeString(name)
 
@@ -56,6 +60,10 @@ func (w *writer) writeStartElement(name string, attr map[string]string) {
 	}
 
 	w.writeByte('>')
+
+	if newline {
+		w.writeNewline()
+	}
 }
 
 func (w *writer) writeEndElement(name string) {
@@ -87,7 +95,7 @@ func (w *writer) writeCloseElement(name string, attr map[string]string) {
 // val 元素内容；
 // attr 元素的属性。
 func (w *writer) writeElement(name, val string, attr map[string]string) {
-	w.writeStartElement(name, attr)
+	w.writeStartElement(name, attr, false)
 	w.writeString(val)
 	w.writeEndElement(name)
 }

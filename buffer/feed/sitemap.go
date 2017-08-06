@@ -26,7 +26,7 @@ func BuildSitemap(d *data.Data) ([]byte, error) {
 
 	w.writeStartElement("urlset", map[string]string{
 		"xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
-	})
+	}, true)
 
 	addPostsToSitemap(w, d)
 
@@ -62,7 +62,7 @@ func addTagsToSitemap(w *writer, d *data.Data) error {
 }
 
 func addItemToSitemap(w *writer, loc, changefreq string, lastmod int64, priority float64) {
-	w.writeStartElement("url", nil)
+	w.writeStartElement("url", nil, true)
 
 	w.writeElement("loc", loc, nil)
 	t := time.Unix(lastmod, 0)

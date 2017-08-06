@@ -11,14 +11,6 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestNewWriter(t *testing.T) {
-	a := assert.New(t)
-	w := newWrite()
-
-	bs, err := w.bytes()
-	a.NotError(err).Equal(bs, xmlHeader)
-}
-
 func TestWriter_writePI(t *testing.T) {
 	a := assert.New(t)
 	test := func(name string, kv map[string]string, want string) {

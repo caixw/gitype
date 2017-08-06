@@ -17,8 +17,8 @@ func BuildRSS(d *data.Data) ([]byte, error) {
 	w.writeStartElement("rss", map[string]string{
 		"version":    "2.0",
 		"xmlns:atom": "http://www.w3.org/2005/Atom",
-	})
-	w.writeStartElement("channel", nil)
+	}, true)
+	w.writeStartElement("channel", nil, true)
 
 	w.writeElement("title", d.Config.Title, nil)
 	w.writeElement("description", d.Config.Subtitle, nil)
@@ -45,7 +45,7 @@ func BuildRSS(d *data.Data) ([]byte, error) {
 
 func addPostsToRSS(w *writer, d *data.Data) {
 	for _, p := range d.Posts {
-		w.writeStartElement("item", nil)
+		w.writeStartElement("item", nil, true)
 
 		w.writeElement("link", d.Config.URL+p.Permalink, nil)
 		w.writeElement("title", p.Title, nil)

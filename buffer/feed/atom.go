@@ -17,7 +17,7 @@ func BuildAtom(d *data.Data) ([]byte, error) {
 	w.writeStartElement("feed", map[string]string{
 		"xmlns":            "http://www.w3.org/2005/Atom",
 		"xmlns:opensearch": "http://a9.com/-/spec/opensearch/1.1/",
-	})
+	}, true)
 
 	w.writeElement("id", d.Config.URL, nil)
 
@@ -49,7 +49,7 @@ func BuildAtom(d *data.Data) ([]byte, error) {
 
 func addPostsToAtom(w *writer, d *data.Data) {
 	for _, p := range d.Posts {
-		w.writeStartElement("entry", nil)
+		w.writeStartElement("entry", nil, true)
 
 		w.writeElement("id", p.Permalink, nil)
 
