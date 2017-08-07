@@ -44,6 +44,7 @@ type page struct {
 	SiteName    string       // 网站名称
 	Subtitle    string       // 副标题
 	URL         string       // 网站主域名
+	Icon        *data.Icon   // 图标
 	Language    string       // 页面语言
 	Root        string       // 网站的根目录
 	Canonical   string       // 当前页的唯一链接
@@ -80,6 +81,7 @@ func (a *app) newPage(typ string) *page {
 		Subtitle:    conf.Subtitle,
 		Language:    conf.Language,
 		URL:         conf.URL,
+		Icon:        conf.Icon,
 		Root:        "/",
 		Canonical:   conf.URL,
 		Keywords:    conf.Keywords,

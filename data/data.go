@@ -86,6 +86,7 @@ type Link struct {
 type Config struct {
 	Title           string `yaml:"title"`                 // 网站标题
 	Language        string `yaml:"language"`              // 语言标记，比如 zh-cmn-Hans
+	Icon            *Icon  `yaml:"icon,omitempty"`        // 程序默认的图标
 	Subtitle        string `yaml:"subtitle,omitempty"`    // 网站副标题
 	URL             string `yaml:"url"`                   // 网站的地址，不包含最后的斜杠
 	Keywords        string `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
@@ -136,6 +137,13 @@ type Sitemap struct {
 	PostPriority   float64 `yaml:"postPriority"`
 	TagChangefreq  string  `yaml:"tagChangefreq"`
 	PostChangefreq string  `yaml:"postChangefreq"`
+}
+
+// Icon 表示程序图标
+type Icon struct {
+	URL   string `yaml:"url"`
+	Type  string `yaml:"type"`
+	Sizes string `yaml:"sizes"`
 }
 
 // FieldError 表示加载文件出错时，具体的错误信息

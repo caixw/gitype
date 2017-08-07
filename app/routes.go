@@ -319,7 +319,7 @@ func (a *app) getPostsRange(postsSize, page int, w http.ResponseWriter) (start, 
 	size := a.buf.Data.Config.PageSize
 	start = size * (page - 1) // 系统从零开始计数
 	if start > postsSize {
-		logs.Debugf("请求页码为[%v]，实际文章数量为[%v]\n", page, postsSize)
+		logs.Debugf("请求页码为[%d]，实际文章数量为[%d]\n", page, postsSize)
 		a.renderError(w, http.StatusNotFound) // 页码超出范围，不存在
 		return 0, 0, false
 	}
