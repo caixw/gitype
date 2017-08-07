@@ -66,7 +66,7 @@ func addItemToSitemap(w *writer, loc, changefreq string, lastmod int64, priority
 
 	w.writeElement("loc", loc, nil)
 	t := time.Unix(lastmod, 0)
-	w.writeElement("lastmod", t.Format("2006-01-02T15:04:05-07:00"), nil)
+	w.writeElement("lastmod", t.Format(time.RFC3339), nil)
 	w.writeElement("changefreq", changefreq, nil)
 	w.writeElement("priority", strconv.FormatFloat(priority, 'f', 1, 32), nil)
 

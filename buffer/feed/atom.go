@@ -38,7 +38,7 @@ func BuildAtom(d *data.Data) ([]byte, error) {
 
 	w.writeElement("title", d.Config.Title, nil)
 	w.writeElement("subtitle", d.Config.Subtitle, nil)
-	w.writeElement("update", time.Now().Format("2006-01-02T15:04:05Z07:00"), nil)
+	w.writeElement("update", time.Now().Format(time.RFC3339), nil)
 
 	addPostsToAtom(w, d)
 
@@ -60,7 +60,7 @@ func addPostsToAtom(w *writer, d *data.Data) {
 		w.writeElement("title", p.Title, nil)
 
 		t := time.Unix(p.Modified, 0)
-		w.writeElement("update", t.Format("2006-01-02T15:04:05Z07:00"), nil)
+		w.writeElement("update", t.Format(time.RFC3339), nil)
 
 		w.writeElement("summary", p.Summary, map[string]string{
 			"type": "html",
