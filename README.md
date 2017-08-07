@@ -82,6 +82,9 @@ pprof         | bool        | 是否需要 /debug/pprof
 #### 网站内容
 
 
+涉及的时间均为 RFC3339 格式：2006-01-02T15:04:05Z07:00。
+
+
 ##### config.yaml
 
 config.yaml 指定了网站的一些基本配置情况：
@@ -121,6 +124,7 @@ Sitemap
 名称           | 类型        | 描述
 :--------------|:------------|:----------
 url            | string      | Sitemap 的地址
+xslURL         | string      | 为 sitemap.xml 配置的 xsl，可以为空
 enableTag      | bool        | 是否把标签放到 Sitemap 中
 tagPriority    | float64     | 标签页的权重
 postPriority   | float64     | 文章页的权重
