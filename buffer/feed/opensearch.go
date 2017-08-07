@@ -5,9 +5,6 @@
 package feed
 
 import (
-	"mime"
-	"path/filepath"
-
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
 )
@@ -31,9 +28,9 @@ func BuildOpensearch(d *data.Data) ([]byte, error) {
 		w.writeElement("LongName", o.LongName, nil)
 	}
 
-	if len(o.Image) > 0 {
-		w.writeElement("Image", o.Image, map[string]string{
-			"type": mime.TypeByExtension(filepath.Ext(o.Image)),
+	if o.Image != nil {
+		w.writeElement("Image", o.Image.URL, map[string]string{
+			"type": o.Image.Type,
 		})
 	}
 

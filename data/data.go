@@ -118,7 +118,7 @@ type Opensearch struct {
 	ShortName   string `yaml:"shortName"`
 	Description string `yaml:"description"`
 	LongName    string `yaml:"longName,omitempty"`
-	Image       string `yaml:"image,omitempty"`
+	Image       *Icon  `yaml:"image,omitempty"`
 }
 
 // RSS 表示 rss 或是 atom 等 feed 的信息

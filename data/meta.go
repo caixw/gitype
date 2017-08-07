@@ -174,6 +174,9 @@ func initConfig(conf *Config) error {
 	if err := checkOpensearch(conf.Opensearch); err != nil {
 		return err
 	}
+	if conf.Opensearch.Image == nil && conf.Icon != nil {
+		conf.Opensearch.Image = conf.Icon
+	}
 
 	// Menus
 	for index, link := range conf.Menus {

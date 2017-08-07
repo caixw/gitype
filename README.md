@@ -94,6 +94,7 @@ config.yaml 指定了网站的一些基本配置情况：
 title           | string      | 网站标题
 subtitle        | string      | 网站副标题
 url             | string      | 网站的地址
+icon            | Icon        | 网站的图标
 keywords        | string      | 默认情况下的 keyword 内容
 description     | string      | 默认情况下的 descrription 内容
 beian           | string      | 备案号
@@ -141,7 +142,17 @@ title       | string      | 出现于 html>head>link.title 属性中
 shortName   | string      | shortName 值
 description | string      | description 值
 longName    | string      | longName 值
-image       | string      | image 值
+image       | Icon        | image 值
+
+
+Icon
+
+名称      | 类型        | 描述
+:---------|:------------|:----------
+type      | string      | 图标的 mime-type
+sizes     | string      | 图标的大小
+url       | string      | 图标地址
+
 
 
 ##### links.yaml
