@@ -5,9 +5,11 @@
 // Package vars 定义一些全局变量、常量。
 package vars
 
+import "time"
+
 const (
 	// 主版本号，符合 semver 规范
-	mainVersion = "0.4.8"
+	mainVersion = "0.5.0"
 
 	// AppName 程序名称
 	AppName = "typing"
@@ -19,7 +21,7 @@ const (
 	// 所有的时间字符串，都将使用此格式去解析。
 	//
 	// 只负责时间的解析，如果是输出时间，则其格式由 meta/config.yaml 中定义。
-	DateFormat = "2006-01-02T15:04:05-0700"
+	DateFormat = time.RFC3339
 )
 
 var (
