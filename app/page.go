@@ -22,10 +22,22 @@ const (
 	contentTypeHTML = "text/html"
 )
 
+// 定义页面的类型
+const (
+	typeIndex  = "index"
+	typePosts  = "posts"
+	typePost   = "post"
+	typeTags   = "tags"
+	typeTag    = "tag"
+	typeSearch = "search"
+	typeLinks  = "links"
+)
+
 // 用于描述一个页面的所有无素
 type page struct {
 	a *app
 
+	Type        string       // 当前页面类型
 	AppVersion  string       // 当前程序的版本号
 	GoVersion   string       // 编译的 Go 版本号
 	Title       string       // 文章标题，可以为空
@@ -55,11 +67,12 @@ type page struct {
 	Post        *data.Post   // 文章详细内容，仅文章页面用到。
 }
 
-func (a *app) newPage() *page {
+func (a *app) newPage(typ string) *page {
 	conf := a.buf.Data.Config
 
 	page := &page{
 		a:          a,
+		Type:       typ,
 		AppVersion: vars.Version(),
 		GoVersion:  runtime.Version(),
 
