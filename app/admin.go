@@ -32,16 +32,24 @@ func (a *app) postAdminPage(w http.ResponseWriter, r *http.Request) {
 			statusError(w, http.StatusInternalServerError)
 			return
 		}
-	}
 
-	a.getAdminPage(w, r)
+		a.renderAdminPage(w, r, "")
+	} else {
+		a.renderAdminPage(w, r, "密码错误")
+	}
 }
 
 // 一个简单的后台页面，可用来手动更新数据。
 func (a *app) getAdminPage(w http.ResponseWriter, r *http.Request) {
+	a.renderAdminPage(w, r, "")
+}
+
+// 一个简单的后台页面，可用来手动更新数据。
+func (a *app) renderAdminPage(w http.ResponseWriter, r *http.Request, message string) {
 	s := map[string]interface{}{
 		"lastUpdate": time.Unix(a.buf.Updated, 0).Format(a.buf.Data.Config.LongDateFormat),
 		"homeURL":    a.buf.Data.Config.URL,
+		"message":    message,
 	}
 
 	if err := a.adminTpl.Execute(w, s); err != nil {

@@ -18,6 +18,10 @@ var AdminHTML = `<!DOCTYPE html>
             width:30rem;
         }
 
+		.message {
+			color: red
+		}
+
         form input,form button{font-size:1.2rem}
 
         a{text-decoration:none}
@@ -28,6 +32,7 @@ var AdminHTML = `<!DOCTYPE html>
 		<p>
 			<span>最后更新时间:</span><time datetime="{{.lastUpdate}}">{{.lastUpdate}}</time>
 		</p>
+		<p class="message">{{.message}}</p>
 
 		<form action="" method="POST">
 			<p>
