@@ -11,6 +11,13 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
+// 表示 Post.Order 的各类值
+const (
+	OrderTop     = "top"     // 置顶
+	OrderLast    = "last"    // 放在尾部
+	OrderDefault = "default" // 默认情况
+)
+
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
 	path   *vars.Path
@@ -49,7 +56,7 @@ type Post struct {
 	Keywords       string  `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
 	Author         *Author `yaml:"author,omitempty"`   // 作者
 	Template       string  `yaml:"template,omitempty"` // 使用的模板。未指定，则使用系统默认的
-	Top            bool    `yaml:"top,omitempty"`      // 是否置顶，多个置顶，则按时间排序
+	Order          string  `yaml:"order,omitempty"`    // 排序方式
 	Summary        string  `yaml:"summary"`            // 摘要
 	Content        string  `yaml:"-"`                  // 内容
 	CreatedFormat  string  `yaml:"created"`            // 创建时间的字符串表示形式

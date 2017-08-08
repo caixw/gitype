@@ -123,14 +123,14 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 	// created
 	t, err := time.Parse(vars.DateFormat, p.CreatedFormat)
 	if err != nil {
-		return nil, fmt.Errorf("[%v]:解析其创建时间是出错：[%v]", slug, err)
+		return nil, fmt.Errorf("%s:解析其创建时间是出错：%v", slug, err)
 	}
 	p.Created = t.Unix()
 
 	// modified
 	t, err = time.Parse(vars.DateFormat, p.ModifiedFormat)
 	if err != nil {
-		return nil, fmt.Errorf("[%v]:解析其修改时间是出错：[%v]", slug, err)
+		return nil, fmt.Errorf("%s:解析其修改时间是出错：%v", slug, err)
 	}
 	p.Modified = t.Unix()
 
@@ -139,18 +139,24 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 		p.Template = "post"
 	}
 
+	if len(p.Order) == 0 {
+		p.Order = OrderDefault
+	} else if p.Order != OrderDefault && p.Order != OrderLast && p.Order != OrderTop {
+		return nil, fmt.Errorf("无效的 Order 值: %s", p.Order)
+	}
+
 	return p, nil
 }
 
 func sortPosts(posts []*Post) {
 	sort.SliceStable(posts, func(i, j int) bool {
 		switch {
-		case posts[i].Top && posts[j].Top:
+		case posts[i].Order == posts[j].Order:
 			return posts[i].Created >= posts[j].Created
-		case posts[i].Top:
-			return false
-		case posts[j].Top:
+		case (posts[i].Order == OrderTop) || (posts[j].Order == OrderLast):
 			return true
+		case (posts[i].Order == OrderLast) || (posts[j].Order == OrderTop):
+			return false
 		default:
 			return posts[i].Created >= posts[j].Created
 		}
