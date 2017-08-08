@@ -110,6 +110,14 @@ atom            | RSS         | atom 配置，若不需要，则不指定该值�
 sitemap         | Sitemap     | sitemap 相关配置，若不需要，则不指定该值即可
 opensearch      | Opensearch  | opensearch 相关配置，若不需要，则不指定该值即可
 
+Author
+名称      | 类型        | 描述
+:---------|:------------|:----------
+name      | string      | 名称
+url       | string      | 网站地址
+email     | string      | 邮箱
+avatar    | string      | 头像
+
 
 RSS
 
