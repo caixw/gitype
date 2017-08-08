@@ -10,10 +10,13 @@ import (
 )
 
 // xml 操作类，简单地封装 bytes.Buffer。
+//
+// 所有在 buf.Write* 系列函数中返回的错误，
+// 都会缓存在 err 中，并阻止再次 buf.Write* 函数的执行。
 type writer struct {
-	err    error
-	buf    *bytes.Buffer
-	indent int
+	err    error         // 缓存 buf.Write* 系列函数的错误信息
+	buf    *bytes.Buffer // 所有的内容写入到 buf 中
+	indent int           // 保存当前的缩进量
 }
 
 func newWrite() *writer {
