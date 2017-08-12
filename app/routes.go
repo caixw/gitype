@@ -18,47 +18,24 @@ import (
 )
 
 func (a *app) initRoutes() error {
-	handle := func(pattern string, h http.HandlerFunc) error {
-		return a.mux.HandleFunc(pattern, a.prepare(h), http.MethodGet)
+	var err error
+	handle := func(pattern string, h http.HandlerFunc) {
+		if err != nil {
+			return
+		}
+		err = a.mux.HandleFunc(pattern, a.prepare(h), http.MethodGet)
 	}
 
-	// posts/2016/about.html
-	if err := handle(vars.PostURL("{slug}"), a.getPost); err != nil {
-		return err
-	}
+	handle(vars.PostURL("{slug}"), a.getPost)     // posts/2016/about.html   posts/{slug}.html
+	handle(vars.IndexURL(0), a.getPosts)          // index.html
+	handle(vars.LinksURL(), a.getLinks)           // links.html
+	handle(vars.TagURL("{slug}", 1), a.getTag)    // tags/tag1.html     tags/{slug}.html
+	handle(vars.TagsURL(), a.getTags)             // tags.html
+	handle(vars.SearchURL("", 1), a.getSearch)    // search.html
+	handle(vars.ThemesURL("{path}"), a.getThemes) // themes/...          themes/{path}
+	handle("/{path}", a.getRaws)                  // /...                /{path}
 
-	// index.html
-	if err := handle(vars.IndexURL(0), a.getPosts); err != nil {
-		return err
-	}
-
-	// links.html
-	if err := handle(vars.LinksURL(), a.getLinks); err != nil {
-		return err
-	}
-
-	// tags/tag1.html
-	if err := handle(vars.TagURL("{slug}", 1), a.getTag); err != nil {
-		return err
-	}
-
-	// tags.html
-	if err := handle(vars.TagsURL(), a.getTags); err != nil {
-		return err
-	}
-
-	// search.html
-	if err := handle(vars.SearchURL("", 1), a.getSearch); err != nil {
-		return err
-	}
-
-	// themes/...
-	if err := handle(vars.ThemesURL("{path}"), a.getThemes); err != nil {
-		return err
-	}
-
-	// /...
-	return handle("/{path}", a.getRaws)
+	return err
 }
 
 // 文章详细页
@@ -123,7 +100,7 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if page < 1 {
-		logs.Debugf("请求的页码[%v]小于1\n", page)
+		logs.Debugf("请求的页码[%d]小于1\n", page)
 		a.renderError(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
@@ -131,7 +108,7 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	p := a.newPage(typeIndex)
 	if page > 1 { // 非首页，标题显示页码数
 		p.Type = typePosts
-		p.Title = fmt.Sprintf("第%v页", page)
+		p.Title = fmt.Sprintf("第%d页", page)
 	}
 	p.Canonical = vars.PostsURL(page)
 
