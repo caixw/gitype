@@ -7,6 +7,7 @@ package data
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/caixw/typing/vars"
 )
@@ -221,4 +222,14 @@ func (author *Author) check() *FieldError {
 	}
 
 	return nil
+}
+
+// 分析时间，将其转换成 unix 时间戳
+func parseDate(format string) (int64, error) {
+	t, err := time.Parse(vars.DateFormat, format)
+	if err != nil {
+		return 0, err
+	}
+
+	return t.Unix(), nil
 }

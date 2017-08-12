@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/is"
@@ -123,11 +122,11 @@ func initConfig(conf *Config) error {
 		return &FieldError{File: confFile, Message: "不能为空", Field: "ShortDateFormat"}
 	}
 
-	t, err := time.Parse(vars.DateFormat, conf.UptimeFormat)
+	t, err := parseDate(conf.UptimeFormat)
 	if err != nil {
 		return &FieldError{File: confFile, Message: err.Error(), Field: "UptimeFormat"}
 	}
-	conf.Uptime = t.Unix()
+	conf.Uptime = t
 
 	// Author
 	if conf.Author == nil {

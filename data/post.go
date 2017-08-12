@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/caixw/typing/vars"
 	"gopkg.in/yaml.v2"
@@ -22,7 +21,7 @@ func (d *Data) loadPosts() error {
 	dir := d.path.PostsDir
 	paths := make([]string, 0, 100)
 
-	// 遍历data/posts目录，查找所有的 meta.yaml 文章。
+	// 遍历 data/posts 目录，查找所有的 meta.yaml 文章。
 	walk := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -121,18 +120,16 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 	}
 
 	// created
-	t, err := time.Parse(vars.DateFormat, p.CreatedFormat)
+	p.Created, err = parseDate(p.CreatedFormat)
 	if err != nil {
 		return nil, fmt.Errorf("%s:解析其创建时间是出错：%v", slug, err)
 	}
-	p.Created = t.Unix()
 
 	// modified
-	t, err = time.Parse(vars.DateFormat, p.ModifiedFormat)
+	p.Modified, err = parseDate(p.ModifiedFormat)
 	if err != nil {
 		return nil, fmt.Errorf("%s:解析其修改时间是出错：%v", slug, err)
 	}
-	p.Modified = t.Unix()
 
 	// 指定默认模板
 	if len(p.Template) == 0 {
