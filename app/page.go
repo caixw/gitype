@@ -37,20 +37,12 @@ const (
 type page struct {
 	a *app
 
-	Type        string       // 当前页面类型
 	AppVersion  string       // 当前程序的版本号
 	GoVersion   string       // 编译的 Go 版本号
-	Title       string       // 文章标题，可以为空
 	SiteName    string       // 网站名称
-	Subtitle    string       // 副标题
-	URL         string       // 网站主域名
-	Icon        *data.Icon   // 图标
+	URL         string       // 网站地址，若是一个子目录，则需要包含该子目录
+	Icon        *data.Icon   // 网站图标
 	Language    string       // 页面语言
-	Root        string       // 网站的根目录
-	Canonical   string       // 当前页的唯一链接
-	Keywords    string       // meta.keywords 的值
-	Q           string       // 搜索关键字
-	Description string       // meta.description 的值
 	PostSize    int          // 总文章数量
 	Beian       string       // 备案号
 	Uptime      int64        // 上线时间
@@ -58,14 +50,24 @@ type page struct {
 	RSS         *data.Link   // RSS，NOTICE:指针方便模板判断其值是否为空
 	Atom        *data.Link   // Atom
 	Opensearch  *data.Link   // Opensearch
-	PrevPage    *data.Link   // 前一页
-	NextPage    *data.Link   // 下一页
 	Tags        []*data.Tag  // 标签列表
 	Links       []*data.Link // 友情链接
-	Tag         *data.Tag    // 标签详细页面，非标签详细页，则为空
 	Menus       []*data.Link // 菜单
-	Posts       []*data.Post // 文章列表，仅标签详情页和搜索页用到。
-	Post        *data.Post   // 文章详细内容，仅文章页面用到。
+
+	Title       string     // 文章标题，可以为空
+	Subtitle    string     // 副标题
+	Canonical   string     // 当前页的唯一链接
+	Keywords    string     // meta.keywords 的值
+	Q           string     // 搜索关键字
+	Description string     // meta.description 的值
+	PrevPage    *data.Link // 前一页
+	NextPage    *data.Link // 下一页
+	Type        string     // 当前页面类型
+
+	// 以下内容，仅在对应的页面才会有内容
+	Tag   *data.Tag    // 标签详细页面，非标签详细页，则为空
+	Posts []*data.Post // 文章列表，仅标签详情页和搜索页用到。
+	Post  *data.Post   // 文章详细内容，仅文章页面用到。
 }
 
 func (a *app) newPage(typ string) *page {
@@ -82,7 +84,6 @@ func (a *app) newPage(typ string) *page {
 		Language:    conf.Language,
 		URL:         conf.URL,
 		Icon:        conf.Icon,
-		Root:        "/",
 		Canonical:   conf.URL,
 		Keywords:    conf.Keywords,
 		Description: conf.Description,
