@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package buffer 加载数据以及对数据处理后的缓存内容。
+// Package buffer 加载数据以及对数据进行进一步处理，以及对内容进行缓存等操作。
 package buffer
 
 import (
