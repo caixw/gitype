@@ -7,6 +7,7 @@ package app
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -16,6 +17,9 @@ import (
 	"github.com/issue9/middleware/compress"
 	"github.com/issue9/utils"
 )
+
+// 模板的扩展名，在主题目录下，所有该扩展名的文件，不会被展示
+const templateExtension = ".html"
 
 func (a *app) initRoutes() error {
 	var err error
@@ -120,7 +124,7 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  vars.PostsURL(page - 1), // 页码从 1 开始计数
+			URL:  vars.PostsURL(page - 1),
 		}
 	}
 	if end < len(a.buf.Data.Posts) {
@@ -150,7 +154,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if tag == nil {
-		logs.Debugf("查找的标签[%v]不存在", slug)
+		logs.Debugf("查找的标签[%s]不存在", slug)
 		a.getRaws(w, r) // 标签不存在，则查找该文件是否存在于 raws 目录下。
 		return
 	}
@@ -160,7 +164,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if page < 1 {
-		logs.Debugf("请求的页码[%v]小于1", page)
+		logs.Debugf("请求的页码[%d]小于1", page)
 		a.renderError(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
@@ -179,13 +183,13 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  vars.TagURL(slug, page-1), // 页码从1开始计数
+			URL:  vars.TagURL(slug, page-1),
 		}
 	}
 	if end < len(tag.Posts) {
 		p.PrevPage = &data.Link{
 			Text: "下一页",
-			URL:  vars.TagURL(slug, page+1), // 页码从1开始计数
+			URL:  vars.TagURL(slug, page+1),
 		}
 	}
 
@@ -215,8 +219,32 @@ func (a *app) getTags(w http.ResponseWriter, r *http.Request) {
 // 主题文件
 // /themes/...
 func (a *app) getThemes(w http.ResponseWriter, r *http.Request) {
-	root := http.Dir(a.path.ThemesDir)
-	http.StripPrefix(vars.ThemesURL(""), http.FileServer(root)).ServeHTTP(w, r)
+	if strings.HasSuffix(r.URL.Path, templateExtension) { // 不展示模板文件
+		a.renderError(w, http.StatusNotFound)
+		return
+	}
+
+	path := strings.TrimPrefix(r.URL.Path, vars.ThemesURL(""))
+
+	if len(path) < len(r.URL.Path) {
+		stat, err := os.Stat(filepath.Join(a.path.ThemesDir, path))
+		if err != nil {
+			logs.Error(err)
+			a.renderError(w, http.StatusInternalServerError)
+			return
+		}
+
+		if stat.IsDir() {
+			a.renderError(w, http.StatusForbidden)
+			return
+		}
+
+		http.ServeFile(w, r, filepath.Join(a.path.ThemesDir, path))
+		return
+	}
+
+	a.renderError(w, http.StatusNotFound)
+	return
 }
 
 // /search.html?q=key&page=2
@@ -260,7 +288,7 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 	if page > 1 {
 		p.PrevPage = &data.Link{
 			Text: "前一页",
-			URL:  vars.SearchURL(q, page-1), // 页码从1开始计数
+			URL:  vars.SearchURL(q, page-1),
 		}
 	}
 	if end < len(posts) {
