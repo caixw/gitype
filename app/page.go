@@ -33,6 +33,15 @@ const (
 	typeLinks  = "links"
 )
 
+// 生成一个带编码的 content-type 报头内容
+func buildContentTypeContent(mime string) string {
+	return mime + ";charset=utf-8"
+}
+
+func setContentType(w http.ResponseWriter, mime string) {
+	w.Header().Set(contentTypeKey, buildContentTypeContent(mime))
+}
+
 // 用于描述一个页面的所有无素
 type page struct {
 	a *app
@@ -114,10 +123,10 @@ func (a *app) newPage(typ string) *page {
 // 输出当前内容到指定模板
 func (p *page) render(w http.ResponseWriter, name string, headers map[string]string) {
 	if len(headers) == 0 {
-		w.Header().Set(contentTypeKey, contentTypeHTML)
+		setContentType(w, contentTypeHTML)
 	} else {
 		if _, exists := headers[contentTypeKey]; !exists {
-			headers[contentTypeKey] = contentTypeHTML
+			headers[contentTypeKey] = buildContentTypeContent(contentTypeHTML)
 		}
 
 		for key, val := range headers {
@@ -159,7 +168,7 @@ func (a *app) renderError(w http.ResponseWriter, code int) {
 		return
 	}
 
-	w.Header().Set(contentTypeKey, contentTypeHTML)
+	setContentType(w, contentTypeHTML)
 	w.WriteHeader(code)
 	w.Write(data)
 }
