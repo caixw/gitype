@@ -19,7 +19,25 @@ import (
 )
 
 // 模板的扩展名，在主题目录下，所有该扩展名的文件，不会被展示
-const templateExtension = ".html"
+var (
+	ignoreThemeFileExts = []string{
+		".html",
+		".yaml",
+		".yml",
+	}
+)
+
+func isIgnoreThemeFile(file string) bool {
+	ext := filepath.Ext(file)
+
+	for _, v := range ignoreThemeFileExts {
+		if ext == v {
+			return true
+		}
+	}
+
+	return false
+}
 
 func (a *app) initRoutes() error {
 	var err error
@@ -219,7 +237,7 @@ func (a *app) getTags(w http.ResponseWriter, r *http.Request) {
 // 主题文件
 // /themes/...
 func (a *app) getThemes(w http.ResponseWriter, r *http.Request) {
-	if strings.HasSuffix(r.URL.Path, templateExtension) { // 不展示模板文件
+	if isIgnoreThemeFile(r.URL.Path) { // 不展示模板文件
 		a.renderError(w, http.StatusNotFound)
 		return
 	}
@@ -227,7 +245,14 @@ func (a *app) getThemes(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, vars.ThemesURL(""))
 
 	if len(path) < len(r.URL.Path) {
-		stat, err := os.Stat(filepath.Join(a.path.ThemesDir, path))
+		filename := filepath.Join(a.path.ThemesDir, path)
+
+		if !utils.FileExists(filename) {
+			a.renderError(w, http.StatusNotFound)
+			return
+		}
+
+		stat, err := os.Stat(filename)
 		if err != nil {
 			logs.Error(err)
 			a.renderError(w, http.StatusInternalServerError)
@@ -239,7 +264,7 @@ func (a *app) getThemes(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		http.ServeFile(w, r, filepath.Join(a.path.ThemesDir, path))
+		http.ServeFile(w, r, filename)
 		return
 	}
 
