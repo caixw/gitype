@@ -68,46 +68,37 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var post *data.Post
-	var next, prev *data.Link
-	for index, p := range a.buf.Data.Posts {
-		if p.Slug != id {
-			continue
+	var index int
+	for i, p := range a.buf.Data.Posts {
+		if p.Slug == id {
+			index = i
+			break
 		}
-		post = p
+	}
 
-		if index > 0 {
-			p := a.buf.Data.Posts[index-1]
-			prev = &data.Link{
-				Text: p.Title,
-				URL:  p.Permalink,
-			}
-		}
-
-		index++
-		if index < len(a.buf.Data.Posts) {
-			p := a.buf.Data.Posts[index]
-			next = &data.Link{
-				Text: p.Title,
-				URL:  p.Permalink,
-			}
-		}
-	} // end for a.data.Posts
-
-	if post == nil {
-		logs.Debugf("并未找到与之相对应的文章:%v", id)
+	if index < 0 {
+		logs.Debugf("并未找到与之相对应的文章:%s", id)
 		a.getRaws(w, r) // 文章不存在，则查找 raws 目录下是否存在同名文件
 		return
 	}
 
+	post := a.buf.Data.Posts[index]
+
 	p := a.newPage(typePost)
 	p.Post = post
-	p.NextPage = next
-	p.PrevPage = prev
 	p.Keywords = post.Keywords
 	p.Description = post.Summary
 	p.Title = post.Title
 	p.Canonical = post.Permalink
+
+	if index > 0 {
+		prev := a.buf.Data.Posts[index-1]
+		p.prevPage(prev.Permalink, prev.Title)
+	}
+	if index+1 < len(a.buf.Data.Posts) {
+		next := a.buf.Data.Posts[index+1]
+		p.nextPage(next.Permalink, next.Title)
+	}
 
 	p.render(w, post.Template, nil)
 }
@@ -140,16 +131,10 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Posts = a.buf.Data.Posts[start:end]
 	if page > 1 {
-		p.PrevPage = &data.Link{
-			Text: "前一页",
-			URL:  vars.PostsURL(page - 1),
-		}
+		p.prevPage(vars.PostsURL(page-1), "")
 	}
 	if end < len(a.buf.Data.Posts) {
-		p.NextPage = &data.Link{
-			Text: "下一页",
-			URL:  vars.PostsURL(page + 1),
-		}
+		p.nextPage(vars.PostsURL(page+1), "")
 	}
 
 	p.render(w, "posts", nil)
@@ -200,16 +185,10 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Posts = tag.Posts[start:end]
 	if page > 1 {
-		p.PrevPage = &data.Link{
-			Text: "前一页",
-			URL:  vars.TagURL(slug, page-1),
-		}
+		p.prevPage(vars.TagURL(slug, page-1), "")
 	}
 	if end < len(tag.Posts) {
-		p.NextPage = &data.Link{
-			Text: "下一页",
-			URL:  vars.TagURL(slug, page+1),
-		}
+		p.nextPage(vars.TagURL(slug, page+1), "")
 	}
 
 	p.render(w, "tag", nil)
@@ -312,16 +291,10 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Posts = posts[start:end]
 	if page > 1 {
-		p.PrevPage = &data.Link{
-			Text: "前一页",
-			URL:  vars.SearchURL(q, page-1),
-		}
+		p.prevPage(vars.SearchURL(q, page-1), "")
 	}
 	if end < len(posts) {
-		p.PrevPage = &data.Link{
-			Text: "下一页",
-			URL:  vars.SearchURL(q, page+1),
-		}
+		p.nextPage(vars.SearchURL(q, page+1), "")
 	}
 
 	p.render(w, "search", nil)

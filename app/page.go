@@ -120,6 +120,30 @@ func (a *app) newPage(typ string) *page {
 	return page
 }
 
+func (p *page) nextPage(url, text string) {
+	if len(text) == 0 {
+		text = "下一页"
+	}
+
+	p.NextPage = &data.Link{
+		Text: text,
+		URL:  url,
+		Rel:  "next",
+	}
+}
+
+func (p *page) prevPage(url, text string) {
+	if len(text) == 0 {
+		text = "上一页"
+	}
+
+	p.PrevPage = &data.Link{
+		Text: text,
+		URL:  url,
+		Rel:  "prev",
+	}
+}
+
 // 输出当前内容到指定模板
 func (p *page) render(w http.ResponseWriter, name string, headers map[string]string) {
 	if len(headers) == 0 {
