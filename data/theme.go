@@ -61,7 +61,7 @@ func loadTheme(dir, id string) (*Theme, error) {
 
 	theme := &Theme{}
 	if err = yaml.Unmarshal(data, theme); err != nil {
-		return nil, fmt.Errorf("解板[%v]出错:%v", path, err)
+		return nil, fmt.Errorf("解板 %s 出错:%v", path, err)
 	}
 
 	if len(theme.Name) == 0 {

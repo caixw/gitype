@@ -70,11 +70,11 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 
 	p := &Post{}
 	if err := yaml.Unmarshal(data, p); err != nil {
-		return nil, fmt.Errorf("[%v]解板yaml出错:%v", slug, err)
+		return nil, fmt.Errorf("%s 解板 yaml 出错:%v", slug, err)
 	}
 
 	if len(p.Title) == 0 {
-		return nil, fmt.Errorf("[%v]:文章标题不能为空", slug)
+		return nil, fmt.Errorf("%s:文章标题不能为空", slug)
 	}
 	p.Slug = slug
 
@@ -84,18 +84,18 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 
 	// content
 	if len(p.Path) == 0 {
-		return nil, fmt.Errorf("[%v]:未指定内容文件", slug)
+		return nil, fmt.Errorf("%s:未指定内容文件", slug)
 	}
 	data, err = ioutil.ReadFile(filepath.Join(dir, p.Path))
 	if err != nil {
-		return nil, fmt.Errorf("[%v]:读取文章内容出错：[%v]", slug, err)
+		return nil, fmt.Errorf("%s:读取文章内容出错：%v", slug, err)
 	}
 	p.Content = string(data)
 
 	// tags
 	ts := strings.Split(p.TagsString, ",")
 	if len(ts) == 0 {
-		return nil, fmt.Errorf("文章[%v]未指定任何关联标签信息", slug)
+		return nil, fmt.Errorf("文章 %s 未指定任何关联标签信息", slug)
 	}
 	for _, tag := range tags {
 		for _, tagName := range ts {
@@ -103,11 +103,11 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 				p.Tags = append(p.Tags, tag)
 				tag.Posts = append(tag.Posts, p)
 				break
-			} // end if
-		} // end for ts
+			}
+		}
 	} // end for tags
 	if len(p.Tags) == 0 {
-		return nil, fmt.Errorf("文章[%v]未指定任何有效的关联标签信息", slug)
+		return nil, fmt.Errorf("文章 %s 未指定任何有效的关联标签信息", slug)
 	}
 
 	// keywords
@@ -122,13 +122,13 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 	// created
 	p.Created, err = parseDate(p.CreatedFormat)
 	if err != nil {
-		return nil, fmt.Errorf("%s:解析其创建时间是出错：%v", slug, err)
+		return nil, fmt.Errorf("%s 解析其创建时间是出错：%v", slug, err)
 	}
 
 	// modified
 	p.Modified, err = parseDate(p.ModifiedFormat)
 	if err != nil {
-		return nil, fmt.Errorf("%s:解析其修改时间是出错：%v", slug, err)
+		return nil, fmt.Errorf("%s 解析其修改时间是出错：%v", slug, err)
 	}
 
 	// 指定默认模板
