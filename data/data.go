@@ -39,12 +39,14 @@ type Author struct {
 
 // Tag 描述标签信息
 type Tag struct {
-	Slug      string  `yaml:"slug"`            // 唯一名称
-	Title     string  `yaml:"title"`           // 名称
-	Color     string  `yaml:"color,omitempty"` // 标签颜色。若未指定，则继承父容器
-	Content   string  `yaml:"content"`         // 对该标签的详细描述
-	Posts     []*Post `yaml:"-"`               // 关联的文章
-	Permalink string  `yaml:"-"`               // 唯一链接
+	Slug        string  `yaml:"slug"`            // 唯一名称
+	Title       string  `yaml:"title"`           // 名称
+	Color       string  `yaml:"color,omitempty"` // 标签颜色。若未指定，则继承父容器
+	Content     string  `yaml:"content"`         // 对该标签的详细描述
+	Posts       []*Post `yaml:"-"`               // 关联的文章
+	Permalink   string  `yaml:"-"`               // 唯一链接
+	Keywords    string  `yaml:"-"`               // meta.keywords 标签的内容，如果为空，使用 Title 属性的值
+	Description string  `yaml:"-"`               // meta.description 标签的内容，若为空，则为 Config.Description
 }
 
 // Post 表示文章的信息
@@ -58,7 +60,7 @@ type Post struct {
 	Author         *Author `yaml:"author,omitempty"`   // 作者
 	Template       string  `yaml:"template,omitempty"` // 使用的模板。未指定，则使用系统默认的
 	Order          string  `yaml:"order,omitempty"`    // 排序方式
-	Summary        string  `yaml:"summary"`            // 摘要
+	Summary        string  `yaml:"summary"`            // 摘要，同时也作为 meta.description 的内容
 	Content        string  `yaml:"-"`                  // 内容
 	CreatedFormat  string  `yaml:"created"`            // 创建时间的字符串表示形式
 	ModifiedFormat string  `yaml:"modified"`           // 修改时间的字符串表示形式

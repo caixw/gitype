@@ -146,7 +146,7 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if end < len(a.buf.Data.Posts) {
-		p.PrevPage = &data.Link{
+		p.NextPage = &data.Link{
 			Text: "下一页",
 			URL:  vars.PostsURL(page + 1),
 		}
@@ -190,8 +190,9 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 	p := a.newPage(typeTag)
 	p.Tag = tag
 	p.Title = tag.Title
+	p.Keywords = tag.Keywords
+	p.Description = tag.Description
 	p.Canonical = vars.TagURL(slug, page)
-	p.Description = "标签" + tag.Title + "的介绍"
 
 	start, end, ok := a.getPostsRange(len(tag.Posts), page, w)
 	if !ok {
@@ -205,7 +206,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if end < len(tag.Posts) {
-		p.PrevPage = &data.Link{
+		p.NextPage = &data.Link{
 			Text: "下一页",
 			URL:  vars.TagURL(slug, page+1),
 		}

@@ -42,6 +42,7 @@ func (d *Data) loadTags() error {
 	if err = yaml.Unmarshal(data, &tags); err != nil {
 		return &FieldError{File: tagsFile, Message: err.Error()}
 	}
+
 	for index, tag := range tags {
 		if len(tag.Slug) == 0 {
 			return &FieldError{File: tagsFile, Message: "不能为空", Field: "[" + strconv.Itoa(index) + "].Slug"}
@@ -57,6 +58,14 @@ func (d *Data) loadTags() error {
 
 		tag.Posts = make([]*Post, 0, 10)
 		tag.Permalink = vars.TagURL(tag.Slug, 0)
+
+		tag.Keywords = tag.Title
+		if tag.Title != tag.Slug {
+			tag.Keywords += ","
+			tag.Keywords += tag.Slug
+		}
+
+		tag.Description = "标签" + tag.Title + "的介绍"
 	}
 	d.Tags = tags
 	return nil
