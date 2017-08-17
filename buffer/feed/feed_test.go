@@ -23,8 +23,8 @@ func TestWriter_writePI(t *testing.T) {
 		a.NotError(err).Equal(string(bs), want)
 	}
 
-	test("xml-stylesheet", nil, "<?xml-stylesheet ?>\n")
-	test("xml-stylesheet", map[string]string{"type": "text/xsl"}, `<?xml-stylesheet type="text/xsl" ?>`+"\n")
+	test("xml-stylesheet", nil, "<?xml-stylesheet?>\n")
+	test("xml-stylesheet", map[string]string{"type": "text/xsl"}, `<?xml-stylesheet type="text/xsl"?>`+"\n")
 }
 
 func TestWriter_writeElement(t *testing.T) {

@@ -9,6 +9,9 @@ import (
 	"strings"
 )
 
+// XML 要求 version 属于必须在其它属性之前
+const xmlPI = `<?xml version="1.0" encoding="utf-8"?>`
+
 // xml 操作类，简单地封装 bytes.Buffer。
 //
 // 所有在 buf.Write* 系列函数中返回的错误，
@@ -24,10 +27,8 @@ func newWrite() *writer {
 		buf: new(bytes.Buffer),
 	}
 
-	w.writePI("xml", map[string]string{
-		"version":  "1.0",
-		"encoding": "utf-8",
-	})
+	w.writeString(xmlPI)
+	w.writeByte('\n')
 
 	return w
 }
@@ -114,7 +115,7 @@ func (w *writer) writePI(name string, kv map[string]string) {
 	w.writeString("<?")
 	w.writeString(name)
 	w.writeAttr(kv)
-	w.writeString(" ?>")
+	w.writeString("?>")
 
 	w.writeByte('\n')
 }
