@@ -173,7 +173,7 @@ func (a *app) initFeeds() {
 
 	if conf.RSS != nil {
 		a.mux.GetFunc(conf.RSS.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, contentTypeRss)
+			setContentType(w, contentTypeRSS)
 			w.Write(a.buf.RSS)
 		}))
 	}
