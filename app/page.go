@@ -69,8 +69,15 @@ type page struct {
 
 // 页面的附加信息，除非重新加载数据，否则内容不会变。
 type info struct {
-	AppVersion  string       // 当前程序的版本号
-	GoVersion   string       // 编译的 Go 版本号
+	AppName    string // 程序名称
+	AppURL     string // 程序官网
+	AppVersion string // 当前程序的版本号
+	GoVersion  string // 编译的 Go 版本号
+
+	ThemeName   string       // 主题名称
+	ThemeURL    string       // 主题官网
+	ThemeAuthor *data.Author // 主题的作者
+
 	SiteName    string       // 网站名称
 	URL         string       // 网站地址，若是一个子目录，则需要包含该子目录
 	Icon        *data.Icon   // 网站图标
@@ -91,8 +98,15 @@ func (a *app) newInfo() *info {
 	conf := a.buf.Data.Config
 
 	info := &info{
-		AppVersion:  vars.Version(),
-		GoVersion:   runtime.Version(),
+		AppName:    vars.AppName,
+		AppURL:     vars.URL,
+		AppVersion: vars.Version(),
+		GoVersion:  runtime.Version(),
+
+		ThemeName:   a.buf.Data.Theme.Name,
+		ThemeURL:    a.buf.Data.Theme.URL,
+		ThemeAuthor: a.buf.Data.Theme.Author,
+
 		SiteName:    conf.Title,
 		URL:         conf.URL,
 		Icon:        conf.Icon,

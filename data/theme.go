@@ -20,6 +20,7 @@ const themeMetaFile = "theme.yaml"
 type Theme struct {
 	ID          string  `yaml:"-"`           // 主题的唯一 ID
 	Name        string  `yaml:"name"`        // 主题名称
+	URL         string  `yaml:"url"`         // 网站
 	Version     string  `yaml:"version"`     // 主题的版本号
 	Description string  `yaml:"description"` // 主题的描述信息
 	Author      *Author `yaml:"author"`      // 作者

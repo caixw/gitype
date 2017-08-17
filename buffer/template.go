@@ -26,7 +26,7 @@ func (b *Buffer) compileTemplate() error {
 
 	tpl, err := template.New("").
 		Funcs(funcMap).
-		ParseGlob(filepath.Join(b.path.ThemesDir, b.Data.Config.Theme, "*.html"))
+		ParseGlob(filepath.Join(b.Data.Theme.Path, "*.html"))
 	if err != nil {
 		return err
 	}

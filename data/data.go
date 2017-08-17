@@ -26,6 +26,7 @@ const (
 type Data struct {
 	path   *vars.Path
 	Config *Config  // 配置内容
+	Theme  *Theme   // 当前主题
 	Tags   []*Tag   // map 对顺序是未定的，所以使用 slice
 	Links  []*Link  // 友情链接
 	Posts  []*Post  // 所有的文章列表
@@ -130,14 +131,13 @@ func (d *Data) sanitize() error {
 // 对各个数据再次进行检测，主要是一些关联数据的相互初始化
 func (d *Data) sanitize2() error {
 	// 检测配置文件中的主题是否存在
-	found := false
 	for _, theme := range d.Themes {
 		if theme.ID == d.Config.Theme {
-			found = true
+			d.Theme = theme
 			break
 		}
 	}
-	if !found {
+	if d.Theme == nil {
 		return &FieldError{File: confFilename, Message: "该主题并不存在", Field: "theme"}
 	}
 
