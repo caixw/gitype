@@ -3,6 +3,8 @@
 // license that can be found in the LICENSE file.
 
 // Package buffer 加载数据以及对数据延伸内容的一些处理，比如根据配置文件生成 RSS 等内容。
+//
+// buffer 是对 data 包的增强，提供的数据依然是相对比较固定的，动态内容应该由 app 包来生成。
 package buffer
 
 import (

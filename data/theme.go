@@ -90,7 +90,6 @@ func (theme *Theme) sanitize() *FieldError {
 	}
 
 	if theme.Author != nil {
-		// err 必须是一个新变量，否则判断会一直是 true
 		if err := theme.Author.sanitize(); err != nil {
 			return err
 		}

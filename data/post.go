@@ -18,15 +18,15 @@ import (
 )
 
 const (
-	postMetaFilename       = "meta.yaml"
-	defaultContentFilename = "content.html"
+	postMetaFilename    = "meta.yaml"
+	postContentFilename = "content.html"
 )
 
 // 表示 Post.Order 的各类值
 const (
-	OrderTop     = "top"     // 置顶
-	OrderLast    = "last"    // 放在尾部
-	OrderDefault = "default" // 默认情况
+	orderTop     = "top"     // 置顶
+	orderLast    = "last"    // 放在尾部
+	orderDefault = "default" // 默认情况
 )
 
 // Post 表示文章的信息
@@ -102,7 +102,7 @@ func loadPost(postsDir, path string) (*Post, error) {
 
 	// path
 	if len(p.Path) == 0 {
-		p.Path = defaultContentFilename
+		p.Path = postContentFilename
 	}
 	data, err = ioutil.ReadFile(filepath.Join(dir, p.Path))
 	if err != nil {
@@ -157,8 +157,8 @@ func (p *Post) sanitize() *FieldError {
 	}
 
 	if len(p.Order) == 0 {
-		p.Order = OrderDefault
-	} else if p.Order != OrderDefault && p.Order != OrderLast && p.Order != OrderTop {
+		p.Order = orderDefault
+	} else if p.Order != orderDefault && p.Order != orderLast && p.Order != orderTop {
 		return &FieldError{File: p.Slug, Message: "无效的值", Field: "order"}
 	}
 
@@ -170,9 +170,9 @@ func sortPosts(posts []*Post) {
 		switch {
 		case posts[i].Order == posts[j].Order:
 			return posts[i].Created >= posts[j].Created
-		case (posts[i].Order == OrderTop) || (posts[j].Order == OrderLast):
+		case (posts[i].Order == orderTop) || (posts[j].Order == orderLast):
 			return true
-		case (posts[i].Order == OrderLast) || (posts[j].Order == OrderTop):
+		case (posts[i].Order == orderLast) || (posts[j].Order == orderTop):
 			return false
 		default:
 			return posts[i].Created >= posts[j].Created
