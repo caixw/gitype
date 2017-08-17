@@ -11,49 +11,63 @@ import (
 	"path/filepath"
 	"sort"
 
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 )
 
-func (d *Data) loadThemes() error {
-	fs, err := ioutil.ReadDir(d.path.ThemesDir)
+const themeMetaFile = "theme.yaml"
+
+// Theme 表示主题信息
+type Theme struct {
+	ID          string  `yaml:"-"`           // 主题的唯一 ID
+	Name        string  `yaml:"name"`        // 主题名称
+	Version     string  `yaml:"version"`     // 主题的版本号
+	Description string  `yaml:"description"` // 主题的描述信息
+	Author      *Author `yaml:"author"`      // 作者
+	Path        string  `yaml:"-"`           // 主题所在的目录
+	Actived     bool    `yaml:"-"`           // 是否当前正在使用的主题
+	Dark        bool    `yaml:"-"`           // 夜间模式
+}
+
+func loadThemes(dir string) ([]*Theme, error) {
+	fs, err := ioutil.ReadDir(dir)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if len(fs) == 0 {
-		return errors.New("未找到任何主题文件")
+		return nil, errors.New("未找到任何主题文件")
 	}
 
-	d.Themes = make([]*Theme, 0, len(fs))
+	themes := make([]*Theme, 0, len(fs))
 
 	for _, file := range fs {
 		if !file.IsDir() {
 			continue
 		}
-		theme, err := loadTheme(d.path.ThemesDir, file.Name())
+		theme, err := loadTheme(dir, file.Name())
 		if err != nil {
-			return err
+			return nil, err
 		}
-		d.Themes = append(d.Themes, theme)
+		themes = append(themes, theme)
 	}
 
-	sort.SliceStable(d.Themes, func(i, j int) bool {
+	sort.SliceStable(themes, func(i, j int) bool {
 		switch {
-		case d.Themes[i].Actived:
+		case themes[i].Actived:
 			return true
-		case d.Themes[j].Actived:
+		case themes[j].Actived:
 			return true
 		default:
-			return d.Themes[i].Name >= d.Themes[j].Name
+			return themes[i].Name >= themes[j].Name
 		}
 	})
 
-	return nil
+	return themes, nil
 }
 
 // dir 主题所在的目录
 // id 主题当前目录名称
 func loadTheme(dir, id string) (*Theme, error) {
-	path := filepath.Join(dir, id, "theme.yaml")
+	path := filepath.Join(dir, id, themeMetaFile)
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -64,18 +78,23 @@ func loadTheme(dir, id string) (*Theme, error) {
 		return nil, fmt.Errorf("解板 %s 出错:%v", path, err)
 	}
 
-	if len(theme.Name) == 0 {
-		return nil, &FieldError{File: path, Message: "不能为空", Field: "name"}
-	}
-	if theme.Author != nil {
-		// err 必须是一个新变量，否则判断会一直是 true
-		if err := theme.Author.check(); err != nil {
-			return nil, err
-		}
-	}
-
-	theme.Path = path
+	theme.Path = filepath.Dir(path)
 	theme.ID = id
 
 	return theme, nil
+}
+
+func (theme *Theme) sanitize() *FieldError {
+	if len(theme.Name) == 0 {
+		return &FieldError{File: filepath.Join(theme.Path, theme.ID), Message: "不能为空", Field: "name"}
+	}
+
+	if theme.Author != nil {
+		// err 必须是一个新变量，否则判断会一直是 true
+		if err := theme.Author.sanitize(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

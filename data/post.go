@@ -13,12 +13,43 @@ import (
 	"strings"
 
 	"github.com/caixw/typing/vars"
+
 	"gopkg.in/yaml.v2"
 )
 
-// 加载所有的文章内容。
-func (d *Data) loadPosts() error {
-	dir := d.path.PostsDir
+const (
+	postMetaFilename       = "meta.yaml"
+	defaultContentFilename = "content.html"
+)
+
+// 表示 Post.Order 的各类值
+const (
+	OrderTop     = "top"     // 置顶
+	OrderLast    = "last"    // 放在尾部
+	OrderDefault = "default" // 默认情况
+)
+
+// Post 表示文章的信息
+type Post struct {
+	Slug           string  `yaml:"-"`                  // 唯一名称
+	Title          string  `yaml:"title"`              // 标题
+	Created        int64   `yaml:"-"`                  // 创建时间
+	Modified       int64   `yaml:"-"`                  // 修改时间
+	Tags           []*Tag  `yaml:"-"`                  // 关联的标签
+	Keywords       string  `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
+	Author         *Author `yaml:"author,omitempty"`   // 作者
+	Template       string  `yaml:"template,omitempty"` // 使用的模板。未指定，则使用系统默认的
+	Order          string  `yaml:"order,omitempty"`    // 排序方式
+	Summary        string  `yaml:"summary"`            // 摘要，同时也作为 meta.description 的内容
+	Content        string  `yaml:"-"`                  // 内容
+	CreatedFormat  string  `yaml:"created"`            // 创建时间的字符串表示形式
+	ModifiedFormat string  `yaml:"modified"`           // 修改时间的字符串表示形式
+	TagsString     string  `yaml:"tags"`               // 关联标签的列表
+	Path           string  `yaml:"path"`               // 正文的文件名，相对于 meta.yaml 所在的目录
+	Permalink      string  `yaml:"-"`                  // 文章的唯一链接
+}
+
+func loadPosts(dir string) ([]*Post, error) {
 	paths := make([]string, 0, 100)
 
 	// 遍历 data/posts 目录，查找所有的 meta.yaml 文章。
@@ -27,38 +58,33 @@ func (d *Data) loadPosts() error {
 			return err
 		}
 
-		if info.Name() == "meta.yaml" {
+		if info.Name() == postMetaFilename {
 			paths = append(paths, path)
 		}
 		return nil
 	}
 
 	if err := filepath.Walk(dir, walk); err != nil {
-		return err
+		return nil, err
 	}
 
 	// 开始加载文章的具体内容。
 	dir = filepath.Clean(dir)
-	d.Posts = make([]*Post, 0, len(paths))
+	posts := make([]*Post, 0, len(paths))
 	for _, p := range paths {
 		p = filepath.Clean(p)
-		post, err := loadPost(dir, p, d.Config, d.Tags)
+		post, err := loadPost(dir, p)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		post.Permalink = vars.PostURL(post.Slug)
 
-		d.Posts = append(d.Posts, post)
+		posts = append(posts, post)
 	}
 
-	return nil
+	return posts, nil
 }
 
-// 加载某一文章。
-//
-// postsDir 表示 data/posts 目录的绝对地址，必须经过 filepath.Clean() 处理；
-// path 表示具体文章的 meta.yaml 文章，必须经过 filepath.Clean() 处理。
-func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
+func loadPost(postsDir, path string) (*Post, error) {
 	dir := filepath.Dir(path)                        // 获取路径部分
 	slug := strings.TrimPrefix(dir, postsDir)        // 获取相对于data/posts的名称
 	slug = strings.Trim(filepath.ToSlash(slug), "/") // 转换成/符号并去掉首尾的/字符
@@ -72,42 +98,32 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 	if err := yaml.Unmarshal(data, p); err != nil {
 		return nil, fmt.Errorf("%s 解板 yaml 出错:%v", slug, err)
 	}
-
-	if len(p.Title) == 0 {
-		return nil, fmt.Errorf("%s:文章标题不能为空", slug)
-	}
 	p.Slug = slug
 
-	if p.Author == nil {
-		p.Author = conf.Author
-	}
-
-	// content
+	// path
 	if len(p.Path) == 0 {
-		return nil, fmt.Errorf("%s:未指定内容文件", slug)
+		p.Path = defaultContentFilename
 	}
 	data, err = ioutil.ReadFile(filepath.Join(dir, p.Path))
 	if err != nil {
-		return nil, fmt.Errorf("%s:读取文章内容出错：%v", slug, err)
+		return nil, &FieldError{File: p.Slug, Message: err.Error(), Field: "path"}
 	}
 	p.Content = string(data)
 
-	// tags
-	ts := strings.Split(p.TagsString, ",")
-	if len(ts) == 0 {
-		return nil, fmt.Errorf("文章 %s 未指定任何关联标签信息", slug)
+	return p, nil
+}
+
+func (p *Post) sanitize() *FieldError {
+	if len(p.Title) == 0 {
+		return &FieldError{File: p.Slug, Message: "不能为空", Field: "title"}
 	}
-	for _, tag := range tags {
-		for _, tagName := range ts {
-			if tag.Slug == tagName {
-				p.Tags = append(p.Tags, tag)
-				tag.Posts = append(tag.Posts, p)
-				break
-			}
-		}
-	} // end for tags
-	if len(p.Tags) == 0 {
-		return nil, fmt.Errorf("文章 %s 未指定任何有效的关联标签信息", slug)
+
+	// permalink
+	p.Permalink = vars.PostURL(p.Slug)
+
+	// content
+	if len(p.Content) == 0 {
+		return &FieldError{File: p.Slug, Message: "不能为空", Field: "content"}
 	}
 
 	// keywords
@@ -120,16 +136,20 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 	}
 
 	// created
-	p.Created, err = parseDate(p.CreatedFormat)
+	created, err := parseDate(p.CreatedFormat)
 	if err != nil {
-		return nil, fmt.Errorf("%s 解析其创建时间是出错：%v", slug, err)
+		return &FieldError{File: p.Slug, Message: err.Error(), Field: "created"}
 	}
+	p.Created = created
+	p.CreatedFormat = ""
 
 	// modified
-	p.Modified, err = parseDate(p.ModifiedFormat)
+	modified, err := parseDate(p.ModifiedFormat)
 	if err != nil {
-		return nil, fmt.Errorf("%s 解析其修改时间是出错：%v", slug, err)
+		return &FieldError{File: p.Slug, Message: err.Error(), Field: "modified"}
 	}
+	p.Modified = modified
+	p.ModifiedFormat = ""
 
 	// 指定默认模板
 	if len(p.Template) == 0 {
@@ -139,10 +159,10 @@ func loadPost(postsDir, path string, conf *Config, tags []*Tag) (*Post, error) {
 	if len(p.Order) == 0 {
 		p.Order = OrderDefault
 	} else if p.Order != OrderDefault && p.Order != OrderLast && p.Order != OrderTop {
-		return nil, fmt.Errorf("无效的 Order 值: %s", p.Order)
+		return &FieldError{File: p.Slug, Message: "无效的值", Field: "order"}
 	}
 
-	return p, nil
+	return nil
 }
 
 func sortPosts(posts []*Post) {
