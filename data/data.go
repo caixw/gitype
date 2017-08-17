@@ -141,7 +141,25 @@ func (d *Data) sanitize2() error {
 		return &FieldError{File: confFilename, Message: "该主题并不存在", Field: "theme"}
 	}
 
+	// 将标签的修改时间设置为网站的上线时间
+	for _, tag := range d.Tags {
+		tag.Modified = d.Config.Uptime
+	}
+
 	// 关联文章与标签
+	if err := d.attachPostTags(); err != nil {
+		return err
+	}
+
+	// 排序
+	for _, tag := range d.Tags {
+		sortPosts(tag.Posts)
+	}
+
+	return nil
+}
+
+func (d *Data) attachPostTags() *FieldError {
 	for _, post := range d.Posts {
 		if post.Author == nil {
 			post.Author = d.Config.Author
@@ -153,22 +171,24 @@ func (d *Data) sanitize2() error {
 			return &FieldError{File: post.Slug, Message: "未指定任何关联标签信息", Field: "tags"}
 		}
 		for _, tag := range d.Tags {
-			for _, tagName := range ts {
-				if tag.Slug == tagName {
-					post.Tags = append(post.Tags, tag)
-					tag.Posts = append(tag.Posts, post)
-					break
+			for _, slug := range ts {
+				if tag.Slug != slug {
+					continue
 				}
+
+				post.Tags = append(post.Tags, tag)
+				tag.Posts = append(tag.Posts, post)
+
+				if tag.Modified < post.Modified {
+					tag.Modified = post.Modified
+				}
+				break
 			}
 		} // end for tags
+
 		if len(post.Tags) == 0 {
 			return &FieldError{File: post.Slug, Message: "未指定任何关联标签信息", Field: "tags"}
 		}
-	}
-
-	// 排序
-	for _, tag := range d.Tags {
-		sortPosts(tag.Posts)
 	}
 
 	return nil

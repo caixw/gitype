@@ -28,6 +28,7 @@ type Tag struct {
 	Permalink   string  `yaml:"-"`               // 唯一链接
 	Keywords    string  `yaml:"-"`               // meta.keywords 标签的内容，如果为空，使用 Title 属性的值
 	Description string  `yaml:"-"`               // meta.description 标签的内容，若为空，则为 Config.Description
+	Modified    int64   `yaml:"-"`               // 所有文章中最迟修改的
 }
 
 // Link 描述链接的内容

@@ -48,15 +48,14 @@ func addPostsToSitemap(w *writer, d *data.Data) {
 }
 
 func addTagsToSitemap(w *writer, d *data.Data) error {
-	now := time.Now().Unix()
 	sitemap := d.Config.Sitemap
 
 	loc := d.Config.URL + vars.TagsURL()
-	addItemToSitemap(w, loc, sitemap.TagChangefreq, now, sitemap.TagPriority)
+	addItemToSitemap(w, loc, sitemap.TagChangefreq, time.Now().Unix(), sitemap.TagPriority)
 
 	for _, tag := range d.Tags {
 		loc = d.Config.URL + tag.Permalink
-		addItemToSitemap(w, loc, sitemap.TagChangefreq, now, sitemap.TagPriority)
+		addItemToSitemap(w, loc, sitemap.TagChangefreq, tag.Modified, sitemap.TagPriority)
 	}
 	return nil
 }
