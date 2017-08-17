@@ -17,11 +17,6 @@ import (
 	"github.com/issue9/utils"
 )
 
-const (
-	contentTypeKey  = "Content-Type"
-	contentTypeHTML = "text/html"
-)
-
 // 定义页面的类型
 const (
 	typeIndex  = "index"
@@ -31,6 +26,15 @@ const (
 	typeTag    = "tag"
 	typeSearch = "search"
 	typeLinks  = "links"
+)
+
+const (
+	contentTypeKey        = "Content-Type"
+	contentTypeHTML       = "text/html"
+	contentTypeXML        = "application/xml"
+	contentTypeAtom       = "application/atom+xml"
+	contentTypeRSS        = "application/rss+xml"
+	contentTypeOpensearch = "application/opensearchdescription+xml"
 )
 
 // 生成一个带编码的 content-type 报头内容
