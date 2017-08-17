@@ -44,24 +44,8 @@ func setContentType(w http.ResponseWriter, mime string) {
 
 // 用于描述一个页面的所有无素
 type page struct {
-	a *app
-
-	AppVersion  string       // 当前程序的版本号
-	GoVersion   string       // 编译的 Go 版本号
-	SiteName    string       // 网站名称
-	URL         string       // 网站地址，若是一个子目录，则需要包含该子目录
-	Icon        *data.Icon   // 网站图标
-	Language    string       // 页面语言
-	PostSize    int          // 总文章数量
-	Beian       string       // 备案号
-	Uptime      int64        // 上线时间
-	LastUpdated int64        // 最后更新时间
-	RSS         *data.Link   // RSS，NOTICE:指针方便模板判断其值是否为空
-	Atom        *data.Link   // Atom
-	Opensearch  *data.Link   // Opensearch
-	Tags        []*data.Tag  // 标签列表
-	Links       []*data.Link // 友情链接
-	Menus       []*data.Link // 菜单
+	a    *app
+	Info *info
 
 	Title       string     // 文章标题，可以为空
 	Subtitle    string     // 副标题
@@ -79,23 +63,36 @@ type page struct {
 	Post  *data.Post   // 文章详细内容，仅文章页面用到。
 }
 
-func (a *app) newPage(typ string) *page {
+// 页面的附加信息，除非重新加载数据，否则内容不会变。
+type info struct {
+	AppVersion  string       // 当前程序的版本号
+	GoVersion   string       // 编译的 Go 版本号
+	SiteName    string       // 网站名称
+	URL         string       // 网站地址，若是一个子目录，则需要包含该子目录
+	Icon        *data.Icon   // 网站图标
+	Language    string       // 页面语言
+	PostSize    int          // 总文章数量
+	Beian       string       // 备案号
+	Uptime      int64        // 上线时间
+	LastUpdated int64        // 最后更新时间
+	RSS         *data.Link   // RSS，NOTICE:指针方便模板判断其值是否为空
+	Atom        *data.Link   // Atom
+	Opensearch  *data.Link   // Opensearch
+	Tags        []*data.Tag  // 标签列表
+	Links       []*data.Link // 友情链接
+	Menus       []*data.Link // 菜单
+}
+
+func (a *app) newInfo() *info {
 	conf := a.buf.Data.Config
 
-	page := &page{
-		a:          a,
-		Type:       typ,
-		AppVersion: vars.Version(),
-		GoVersion:  runtime.Version(),
-
+	info := &info{
+		AppVersion:  vars.Version(),
+		GoVersion:   runtime.Version(),
 		SiteName:    conf.Title,
-		Subtitle:    conf.Subtitle,
-		Language:    conf.Language,
 		URL:         conf.URL,
 		Icon:        conf.Icon,
-		Canonical:   conf.URL,
-		Keywords:    conf.Keywords,
-		Description: conf.Description,
+		Language:    conf.Language,
 		PostSize:    len(a.buf.Data.Posts),
 		Beian:       conf.Beian,
 		Uptime:      conf.Uptime,
@@ -106,18 +103,31 @@ func (a *app) newPage(typ string) *page {
 	}
 
 	if conf.RSS != nil {
-		page.RSS = &data.Link{Title: conf.RSS.Title, URL: conf.RSS.URL}
+		info.RSS = &data.Link{Title: conf.RSS.Title, URL: conf.RSS.URL}
 	}
 
 	if conf.Atom != nil {
-		page.Atom = &data.Link{Title: conf.Atom.Title, URL: conf.Atom.URL}
+		info.Atom = &data.Link{Title: conf.Atom.Title, URL: conf.Atom.URL}
 	}
 
 	if conf.Opensearch != nil {
-		page.Opensearch = &data.Link{Title: conf.Opensearch.Title, URL: conf.Opensearch.URL}
+		info.Opensearch = &data.Link{Title: conf.Opensearch.Title, URL: conf.Opensearch.URL}
 	}
 
-	return page
+	return info
+}
+
+func (a *app) page(typ string) *page {
+	conf := a.buf.Data.Config
+
+	return &page{
+		a:           a,
+		Info:        a.info,
+		Subtitle:    conf.Subtitle,
+		Keywords:    conf.Keywords,
+		Description: conf.Description,
+		Type:        typ,
+	}
 }
 
 func (p *page) nextPage(url, text string) {

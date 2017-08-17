@@ -28,6 +28,7 @@ type app struct {
 	mux      *mux.Mux
 	conf     *config
 	buf      *buffer.Buffer
+	info     *info
 	adminTpl *template.Template // 后台管理的模板页面。
 }
 
@@ -158,6 +159,8 @@ func (a *app) reload() error {
 
 	// 只有生成成功了，才替换老数据
 	a.buf = buf
+
+	a.info = a.newInfo()
 
 	// 重新生成 feed 路由
 	a.initFeeds()

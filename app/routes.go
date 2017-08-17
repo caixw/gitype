@@ -84,7 +84,7 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 
 	post := a.buf.Data.Posts[index]
 
-	p := a.newPage(typePost)
+	p := a.page(typePost)
 	p.Post = post
 	p.Keywords = post.Keywords
 	p.Description = post.Summary
@@ -118,10 +118,10 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := a.newPage(typeIndex)
+	p := a.page(typeIndex)
 	if page > 1 { // 非首页，标题显示页码数
 		p.Type = typePosts
-		p.Title = fmt.Sprintf("第%d页", page)
+		p.Title = fmt.Sprintf("第 %d 页", page)
 	}
 	p.Canonical = vars.PostsURL(page)
 
@@ -172,7 +172,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := a.newPage(typeTag)
+	p := a.page(typeTag)
 	p.Tag = tag
 	p.Title = tag.Title
 	p.Keywords = tag.Keywords
@@ -197,7 +197,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 // 友情链接页
 // /links.html
 func (a *app) getLinks(w http.ResponseWriter, r *http.Request) {
-	p := a.newPage(typeLinks)
+	p := a.page(typeLinks)
 	p.Title = "友情链接"
 	p.Canonical = vars.LinksURL()
 
@@ -207,7 +207,7 @@ func (a *app) getLinks(w http.ResponseWriter, r *http.Request) {
 // 标签列表页
 // /tags.html
 func (a *app) getTags(w http.ResponseWriter, r *http.Request) {
-	p := a.newPage(typeTags)
+	p := a.page(typeTags)
 	p.Title = "标签"
 	p.Canonical = vars.TagsURL()
 
@@ -254,7 +254,7 @@ func (a *app) getThemes(w http.ResponseWriter, r *http.Request) {
 
 // /search.html?q=key&page=2
 func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
-	p := a.newPage(typeSearch)
+	p := a.page(typeSearch)
 
 	q := r.FormValue("q")
 	if len(q) == 0 {
