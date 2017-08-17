@@ -8,51 +8,41 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
+
+func TestPost_sanitize(t *testing.T) {
+	a := assert.New(t)
+
+	post, err := loadPost(filepath.Clean("./testdata/data/posts"), filepath.Clean("./testdata/data/posts/post1/meta.yaml"))
+	a.NotError(err).NotNil(post)
+
+	a.NotError(post.sanitize())
+	a.Equal(len(post.Tags), 0) // 未调用 sanitize2 初始化
+	a.Equal(post.Modified, 0)
+	a.Equal(post.Template, "post") // 默认模板
+}
 
 func TestLoadPost(t *testing.T) {
 	a := assert.New(t)
 
-	tags := []*Tag{
-		&Tag{Slug: "default1", Posts: make([]*Post, 0, 10)},
-		&Tag{Slug: "default2", Posts: make([]*Post, 0, 10)},
-	}
-	conf := &Config{
-		Theme: "t1",
-	}
-
-	post, err := loadPost(filepath.Clean("./testdata/data/posts"), filepath.Clean("./testdata/data/posts/post1/meta.yaml"), conf, tags)
+	post, err := loadPost(filepath.Clean("./testdata/data/posts"), filepath.Clean("./testdata/data/posts/post1/meta.yaml"))
 	a.NotError(err).NotNil(post)
-	a.Equal(len(post.Tags), 2).Equal(post.Tags[0].Slug, "default1")
-	a.Equal(len(tags[0].Posts), 1) // 会同时增加标签的计数器
+	a.Equal(len(post.Tags), 0) // 未调用 Data.sanitize2 初始化
 	a.Equal(post.Modified, 0)
-	a.Equal(post.Template, "post") // 默认模板
+	a.Equal(post.Template, "") // 未调用 Post.sanitize
 	a.Equal(post.Content, "<article>a1</article>\n")
 
-	post, err = loadPost(filepath.Clean("./testdata/data/posts"), filepath.Clean("./testdata/data/posts/folder/post2/meta.yaml"), conf, tags)
+	post, err = loadPost(filepath.Clean("./testdata/data/posts"), filepath.Clean("./testdata/data/posts/folder/post2/meta.yaml"))
 	a.NotError(err).NotNil(post)
 	a.Equal(post.Slug, "folder/post2")
 	a.Equal(post.Template, "t1") // 模板
 }
 
-func TestData_loadPosts(t *testing.T) {
+func TestLoadPosts(t *testing.T) {
 	a := assert.New(t)
 
-	tags := []*Tag{
-		&Tag{Slug: "default1"},
-		&Tag{Slug: "default2"},
-	}
-	conf := &Config{
-		Theme: "t1",
-	}
-
-	d := &Data{
-		path:   vars.NewPath("./testdata"),
-		Tags:   tags,
-		Config: conf,
-	}
-	a.NotError(d.loadPosts())
-	a.Equal(len(d.Posts), 2)
+	posts, err := loadPosts("./testdata")
+	a.NotError(err).NotNil(posts)
+	a.Equal(len(posts), 2)
 }

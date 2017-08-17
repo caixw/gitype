@@ -7,21 +7,8 @@ package data
 import (
 	"testing"
 
-	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
-
-func TestLoadConfig(t *testing.T) {
-	a := assert.New(t)
-
-	d := &Data{path: vars.NewPath("./testdata")}
-	a.NotError(d.loadConfig()).NotNil(d.Config)
-	conf := d.Config
-	a.Equal(conf.Title, "title")
-	a.Equal(conf.URL, "https://caixw.io")
-	a.Equal(conf.Menus[0].URL, "url1")
-	a.Equal(conf.Menus[1].Title, "title2")
-}
 
 func TestCheckRSS(t *testing.T) {
 	a := assert.New(t)

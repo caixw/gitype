@@ -7,37 +7,18 @@ package data
 import (
 	"testing"
 
-	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
 
-func TestData_loadTags(t *testing.T) {
+func TestAuthor_sanitize(t *testing.T) {
 	a := assert.New(t)
 
-	data := &Data{
-		path: vars.NewPath("./testdata"),
-	}
-	a.NotError(data.loadTags())
-	a.NotNil(data.Tags)
-	a.Equal(data.Tags[0].Slug, "default1")
-	a.Equal(data.Tags[0].Color, "efefef")
-	a.Equal(data.Tags[0].Title, "默认1")
-	a.Equal(data.Tags[1].Slug, "default2")
-	a.Equal(data.Tags[0].Permalink, "/tags/default1.html")
+	author := &Author{}
+	a.Error(author.sanitize())
 
-	t.Log(data.Tags[0])
-}
+	author.Name = ""
+	a.Error(author.sanitize())
 
-func TestData_loadLinks(t *testing.T) {
-	a := assert.New(t)
-
-	data := &Data{path: vars.NewPath("./testdata")}
-	a.NotError(data.loadLinks())
-	a.True(len(data.Links) > 0)
-	a.Equal(data.Links[0].Text, "text0")
-	a.Equal(data.Links[0].URL, "url0")
-	a.Equal(data.Links[1].Text, "text1")
-	a.Equal(data.Links[1].URL, "url1")
-
-	t.Log(data.Links)
+	author.Name = "caixw"
+	a.NotError(author.sanitize())
 }
