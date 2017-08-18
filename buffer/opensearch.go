@@ -9,7 +9,7 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// buildOpensearch 用于生成一个符合 atom 规范的 XML 文本。
+// 用于生成一个符合 atom 规范的 XML 文本。
 func buildOpensearch(d *data.Data) ([]byte, error) {
 	w := newWrite()
 

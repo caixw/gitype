@@ -18,9 +18,7 @@ import (
 // Buffer 所有数据的缓存，每次更新数据时，
 // 直接声明一个新的 Buffer 实例，丢弃原来的 Buffer 即可。
 type Buffer struct {
-	path *vars.Path
-
-	Updated int64 // 当前数据的加载时间
+	Created int64 // 当前数据的加载时间
 	Data    *data.Data
 
 	// 缓存的数据
@@ -38,10 +36,8 @@ func New(path *vars.Path) (*Buffer, error) {
 		return nil, err
 	}
 
-	now := time.Now().Unix()
 	b := &Buffer{
-		path:    path,
-		Updated: now,
+		Created: time.Now().Unix(),
 		Data:    d,
 	}
 

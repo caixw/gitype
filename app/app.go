@@ -164,7 +164,7 @@ func (a *app) reload() error {
 	a.buf = buf
 
 	a.info = a.newInfo()
-	a.etag = strconv.FormatInt(a.buf.Updated, 10)
+	a.etag = strconv.FormatInt(a.buf.Created, 10)
 
 	// 重新生成 feed 路由
 	a.initFeeds()

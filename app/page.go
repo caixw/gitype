@@ -114,7 +114,7 @@ func (a *app) newInfo() *info {
 		PostSize:    len(a.buf.Data.Posts),
 		Beian:       conf.Beian,
 		Uptime:      conf.Uptime,
-		LastUpdated: a.buf.Updated,
+		LastUpdated: a.buf.Created,
 		Tags:        a.buf.Data.Tags,
 		Links:       a.buf.Data.Links,
 		Menus:       conf.Menus,
