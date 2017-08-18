@@ -22,8 +22,6 @@ type Theme struct {
 	Description string  `yaml:"description"` // 主题的描述信息
 	Author      *Author `yaml:"author"`      // 作者
 	Path        string  `yaml:"-"`           // 主题所在的目录
-	Actived     bool    `yaml:"-"`           // 是否当前正在使用的主题
-	Dark        bool    `yaml:"-"`           // 夜间模式
 }
 
 func loadThemes(dir string) ([]*Theme, error) {
@@ -49,14 +47,7 @@ func loadThemes(dir string) ([]*Theme, error) {
 	}
 
 	sort.SliceStable(themes, func(i, j int) bool {
-		switch {
-		case themes[i].Actived:
-			return true
-		case themes[j].Actived:
-			return true
-		default:
-			return themes[i].Name >= themes[j].Name
-		}
+		return themes[i].Name >= themes[j].Name
 	})
 
 	return themes, nil
