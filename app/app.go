@@ -23,6 +23,8 @@ import (
 
 const debugPprof = "/debug/pprof/"
 
+const configFilename = "app.json"
+
 type app struct {
 	path     *vars.Path
 	mux      *mux.Mux
@@ -44,7 +46,7 @@ func statusError(w http.ResponseWriter, status int) {
 func Run(path *vars.Path) error {
 	logs.Info("程序工作路径为:", path.Root)
 
-	conf, err := loadConfig(filepath.Join(path.ConfDir, "app.json"))
+	conf, err := loadConfig(filepath.Join(path.ConfDir, configFilename))
 	if err != nil {
 		return err
 	}
