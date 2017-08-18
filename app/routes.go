@@ -342,12 +342,12 @@ func (a *app) prepare(f http.HandlerFunc) http.HandlerFunc {
 		logs.Infof("%s: %s", r.UserAgent(), r.URL) // 输出访问日志
 
 		// 直接根据整个博客的最后更新时间来确认 etag
-		if r.Header.Get("If-None-Match") == a.buf.Etag {
+		if r.Header.Get("If-None-Match") == a.etag {
 			logs.Infof("304: %s", r.URL)
 			w.WriteHeader(http.StatusNotModified)
 			return
 		}
-		w.Header().Set("Etag", a.buf.Etag)
+		w.Header().Set("Etag", a.etag)
 		w.Header().Set("Content-Language", a.buf.Data.Config.Language)
 		compress.New(f, logs.ERROR()).ServeHTTP(w, r)
 	}

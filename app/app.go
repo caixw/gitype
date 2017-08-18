@@ -27,9 +27,12 @@ type app struct {
 	path     *vars.Path
 	mux      *mux.Mux
 	conf     *config
-	buf      *buffer.Buffer
-	info     *info
 	adminTpl *template.Template // 后台管理的模板页面。
+
+	// 以下内容可动态加载
+	buf  *buffer.Buffer
+	info *info
+	etag string
 }
 
 // 标准的错误状态码输出函数，略作封装。
@@ -161,6 +164,7 @@ func (a *app) reload() error {
 	a.buf = buf
 
 	a.info = a.newInfo()
+	a.etag = strconv.FormatInt(a.buf.Updated, 10)
 
 	// 重新生成 feed 路由
 	a.initFeeds()

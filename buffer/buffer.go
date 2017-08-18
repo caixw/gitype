@@ -9,7 +9,6 @@ package buffer
 
 import (
 	"html/template"
-	"strconv"
 	"time"
 
 	"github.com/caixw/typing/buffer/feed"
@@ -23,7 +22,6 @@ type Buffer struct {
 	path *vars.Path
 
 	Updated int64      // 更新时间，一般为数据的加载时间
-	Etag    string     // 响应头中的 Etag 字段，直接使用时间戳字符串表示
 	Data    *data.Data // 加载的数据
 
 	// 缓存的数据
@@ -45,7 +43,6 @@ func New(path *vars.Path) (*Buffer, error) {
 	b := &Buffer{
 		path:    path,
 		Updated: now,
-		Etag:    strconv.FormatInt(now, 10),
 		Data:    d,
 	}
 
