@@ -47,7 +47,7 @@ func (b *Buffer) shortDateFormat(t int64) interface{} {
 	return time.Unix(t, 0).Format(b.Data.Config.ShortDateFormat)
 }
 
-// 将内容显示为html内容
+// 将内容显示为 HTML 内容
 func htmlEscaped(html string) interface{} {
 	return template.HTML(html)
 }

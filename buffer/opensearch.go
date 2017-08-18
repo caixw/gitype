@@ -4,20 +4,20 @@
 
 package buffer
 
-import (
-	"github.com/caixw/typing/data"
-	"github.com/caixw/typing/vars"
-)
+import "github.com/caixw/typing/vars"
 
 // 用于生成一个符合 atom 规范的 XML 文本。
-func buildOpensearch(d *data.Data) ([]byte, error) {
+func (buf *Buffer) buildOpensearch() error {
+	if buf.Data.Config.Opensearch == nil {
+		return nil
+	}
+
 	w := newWrite()
+	o := buf.Data.Config.Opensearch
 
 	w.writeStartElement("OpenSearchDescription", map[string]string{
 		"xmlns": "http://a9.com/-/spec/opensearch/1.1/",
 	})
-
-	o := d.Config.Opensearch
 
 	w.writeElement("InputEncoding", "UTF-8", nil)
 	w.writeElement("OutputEncoding", "UTF-8", nil)
@@ -40,9 +40,14 @@ func buildOpensearch(d *data.Data) ([]byte, error) {
 	})
 
 	w.writeElement("Developer", vars.AppName, nil)
-	w.writeElement("Language", d.Config.Language, nil)
+	w.writeElement("Language", buf.Data.Config.Language, nil)
 
 	w.writeEndElement("OpenSearchDescription")
 
-	return w.bytes()
+	bs, err := w.bytes()
+	if err != nil {
+		return err
+	}
+	buf.Opensearch = bs
+	return nil
 }

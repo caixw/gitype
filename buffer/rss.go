@@ -4,14 +4,15 @@
 
 package buffer
 
-import (
-	"time"
-
-	"github.com/caixw/typing/data"
-)
+import "time"
 
 // 生成一个符合 rss 规范的 XML 文本。
-func buildRSS(d *data.Data) ([]byte, error) {
+func (buf *Buffer) buildRSS() error {
+	conf := buf.Data.Config
+	if conf.RSS == nil {
+		return nil
+	}
+
 	w := newWrite()
 
 	w.writeStartElement("rss", map[string]string{
@@ -20,37 +21,39 @@ func buildRSS(d *data.Data) ([]byte, error) {
 	})
 	w.writeStartElement("channel", nil)
 
-	w.writeElement("title", d.Config.Title, nil)
-	w.writeElement("description", d.Config.Subtitle, nil)
-	w.writeElement("link", d.Config.URL, nil)
+	w.writeElement("title", conf.Title, nil)
+	w.writeElement("description", conf.Subtitle, nil)
+	w.writeElement("link", conf.URL, nil)
 
-	if d.Config.Opensearch != nil {
-		o := d.Config.Opensearch
-
+	if conf.Opensearch != nil {
 		w.writeCloseElement("atom:link", map[string]string{
 			"rel":   "search",
-			"type":  o.Type,
-			"title": o.Title,
-			"href":  d.Config.URL + o.URL,
+			"type":  conf.Opensearch.Type,
+			"title": conf.Opensearch.Title,
+			"href":  conf.URL + conf.Opensearch.URL,
 		})
 	}
 
-	addPostsToRSS(w, d)
+	addPostsToRSS(w, buf)
 
 	w.writeEndElement("channel")
 	w.writeEndElement("rss")
 
-	return w.bytes()
+	bs, err := w.bytes()
+	if err != nil {
+		return err
+	}
+	buf.RSS = bs
+	return nil
 }
 
-func addPostsToRSS(w *xmlWriter, d *data.Data) {
-	for _, p := range d.Posts {
+func addPostsToRSS(w *xmlWriter, buf *Buffer) {
+	for _, p := range buf.Data.Posts {
 		w.writeStartElement("item", nil)
 
-		w.writeElement("link", d.Config.URL+p.Permalink, nil)
+		w.writeElement("link", buf.Data.Config.URL+p.Permalink, nil)
 		w.writeElement("title", p.Title, nil)
-		t := time.Unix(p.Created, 0)
-		w.writeElement("pubDate", t.Format(time.RFC1123), nil)
+		w.writeElement("pubDate", formatUnix(p.Created, time.RFC1123), nil)
 		w.writeElement("description", p.Summary, nil)
 
 		w.writeEndElement("item")

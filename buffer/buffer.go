@@ -41,54 +41,25 @@ func New(path *vars.Path) (*Buffer, error) {
 		Data:    d,
 	}
 
-	if err = b.compileTemplate(); err != nil {
-		return nil, err
+	errFilter := func(fn func() error) {
+		if err == nil {
+			err = fn()
+		}
 	}
 
-	if err = b.initFeeds(); err != nil {
+	errFilter(b.compileTemplate)
+	errFilter(b.buildRSS)
+	errFilter(b.buildAtom)
+	errFilter(b.buildSitemap)
+	errFilter(b.buildOpensearch)
+
+	if err != nil {
 		return nil, err
 	}
-
 	return b, nil
 }
 
-func (b *Buffer) initFeeds() error {
-	conf := b.Data.Config
-
-	if conf.RSS != nil {
-		rss, err := buildRSS(b.Data)
-		if err != nil {
-			return err
-		}
-		b.RSS = rss
-	}
-
-	if conf.Atom != nil {
-		atom, err := buildAtom(b.Data)
-		if err != nil {
-			return err
-		}
-
-		b.Atom = atom
-	}
-
-	if conf.Sitemap != nil {
-		sitemap, err := buildSitemap(b.Data)
-		if err != nil {
-			return err
-		}
-
-		b.Sitemap = sitemap
-	}
-
-	if conf.Opensearch != nil {
-		opensearch, err := buildOpensearch(b.Data)
-		if err != nil {
-			return err
-		}
-
-		b.Opensearch = opensearch
-	}
-
-	return nil
+func formatUnix(unix int64, format string) string {
+	t := time.Unix(unix, 0)
+	return t.Format(format)
 }

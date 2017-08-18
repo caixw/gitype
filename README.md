@@ -57,9 +57,9 @@ data 为博客的实际内容，包含了文章，标签，友链以及网站名
 
 #### conf 目录下内容
 
-conf 目录下的为程序级别的配置文件，在程序加载之后，无法再次更改。其中
-app.json 定义了诸如端口，证书等基本数据；
-logs.xml 定义了日志的输出形式和保存路径，具体配置可参考 [logs](https://github.com/issue9/logs) 的相关文档。
+conf 目录下的为程序级别的配置文件，在程序加载之后，无法再次更改。其中：
+- app.json 定义了诸如端口，证书等基本数据；
+- logs.xml 定义了日志的输出形式和保存路径，具体配置可参考 [logs](https://github.com/issue9/logs) 的相关文档。
 
 
 ##### app.json
@@ -90,7 +90,7 @@ pprof         | bool        | 是否需要 /debug/pprof
 config.yaml 指定了网站的一些基本配置情况：
 
 名称            | 类型        | 描述
-:-------------  |:------------|:------
+:---------------|:------------|:------
 title           | string      | 网站标题
 subtitle        | string      | 网站副标题
 url             | string      | 网站的地址
@@ -196,7 +196,7 @@ content   | string      | 用于描述该标签的详细内容，可以是**HTML
 ##### 主题
 
 data/themes 下为主题文件，可定义多个主题，通过 config 中的 theme 指定当前使用的主题。
-主题模板为 [Go 官方模板](https://golang.org/pkg/html/template/)。
+主题模板语法为 [html/template](https://golang.org/pkg/html/template/)。
 
 
 单一主题下，可以为文章详细页定义多个模板，通过每篇文章的 meta.yaml 可以自定义当前文章使用的模板，

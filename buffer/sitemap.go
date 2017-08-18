@@ -8,18 +8,21 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
 )
 
 // 生成一个符合 sitemap 规范的 XML 文本。
-func buildSitemap(d *data.Data) ([]byte, error) {
+func (buf *Buffer) buildSitemap() error {
+	conf := buf.Data.Config
+	if conf.Sitemap == nil {
+		return nil
+	}
 	w := newWrite()
 
-	if len(d.Config.Sitemap.XslURL) > 0 {
+	if len(conf.Sitemap.XslURL) > 0 {
 		w.writePI("xml-stylesheet", map[string]string{
 			"type": "text/xsl",
-			"href": d.Config.Sitemap.XslURL,
+			"href": conf.Sitemap.XslURL,
 		})
 	}
 
@@ -27,33 +30,38 @@ func buildSitemap(d *data.Data) ([]byte, error) {
 		"xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
 	})
 
-	addPostsToSitemap(w, d)
+	addPostsToSitemap(w, buf)
 
-	if d.Config.Sitemap.EnableTag {
-		addTagsToSitemap(w, d)
+	if conf.Sitemap.EnableTag {
+		addTagsToSitemap(w, buf)
 	}
 
 	w.writeEndElement("urlset")
 
-	return w.bytes()
+	bs, err := w.bytes()
+	if err != nil {
+		return err
+	}
+	buf.Sitemap = bs
+	return nil
 }
 
-func addPostsToSitemap(w *xmlWriter, d *data.Data) {
-	sitemap := d.Config.Sitemap
-	for _, p := range d.Posts {
-		loc := d.Config.URL + p.Permalink
+func addPostsToSitemap(w *xmlWriter, buf *Buffer) {
+	sitemap := buf.Data.Config.Sitemap
+	for _, p := range buf.Data.Posts {
+		loc := buf.Data.Config.URL + p.Permalink
 		addItemToSitemap(w, loc, sitemap.PostChangefreq, p.Modified, sitemap.PostPriority)
 	}
 }
 
-func addTagsToSitemap(w *xmlWriter, d *data.Data) error {
-	sitemap := d.Config.Sitemap
+func addTagsToSitemap(w *xmlWriter, buf *Buffer) error {
+	sitemap := buf.Data.Config.Sitemap
 
-	loc := d.Config.URL + vars.TagsURL()
-	addItemToSitemap(w, loc, sitemap.TagChangefreq, time.Now().Unix(), sitemap.TagPriority)
+	loc := buf.Data.Config.URL + vars.TagsURL()
+	addItemToSitemap(w, loc, sitemap.TagChangefreq, buf.Created, sitemap.TagPriority)
 
-	for _, tag := range d.Tags {
-		loc = d.Config.URL + tag.Permalink
+	for _, tag := range buf.Data.Tags {
+		loc = buf.Data.Config.URL + tag.Permalink
 		addItemToSitemap(w, loc, sitemap.TagChangefreq, tag.Modified, sitemap.TagPriority)
 	}
 	return nil
@@ -63,8 +71,7 @@ func addItemToSitemap(w *xmlWriter, loc, changefreq string, lastmod int64, prior
 	w.writeStartElement("url", nil)
 
 	w.writeElement("loc", loc, nil)
-	t := time.Unix(lastmod, 0)
-	w.writeElement("lastmod", t.Format(time.RFC3339), nil)
+	w.writeElement("lastmod", formatUnix(lastmod, time.RFC3339), nil)
 	w.writeElement("changefreq", changefreq, nil)
 	w.writeElement("priority", strconv.FormatFloat(priority, 'f', 1, 32), nil)
 
