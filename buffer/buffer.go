@@ -11,7 +11,6 @@ import (
 	"html/template"
 	"time"
 
-	"github.com/caixw/typing/buffer/feed"
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
 )
@@ -21,8 +20,8 @@ import (
 type Buffer struct {
 	path *vars.Path
 
-	Updated int64      // 更新时间，一般为数据的加载时间
-	Data    *data.Data // 加载的数据
+	Updated int64 // 当前数据的加载时间
+	Data    *data.Data
 
 	// 缓存的数据
 	Template   *template.Template // 主题编译后的模板
@@ -61,7 +60,7 @@ func (b *Buffer) initFeeds() error {
 	conf := b.Data.Config
 
 	if conf.RSS != nil {
-		rss, err := feed.BuildRSS(b.Data)
+		rss, err := buildRSS(b.Data)
 		if err != nil {
 			return err
 		}
@@ -69,7 +68,7 @@ func (b *Buffer) initFeeds() error {
 	}
 
 	if conf.Atom != nil {
-		atom, err := feed.BuildAtom(b.Data)
+		atom, err := buildAtom(b.Data)
 		if err != nil {
 			return err
 		}
@@ -78,7 +77,7 @@ func (b *Buffer) initFeeds() error {
 	}
 
 	if conf.Sitemap != nil {
-		sitemap, err := feed.BuildSitemap(b.Data)
+		sitemap, err := buildSitemap(b.Data)
 		if err != nil {
 			return err
 		}
@@ -87,7 +86,7 @@ func (b *Buffer) initFeeds() error {
 	}
 
 	if conf.Opensearch != nil {
-		opensearch, err := feed.BuildOpensearch(b.Data)
+		opensearch, err := buildOpensearch(b.Data)
 		if err != nil {
 			return err
 		}

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package feed
+package buffer
 
 import (
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
 )
 
-// BuildOpensearch 用于生成一个符合 atom 规范的 XML 文本。
-func BuildOpensearch(d *data.Data) ([]byte, error) {
+// buildOpensearch 用于生成一个符合 atom 规范的 XML 文本。
+func buildOpensearch(d *data.Data) ([]byte, error) {
 	w := newWrite()
 
 	w.writeStartElement("OpenSearchDescription", map[string]string{

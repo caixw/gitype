@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package feed
+package buffer
 
 import (
 	"bytes"
@@ -14,7 +14,7 @@ import (
 func TestWriter_writePI(t *testing.T) {
 	a := assert.New(t)
 	test := func(name string, kv map[string]string, want string) {
-		w := &writer{
+		w := &xmlWriter{
 			buf: new(bytes.Buffer),
 		}
 
@@ -30,7 +30,7 @@ func TestWriter_writePI(t *testing.T) {
 func TestWriter_writeElement(t *testing.T) {
 	a := assert.New(t)
 	test := func(name, val string, kv map[string]string, want string) {
-		w := &writer{
+		w := &xmlWriter{
 			buf: new(bytes.Buffer),
 		}
 
@@ -47,7 +47,7 @@ func TestWriter_writeElement(t *testing.T) {
 func TestWriter_writeCloseElement(t *testing.T) {
 	a := assert.New(t)
 	test := func(name string, kv map[string]string, want string) {
-		w := &writer{
+		w := &xmlWriter{
 			buf: new(bytes.Buffer),
 		}
 

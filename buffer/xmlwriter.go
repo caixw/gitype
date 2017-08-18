@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package feed
+package buffer
 
 import (
 	"bytes"
@@ -13,14 +13,14 @@ import (
 const xmlPI = `<?xml version="1.0" encoding="utf-8"?>`
 
 // xml 操作类，简单地封装 bytes.Buffer。
-type writer struct {
+type xmlWriter struct {
 	buf    *bytes.Buffer
 	err    error // 缓存 buf.Write* 系列函数的错误信息，并阻止其再次执行
 	indent int   // 保存当前的缩进量
 }
 
-func newWrite() *writer {
-	w := &writer{
+func newWrite() *xmlWriter {
+	w := &xmlWriter{
 		buf: bytes.NewBufferString(xmlPI),
 	}
 
@@ -29,7 +29,7 @@ func newWrite() *writer {
 	return w
 }
 
-func (w *writer) writeString(str string) {
+func (w *xmlWriter) writeString(str string) {
 	if w.err != nil {
 		return
 	}
@@ -37,7 +37,7 @@ func (w *writer) writeString(str string) {
 	_, w.err = w.buf.WriteString(str)
 }
 
-func (w *writer) writeByte(b byte) {
+func (w *xmlWriter) writeByte(b byte) {
 	if w.err != nil {
 		return
 	}
@@ -45,12 +45,12 @@ func (w *writer) writeByte(b byte) {
 	w.err = w.buf.WriteByte(b)
 }
 
-func (w *writer) writeStartElement(name string, attr map[string]string) {
+func (w *xmlWriter) writeStartElement(name string, attr map[string]string) {
 	w.startElement(name, attr, true)
 }
 
 // newline 是否换行
-func (w *writer) startElement(name string, attr map[string]string, newline bool) {
+func (w *xmlWriter) startElement(name string, attr map[string]string, newline bool) {
 	w.writeString(strings.Repeat(" ", w.indent*4))
 	w.indent++
 
@@ -64,12 +64,12 @@ func (w *writer) startElement(name string, attr map[string]string, newline bool)
 	}
 }
 
-func (w *writer) writeEndElement(name string) {
+func (w *xmlWriter) writeEndElement(name string) {
 	w.endElement(name, true)
 }
 
 // indent 是否需要填上缩时的字符
-func (w *writer) endElement(name string, indent bool) {
+func (w *xmlWriter) endElement(name string, indent bool) {
 	w.indent--
 	if indent {
 		w.writeString(strings.Repeat(" ", w.indent*4))
@@ -85,7 +85,7 @@ func (w *writer) endElement(name string, indent bool) {
 // 写入一个自闭合的元素
 // name 元素标签名；
 // attr 元素的属性。
-func (w *writer) writeCloseElement(name string, attr map[string]string) {
+func (w *xmlWriter) writeCloseElement(name string, attr map[string]string) {
 	w.writeString(strings.Repeat(" ", w.indent*4))
 
 	w.writeByte('<')
@@ -100,14 +100,14 @@ func (w *writer) writeCloseElement(name string, attr map[string]string) {
 // name 元素标签名；
 // val 元素内容；
 // attr 元素的属性。
-func (w *writer) writeElement(name, val string, attr map[string]string) {
+func (w *xmlWriter) writeElement(name, val string, attr map[string]string) {
 	w.startElement(name, attr, false)
 	w.writeString(val)
 	w.endElement(name, false)
 }
 
 // 写入一个 PI 指令
-func (w *writer) writePI(name string, kv map[string]string) {
+func (w *xmlWriter) writePI(name string, kv map[string]string) {
 	w.writeString("<?")
 	w.writeString(name)
 	w.writeAttr(kv)
@@ -116,7 +116,7 @@ func (w *writer) writePI(name string, kv map[string]string) {
 	w.writeByte('\n')
 }
 
-func (w *writer) writeAttr(attr map[string]string) {
+func (w *xmlWriter) writeAttr(attr map[string]string) {
 	for k, v := range attr {
 		w.writeByte(' ')
 		w.writeString(k)
@@ -127,7 +127,7 @@ func (w *writer) writeAttr(attr map[string]string) {
 }
 
 // 将内容转换成 []byte 并返回
-func (w *writer) bytes() ([]byte, error) {
+func (w *xmlWriter) bytes() ([]byte, error) {
 	if w.err != nil {
 		return nil, w.err
 	}

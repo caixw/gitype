@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package feed
+package buffer
 
 import (
 	"time"
@@ -10,8 +10,8 @@ import (
 	"github.com/caixw/typing/data"
 )
 
-// BuildRSS 生成一个符合 rss 规范的 XML 文本。
-func BuildRSS(d *data.Data) ([]byte, error) {
+// buildRSS 生成一个符合 rss 规范的 XML 文本。
+func buildRSS(d *data.Data) ([]byte, error) {
 	w := newWrite()
 
 	w.writeStartElement("rss", map[string]string{
@@ -43,7 +43,7 @@ func BuildRSS(d *data.Data) ([]byte, error) {
 	return w.bytes()
 }
 
-func addPostsToRSS(w *writer, d *data.Data) {
+func addPostsToRSS(w *xmlWriter, d *data.Data) {
 	for _, p := range d.Posts {
 		w.writeStartElement("item", nil)
 

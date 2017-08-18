@@ -2,8 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package feed 包提供了根据数据生成 sitemap，atom，rss 的功能。
-package feed
+package buffer
 
 import (
 	"strconv"
@@ -13,8 +12,8 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// BuildSitemap 生成一个符合 sitemap 规范的 XML 文本。
-func BuildSitemap(d *data.Data) ([]byte, error) {
+// buildSitemap 生成一个符合 sitemap 规范的 XML 文本。
+func buildSitemap(d *data.Data) ([]byte, error) {
 	w := newWrite()
 
 	if len(d.Config.Sitemap.XslURL) > 0 {
@@ -39,7 +38,7 @@ func BuildSitemap(d *data.Data) ([]byte, error) {
 	return w.bytes()
 }
 
-func addPostsToSitemap(w *writer, d *data.Data) {
+func addPostsToSitemap(w *xmlWriter, d *data.Data) {
 	sitemap := d.Config.Sitemap
 	for _, p := range d.Posts {
 		loc := d.Config.URL + p.Permalink
@@ -47,7 +46,7 @@ func addPostsToSitemap(w *writer, d *data.Data) {
 	}
 }
 
-func addTagsToSitemap(w *writer, d *data.Data) error {
+func addTagsToSitemap(w *xmlWriter, d *data.Data) error {
 	sitemap := d.Config.Sitemap
 
 	loc := d.Config.URL + vars.TagsURL()
@@ -60,7 +59,7 @@ func addTagsToSitemap(w *writer, d *data.Data) error {
 	return nil
 }
 
-func addItemToSitemap(w *writer, loc, changefreq string, lastmod int64, priority float64) {
+func addItemToSitemap(w *xmlWriter, loc, changefreq string, lastmod int64, priority float64) {
 	w.writeStartElement("url", nil)
 
 	w.writeElement("loc", loc, nil)

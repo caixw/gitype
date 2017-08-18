@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package feed
+package buffer
 
 import (
 	"time"
@@ -10,8 +10,8 @@ import (
 	"github.com/caixw/typing/data"
 )
 
-// BuildAtom 用于生成一个符合 atom 规范的 XML 文本。
-func BuildAtom(d *data.Data) ([]byte, error) {
+// buildAtom 用于生成一个符合 atom 规范的 XML 文本。
+func buildAtom(d *data.Data) ([]byte, error) {
 	w := newWrite()
 
 	w.writeStartElement("feed", map[string]string{
@@ -47,7 +47,7 @@ func BuildAtom(d *data.Data) ([]byte, error) {
 	return w.bytes()
 }
 
-func addPostsToAtom(w *writer, d *data.Data) {
+func addPostsToAtom(w *xmlWriter, d *data.Data) {
 	for _, p := range d.Posts {
 		w.writeStartElement("entry", nil)
 
