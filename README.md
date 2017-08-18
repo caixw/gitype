@@ -103,6 +103,7 @@ pageSize        | int         | 每页显示的数量
 longDateFormat  | string      | 长时间的显示格式，Go 的时间格式化方式
 shortDateFormat | string      | 短时间的显示格式，Go 的时间格式化方式
 theme           | string      | 默认主题
+type            | string      | 所有 html 页面的 mime type，默认使用 vars.ContentTypeHTML
 menus           | []Link      | 菜单内容，格式与 links.yaml 的相同
 author          | Author      | 默认的作者信息
 rss             | RSS         | rss 配置，若不需要，则不指定该值即可
@@ -126,6 +127,7 @@ RSS
 title     | string      | 标题
 size      | int         | 显示数量
 url       | string      | 地址
+type      | string      | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
 
 
 Sitemap
@@ -139,6 +141,7 @@ tagPriority    | float64     | 标签页的权重
 postPriority   | float64     | 文章页的权重
 tagChangefreq  | string      | 标签页的修改频率
 postChangefreq | string      | 文章页的修改频率
+type           | string      | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
 
 
 Opensearch
@@ -151,6 +154,7 @@ shortName   | string      | shortName 值
 description | string      | description 值
 longName    | string      | longName 值
 image       | Icon        | image 值
+type        | string      | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
 
 
 Icon

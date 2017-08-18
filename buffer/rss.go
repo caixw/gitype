@@ -29,7 +29,7 @@ func buildRSS(d *data.Data) ([]byte, error) {
 
 		w.writeCloseElement("atom:link", map[string]string{
 			"rel":   "search",
-			"type":  "application/opensearchdescription+xml",
+			"type":  o.Type,
 			"title": o.Title,
 			"href":  d.Config.URL + o.URL,
 		})

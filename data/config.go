@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/caixw/typing/vars"
+
 	"github.com/issue9/is"
 )
 
@@ -29,6 +31,7 @@ type Config struct {
 	LongDateFormat  string `yaml:"longDateFormat"`        // 长时间的显示格式
 	ShortDateFormat string `yaml:"shortDateFormat"`       // 短时间的显示格式
 	Theme           string `yaml:"theme"`                 // 默认主题
+	Type            string `yaml:"type,omitempty"`        // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
 
 	Author *Author `yaml:"author"`          // 默认的作者信息
 	Menus  []*Link `yaml:"menus,omitempty"` // 导航菜单
@@ -48,14 +51,16 @@ type Opensearch struct {
 	ShortName   string `yaml:"shortName"`
 	Description string `yaml:"description"`
 	LongName    string `yaml:"longName,omitempty"`
+	Type        string `yaml:"type,omitempty"` // mimeType 默认取 vars.ContentTypeOpensearch
 	Image       *Icon  `yaml:"image,omitempty"`
 }
 
 // RSS 表示 rss 或是 atom 等 feed 的信息
 type RSS struct {
-	Title string `yaml:"title"` // 标题
-	Size  int    `yaml:"size"`  // 显示数量
-	URL   string `yaml:"url"`   // 地址
+	Title string `yaml:"title"`          // 标题
+	Size  int    `yaml:"size"`           // 显示数量
+	URL   string `yaml:"url"`            // 地址
+	Type  string `yaml:"type,omitempty"` // mimeType
 }
 
 // Sitemap 表示 sitemap 的相关配置项
@@ -67,6 +72,7 @@ type Sitemap struct {
 	PostPriority   float64 `yaml:"postPriority"`
 	TagChangefreq  string  `yaml:"tagChangefreq"`
 	PostChangefreq string  `yaml:"postChangefreq"`
+	Type           string  `yaml:"type,omitempty"` // mimeType
 }
 
 func (conf *Config) sanitize() *FieldError {
@@ -112,26 +118,42 @@ func (conf *Config) sanitize() *FieldError {
 		return &FieldError{File: confFilename, Message: "不能为空", Field: "Theme"}
 	}
 
+	// rss
 	if err := checkRSS("RSS", conf.RSS); err != nil {
 		return err
 	}
 	if conf.RSS != nil && len(conf.RSS.Title) == 0 {
 		conf.RSS.Title = conf.Title
 	}
+	if conf.RSS != nil && len(conf.RSS.Type) == 0 {
+		conf.RSS.Type = vars.ContentTypeRSS
+	}
 
+	// atom
 	if err := checkRSS("Atom", conf.Atom); err != nil {
 		return err
 	}
 	if conf.Atom != nil && len(conf.Atom.Title) == 0 {
 		conf.Atom.Title = conf.Title
 	}
+	if conf.Atom != nil && len(conf.Atom.Type) == 0 {
+		conf.Atom.Type = vars.ContentTypeAtom
+	}
 
+	// sitemap
 	if err := checkSitemap(conf.Sitemap); err != nil {
 		return err
 	}
+	if conf.Sitemap != nil && len(conf.Sitemap.Type) == 0 {
+		conf.Sitemap.Type = vars.ContentTypeXML
+	}
 
+	// opensearch
 	if err := checkOpensearch(conf.Opensearch); err != nil {
 		return err
+	}
+	if conf.Opensearch != nil && len(conf.Opensearch.Type) == 0 {
+		conf.Opensearch.Type = vars.ContentTypeOpensearch
 	}
 	if conf.Opensearch != nil &&
 		conf.Opensearch.Image == nil &&

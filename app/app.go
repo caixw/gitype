@@ -177,28 +177,28 @@ func (a *app) initFeeds() {
 
 	if conf.RSS != nil {
 		a.mux.GetFunc(conf.RSS.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, contentTypeRSS)
+			setContentType(w, conf.RSS.Type)
 			w.Write(a.buf.RSS)
 		}))
 	}
 
 	if conf.Atom != nil {
 		a.mux.GetFunc(conf.Atom.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, contentTypeAtom)
+			setContentType(w, conf.Atom.Type)
 			w.Write(a.buf.Atom)
 		}))
 	}
 
 	if conf.Sitemap != nil {
 		a.mux.GetFunc(conf.Sitemap.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, contentTypeXML)
+			setContentType(w, conf.Sitemap.Type)
 			w.Write(a.buf.Sitemap)
 		}))
 	}
 
 	if conf.Opensearch != nil {
 		a.mux.GetFunc(conf.Opensearch.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, contentTypeOpensearch)
+			setContentType(w, conf.Opensearch.Type)
 			w.Write(a.buf.Opensearch)
 		}))
 	}

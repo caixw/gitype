@@ -30,7 +30,7 @@ func buildAtom(d *data.Data) ([]byte, error) {
 
 		w.writeCloseElement("link", map[string]string{
 			"rel":   "search",
-			"type":  "application/opensearchdescription+xml",
+			"type":  o.Type,
 			"href":  d.Config.URL + o.URL,
 			"title": o.Title,
 		})

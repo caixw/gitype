@@ -45,7 +45,7 @@ type Link struct {
 // Icon 表示程序图标
 type Icon struct {
 	URL   string `yaml:"url"`
-	Type  string `yaml:"type"`
+	Type  string `yaml:"type"` // mime type
 	Sizes string `yaml:"sizes"`
 }
 

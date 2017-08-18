@@ -28,14 +28,7 @@ const (
 	typeLinks  = "links"
 )
 
-const (
-	contentTypeKey        = "Content-Type"
-	contentTypeHTML       = "text/html"
-	contentTypeXML        = "application/xml"
-	contentTypeAtom       = "application/atom+xml"
-	contentTypeRSS        = "application/rss+xml"
-	contentTypeOpensearch = "application/opensearchdescription+xml"
-)
+const contentTypeKey = "Content-Type"
 
 // 生成一个带编码的 content-type 报头内容
 func buildContentTypeContent(mime string) string {
@@ -175,10 +168,10 @@ func (p *page) prevPage(url, text string) {
 // 输出当前内容到指定模板
 func (p *page) render(w http.ResponseWriter, name string, headers map[string]string) {
 	if len(headers) == 0 {
-		setContentType(w, contentTypeHTML)
+		setContentType(w, p.a.buf.Data.Config.Type)
 	} else {
 		if _, exists := headers[contentTypeKey]; !exists {
-			headers[contentTypeKey] = buildContentTypeContent(contentTypeHTML)
+			headers[contentTypeKey] = buildContentTypeContent(p.a.buf.Data.Config.Type)
 		}
 
 		for key, val := range headers {
@@ -220,7 +213,7 @@ func (a *app) renderError(w http.ResponseWriter, code int) {
 		return
 	}
 
-	setContentType(w, contentTypeHTML)
+	setContentType(w, a.buf.Data.Config.Type)
 	w.WriteHeader(code)
 	w.Write(data)
 }
