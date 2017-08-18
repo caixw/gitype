@@ -30,9 +30,8 @@ type Config struct {
 	ShortDateFormat string `yaml:"shortDateFormat"`       // 短时间的显示格式
 	Theme           string `yaml:"theme"`                 // 默认主题
 
-	Author *Author `yaml:"author"` // 默认的作者信息
-
-	Menus []*Link `yaml:"menus,omitempty"` // 菜单内容
+	Author *Author `yaml:"author"`          // 默认的作者信息
+	Menus  []*Link `yaml:"menus,omitempty"` // 导航菜单
 
 	// feeds
 	RSS        *RSS        `yaml:"rss,omitempty"`

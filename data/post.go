@@ -5,7 +5,6 @@
 package data
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -13,8 +12,6 @@ import (
 	"strings"
 
 	"github.com/caixw/typing/vars"
-
-	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -85,18 +82,13 @@ func loadPosts(dir string) ([]*Post, error) {
 }
 
 func loadPost(postsDir, path string) (*Post, error) {
-	dir := filepath.Dir(path)                        // 获取路径部分
-	slug := strings.TrimPrefix(dir, postsDir)        // 获取相对于data/posts的名称
-	slug = strings.Trim(filepath.ToSlash(slug), "/") // 转换成/符号并去掉首尾的/字符
-
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
+	dir := filepath.Dir(path)                 // 获取路径部分
+	slug := strings.TrimPrefix(dir, postsDir) // 获取相对于 data/posts 的名称
+	slug = strings.Trim(filepath.ToSlash(slug), "/")
 
 	p := &Post{}
-	if err := yaml.Unmarshal(data, p); err != nil {
-		return nil, fmt.Errorf("%s 解板 yaml 出错:%v", slug, err)
+	if err := loadYamlFile(path, p); err != nil {
+		return nil, err
 	}
 	p.Slug = slug
 
@@ -104,7 +96,7 @@ func loadPost(postsDir, path string) (*Post, error) {
 	if len(p.Path) == 0 {
 		p.Path = postContentFilename
 	}
-	data, err = ioutil.ReadFile(filepath.Join(dir, p.Path))
+	data, err := ioutil.ReadFile(filepath.Join(dir, p.Path))
 	if err != nil {
 		return nil, &FieldError{File: p.Slug, Message: err.Error(), Field: "path"}
 	}
@@ -151,11 +143,12 @@ func (p *Post) sanitize() *FieldError {
 	p.Modified = modified
 	p.ModifiedFormat = ""
 
-	// 指定默认模板
+	// template
 	if len(p.Template) == 0 {
 		p.Template = "post"
 	}
 
+	// order
 	if len(p.Order) == 0 {
 		p.Order = orderDefault
 	} else if p.Order != orderDefault && p.Order != orderLast && p.Order != orderTop {

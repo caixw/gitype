@@ -57,7 +57,7 @@ type FieldError struct {
 }
 
 func (err *FieldError) Error() string {
-	return fmt.Sprintf("在文件 %v 中的 %v 字段发生错误： %v", err.File, err.Field, err.Message)
+	return fmt.Sprintf("在文件 %s 中的 %s 字段发生错误：%s", err.File, err.Field, err.Message)
 }
 
 func (link *Link) sanitize() *FieldError {
@@ -93,7 +93,7 @@ func (tag *Tag) sanitize() *FieldError {
 		return &FieldError{Message: "不能为空", Field: "content"}
 	}
 
-	tag.Posts = make([]*Post, 0, 10)
+	tag.Posts = make([]*Post, 0, 100)
 	tag.Permalink = vars.TagURL(tag.Slug, 0)
 
 	tag.Keywords = tag.Title

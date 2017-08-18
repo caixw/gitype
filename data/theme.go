@@ -6,12 +6,9 @@ package data
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"sort"
-
-	"gopkg.in/yaml.v2"
 )
 
 const themeMetaFile = "theme.yaml"
@@ -69,14 +66,10 @@ func loadThemes(dir string) ([]*Theme, error) {
 // id 主题当前目录名称
 func loadTheme(dir, id string) (*Theme, error) {
 	path := filepath.Join(dir, id, themeMetaFile)
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
 
 	theme := &Theme{}
-	if err = yaml.Unmarshal(data, theme); err != nil {
-		return nil, fmt.Errorf("解板 %s 出错:%v", path, err)
+	if err := loadYamlFile(path, theme); err != nil {
+		return nil, err
 	}
 
 	theme.Path = filepath.Dir(path)
