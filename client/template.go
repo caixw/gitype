@@ -10,27 +10,45 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
 )
 
 // 编译主题的模板。
-func (b *Client) compileTemplate() error {
+func (client *Client) compileTemplate() error {
 	funcMap := template.FuncMap{
 		"strip":    stripTags,
 		"html":     htmlEscaped,
-		"ldate":    b.longDateFormat,
-		"sdate":    b.shortDateFormat,
+		"ldate":    client.longDateFormat,
+		"sdate":    client.shortDateFormat,
 		"rfc3339":  rfc3339DateFormat,
 		"themeURL": func(p string) string { return vars.ThemesURL(p) },
 	}
 
 	tpl, err := template.New("").
 		Funcs(funcMap).
-		ParseGlob(filepath.Join(b.Data.Theme.Path, "*.html"))
+		ParseGlob(filepath.Join(client.Data.Theme.Path, "*.html"))
 	if err != nil {
 		return err
 	}
-	b.template = tpl
+	client.template = tpl
+
+	return client.checkPostTemplate()
+}
+
+// 检测文章中的模板名称是否在模板中真实存在
+func (client *Client) checkPostTemplate() error {
+	for _, post := range client.Data.Posts {
+		if nil != client.template.Lookup(post.Template) {
+			continue
+		}
+
+		return &data.FieldError{
+			Message: "不存在",
+			Field:   "template",
+			File:    post.Slug,
+		}
+	}
 
 	return nil
 }
