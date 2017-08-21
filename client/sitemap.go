@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package buffer
+package client
 
 import (
 	"strconv"
@@ -12,7 +12,7 @@ import (
 )
 
 // 生成一个符合 sitemap 规范的 XML 文本。
-func (buf *Buffer) buildSitemap() error {
+func (buf *Client) buildSitemap() error {
 	conf := buf.Data.Config
 	if conf.Sitemap == nil {
 		return nil
@@ -46,7 +46,7 @@ func (buf *Buffer) buildSitemap() error {
 	return nil
 }
 
-func addPostsToSitemap(w *xmlWriter, buf *Buffer) {
+func addPostsToSitemap(w *xmlWriter, buf *Client) {
 	sitemap := buf.Data.Config.Sitemap
 	for _, p := range buf.Data.Posts {
 		loc := buf.Data.Config.URL + p.Permalink
@@ -54,7 +54,7 @@ func addPostsToSitemap(w *xmlWriter, buf *Buffer) {
 	}
 }
 
-func addTagsToSitemap(w *xmlWriter, buf *Buffer) error {
+func addTagsToSitemap(w *xmlWriter, buf *Client) error {
 	sitemap := buf.Data.Config.Sitemap
 
 	loc := buf.Data.Config.URL + vars.TagsURL()

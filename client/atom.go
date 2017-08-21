@@ -2,12 +2,12 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package buffer
+package client
 
 import "time"
 
 // 用于生成一个符合 atom 规范的 XML 文本。
-func (buf *Buffer) buildAtom() error {
+func (buf *Client) buildAtom() error {
 	conf := buf.Data.Config
 	if conf.Atom == nil { // 不需要生成 atom
 		return nil
@@ -50,7 +50,7 @@ func (buf *Buffer) buildAtom() error {
 	return nil
 }
 
-func addPostsToAtom(w *xmlWriter, buf *Buffer) {
+func addPostsToAtom(w *xmlWriter, buf *Client) {
 	for _, p := range buf.Data.Posts {
 		w.writeStartElement("entry", nil)
 

@@ -88,7 +88,7 @@ type info struct {
 }
 
 func (a *app) newInfo() *info {
-	conf := a.buf.Data.Config
+	conf := a.client.Data.Config
 
 	info := &info{
 		AppName:    vars.AppName,
@@ -96,20 +96,20 @@ func (a *app) newInfo() *info {
 		AppVersion: vars.Version(),
 		GoVersion:  runtime.Version(),
 
-		ThemeName:   a.buf.Data.Theme.Name,
-		ThemeURL:    a.buf.Data.Theme.URL,
-		ThemeAuthor: a.buf.Data.Theme.Author,
+		ThemeName:   a.client.Data.Theme.Name,
+		ThemeURL:    a.client.Data.Theme.URL,
+		ThemeAuthor: a.client.Data.Theme.Author,
 
 		SiteName:    conf.Title,
 		URL:         conf.URL,
 		Icon:        conf.Icon,
 		Language:    conf.Language,
-		PostSize:    len(a.buf.Data.Posts),
+		PostSize:    len(a.client.Data.Posts),
 		Beian:       conf.Beian,
 		Uptime:      conf.Uptime,
-		LastUpdated: a.buf.Created,
-		Tags:        a.buf.Data.Tags,
-		Links:       a.buf.Data.Links,
+		LastUpdated: a.client.Created,
+		Tags:        a.client.Data.Tags,
+		Links:       a.client.Data.Links,
 		Menus:       conf.Menus,
 	}
 
@@ -129,7 +129,7 @@ func (a *app) newInfo() *info {
 }
 
 func (a *app) page(typ string) *page {
-	conf := a.buf.Data.Config
+	conf := a.client.Data.Config
 
 	return &page{
 		a:           a,
@@ -168,10 +168,10 @@ func (p *page) prevPage(url, text string) {
 // 输出当前内容到指定模板
 func (p *page) render(w http.ResponseWriter, name string, headers map[string]string) {
 	if len(headers) == 0 {
-		setContentType(w, p.a.buf.Data.Config.Type)
+		setContentType(w, p.a.client.Data.Config.Type)
 	} else {
 		if _, exists := headers[contentTypeKey]; !exists {
-			headers[contentTypeKey] = buildContentTypeContent(p.a.buf.Data.Config.Type)
+			headers[contentTypeKey] = buildContentTypeContent(p.a.client.Data.Config.Type)
 		}
 
 		for key, val := range headers {
@@ -179,7 +179,7 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 		}
 	}
 
-	err := p.a.buf.Template.ExecuteTemplate(w, name, p)
+	err := p.a.client.Template.ExecuteTemplate(w, name, p)
 	if err != nil {
 		logs.Error(err)
 		p.a.renderError(w, http.StatusInternalServerError)
@@ -199,7 +199,7 @@ func (a *app) renderError(w http.ResponseWriter, code int) {
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	filename := strconv.Itoa(code) + ".html"
-	path := filepath.Join(a.path.ThemesDir, a.buf.Data.Config.Theme, filename)
+	path := filepath.Join(a.path.ThemesDir, a.client.Data.Config.Theme, filename)
 	if !utils.FileExists(path) {
 		logs.Errorf("模板文件[%s]不存在\n", path)
 		statusError(w, code)
@@ -213,7 +213,7 @@ func (a *app) renderError(w http.ResponseWriter, code int) {
 		return
 	}
 
-	setContentType(w, a.buf.Data.Config.Type)
+	setContentType(w, a.client.Data.Config.Type)
 	w.WriteHeader(code)
 	w.Write(data)
 }

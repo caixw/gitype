@@ -28,7 +28,7 @@ func (w *logW) Write(bs []byte) (int, error) {
 func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 	now := time.Now().Unix()
 
-	if now-a.conf.WebhooksUpdateFreq < a.buf.Created {
+	if now-a.conf.WebhooksUpdateFreq < a.client.Created {
 		logs.Debug("更新过于频繁，被中止！")
 		return
 	}

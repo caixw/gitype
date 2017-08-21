@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package buffer
+package client
 
 import (
 	"html/template"
@@ -14,7 +14,7 @@ import (
 )
 
 // 编译主题的模板。
-func (b *Buffer) compileTemplate() error {
+func (b *Client) compileTemplate() error {
 	funcMap := template.FuncMap{
 		"strip":    stripTags,
 		"html":     htmlEscaped,
@@ -39,11 +39,11 @@ func rfc3339DateFormat(t int64) interface{} {
 	return time.Unix(t, 0).Format(time.RFC3339)
 }
 
-func (b *Buffer) longDateFormat(t int64) interface{} {
+func (b *Client) longDateFormat(t int64) interface{} {
 	return time.Unix(t, 0).Format(b.Data.Config.LongDateFormat)
 }
 
-func (b *Buffer) shortDateFormat(t int64) interface{} {
+func (b *Client) shortDateFormat(t int64) interface{} {
 	return time.Unix(t, 0).Format(b.Data.Config.ShortDateFormat)
 }
 

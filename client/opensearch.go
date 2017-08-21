@@ -2,12 +2,12 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package buffer
+package client
 
 import "github.com/caixw/typing/vars"
 
 // 用于生成一个符合 atom 规范的 XML 文本。
-func (buf *Buffer) buildOpensearch() error {
+func (buf *Client) buildOpensearch() error {
 	if buf.Data.Config.Opensearch == nil {
 		return nil
 	}

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package buffer
+package client
 
 import "time"
 
 // 生成一个符合 rss 规范的 XML 文本。
-func (buf *Buffer) buildRSS() error {
+func (buf *Client) buildRSS() error {
 	conf := buf.Data.Config
 	if conf.RSS == nil {
 		return nil
@@ -47,7 +47,7 @@ func (buf *Buffer) buildRSS() error {
 	return nil
 }
 
-func addPostsToRSS(w *xmlWriter, buf *Buffer) {
+func addPostsToRSS(w *xmlWriter, buf *Client) {
 	for _, p := range buf.Data.Posts {
 		w.writeStartElement("item", nil)
 
