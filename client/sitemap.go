@@ -12,12 +12,28 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// 生成一个符合 sitemap 规范的 XML 文本。
-func (client *Client) buildSitemap() error {
+func (client *Client) initSitemap() error {
 	conf := client.Data.Config
 	if conf.Sitemap == nil {
 		return nil
 	}
+
+	if err := client.buildSitemap(); err != nil {
+		return err
+	}
+
+	client.patterns = append(client.patterns, conf.Sitemap.URL)
+	client.mux.GetFunc(conf.Sitemap.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, conf.Sitemap.Type)
+		w.Write(client.sitemap)
+	}))
+
+	return nil
+}
+
+// 生成一个符合 sitemap 规范的 XML 文本。
+func (client *Client) buildSitemap() error {
+	conf := client.Data.Config
 	w := newWrite()
 
 	if len(conf.Sitemap.XslURL) > 0 {
@@ -44,12 +60,6 @@ func (client *Client) buildSitemap() error {
 		return err
 	}
 	client.sitemap = bs
-
-	client.patterns = append(client.patterns, conf.Sitemap.URL)
-	client.mux.GetFunc(conf.Sitemap.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-		setContentType(w, conf.Sitemap.Type)
-		w.Write(client.sitemap)
-	}))
 
 	return nil
 }

@@ -9,6 +9,24 @@ import (
 	"time"
 )
 
+func (client *Client) initAtom() error {
+	if client.Data.Config.Atom == nil { // 不需要生成 atom
+		return nil
+	}
+
+	if err := client.buildAtom(); err != nil {
+		return err
+	}
+
+	conf := client.Data.Config
+	client.patterns = append(client.patterns, conf.Atom.URL)
+	client.mux.GetFunc(conf.Atom.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, conf.Atom.Type)
+		w.Write(client.atom)
+	}))
+	return nil
+}
+
 // 用于生成一个符合 atom 规范的 XML 文本。
 func (client *Client) buildAtom() error {
 	conf := client.Data.Config
@@ -50,12 +68,6 @@ func (client *Client) buildAtom() error {
 		return err
 	}
 	client.atom = bs
-
-	client.patterns = append(client.patterns, conf.Atom.URL)
-	client.mux.GetFunc(conf.Atom.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-		setContentType(w, conf.Atom.Type)
-		w.Write(client.atom)
-	}))
 
 	return nil
 }

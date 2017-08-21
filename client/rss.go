@@ -9,13 +9,28 @@ import (
 	"time"
 )
 
-// 生成一个符合 rss 规范的 XML 文本。
-func (client *Client) buildRSS() error {
+func (client *Client) initRSS() error {
 	conf := client.Data.Config
 	if conf.RSS == nil {
 		return nil
 	}
 
+	if err := client.buildRSS(); err != nil {
+		return err
+	}
+
+	client.patterns = append(client.patterns, conf.RSS.URL)
+	client.mux.GetFunc(conf.RSS.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, conf.RSS.Type)
+		w.Write(client.rss)
+	}))
+
+	return nil
+}
+
+// 生成一个符合 rss 规范的 XML 文本。
+func (client *Client) buildRSS() error {
+	conf := client.Data.Config
 	w := newWrite()
 
 	w.writeStartElement("rss", map[string]string{
@@ -47,12 +62,6 @@ func (client *Client) buildRSS() error {
 		return err
 	}
 	client.rss = bs
-
-	client.patterns = append(client.patterns, conf.RSS.URL)
-	client.mux.GetFunc(conf.RSS.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-		setContentType(w, conf.RSS.Type)
-		w.Write(client.rss)
-	}))
 
 	return nil
 }

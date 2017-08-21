@@ -57,10 +57,10 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 	}
 
 	errFilter(client.compileTemplate)
-	errFilter(client.buildRSS)
-	errFilter(client.buildAtom)
-	errFilter(client.buildSitemap)
-	errFilter(client.buildOpensearch)
+	errFilter(client.initRSS)
+	errFilter(client.initAtom)
+	errFilter(client.initSitemap)
+	errFilter(client.initOpensearch)
 	errFilter(client.initRoutes)
 	if err != nil {
 		return nil, err

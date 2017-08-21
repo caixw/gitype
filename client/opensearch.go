@@ -10,12 +10,27 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// 用于生成一个符合 atom 规范的 XML 文本。
-func (client *Client) buildOpensearch() error {
+func (client *Client) initOpensearch() error {
 	if client.Data.Config.Opensearch == nil {
 		return nil
 	}
 
+	if err := client.buildOpensearch(); err != nil {
+		return err
+	}
+
+	conf := client.Data.Config
+	client.patterns = append(client.patterns, conf.Opensearch.URL)
+	client.mux.GetFunc(conf.Opensearch.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, conf.Opensearch.Type)
+		w.Write(client.opensearch)
+	}))
+
+	return nil
+}
+
+// 用于生成一个符合 atom 规范的 XML 文本。
+func (client *Client) buildOpensearch() error {
 	w := newWrite()
 	o := client.Data.Config.Opensearch
 
@@ -53,13 +68,6 @@ func (client *Client) buildOpensearch() error {
 		return err
 	}
 	client.opensearch = bs
-
-	conf := client.Data.Config
-	client.patterns = append(client.patterns, conf.Opensearch.URL)
-	client.mux.GetFunc(conf.Opensearch.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-		setContentType(w, conf.Opensearch.Type)
-		w.Write(client.opensearch)
-	}))
 
 	return nil
 }
