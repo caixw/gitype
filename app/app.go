@@ -52,7 +52,7 @@ func Run(path *vars.Path) error {
 	}
 
 	// 初始化 webhooks
-	a.mux.PostFunc(a.conf.WebhooksURL, a.postWebhooks)
+	a.mux.HandleFunc(a.conf.WebhooksURL, a.postWebhooks, a.conf.WebhooksMethod)
 
 	// 初始化控制台相关操作
 	if err := a.initAdmin(); err != nil {

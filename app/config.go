@@ -7,6 +7,7 @@ package app
 import (
 	"encoding/json"
 	"io/ioutil"
+	"net/http"
 
 	"github.com/caixw/typing/data"
 	"github.com/issue9/utils"
@@ -21,11 +22,13 @@ type config struct {
 	Pprof     bool              `json:"pprof"`
 	Headers   map[string]string `json:"headers"`
 
-	WebhooksURL        string `json:"webhooksURL"`        // webhooks 接收地址
-	WebhooksUpdateFreq int64  `json:"webhooksUpdateFreq"` // webhooks 的最小更新频率，秒数
-	RepoURL            string `json:"repoURL"`            // 远程仓库的地址
-	AdminURL           string `json:"adminURL"`           // 后台管理地址
-	AdminPassword      string `json:"adminPassword"`      // 后台管理登录地址
+	WebhooksURL        string `json:"webhooksURL"`              // webhooks 接收地址
+	WebhooksUpdateFreq int64  `json:"webhooksUpdateFreq"`       // webhooks 的最小更新频率，秒数
+	WebhooksMethod     string `json:"webhooksMethod,omitempty"` // webhooks 的请求方式，默认为 POST
+	RepoURL            string `json:"repoURL"`                  // 远程仓库的地址
+
+	AdminURL      string `json:"adminURL"`      // 后台管理地址
+	AdminPassword string `json:"adminPassword"` // 后台管理登录地址
 }
 
 func loadConfig(path string) (*config, error) {
@@ -37,6 +40,10 @@ func loadConfig(path string) (*config, error) {
 	conf := &config{}
 	if err = json.Unmarshal(bs, conf); err != nil {
 		return nil, err
+	}
+
+	if len(conf.WebhooksMethod) == 0 {
+		conf.WebhooksMethod = http.MethodPost
 	}
 
 	switch {
