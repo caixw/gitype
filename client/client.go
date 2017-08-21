@@ -2,7 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package client ...
+// Package client 是对 data 数据的再次加工以及所有非固定路由的处理，
+// 方便重新加载数据时，可以直接释放整修 client 再重新生成。
 package client
 
 import (
@@ -15,8 +16,7 @@ import (
 	"github.com/issue9/mux"
 )
 
-// Client 所有数据的缓存，每次更新数据时，
-// 直接声明一个新的 Client 实例，丢弃原来的 Client 即可。
+// Client 处理用户请求
 type Client struct {
 	path       *vars.Path
 	info       *info
@@ -28,6 +28,7 @@ type Client struct {
 	sitemap    []byte
 	opensearch []byte
 	patterns   []string // 记录所有的路由项，方便翻译时删除
+	tags       []*data.Tag
 
 	Created int64 // 当前数据的加载时间
 	Data    *data.Data
@@ -56,6 +57,7 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 		}
 	}
 
+	// 依赖 data.Data 数据的相关操作
 	errFilter(client.compileTemplate)
 	errFilter(client.initRSS)
 	errFilter(client.initAtom)
@@ -74,9 +76,4 @@ func (client *Client) Free() {
 	for _, pattern := range client.patterns {
 		client.mux.Remove(pattern)
 	}
-}
-
-func formatUnix(unix int64, format string) string {
-	t := time.Unix(unix, 0)
-	return t.Format(format)
 }

@@ -151,10 +151,17 @@ func (d *Data) sanitize2() error {
 		return err
 	}
 
-	// 排序
+	// 过滤空标签，排序标签关联的文章
+	tags := make([]*Tag, 0, len(d.Tags))
 	for _, tag := range d.Tags {
+		if len(tag.Posts) == 0 {
+			continue
+		}
+
 		sortPosts(tag.Posts)
+		tags = append(tags, tag)
 	}
+	d.Tags = tags
 
 	return nil
 }

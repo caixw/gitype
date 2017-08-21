@@ -7,10 +7,16 @@ package client
 import (
 	"bytes"
 	"strings"
+	"time"
 )
 
 // XML 要求 version 属于必须在其它属性之前
 const xmlPI = `<?xml version="1.0" encoding="utf-8"?>`
+
+func formatUnix(unix int64, format string) string {
+	t := time.Unix(unix, 0)
+	return t.Format(format)
+}
 
 // xml 操作类，简单地封装 bytes.Buffer。
 type xmlWriter struct {
