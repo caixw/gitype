@@ -71,7 +71,7 @@ httpState         | string      | 当 https 为 true 时，对 80 端口的处�
 certFile          | string      | 当 https 为 true 时，此值为必填
 keyFile           | string      | 当 https 为 true 时，此值为必填
 port              | string      | 端口，不指定，默认为 80 或是 443
-pprof             | bool        | 是否需要 /debug/pprof
+pprof             | bool        | 是否需要在 /debug/pprof 输出调试信息
 headers           | map         | 附加的头信息，头信息可能在其它地方被修改
 webhooksURL       | string      | webhooks 的接收地址
 webhookUpdateFreq | int64       | webhooks 的最小更新频率，单位：秒
@@ -115,7 +115,8 @@ atom            | RSS         | atom 配置，若不需要，则不指定该值�
 sitemap         | Sitemap     | sitemap 相关配置，若不需要，则不指定该值即可
 opensearch      | Opensearch  | opensearch 相关配置，若不需要，则不指定该值即可
 
-Author
+###### Author
+
 名称      | 类型        | 描述
 :---------|:------------|:----------
 name      | string      | 名称
@@ -124,7 +125,7 @@ email     | string      | 邮箱
 avatar    | string      | 头像
 
 
-RSS
+###### RSS
 
 名称      | 类型        | 描述
 :---------|:------------|:----------
@@ -134,7 +135,7 @@ url       | string      | 地址
 type      | string      | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
 
 
-Sitemap
+###### Sitemap
 
 名称           | 类型        | 描述
 :--------------|:------------|:----------
@@ -148,7 +149,7 @@ postChangefreq | string      | 文章页的修改频率
 type           | string      | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
 
 
-Opensearch
+###### Opensearch
 
 名称      | 类型        | 描述
 :-----------|:------------|:----------
