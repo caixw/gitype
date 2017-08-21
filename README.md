@@ -64,17 +64,21 @@ conf 目录下的为程序级别的配置文件，在程序加载之后，无法
 
 ##### app.json
 
-名称          | 类型        | 描述
-:-------------|:------------|:------
-adminURL      | string      | 后台管理的地址
-adminPassword | string      | 后台管理密码
-https         | bool        | 是否启用 https
-httpState     | string      | 当 https 为 true 时，对 80 端口的处理方式，可以为 disable, redirect, default
-certFile      | string      | 当 https 为 true 时，此值为必填
-keyFile       | string      | 当 https 为 true 时，此值为必填
-port          | string      | 端口，不指定，默认为 80 或是 443
-headers       | map         | 附加的头信息，头信息可能在其它地方被修改
-pprof         | bool        | 是否需要 /debug/pprof
+名称              | 类型        | 描述
+:-----------------|:------------|:------
+https             | bool        | 是否启用 https
+httpState         | string      | 当 https 为 true 时，对 80 端口的处理方式，可以为 disable, redirect, default
+certFile          | string      | 当 https 为 true 时，此值为必填
+keyFile           | string      | 当 https 为 true 时，此值为必填
+port              | string      | 端口，不指定，默认为 80 或是 443
+pprof             | bool        | 是否需要 /debug/pprof
+headers           | map         | 附加的头信息，头信息可能在其它地方被修改
+webhooksURL       | string      | webhooks 的接收地址
+webhookUpdateFreq | int64       | webhooks 的最小更新频率，单位：秒
+webhooksMethod    | string      | webhooks 接收地址的接收方法，不指定，则默认为 POST
+repoURL           | string      | 远程仓库的地址
+adminURL          | string      | 后台管理的地址
+adminPassword     | string      | 后台管理密码
 
 
 
