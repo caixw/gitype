@@ -24,7 +24,7 @@ import (
 // 模板的扩展名，在主题目录下，所有该扩展名的文件，不会被展示
 var (
 	ignoreThemeFileExts = []string{
-		".html",
+		templateExtension,
 		".yaml",
 		".yml",
 	}

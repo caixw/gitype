@@ -14,6 +14,9 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
+// 模板文件的扩展名
+const templateExtension = ".html"
+
 // 编译主题的模板。
 func (client *Client) compileTemplate() error {
 	funcMap := template.FuncMap{
@@ -25,9 +28,9 @@ func (client *Client) compileTemplate() error {
 		"themeURL": func(p string) string { return vars.ThemesURL(p) },
 	}
 
-	tpl, err := template.New("").
+	tpl, err := template.New("client").
 		Funcs(funcMap).
-		ParseGlob(filepath.Join(client.Data.Theme.Path, "*.html"))
+		ParseGlob(filepath.Join(client.Data.Theme.Path, "*"+templateExtension))
 	if err != nil {
 		return err
 	}
@@ -57,12 +60,12 @@ func rfc3339DateFormat(t int64) interface{} {
 	return time.Unix(t, 0).Format(time.RFC3339)
 }
 
-func (b *Client) longDateFormat(t int64) interface{} {
-	return time.Unix(t, 0).Format(b.Data.Config.LongDateFormat)
+func (client *Client) longDateFormat(t int64) interface{} {
+	return time.Unix(t, 0).Format(client.Data.Config.LongDateFormat)
 }
 
-func (b *Client) shortDateFormat(t int64) interface{} {
-	return time.Unix(t, 0).Format(b.Data.Config.ShortDateFormat)
+func (client *Client) shortDateFormat(t int64) interface{} {
+	return time.Unix(t, 0).Format(client.Data.Config.ShortDateFormat)
 }
 
 // 将内容显示为 HTML 内容

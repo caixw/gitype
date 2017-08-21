@@ -27,7 +27,7 @@ type Client struct {
 	atom       []byte
 	sitemap    []byte
 	opensearch []byte
-	patterns   []string // 记录所有的路由项，方便翻译时删除
+	patterns   []string // 记录所有的路由项，方便释放时删除
 
 	Created int64 // 当前数据的加载时间
 	Data    *data.Data
