@@ -14,8 +14,7 @@ import (
 const xmlPI = `<?xml version="1.0" encoding="utf-8"?>`
 
 func formatUnix(unix int64, format string) string {
-	t := time.Unix(unix, 0)
-	return t.Format(format)
+	return time.Unix(unix, 0).Format(format)
 }
 
 // xml 操作类，简单地封装 bytes.Buffer。

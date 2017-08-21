@@ -10,7 +10,7 @@ import (
 )
 
 func (client *Client) initRSS() error {
-	conf := client.Data.Config
+	conf := client.data.Config
 	if conf.RSS == nil {
 		return nil
 	}
@@ -30,7 +30,7 @@ func (client *Client) initRSS() error {
 
 // 生成一个符合 rss 规范的 XML 文本。
 func (client *Client) buildRSS() error {
-	conf := client.Data.Config
+	conf := client.data.Config
 	w := newWrite()
 
 	w.writeStartElement("rss", map[string]string{
@@ -67,10 +67,10 @@ func (client *Client) buildRSS() error {
 }
 
 func addPostsToRSS(w *xmlWriter, buf *Client) {
-	for _, p := range buf.Data.Posts {
+	for _, p := range buf.data.Posts {
 		w.writeStartElement("item", nil)
 
-		w.writeElement("link", buf.Data.Config.URL+p.Permalink, nil)
+		w.writeElement("link", buf.data.Config.URL+p.Permalink, nil)
 		w.writeElement("title", p.Title, nil)
 		w.writeElement("pubDate", formatUnix(p.Created, time.RFC1123), nil)
 		w.writeElement("description", p.Summary, nil)

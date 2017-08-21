@@ -88,7 +88,7 @@ type info struct {
 }
 
 func (client *Client) newInfo() *info {
-	conf := client.Data.Config
+	conf := client.data.Config
 
 	info := &info{
 		AppName:    vars.AppName,
@@ -96,20 +96,20 @@ func (client *Client) newInfo() *info {
 		AppVersion: vars.Version(),
 		GoVersion:  runtime.Version(),
 
-		ThemeName:   client.Data.Theme.Name,
-		ThemeURL:    client.Data.Theme.URL,
-		ThemeAuthor: client.Data.Theme.Author,
+		ThemeName:   client.data.Theme.Name,
+		ThemeURL:    client.data.Theme.URL,
+		ThemeAuthor: client.data.Theme.Author,
 
 		SiteName:    conf.Title,
 		URL:         conf.URL,
 		Icon:        conf.Icon,
 		Language:    conf.Language,
-		PostSize:    len(client.Data.Posts),
+		PostSize:    len(client.data.Posts),
 		Beian:       conf.Beian,
 		Uptime:      conf.Uptime,
 		LastUpdated: client.Created,
-		Tags:        client.Data.Tags,
-		Links:       client.Data.Links,
+		Tags:        client.data.Tags,
+		Links:       client.data.Links,
 		Menus:       conf.Menus,
 	}
 
@@ -129,7 +129,7 @@ func (client *Client) newInfo() *info {
 }
 
 func (client *Client) page(typ string) *page {
-	conf := client.Data.Config
+	conf := client.data.Config
 
 	return &page{
 		client:      client,
@@ -168,10 +168,10 @@ func (p *page) prevPage(url, text string) {
 // 输出当前内容到指定模板
 func (p *page) render(w http.ResponseWriter, name string, headers map[string]string) {
 	if len(headers) == 0 {
-		setContentType(w, p.client.Data.Config.Type)
+		setContentType(w, p.client.data.Config.Type)
 	} else {
 		if _, exists := headers[contentTypeKey]; !exists {
-			headers[contentTypeKey] = buildContentTypeContent(p.client.Data.Config.Type)
+			headers[contentTypeKey] = buildContentTypeContent(p.client.data.Config.Type)
 		}
 
 		for key, val := range headers {
@@ -199,7 +199,7 @@ func (client *Client) renderError(w http.ResponseWriter, code int) {
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	filename := strconv.Itoa(code) + ".html"
-	path := filepath.Join(client.path.ThemesDir, client.Data.Config.Theme, filename)
+	path := filepath.Join(client.path.ThemesDir, client.data.Config.Theme, filename)
 	if !utils.FileExists(path) {
 		logs.Errorf("模板文件 %s 不存在\n", path)
 		http.Error(w, http.StatusText(code), code)
@@ -213,7 +213,7 @@ func (client *Client) renderError(w http.ResponseWriter, code int) {
 		return
 	}
 
-	setContentType(w, client.Data.Config.Type)
+	setContentType(w, client.data.Config.Type)
 	w.WriteHeader(code)
 	w.Write(data)
 }

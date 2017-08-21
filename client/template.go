@@ -30,7 +30,7 @@ func (client *Client) compileTemplate() error {
 
 	tpl, err := template.New("client").
 		Funcs(funcMap).
-		ParseGlob(filepath.Join(client.Data.Theme.Path, "*"+templateExtension))
+		ParseGlob(filepath.Join(client.data.Theme.Path, "*"+templateExtension))
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func (client *Client) compileTemplate() error {
 
 // 检测文章中的模板名称是否在模板中真实存在
 func (client *Client) checkPostTemplate() error {
-	for _, post := range client.Data.Posts {
+	for _, post := range client.data.Posts {
 		if nil != client.template.Lookup(post.Template) {
 			continue
 		}
@@ -61,11 +61,11 @@ func rfc3339DateFormat(t int64) interface{} {
 }
 
 func (client *Client) longDateFormat(t int64) interface{} {
-	return time.Unix(t, 0).Format(client.Data.Config.LongDateFormat)
+	return time.Unix(t, 0).Format(client.data.Config.LongDateFormat)
 }
 
 func (client *Client) shortDateFormat(t int64) interface{} {
-	return time.Unix(t, 0).Format(client.Data.Config.ShortDateFormat)
+	return time.Unix(t, 0).Format(client.data.Config.ShortDateFormat)
 }
 
 // 将内容显示为 HTML 内容

@@ -7,6 +7,7 @@ package app
 import (
 	"html/template"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/caixw/typing/app/admin"
@@ -44,11 +45,15 @@ func (a *app) getAdminPage(w http.ResponseWriter, r *http.Request) {
 	a.renderAdminPage(w, r, "")
 }
 
-// 一个简单的后台页面，可用来手动更新数据。
 func (a *app) renderAdminPage(w http.ResponseWriter, r *http.Request, message string) {
+	home := strings.TrimSuffix(r.URL.Path, a.conf.AdminURL)
+	if len(home) == 0 {
+		home = "/"
+	}
+
 	s := map[string]interface{}{
-		"lastUpdate": time.Unix(a.client.Created, 0).Format(a.client.Data.Config.LongDateFormat),
-		"homeURL":    a.client.Data.Config.URL,
+		"lastUpdate": time.Unix(a.client.Created, 0).Format(time.RFC3339),
+		"homeURL":    home,
 		"message":    message,
 	}
 

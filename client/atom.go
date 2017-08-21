@@ -10,7 +10,7 @@ import (
 )
 
 func (client *Client) initAtom() error {
-	if client.Data.Config.Atom == nil { // 不需要生成 atom
+	if client.data.Config.Atom == nil { // 不需要生成 atom
 		return nil
 	}
 
@@ -18,7 +18,7 @@ func (client *Client) initAtom() error {
 		return err
 	}
 
-	conf := client.Data.Config
+	conf := client.data.Config
 	client.patterns = append(client.patterns, conf.Atom.URL)
 	client.mux.GetFunc(conf.Atom.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
 		setContentType(w, conf.Atom.Type)
@@ -29,7 +29,7 @@ func (client *Client) initAtom() error {
 
 // 用于生成一个符合 atom 规范的 XML 文本。
 func (client *Client) buildAtom() error {
-	conf := client.Data.Config
+	conf := client.data.Config
 	if conf.Atom == nil { // 不需要生成 atom
 		return nil
 	}
@@ -73,13 +73,13 @@ func (client *Client) buildAtom() error {
 }
 
 func addPostsToAtom(w *xmlWriter, buf *Client) {
-	for _, p := range buf.Data.Posts {
+	for _, p := range buf.data.Posts {
 		w.writeStartElement("entry", nil)
 
 		w.writeElement("id", p.Permalink, nil)
 
 		w.writeCloseElement("link", map[string]string{
-			"href": buf.Data.Config.URL + p.Permalink,
+			"href": buf.data.Config.URL + p.Permalink,
 		})
 
 		w.writeElement("title", p.Title, nil)

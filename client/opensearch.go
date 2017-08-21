@@ -11,7 +11,7 @@ import (
 )
 
 func (client *Client) initOpensearch() error {
-	if client.Data.Config.Opensearch == nil {
+	if client.data.Config.Opensearch == nil {
 		return nil
 	}
 
@@ -19,7 +19,7 @@ func (client *Client) initOpensearch() error {
 		return err
 	}
 
-	conf := client.Data.Config
+	conf := client.data.Config
 	client.patterns = append(client.patterns, conf.Opensearch.URL)
 	client.mux.GetFunc(conf.Opensearch.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
 		setContentType(w, conf.Opensearch.Type)
@@ -32,7 +32,7 @@ func (client *Client) initOpensearch() error {
 // 用于生成一个符合 atom 规范的 XML 文本。
 func (client *Client) buildOpensearch() error {
 	w := newWrite()
-	o := client.Data.Config.Opensearch
+	o := client.data.Config.Opensearch
 
 	w.writeStartElement("OpenSearchDescription", map[string]string{
 		"xmlns": "http://a9.com/-/spec/opensearch/1.1/",
@@ -59,7 +59,7 @@ func (client *Client) buildOpensearch() error {
 	})
 
 	w.writeElement("Developer", vars.AppName, nil)
-	w.writeElement("Language", client.Data.Config.Language, nil)
+	w.writeElement("Language", client.data.Config.Language, nil)
 
 	w.writeEndElement("OpenSearchDescription")
 

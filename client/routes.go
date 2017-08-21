@@ -74,7 +74,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var index int
-	for i, p := range client.Data.Posts {
+	for i, p := range client.data.Posts {
 		if p.Slug == id {
 			index = i
 			break
@@ -87,7 +87,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post := client.Data.Posts[index]
+	post := client.data.Posts[index]
 
 	p := client.page(typePost)
 	p.Post = post
@@ -97,11 +97,11 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Canonical = post.Permalink
 
 	if index > 0 {
-		prev := client.Data.Posts[index-1]
+		prev := client.data.Posts[index-1]
 		p.prevPage(prev.Permalink, prev.Title)
 	}
-	if index+1 < len(client.Data.Posts) {
-		next := client.Data.Posts[index+1]
+	if index+1 < len(client.data.Posts) {
+		next := client.data.Posts[index+1]
 		p.nextPage(next.Permalink, next.Title)
 	}
 
@@ -130,15 +130,15 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Canonical = vars.PostsURL(page)
 
-	start, end, ok := client.getPostsRange(len(client.Data.Posts), page, w)
+	start, end, ok := client.getPostsRange(len(client.data.Posts), page, w)
 	if !ok {
 		return
 	}
-	p.Posts = client.Data.Posts[start:end]
+	p.Posts = client.data.Posts[start:end]
 	if page > 1 {
 		p.prevPage(vars.PostsURL(page-1), "")
 	}
-	if end < len(client.Data.Posts) {
+	if end < len(client.data.Posts) {
 		p.nextPage(vars.PostsURL(page+1), "")
 	}
 
@@ -154,7 +154,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var tag *data.Tag
-	for _, t := range client.Data.Tags {
+	for _, t := range client.data.Tags {
 		if t.Slug == slug {
 			tag = t
 			break
@@ -278,9 +278,9 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 查找标题和内容
-	posts := make([]*data.Post, 0, len(client.Data.Posts))
+	posts := make([]*data.Post, 0, len(client.data.Posts))
 	key := strings.ToLower(q)
-	for _, v := range client.Data.Posts {
+	for _, v := range client.data.Posts {
 		if strings.Contains(v.Title, key) || strings.Contains(v.Content, key) {
 			posts = append(posts, v)
 		}
@@ -325,7 +325,7 @@ func (client *Client) getRaws(w http.ResponseWriter, r *http.Request) {
 
 // 确认当前文章列表页选择范围。
 func (client *Client) getPostsRange(postsSize, page int, w http.ResponseWriter) (start, end int, ok bool) {
-	size := client.Data.Config.PageSize
+	size := client.data.Config.PageSize
 	start = size * (page - 1) // 系统从零开始计数
 	if start > postsSize {
 		logs.Debugf("请求页码为[%d]，实际文章数量为[%d]\n", page, postsSize)
@@ -353,7 +353,7 @@ func (client *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Etag", client.etag)
-		w.Header().Set("Content-Language", client.Data.Config.Language)
+		w.Header().Set("Content-Language", client.data.Config.Language)
 		compress.New(f, logs.ERROR()).ServeHTTP(w, r)
 	}
 }

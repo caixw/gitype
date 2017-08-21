@@ -13,7 +13,7 @@ import (
 )
 
 func (client *Client) initSitemap() error {
-	conf := client.Data.Config
+	conf := client.data.Config
 	if conf.Sitemap == nil {
 		return nil
 	}
@@ -33,7 +33,7 @@ func (client *Client) initSitemap() error {
 
 // 生成一个符合 sitemap 规范的 XML 文本。
 func (client *Client) buildSitemap() error {
-	conf := client.Data.Config
+	conf := client.data.Config
 	w := newWrite()
 
 	if len(conf.Sitemap.XslURL) > 0 {
@@ -65,21 +65,21 @@ func (client *Client) buildSitemap() error {
 }
 
 func addPostsToSitemap(w *xmlWriter, buf *Client) {
-	sitemap := buf.Data.Config.Sitemap
-	for _, p := range buf.Data.Posts {
-		loc := buf.Data.Config.URL + p.Permalink
+	sitemap := buf.data.Config.Sitemap
+	for _, p := range buf.data.Posts {
+		loc := buf.data.Config.URL + p.Permalink
 		addItemToSitemap(w, loc, sitemap.PostChangefreq, p.Modified, sitemap.PostPriority)
 	}
 }
 
 func addTagsToSitemap(w *xmlWriter, buf *Client) error {
-	sitemap := buf.Data.Config.Sitemap
+	sitemap := buf.data.Config.Sitemap
 
-	loc := buf.Data.Config.URL + vars.TagsURL()
+	loc := buf.data.Config.URL + vars.TagsURL()
 	addItemToSitemap(w, loc, sitemap.TagChangefreq, buf.Created, sitemap.TagPriority)
 
-	for _, tag := range buf.Data.Tags {
-		loc = buf.Data.Config.URL + tag.Permalink
+	for _, tag := range buf.data.Tags {
+		loc = buf.data.Config.URL + tag.Permalink
 		addItemToSitemap(w, loc, sitemap.TagChangefreq, tag.Modified, sitemap.TagPriority)
 	}
 	return nil

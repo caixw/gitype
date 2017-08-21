@@ -19,6 +19,7 @@ import (
 // Client 处理用户请求
 type Client struct {
 	path       *vars.Path
+	data       *data.Data
 	info       *info
 	mux        *mux.Mux
 	etag       string
@@ -30,7 +31,6 @@ type Client struct {
 	patterns   []string // 记录所有的路由项，方便释放时删除
 
 	Created int64 // 当前数据的加载时间
-	Data    *data.Data
 }
 
 // New 声明一个新的 Client 实例
@@ -46,7 +46,7 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 		mux:     mux,
 		etag:    strconv.FormatInt(now, 10),
 		Created: now,
-		Data:    d,
+		data:    d,
 	}
 	client.info = client.newInfo()
 
