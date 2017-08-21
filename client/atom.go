@@ -4,11 +4,14 @@
 
 package client
 
-import "time"
+import (
+	"net/http"
+	"time"
+)
 
 // 用于生成一个符合 atom 规范的 XML 文本。
-func (buf *Client) buildAtom() error {
-	conf := buf.Data.Config
+func (client *Client) buildAtom() error {
+	conf := client.Data.Config
 	if conf.Atom == nil { // 不需要生成 atom
 		return nil
 	}
@@ -36,9 +39,9 @@ func (buf *Client) buildAtom() error {
 
 	w.writeElement("title", conf.Title, nil)
 	w.writeElement("subtitle", conf.Subtitle, nil)
-	w.writeElement("update", formatUnix(buf.Created, time.RFC3339), nil)
+	w.writeElement("update", formatUnix(client.Created, time.RFC3339), nil)
 
-	addPostsToAtom(w, buf)
+	addPostsToAtom(w, client)
 
 	w.writeEndElement("feed")
 
@@ -46,7 +49,14 @@ func (buf *Client) buildAtom() error {
 	if err != nil {
 		return err
 	}
-	buf.atom = bs
+	client.atom = bs
+
+	client.patterns = append(client.patterns, conf.Atom.URL)
+	client.mux.GetFunc(conf.Atom.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, conf.Atom.Type)
+		w.Write(client.atom)
+	}))
+
 	return nil
 }
 

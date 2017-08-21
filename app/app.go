@@ -28,9 +28,7 @@ type app struct {
 	mux      *mux.Mux
 	conf     *config
 	adminTpl *template.Template // 后台管理的模板页面。
-
-	// 以下内容可动态加载
-	client *client.Client
+	client   *client.Client
 }
 
 // 标准的错误状态码输出函数，略作封装。
@@ -142,6 +140,11 @@ func serveHTTP(a *app) {
 
 // 重新加载数据
 func (a *app) reload() error {
+	// 释放旧数据
+	if a.client != nil {
+		a.client.Free()
+	}
+
 	// 生成新的数据
 	c, err := client.New(a.path, a.mux)
 	if err != nil {

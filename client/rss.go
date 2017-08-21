@@ -4,11 +4,14 @@
 
 package client
 
-import "time"
+import (
+	"net/http"
+	"time"
+)
 
 // 生成一个符合 rss 规范的 XML 文本。
-func (buf *Client) buildRSS() error {
-	conf := buf.Data.Config
+func (client *Client) buildRSS() error {
+	conf := client.Data.Config
 	if conf.RSS == nil {
 		return nil
 	}
@@ -34,7 +37,7 @@ func (buf *Client) buildRSS() error {
 		})
 	}
 
-	addPostsToRSS(w, buf)
+	addPostsToRSS(w, client)
 
 	w.writeEndElement("channel")
 	w.writeEndElement("rss")
@@ -43,7 +46,14 @@ func (buf *Client) buildRSS() error {
 	if err != nil {
 		return err
 	}
-	buf.rss = bs
+	client.rss = bs
+
+	client.patterns = append(client.patterns, conf.RSS.URL)
+	client.mux.GetFunc(conf.RSS.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, conf.RSS.Type)
+		w.Write(client.rss)
+	}))
+
 	return nil
 }
 

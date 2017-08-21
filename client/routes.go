@@ -48,6 +48,8 @@ func (client *Client) initRoutes() error {
 		if err != nil {
 			return
 		}
+
+		client.patterns = append(client.patterns, pattern)
 		err = client.mux.HandleFunc(pattern, client.prepare(h), http.MethodGet)
 	}
 
@@ -61,58 +63,6 @@ func (client *Client) initRoutes() error {
 	handle("/{path}", client.getRaws)                  // /...                /{path}
 
 	return err
-}
-
-func (client *Client) initFeeds() {
-	conf := client.Data.Config
-
-	if conf.RSS != nil {
-		client.mux.GetFunc(conf.RSS.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, conf.RSS.Type)
-			w.Write(client.rss)
-		}))
-	}
-
-	if conf.Atom != nil {
-		client.mux.GetFunc(conf.Atom.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, conf.Atom.Type)
-			w.Write(client.atom)
-		}))
-	}
-
-	if conf.Sitemap != nil {
-		client.mux.GetFunc(conf.Sitemap.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, conf.Sitemap.Type)
-			w.Write(client.sitemap)
-		}))
-	}
-
-	if conf.Opensearch != nil {
-		client.mux.GetFunc(conf.Opensearch.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, conf.Opensearch.Type)
-			w.Write(client.opensearch)
-		}))
-	}
-}
-
-func (client *Client) removeFeeds() {
-	conf := client.Data.Config
-
-	if conf.RSS != nil {
-		client.mux.Remove(conf.RSS.URL)
-	}
-
-	if conf.Atom != nil {
-		client.mux.Remove(conf.Atom.URL)
-	}
-
-	if conf.Sitemap != nil {
-		client.mux.Remove(conf.Sitemap.URL)
-	}
-
-	if conf.Opensearch != nil {
-		client.mux.Remove(conf.Opensearch.URL)
-	}
 }
 
 // 文章详细页

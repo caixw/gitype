@@ -7,7 +7,6 @@ package client
 
 import (
 	"html/template"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -28,6 +27,7 @@ type Client struct {
 	atom       []byte
 	sitemap    []byte
 	opensearch []byte
+	patterns   []string // 记录所有的路由项，方便翻译时删除
 
 	Created int64 // 当前数据的加载时间
 	Data    *data.Data
@@ -66,22 +66,17 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 		return nil, err
 	}
 
-	client.initFeeds()
-
 	return client, nil
 }
 
 // Free 释放 Client 内容
-func (a *Client) Free() {
-	a.removeFeeds()
+func (client *Client) Free() {
+	for _, pattern := range client.patterns {
+		client.mux.Remove(pattern)
+	}
 }
 
 func formatUnix(unix int64, format string) string {
 	t := time.Unix(unix, 0)
 	return t.Format(format)
-}
-
-// 标准的错误状态码输出函数，略作封装。
-func statusError(w http.ResponseWriter, status int) {
-	http.Error(w, http.StatusText(status), status)
 }

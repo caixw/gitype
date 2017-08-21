@@ -44,7 +44,7 @@ type Config struct {
 
 // Opensearch 相关定义
 type Opensearch struct {
-	URL   string `yaml:"url"`             // opensearch 的地址
+	URL   string `yaml:"url"`             // opensearch 的地址，不能包含域名
 	Title string `yaml:"title,omitempty"` // 出现于 html>head>link.title 属性中
 
 	ShortName   string `yaml:"shortName"`
@@ -58,13 +58,13 @@ type Opensearch struct {
 type RSS struct {
 	Title string `yaml:"title"`          // 标题
 	Size  int    `yaml:"size"`           // 显示数量
-	URL   string `yaml:"url"`            // 地址
+	URL   string `yaml:"url"`            // 地址，不能包含域名
 	Type  string `yaml:"type,omitempty"` // mimeType
 }
 
 // Sitemap 表示 sitemap 的相关配置项
 type Sitemap struct {
-	URL            string  `yaml:"url"`              // 展示给用户的地址
+	URL            string  `yaml:"url"`              // 展示给用户的地址，不能包含域名
 	XslURL         string  `yaml:"xslURL,omitempty"` // 为 sitemap 指定一个 xsl 文件
 	EnableTag      bool    `yaml:"enableTag,omitempty"`
 	TagPriority    float64 `yaml:"tagPriority"`

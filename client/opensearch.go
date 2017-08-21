@@ -4,16 +4,20 @@
 
 package client
 
-import "github.com/caixw/typing/vars"
+import (
+	"net/http"
+
+	"github.com/caixw/typing/vars"
+)
 
 // 用于生成一个符合 atom 规范的 XML 文本。
-func (buf *Client) buildOpensearch() error {
-	if buf.Data.Config.Opensearch == nil {
+func (client *Client) buildOpensearch() error {
+	if client.Data.Config.Opensearch == nil {
 		return nil
 	}
 
 	w := newWrite()
-	o := buf.Data.Config.Opensearch
+	o := client.Data.Config.Opensearch
 
 	w.writeStartElement("OpenSearchDescription", map[string]string{
 		"xmlns": "http://a9.com/-/spec/opensearch/1.1/",
@@ -40,7 +44,7 @@ func (buf *Client) buildOpensearch() error {
 	})
 
 	w.writeElement("Developer", vars.AppName, nil)
-	w.writeElement("Language", buf.Data.Config.Language, nil)
+	w.writeElement("Language", client.Data.Config.Language, nil)
 
 	w.writeEndElement("OpenSearchDescription")
 
@@ -48,6 +52,14 @@ func (buf *Client) buildOpensearch() error {
 	if err != nil {
 		return err
 	}
-	buf.opensearch = bs
+	client.opensearch = bs
+
+	conf := client.Data.Config
+	client.patterns = append(client.patterns, conf.Opensearch.URL)
+	client.mux.GetFunc(conf.Opensearch.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, conf.Opensearch.Type)
+		w.Write(client.opensearch)
+	}))
+
 	return nil
 }

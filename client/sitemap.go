@@ -5,6 +5,7 @@
 package client
 
 import (
+	"net/http"
 	"strconv"
 	"time"
 
@@ -12,8 +13,8 @@ import (
 )
 
 // 生成一个符合 sitemap 规范的 XML 文本。
-func (buf *Client) buildSitemap() error {
-	conf := buf.Data.Config
+func (client *Client) buildSitemap() error {
+	conf := client.Data.Config
 	if conf.Sitemap == nil {
 		return nil
 	}
@@ -30,10 +31,10 @@ func (buf *Client) buildSitemap() error {
 		"xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
 	})
 
-	addPostsToSitemap(w, buf)
+	addPostsToSitemap(w, client)
 
 	if conf.Sitemap.EnableTag {
-		addTagsToSitemap(w, buf)
+		addTagsToSitemap(w, client)
 	}
 
 	w.writeEndElement("urlset")
@@ -42,7 +43,14 @@ func (buf *Client) buildSitemap() error {
 	if err != nil {
 		return err
 	}
-	buf.sitemap = bs
+	client.sitemap = bs
+
+	client.patterns = append(client.patterns, conf.Sitemap.URL)
+	client.mux.GetFunc(conf.Sitemap.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, conf.Sitemap.Type)
+		w.Write(client.sitemap)
+	}))
+
 	return nil
 }
 
