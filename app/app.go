@@ -123,9 +123,9 @@ func (a *app) buildPprof(h http.Handler) http.Handler {
 func serveHTTP(a *app) {
 	switch a.conf.HTTPState {
 	case "default":
-		logs.Error(http.ListenAndServe(":80", a.mux))
+		logs.Error(http.ListenAndServe(httpPort, a.mux))
 	case "redirect":
-		logs.Error(http.ListenAndServe(":80", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		logs.Error(http.ListenAndServe(httpPort, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// 构建跳转链接
 			url := r.URL
 			url.Scheme = "HTTPS"

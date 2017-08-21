@@ -9,7 +9,7 @@ import "time"
 
 const (
 	// 主版本号，符合 semver 规范
-	mainVersion = "0.7.17"
+	mainVersion = "0.7.18"
 
 	// AppName 程序名称
 	AppName = "typing"
@@ -24,7 +24,11 @@ const (
 	DateFormat = time.RFC3339
 )
 
-// 一些默认的 mime type 类型
+// 默认的 mime type 类型。
+//
+// 一般情况下，用户无须修改此处内容，所有的 mime type 值都可以在
+// data/meta/config.yaml 中手动指定，此处仅作为在其未指定的情况下
+// 的一种默认值。
 const (
 	ContentTypeHTML       = "text/html"
 	ContentTypeXML        = "application/xml"
@@ -50,7 +54,7 @@ func Version() string {
 	return version
 }
 
-// CommitHash 获取当前版本的 git commit hash
+// CommitHash 获取最后一条代码提交记录的 hash 值。
 func CommitHash() string {
 	return commitHash
 }

@@ -13,6 +13,8 @@ import (
 	"github.com/issue9/utils"
 )
 
+const httpPort = ":80"
+
 type config struct {
 	HTTPS     bool              `json:"https"`
 	HTTPState string            `json:"httpState"` // 对 80 端口的处理方式，可以 disable, redirect, default
@@ -49,6 +51,8 @@ func loadConfig(path string) (*config, error) {
 	switch {
 	case conf.HTTPS && conf.HTTPState != "disable" && conf.HTTPState != "default" && conf.HTTPState != "redirect":
 		return nil, &data.FieldError{File: configFilename, Field: "httpState", Message: "无效的取值"}
+	case conf.HTTPS && conf.HTTPState != "disable" && conf.Port == httpPort:
+		return nil, &data.FieldError{File: configFilename, Field: "port", Message: "80 端口已经被被监听"}
 	case conf.HTTPS && !utils.FileExists(conf.CertFile):
 		return nil, &data.FieldError{File: configFilename, Field: "certFile", Message: "不能为空"}
 	case conf.HTTPS && !utils.FileExists(conf.KeyFile):
