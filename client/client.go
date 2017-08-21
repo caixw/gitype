@@ -28,7 +28,6 @@ type Client struct {
 	sitemap    []byte
 	opensearch []byte
 	patterns   []string // 记录所有的路由项，方便翻译时删除
-	tags       []*data.Tag
 
 	Created int64 // 当前数据的加载时间
 	Data    *data.Data
