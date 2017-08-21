@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package app
+package client
 
 import (
 	"io/ioutil"
@@ -41,8 +41,8 @@ func setContentType(w http.ResponseWriter, mime string) {
 
 // 用于描述一个页面的所有无素
 type page struct {
-	a    *app
-	Info *info
+	client *Client
+	Info   *info
 
 	Title       string     // 文章标题，可以为空
 	Subtitle    string     // 副标题
@@ -87,8 +87,8 @@ type info struct {
 	Menus       []*data.Link // 菜单
 }
 
-func (a *app) newInfo() *info {
-	conf := a.client.Data.Config
+func (client *Client) newInfo() *info {
+	conf := client.Data.Config
 
 	info := &info{
 		AppName:    vars.AppName,
@@ -96,20 +96,20 @@ func (a *app) newInfo() *info {
 		AppVersion: vars.Version(),
 		GoVersion:  runtime.Version(),
 
-		ThemeName:   a.client.Data.Theme.Name,
-		ThemeURL:    a.client.Data.Theme.URL,
-		ThemeAuthor: a.client.Data.Theme.Author,
+		ThemeName:   client.Data.Theme.Name,
+		ThemeURL:    client.Data.Theme.URL,
+		ThemeAuthor: client.Data.Theme.Author,
 
 		SiteName:    conf.Title,
 		URL:         conf.URL,
 		Icon:        conf.Icon,
 		Language:    conf.Language,
-		PostSize:    len(a.client.Data.Posts),
+		PostSize:    len(client.Data.Posts),
 		Beian:       conf.Beian,
 		Uptime:      conf.Uptime,
-		LastUpdated: a.client.Created,
-		Tags:        a.client.Data.Tags,
-		Links:       a.client.Data.Links,
+		LastUpdated: client.Created,
+		Tags:        client.Data.Tags,
+		Links:       client.Data.Links,
 		Menus:       conf.Menus,
 	}
 
@@ -128,12 +128,12 @@ func (a *app) newInfo() *info {
 	return info
 }
 
-func (a *app) page(typ string) *page {
-	conf := a.client.Data.Config
+func (client *Client) page(typ string) *page {
+	conf := client.Data.Config
 
 	return &page{
-		a:           a,
-		Info:        a.info,
+		client:      client,
+		Info:        client.info,
 		Subtitle:    conf.Subtitle,
 		Keywords:    conf.Keywords,
 		Description: conf.Description,
@@ -168,10 +168,10 @@ func (p *page) prevPage(url, text string) {
 // 输出当前内容到指定模板
 func (p *page) render(w http.ResponseWriter, name string, headers map[string]string) {
 	if len(headers) == 0 {
-		setContentType(w, p.a.client.Data.Config.Type)
+		setContentType(w, p.client.Data.Config.Type)
 	} else {
 		if _, exists := headers[contentTypeKey]; !exists {
-			headers[contentTypeKey] = buildContentTypeContent(p.a.client.Data.Config.Type)
+			headers[contentTypeKey] = buildContentTypeContent(p.client.Data.Config.Type)
 		}
 
 		for key, val := range headers {
@@ -179,10 +179,10 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 		}
 	}
 
-	err := p.a.client.Template.ExecuteTemplate(w, name, p)
+	err := p.client.Template.ExecuteTemplate(w, name, p)
 	if err != nil {
 		logs.Error(err)
-		p.a.renderError(w, http.StatusInternalServerError)
+		p.client.renderError(w, http.StatusInternalServerError)
 		return
 	}
 }
@@ -191,7 +191,7 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 // 若该页面模板不存在，则输出状态码对应的文本内容。
 // 只查找当前主题目录下的相关文件。
 // 只对状态码大于等于 400 的起作用。
-func (a *app) renderError(w http.ResponseWriter, code int) {
+func (client *Client) renderError(w http.ResponseWriter, code int) {
 	if code < 400 {
 		return
 	}
@@ -199,7 +199,7 @@ func (a *app) renderError(w http.ResponseWriter, code int) {
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	filename := strconv.Itoa(code) + ".html"
-	path := filepath.Join(a.path.ThemesDir, a.client.Data.Config.Theme, filename)
+	path := filepath.Join(client.path.ThemesDir, client.Data.Config.Theme, filename)
 	if !utils.FileExists(path) {
 		logs.Errorf("模板文件[%s]不存在\n", path)
 		statusError(w, code)
@@ -213,7 +213,7 @@ func (a *app) renderError(w http.ResponseWriter, code int) {
 		return
 	}
 
-	setContentType(w, a.client.Data.Config.Type)
+	setContentType(w, client.Data.Config.Type)
 	w.WriteHeader(code)
 	w.Write(data)
 }

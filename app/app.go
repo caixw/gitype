@@ -11,14 +11,12 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/caixw/typing/client"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
-	"github.com/issue9/mux/params"
 )
 
 const debugPprof = "/debug/pprof/"
@@ -33,8 +31,6 @@ type app struct {
 
 	// 以下内容可动态加载
 	client *client.Client
-	info   *info
-	etag   string
 }
 
 // 标准的错误状态码输出函数，略作封装。
@@ -68,11 +64,6 @@ func Run(path *vars.Path) error {
 	// 加载数据
 	if err = a.reload(); err != nil {
 		logs.Error(err)
-	}
-
-	// 路由由代码定义，不会更改，所以不需要在 a.reload() 中重新加载。
-	if err = a.initRoutes(); err != nil {
-		return err
 	}
 
 	h := a.buildHeader(a.buildPprof(a.mux))
@@ -152,114 +143,13 @@ func serveHTTP(a *app) {
 // 重新加载数据
 func (a *app) reload() error {
 	// 生成新的数据
-	buf, err := client.New(a.path)
+	c, err := client.New(a.path, a.mux)
 	if err != nil {
 		return err
 	}
 
-	// 移除旧的 feed 路由
-	if a.client != nil {
-		a.removeFeeds()
-	}
-
 	// 只有生成成功了，才替换老数据
-	a.client = buf
-
-	a.info = a.newInfo()
-	a.etag = strconv.FormatInt(a.client.Created, 10)
-
-	// 重新生成 feed 路由
-	a.initFeeds()
+	a.client = c
 
 	return nil
-}
-
-func (a *app) initFeeds() {
-	conf := a.client.Data.Config
-
-	if conf.RSS != nil {
-		a.mux.GetFunc(conf.RSS.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, conf.RSS.Type)
-			w.Write(a.client.RSS)
-		}))
-	}
-
-	if conf.Atom != nil {
-		a.mux.GetFunc(conf.Atom.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, conf.Atom.Type)
-			w.Write(a.client.Atom)
-		}))
-	}
-
-	if conf.Sitemap != nil {
-		a.mux.GetFunc(conf.Sitemap.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, conf.Sitemap.Type)
-			w.Write(a.client.Sitemap)
-		}))
-	}
-
-	if conf.Opensearch != nil {
-		a.mux.GetFunc(conf.Opensearch.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, conf.Opensearch.Type)
-			w.Write(a.client.Opensearch)
-		}))
-	}
-}
-
-func (a *app) removeFeeds() {
-	conf := a.client.Data.Config
-
-	if conf.RSS != nil {
-		a.mux.Remove(conf.RSS.URL)
-	}
-
-	if conf.Atom != nil {
-		a.mux.Remove(conf.Atom.URL)
-	}
-
-	if conf.Sitemap != nil {
-		a.mux.Remove(conf.Sitemap.URL)
-	}
-
-	if conf.Opensearch != nil {
-		a.mux.Remove(conf.Opensearch.URL)
-	}
-}
-
-// 获取路径匹配中的参数，并以字符串的格式返回。
-// 若不能找到该参数，返回 false
-func (a *app) paramString(w http.ResponseWriter, r *http.Request, key string) (string, bool) {
-	ps := mux.Params(r)
-	val, err := ps.String(key)
-
-	if err == params.ErrParamNotExists {
-		a.renderError(w, http.StatusNotFound)
-		return "", false
-	} else if err != nil {
-		logs.Error(err)
-		a.renderError(w, http.StatusNotFound)
-		return "", false
-	} else if len(val) == 0 {
-		a.renderError(w, http.StatusNotFound)
-		return "", false
-	}
-
-	return val, true
-}
-
-// 获取查询参数 key 的值，并将其转换成 Int 类型，若该值不存在返回 def 作为其默认值，
-// 若是类型不正确，则返回一个 false，并向客户端输出一个 400 错误。
-func (a *app) queryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int, bool) {
-	val := r.FormValue(key)
-	if len(val) == 0 {
-		return def, true
-	}
-
-	ret, err := strconv.Atoi(val)
-	if err != nil {
-		logs.Error(err)
-		a.renderError(w, http.StatusBadRequest)
-		return 0, false
-	}
-	return ret, true
 }

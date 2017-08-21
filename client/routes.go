@@ -2,19 +2,22 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package app
+package client
 
 import (
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/middleware/compress"
+	"github.com/issue9/mux"
+	"github.com/issue9/mux/params"
 	"github.com/issue9/utils"
 )
 
@@ -39,7 +42,7 @@ func isIgnoreThemeFile(file string) bool {
 	return false
 }
 
-func (a *app) initRoutes() error {
+func (a *Client) initRoutes() error {
 	var err error
 	handle := func(pattern string, h http.HandlerFunc) {
 		if err != nil {
@@ -60,16 +63,68 @@ func (a *app) initRoutes() error {
 	return err
 }
 
+func (a *Client) initFeeds() {
+	conf := a.Data.Config
+
+	if conf.RSS != nil {
+		a.mux.GetFunc(conf.RSS.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
+			setContentType(w, conf.RSS.Type)
+			w.Write(a.RSS)
+		}))
+	}
+
+	if conf.Atom != nil {
+		a.mux.GetFunc(conf.Atom.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
+			setContentType(w, conf.Atom.Type)
+			w.Write(a.Atom)
+		}))
+	}
+
+	if conf.Sitemap != nil {
+		a.mux.GetFunc(conf.Sitemap.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
+			setContentType(w, conf.Sitemap.Type)
+			w.Write(a.Sitemap)
+		}))
+	}
+
+	if conf.Opensearch != nil {
+		a.mux.GetFunc(conf.Opensearch.URL, a.prepare(func(w http.ResponseWriter, r *http.Request) {
+			setContentType(w, conf.Opensearch.Type)
+			w.Write(a.Opensearch)
+		}))
+	}
+}
+
+func (a *Client) removeFeeds() {
+	conf := a.Data.Config
+
+	if conf.RSS != nil {
+		a.mux.Remove(conf.RSS.URL)
+	}
+
+	if conf.Atom != nil {
+		a.mux.Remove(conf.Atom.URL)
+	}
+
+	if conf.Sitemap != nil {
+		a.mux.Remove(conf.Sitemap.URL)
+	}
+
+	if conf.Opensearch != nil {
+		a.mux.Remove(conf.Opensearch.URL)
+	}
+}
+
 // 文章详细页
 // /posts/{slug}.html
-func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
+func (a *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	id, found := a.paramString(w, r, "slug")
 	if !found {
 		return
 	}
 
 	var index int
-	for i, p := range a.client.Data.Posts {
+	for i, p := range a.Data.Posts {
 		if p.Slug == id {
 			index = i
 			break
@@ -82,7 +137,7 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post := a.client.Data.Posts[index]
+	post := a.Data.Posts[index]
 
 	p := a.page(typePost)
 	p.Post = post
@@ -92,11 +147,11 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Canonical = post.Permalink
 
 	if index > 0 {
-		prev := a.client.Data.Posts[index-1]
+		prev := a.Data.Posts[index-1]
 		p.prevPage(prev.Permalink, prev.Title)
 	}
-	if index+1 < len(a.client.Data.Posts) {
-		next := a.client.Data.Posts[index+1]
+	if index+1 < len(a.Data.Posts) {
+		next := a.Data.Posts[index+1]
 		p.nextPage(next.Permalink, next.Title)
 	}
 
@@ -106,7 +161,7 @@ func (a *app) getPost(w http.ResponseWriter, r *http.Request) {
 // 首页及文章列表页
 // /
 // /posts.html?page=2
-func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
+func (a *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	page, ok := a.queryInt(w, r, "page", 1)
 	if !ok {
 		return
@@ -125,15 +180,15 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Canonical = vars.PostsURL(page)
 
-	start, end, ok := a.getPostsRange(len(a.client.Data.Posts), page, w)
+	start, end, ok := a.getPostsRange(len(a.Data.Posts), page, w)
 	if !ok {
 		return
 	}
-	p.Posts = a.client.Data.Posts[start:end]
+	p.Posts = a.Data.Posts[start:end]
 	if page > 1 {
 		p.prevPage(vars.PostsURL(page-1), "")
 	}
-	if end < len(a.client.Data.Posts) {
+	if end < len(a.Data.Posts) {
 		p.nextPage(vars.PostsURL(page+1), "")
 	}
 
@@ -142,14 +197,14 @@ func (a *app) getPosts(w http.ResponseWriter, r *http.Request) {
 
 // 标签详细页
 // /tags/tag1.html?page=2
-func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
+func (a *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	slug, ok := a.paramString(w, r, "slug")
 	if !ok {
 		return
 	}
 
 	var tag *data.Tag
-	for _, t := range a.client.Data.Tags {
+	for _, t := range a.Data.Tags {
 		if t.Slug == slug {
 			tag = t
 			break
@@ -196,7 +251,7 @@ func (a *app) getTag(w http.ResponseWriter, r *http.Request) {
 
 // 友情链接页
 // /links.html
-func (a *app) getLinks(w http.ResponseWriter, r *http.Request) {
+func (a *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 	p := a.page(typeLinks)
 	p.Title = "友情链接"
 	p.Canonical = vars.LinksURL()
@@ -206,7 +261,7 @@ func (a *app) getLinks(w http.ResponseWriter, r *http.Request) {
 
 // 标签列表页
 // /tags.html
-func (a *app) getTags(w http.ResponseWriter, r *http.Request) {
+func (a *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	p := a.page(typeTags)
 	p.Title = "标签"
 	p.Canonical = vars.TagsURL()
@@ -216,7 +271,7 @@ func (a *app) getTags(w http.ResponseWriter, r *http.Request) {
 
 // 主题文件
 // /themes/...
-func (a *app) getThemes(w http.ResponseWriter, r *http.Request) {
+func (a *Client) getThemes(w http.ResponseWriter, r *http.Request) {
 	if isIgnoreThemeFile(r.URL.Path) { // 不展示模板文件
 		a.renderError(w, http.StatusNotFound)
 		return
@@ -253,7 +308,7 @@ func (a *app) getThemes(w http.ResponseWriter, r *http.Request) {
 }
 
 // /search.html?q=key&page=2
-func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
+func (a *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p := a.page(typeSearch)
 
 	q := r.FormValue("q")
@@ -273,9 +328,9 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 查找标题和内容
-	posts := make([]*data.Post, 0, len(a.client.Data.Posts))
+	posts := make([]*data.Post, 0, len(a.Data.Posts))
 	key := strings.ToLower(q)
-	for _, v := range a.client.Data.Posts {
+	for _, v := range a.Data.Posts {
 		if strings.Contains(v.Title, key) || strings.Contains(v.Content, key) {
 			posts = append(posts, v)
 		}
@@ -302,7 +357,7 @@ func (a *app) getSearch(w http.ResponseWriter, r *http.Request) {
 
 // 读取根下的文件
 // /...
-func (a *app) getRaws(w http.ResponseWriter, r *http.Request) {
+func (a *Client) getRaws(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
 		a.getPosts(w, r)
 		return
@@ -319,8 +374,8 @@ func (a *app) getRaws(w http.ResponseWriter, r *http.Request) {
 }
 
 // 确认当前文章列表页选择范围。
-func (a *app) getPostsRange(postsSize, page int, w http.ResponseWriter) (start, end int, ok bool) {
-	size := a.client.Data.Config.PageSize
+func (a *Client) getPostsRange(postsSize, page int, w http.ResponseWriter) (start, end int, ok bool) {
+	size := a.Data.Config.PageSize
 	start = size * (page - 1) // 系统从零开始计数
 	if start > postsSize {
 		logs.Debugf("请求页码为[%d]，实际文章数量为[%d]\n", page, postsSize)
@@ -337,7 +392,7 @@ func (a *app) getPostsRange(postsSize, page int, w http.ResponseWriter) (start, 
 }
 
 // 每次访问前需要做的预处理工作。
-func (a *app) prepare(f http.HandlerFunc) http.HandlerFunc {
+func (a *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		logs.Infof("%s: %s", r.UserAgent(), r.URL) // 输出访问日志
 
@@ -348,7 +403,45 @@ func (a *app) prepare(f http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Etag", a.etag)
-		w.Header().Set("Content-Language", a.client.Data.Config.Language)
+		w.Header().Set("Content-Language", a.Data.Config.Language)
 		compress.New(f, logs.ERROR()).ServeHTTP(w, r)
 	}
+}
+
+// 获取路径匹配中的参数，并以字符串的格式返回。
+// 若不能找到该参数，返回 false
+func (a *Client) paramString(w http.ResponseWriter, r *http.Request, key string) (string, bool) {
+	ps := mux.Params(r)
+	val, err := ps.String(key)
+
+	if err == params.ErrParamNotExists {
+		a.renderError(w, http.StatusNotFound)
+		return "", false
+	} else if err != nil {
+		logs.Error(err)
+		a.renderError(w, http.StatusNotFound)
+		return "", false
+	} else if len(val) == 0 {
+		a.renderError(w, http.StatusNotFound)
+		return "", false
+	}
+
+	return val, true
+}
+
+// 获取查询参数 key 的值，并将其转换成 Int 类型，若该值不存在返回 def 作为其默认值，
+// 若是类型不正确，则返回一个 false，并向客户端输出一个 400 错误。
+func (a *Client) queryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int, bool) {
+	val := r.FormValue(key)
+	if len(val) == 0 {
+		return def, true
+	}
+
+	ret, err := strconv.Atoi(val)
+	if err != nil {
+		logs.Error(err)
+		a.renderError(w, http.StatusBadRequest)
+		return 0, false
+	}
+	return ret, true
 }
