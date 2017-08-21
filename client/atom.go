@@ -46,7 +46,7 @@ func (buf *Client) buildAtom() error {
 	if err != nil {
 		return err
 	}
-	buf.Atom = bs
+	buf.atom = bs
 	return nil
 }
 

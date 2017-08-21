@@ -19,21 +19,21 @@ import (
 // Client 所有数据的缓存，每次更新数据时，
 // 直接声明一个新的 Client 实例，丢弃原来的 Client 即可。
 type Client struct {
-	path *vars.Path
-	info *info
-	mux  *mux.Mux
-	etag string
+	path       *vars.Path
+	info       *info
+	mux        *mux.Mux
+	etag       string
+	template   *template.Template // 主题编译后的模板
+	rss        []byte
+	atom       []byte
+	sitemap    []byte
+	opensearch []byte
 
-	Created    int64 // 当前数据的加载时间
-	Data       *data.Data
-	Template   *template.Template // 主题编译后的模板
-	RSS        []byte
-	Atom       []byte
-	Sitemap    []byte
-	Opensearch []byte
+	Created int64 // 当前数据的加载时间
+	Data    *data.Data
 }
 
-// New 声明一个新的 Buffer 实例
+// New 声明一个新的 Client 实例
 func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 	d, err := data.Load(path)
 	if err != nil {

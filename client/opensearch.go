@@ -48,6 +48,6 @@ func (buf *Client) buildOpensearch() error {
 	if err != nil {
 		return err
 	}
-	buf.Opensearch = bs
+	buf.opensearch = bs
 	return nil
 }

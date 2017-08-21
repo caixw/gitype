@@ -42,7 +42,7 @@ func (buf *Client) buildSitemap() error {
 	if err != nil {
 		return err
 	}
-	buf.Sitemap = bs
+	buf.sitemap = bs
 	return nil
 }
 

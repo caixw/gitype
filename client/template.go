@@ -30,7 +30,7 @@ func (b *Client) compileTemplate() error {
 	if err != nil {
 		return err
 	}
-	b.Template = tpl
+	b.template = tpl
 
 	return nil
 }

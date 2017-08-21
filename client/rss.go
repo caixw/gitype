@@ -43,7 +43,7 @@ func (buf *Client) buildRSS() error {
 	if err != nil {
 		return err
 	}
-	buf.RSS = bs
+	buf.rss = bs
 	return nil
 }
 
