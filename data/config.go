@@ -93,6 +93,10 @@ func (conf *Config) sanitize() *FieldError {
 	}
 	conf.Uptime = t
 
+	if len(conf.Type) == 0 {
+		conf.Type = vars.ContentTypeHTML
+	}
+
 	// Author
 	if conf.Author == nil {
 		return &FieldError{File: confFilename, Message: "必须指定作者", Field: "Author"}
