@@ -9,7 +9,7 @@ import "time"
 
 const (
 	// 主版本号，符合 semver 规范
-	mainVersion = "0.7.18"
+	mainVersion = "0.7.19"
 
 	// AppName 程序名称
 	AppName = "typing"

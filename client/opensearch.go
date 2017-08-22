@@ -54,7 +54,7 @@ func (client *Client) buildOpensearch() error {
 	}
 
 	w.writeCloseElement("Url", map[string]string{
-		"type":     "text/html",
+		"type":     client.data.Config.Type,
 		"template": vars.SearchURL("{searchTerms}", 0),
 	})
 

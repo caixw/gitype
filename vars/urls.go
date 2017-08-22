@@ -77,7 +77,7 @@ func SearchURL(q string, page int) string {
 
 	if page > 1 {
 		if len(q) > 0 {
-			url += "&"
+			url += "&amp;"
 		} else {
 			url += "?"
 		}
