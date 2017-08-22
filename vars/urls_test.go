@@ -40,7 +40,7 @@ func TestSearchURL(t *testing.T) {
 
 	a.Equal(SearchURL("q", 0), "/search.html?q=q")
 	a.Equal(SearchURL("q", 1), "/search.html?q=q")
-	a.Equal(SearchURL("q", 2), "/search.html?q=q&page=2")
+	a.Equal(SearchURL("q", 2), "/search.html?q=q&amp;page=2")
 }
 
 func TestThemesURL(t *testing.T) {
