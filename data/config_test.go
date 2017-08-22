@@ -39,14 +39,14 @@ func TestCheckSitemap(t *testing.T) {
 	s.URL = "url"
 	a.Error(checkSitemap(s))
 
-	s.TagPriority = -1.0
+	s.Priority = -1.0
 	a.Error(checkSitemap(s))
-	s.TagPriority = 1.1
+	s.Priority = 1.1
 	a.Error(checkSitemap(s))
 
-	s.TagPriority = .8
+	s.Priority = .8
 	s.PostPriority = 0.9
-	s.TagChangefreq = "never"
+	s.Changefreq = "never"
 	s.PostChangefreq = "never"
 	a.NotError(checkSitemap(s))
 }
