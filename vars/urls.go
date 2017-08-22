@@ -11,14 +11,15 @@ import (
 
 // 与 URL 相关的一些定义，方便做一些自定义操作
 const (
-	index  = "/index"  // 列表页地址
-	post   = "/posts"  // 文章详细页地址
-	tags   = "/tags"   // 标签列表页地址
-	tag    = "/tags"   // 标签详细页地址
-	links  = "/links"  // 友情链接
-	search = "/search" // 搜索 URL，会加上 Suffix 作为后缀
-	themes = "/themes" // 主题地址
-	suffix = ".html"   // 地址后缀
+	index    = "/index"    // 列表页地址
+	post     = "/posts"    // 文章详细页地址
+	tags     = "/tags"     // 标签列表页地址
+	tag      = "/tags"     // 标签详细页地址
+	links    = "/links"    // 友情链接
+	archives = "/archives" // 归档
+	search   = "/search"   // 搜索 URL，会加上 Suffix 作为后缀
+	themes   = "/themes"   // 主题地址
+	suffix   = ".html"     // 地址后缀
 )
 
 // LinksURL 生成友情链接的 URL
@@ -66,6 +67,11 @@ func TagURL(slug string, page int) string {
 // TagsURL 生成标签列表的 URL
 func TagsURL() string {
 	return tags + suffix
+}
+
+// ArchivesURL 生成归档页面的 URL
+func ArchivesURL() string {
+	return archives + suffix
 }
 
 // SearchURL 构建搜索页面的 URL

@@ -49,6 +49,10 @@ func (client *Client) buildSitemap() error {
 
 	addPostsToSitemap(w, client)
 
+	// archives.html
+	loc := client.data.Config.URL + vars.ArchivesURL()
+	addItemToSitemap(w, loc, conf.Sitemap.TagChangefreq, client.Created, conf.Sitemap.TagPriority)
+
 	if conf.Sitemap.EnableTag {
 		addTagsToSitemap(w, client)
 	}
@@ -64,22 +68,22 @@ func (client *Client) buildSitemap() error {
 	return nil
 }
 
-func addPostsToSitemap(w *xmlWriter, buf *Client) {
-	sitemap := buf.data.Config.Sitemap
-	for _, p := range buf.data.Posts {
-		loc := buf.data.Config.URL + p.Permalink
+func addPostsToSitemap(w *xmlWriter, client *Client) {
+	sitemap := client.data.Config.Sitemap
+	for _, p := range client.data.Posts {
+		loc := client.data.Config.URL + p.Permalink
 		addItemToSitemap(w, loc, sitemap.PostChangefreq, p.Modified, sitemap.PostPriority)
 	}
 }
 
-func addTagsToSitemap(w *xmlWriter, buf *Client) error {
-	sitemap := buf.data.Config.Sitemap
+func addTagsToSitemap(w *xmlWriter, client *Client) error {
+	sitemap := client.data.Config.Sitemap
 
-	loc := buf.data.Config.URL + vars.TagsURL()
-	addItemToSitemap(w, loc, sitemap.TagChangefreq, buf.Created, sitemap.TagPriority)
+	loc := client.data.Config.URL + vars.TagsURL()
+	addItemToSitemap(w, loc, sitemap.TagChangefreq, client.Created, sitemap.TagPriority)
 
-	for _, tag := range buf.data.Tags {
-		loc = buf.data.Config.URL + tag.Permalink
+	for _, tag := range client.data.Tags {
+		loc = client.data.Config.URL + tag.Permalink
 		addItemToSitemap(w, loc, sitemap.TagChangefreq, tag.Modified, sitemap.TagPriority)
 	}
 	return nil

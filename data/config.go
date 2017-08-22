@@ -14,32 +14,44 @@ import (
 
 const confFilename = "config.yaml"
 
+// 归档的类型
+const (
+	ArchiveTypeYear  = "year"
+	ArchiveTypeMonth = "month"
+)
+
 // Config 一些基本配置项。
 type Config struct {
-	Title           string `yaml:"title"`                 // 网站标题
-	Language        string `yaml:"language"`              // 语言标记，比如 zh-cmn-Hans
-	Icon            *Icon  `yaml:"icon,omitempty"`        // 程序默认的图标
-	Subtitle        string `yaml:"subtitle,omitempty"`    // 网站副标题
-	URL             string `yaml:"url"`                   // 网站的地址，不包含最后的斜杠，仅在生成地址时使用
-	Keywords        string `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
-	Description     string `yaml:"description,omitempty"` // 默认情况下的 descrription 内容
-	Beian           string `yaml:"beian,omitempty"`       // 备案号
-	Uptime          int64  `yaml:"-"`                     // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
-	UptimeFormat    string `yaml:"uptime"`                // 上线时间，字符串表示
-	PageSize        int    `yaml:"pageSize"`              // 每页显示的数量
-	LongDateFormat  string `yaml:"longDateFormat"`        // 长时间的显示格式
-	ShortDateFormat string `yaml:"shortDateFormat"`       // 短时间的显示格式
-	Theme           string `yaml:"theme"`                 // 默认主题
-	Type            string `yaml:"type,omitempty"`        // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
-
-	Author *Author `yaml:"author"`          // 默认的作者信息
-	Menus  []*Link `yaml:"menus,omitempty"` // 导航菜单
+	Title           string   `yaml:"title"`                 // 网站标题
+	Language        string   `yaml:"language"`              // 语言标记，比如 zh-cmn-Hans
+	Subtitle        string   `yaml:"subtitle,omitempty"`    // 网站副标题
+	URL             string   `yaml:"url"`                   // 网站的地址，不包含最后的斜杠，仅在生成地址时使用
+	Keywords        string   `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
+	Description     string   `yaml:"description,omitempty"` // 默认情况下的 descrription 内容
+	Beian           string   `yaml:"beian,omitempty"`       // 备案号
+	Uptime          int64    `yaml:"-"`                     // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	UptimeFormat    string   `yaml:"uptime"`                // 上线时间，字符串表示
+	PageSize        int      `yaml:"pageSize"`              // 每页显示的数量
+	LongDateFormat  string   `yaml:"longDateFormat"`        // 长时间的显示格式
+	ShortDateFormat string   `yaml:"shortDateFormat"`       // 短时间的显示格式
+	Theme           string   `yaml:"theme"`                 // 默认主题
+	Type            string   `yaml:"type,omitempty"`        // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
+	Icon            *Icon    `yaml:"icon,omitempty"`        // 程序默认的图标
+	Author          *Author  `yaml:"author"`                // 默认的作者信息
+	Menus           []*Link  `yaml:"menus,omitempty"`       // 导航菜单
+	Archive         *Archive `yaml:"archive,omitempty"`     // 归档页的配置内容
 
 	// feeds
 	RSS        *RSS        `yaml:"rss,omitempty"`
 	Atom       *RSS        `yaml:"atom,omitempty"`
 	Sitemap    *Sitemap    `yaml:"sitemap,omitempty"`
 	Opensearch *Opensearch `yaml:"opensearch,omitempty"`
+}
+
+// Archive 存档页的配置内容
+type Archive struct {
+	Type   string `yaml:"type"`   // 存档的分类方式，可以为 year 或是 month
+	Format string `yaml:"format"` // 标题的格式化字符串
 }
 
 // Opensearch 相关定义
@@ -67,7 +79,7 @@ type Sitemap struct {
 	URL            string  `yaml:"url"`              // 展示给用户的地址，不能包含域名
 	XslURL         string  `yaml:"xslURL,omitempty"` // 为 sitemap 指定一个 xsl 文件
 	EnableTag      bool    `yaml:"enableTag,omitempty"`
-	TagPriority    float64 `yaml:"tagPriority"`
+	TagPriority    float64 `yaml:"tagPriority"` // 非文章类，都使用此值
 	PostPriority   float64 `yaml:"postPriority"`
 	TagChangefreq  string  `yaml:"tagChangefreq"`
 	PostChangefreq string  `yaml:"postChangefreq"`
@@ -97,6 +109,15 @@ func (conf *Config) sanitize() *FieldError {
 		conf.Type = vars.ContentTypeHTML
 	}
 
+	// icon
+	if conf.Icon != nil {
+		if err := conf.Icon.sanitize(); err != nil {
+			err.File = confFilename
+			err.Field = "Icon." + err.Field
+			return err
+		}
+	}
+
 	// Author
 	if conf.Author == nil {
 		return &FieldError{File: confFilename, Message: "必须指定作者", Field: "Author"}
@@ -119,6 +140,14 @@ func (conf *Config) sanitize() *FieldError {
 	// theme
 	if len(conf.Theme) == 0 {
 		return &FieldError{File: confFilename, Message: "不能为空", Field: "Theme"}
+	}
+
+	// archive
+	if conf.Archive == nil {
+		return &FieldError{File: confFilename, Message: "不能为空", Field: "archive"}
+	}
+	if conf.Archive.Type != ArchiveTypeMonth && conf.Archive.Type != ArchiveTypeYear {
+		return &FieldError{File: confFilename, Message: "取值不正确", Field: "archive.type"}
 	}
 
 	// rss

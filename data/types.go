@@ -60,6 +60,14 @@ func (err *FieldError) Error() string {
 	return fmt.Sprintf("在文件 %s 中的 %s 字段发生错误：%s", err.File, err.Field, err.Message)
 }
 
+func (icon *Icon) sanitize() *FieldError {
+	if len(icon.URL) == 0 {
+		return &FieldError{Field: "url", Message: "不能为空"}
+	}
+
+	return nil
+}
+
 func (link *Link) sanitize() *FieldError {
 	if len(link.Text) == 0 {
 		return &FieldError{Field: "text", Message: "不能为空"}

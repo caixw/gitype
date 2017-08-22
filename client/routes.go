@@ -58,6 +58,7 @@ func (client *Client) initRoutes() error {
 	handle(vars.LinksURL(), client.getLinks)           // links.html
 	handle(vars.TagURL("{slug}", 1), client.getTag)    // tags/tag1.html     tags/{slug}.html
 	handle(vars.TagsURL(), client.getTags)             // tags.html
+	handle(vars.ArchivesURL(), client.getArchives)     // archives.html
 	handle(vars.SearchURL("", 1), client.getSearch)    // search.html
 	handle(vars.ThemesURL("{path}"), client.getThemes) // themes/...          themes/{path}
 	handle("/{path}", client.getRaws)                  // /...                /{path}
@@ -217,6 +218,17 @@ func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	p.Canonical = vars.TagsURL()
 
 	p.render(w, "tags", nil)
+}
+
+// 归档页
+// /archives.html
+func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
+	p := client.page(typeArchives)
+	p.Title = "归档"
+	p.Canonical = vars.ArchivesURL()
+	p.Archives = client.archives
+
+	p.render(w, "archives", nil)
 }
 
 // 主题文件

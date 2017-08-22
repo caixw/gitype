@@ -18,17 +18,20 @@ import (
 
 // Client 处理用户请求
 type Client struct {
-	path       *vars.Path
-	data       *data.Data
+	path     *vars.Path
+	data     *data.Data
+	mux      *mux.Mux
+	patterns []string // 记录所有的路由项，方便释放时删除
+	etag     string
+
+	// 由 data 延伸出的数据
 	info       *info
-	mux        *mux.Mux
-	etag       string
 	template   *template.Template // 主题编译后的模板
 	rss        []byte
 	atom       []byte
 	sitemap    []byte
 	opensearch []byte
-	patterns   []string // 记录所有的路由项，方便释放时删除
+	archives   []*archive
 
 	Created int64 // 当前数据的加载时间
 }
@@ -58,6 +61,7 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 
 	// 依赖 data.Data 数据的相关操作
 	errFilter(client.compileTemplate)
+	errFilter(client.initArchives)
 	errFilter(client.initRSS)
 	errFilter(client.initAtom)
 	errFilter(client.initSitemap)

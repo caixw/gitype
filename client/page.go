@@ -19,13 +19,14 @@ import (
 
 // 定义页面的类型
 const (
-	typeIndex  = "index"
-	typePosts  = "posts"
-	typePost   = "post"
-	typeTags   = "tags"
-	typeTag    = "tag"
-	typeSearch = "search"
-	typeLinks  = "links"
+	typeIndex    = "index"
+	typePosts    = "posts"
+	typePost     = "post"
+	typeTags     = "tags"
+	typeTag      = "tag"
+	typeArchives = "archives"
+	typeLinks    = "links"
+	typeSearch   = "search"
 )
 
 const contentTypeKey = "Content-Type"
@@ -55,9 +56,10 @@ type page struct {
 	Type        string     // 当前页面类型
 
 	// 以下内容，仅在对应的页面才会有内容
-	Tag   *data.Tag    // 标签详细页面，非标签详细页，则为空
-	Posts []*data.Post // 文章列表，仅标签详情页和搜索页用到。
-	Post  *data.Post   // 文章详细内容，仅文章页面用到。
+	Tag      *data.Tag    // 标签详细页面，非标签详细页，则为空
+	Posts    []*data.Post // 文章列表，仅标签详情页和搜索页用到。
+	Post     *data.Post   // 文章详细内容，仅文章页面用到。
+	Archives []*archive   // 归档
 }
 
 // 页面的附加信息，除非重新加载数据，否则内容不会变。
