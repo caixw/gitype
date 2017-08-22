@@ -98,7 +98,6 @@ config.yaml 指定了网站的一些基本配置情况：
 title           | string      | 网站标题
 subtitle        | string      | 网站副标题
 url             | string      | 网站的地址
-icon            | Icon        | 网站的图标
 keywords        | string      | 默认情况下的 keyword 内容
 description     | string      | 默认情况下的 descrription 内容
 beian           | string      | 备案号
@@ -108,8 +107,10 @@ longDateFormat  | string      | 长时间的显示格式，Go 的时间格式化
 shortDateFormat | string      | 短时间的显示格式，Go 的时间格式化方式
 theme           | string      | 默认主题
 type            | string      | 所有 html 页面的 mime type，默认使用 vars.ContentTypeHTML
+icon            | Icon        | 网站的图标
 menus           | []Link      | 菜单内容，格式与 links.yaml 的相同
 author          | Author      | 默认的作者信息
+archive         | Archive     | 存档页的相关配置
 rss             | RSS         | rss 配置，若不需要，则不指定该值即可
 atom            | RSS         | atom 配置，若不需要，则不指定该值即可
 sitemap         | Sitemap     | sitemap 相关配置，若不需要，则不指定该值即可
@@ -124,6 +125,13 @@ url       | string      | 网站地址
 email     | string      | 邮箱
 avatar    | string      | 头像
 
+
+###### Archive
+
+名称      | 类型        | 描述
+:---------|:------------|:----------
+type      | string      | 存档的分类方式，可以是按年：year 或是按月：month
+format    | string      | 标题的格式
 
 ###### RSS
 
@@ -142,9 +150,9 @@ type      | string      | 当前文件的 mimetype 若不指定，会使用 vars
 url            | string      | Sitemap 的地址
 xslURL         | string      | 为 sitemap.xml 配置的 xsl，可以为空
 enableTag      | bool        | 是否把标签放到 Sitemap 中
-tagPriority    | float64     | 标签页的权重
+priority       | float64     | 标签页的权重
+changefreq     | string      | 标签页的修改频率
 postPriority   | float64     | 文章页的权重
-tagChangefreq  | string      | 标签页的修改频率
 postChangefreq | string      | 文章页的修改频率
 type           | string      | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
 

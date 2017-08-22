@@ -76,14 +76,16 @@ type RSS struct {
 
 // Sitemap 表示 sitemap 的相关配置项
 type Sitemap struct {
-	URL            string  `yaml:"url"`              // 展示给用户的地址，不能包含域名
-	XslURL         string  `yaml:"xslURL,omitempty"` // 为 sitemap 指定一个 xsl 文件
-	EnableTag      bool    `yaml:"enableTag,omitempty"`
-	TagPriority    float64 `yaml:"tagPriority"` // 非文章类，都使用此值
+	URL        string  `yaml:"url"`                 // 展示给用户的地址，不能包含域名
+	XslURL     string  `yaml:"xslURL,omitempty"`    // 为 sitemap 指定一个 xsl 文件
+	Priority   float64 `yaml:"priority"`            // 默认的优先级
+	Changefreq string  `yaml:"changefreq"`          // 默认的更新频率
+	Type       string  `yaml:"type,omitempty"`      // mimeType
+	EnableTag  bool    `yaml:"enableTag,omitempty"` // 是否将标签相关的页面写入 sitemap
+
+	// 文章可以指定一个专门的值
 	PostPriority   float64 `yaml:"postPriority"`
-	TagChangefreq  string  `yaml:"tagChangefreq"`
 	PostChangefreq string  `yaml:"postChangefreq"`
-	Type           string  `yaml:"type,omitempty"` // mimeType
 }
 
 func (conf *Config) sanitize() *FieldError {
@@ -225,12 +227,12 @@ func checkSitemap(s *Sitemap) *FieldError {
 		switch {
 		case len(s.URL) == 0:
 			return &FieldError{File: confFilename, Message: "不能为空", Field: "Sitemap.URL"}
-		case s.TagPriority > 1 || s.TagPriority < 0:
-			return &FieldError{File: confFilename, Message: "介于[0,1]之间的浮点数", Field: "Sitemap.TagPriority"}
+		case s.Priority > 1 || s.Priority < 0:
+			return &FieldError{File: confFilename, Message: "介于[0,1]之间的浮点数", Field: "Sitemap.priority"}
 		case s.PostPriority > 1 || s.PostPriority < 0:
 			return &FieldError{File: confFilename, Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
-		case !isChangereq(s.TagChangefreq):
-			return &FieldError{File: confFilename, Message: "取值不正确", Field: "Sitemap.TagChangefreq"}
+		case !isChangereq(s.Changefreq):
+			return &FieldError{File: confFilename, Message: "取值不正确", Field: "Sitemap.changefreq"}
 		case !isChangereq(s.PostChangefreq):
 			return &FieldError{File: confFilename, Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
 		}

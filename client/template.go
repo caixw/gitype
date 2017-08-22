@@ -5,17 +5,48 @@
 package client
 
 import (
+	"fmt"
 	"html/template"
 	"path/filepath"
 	"regexp"
 	"time"
 
-	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
 )
 
 // 模板文件的扩展名
 const templateExtension = ".html"
+
+// 肯定存在的模板类型，检测模板是否存在时，会用到。
+// 该值会被 checkTemplates 改变，不能用于其它地方。
+var templates = []string{
+	"posts",
+	"post",
+	"tags",
+	"tag",
+	"links",
+	"archives",
+	"search",
+}
+
+// 模板的扩展名，在主题目录下，以下扩展名的文件，不会被展示
+var ignoreThemeFileExts = []string{
+	templateExtension,
+	".yaml",
+	".yml",
+}
+
+func isIgnoreThemeFile(file string) bool {
+	ext := filepath.Ext(file)
+
+	for _, v := range ignoreThemeFileExts {
+		if ext == v {
+			return true
+		}
+	}
+
+	return false
+}
 
 // 编译主题的模板。
 func (client *Client) compileTemplate() error {
@@ -36,21 +67,26 @@ func (client *Client) compileTemplate() error {
 	}
 	client.template = tpl
 
-	return client.checkPostTemplate()
+	return client.checkTemplatesExists()
 }
 
-// 检测文章中的模板名称是否在模板中真实存在
-func (client *Client) checkPostTemplate() error {
+// 检测模板名称是否在模板中真实存在
+func (client *Client) checkTemplatesExists() error {
 	for _, post := range client.data.Posts {
-		if nil != client.template.Lookup(post.Template) {
+		for _, tpl := range templates {
+			if tpl != post.Template {
+				templates = append(templates, post.Template)
+			}
+		}
+	}
+
+	// 模板定义未必是按文件分的，所以不能简单地判断文件是否存在
+	for _, tpl := range templates {
+		if nil != client.template.Lookup(tpl) {
 			continue
 		}
 
-		return &data.FieldError{
-			Message: "不存在",
-			Field:   "template",
-			File:    post.Slug,
-		}
+		return fmt.Errorf("模板 %s 未定义", tpl)
 	}
 
 	return nil
