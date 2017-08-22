@@ -21,27 +21,6 @@ import (
 	"github.com/issue9/utils"
 )
 
-// 模板的扩展名，在主题目录下，所有该扩展名的文件，不会被展示
-var (
-	ignoreThemeFileExts = []string{
-		templateExtension,
-		".yaml",
-		".yml",
-	}
-)
-
-func isIgnoreThemeFile(file string) bool {
-	ext := filepath.Ext(file)
-
-	for _, v := range ignoreThemeFileExts {
-		if ext == v {
-			return true
-		}
-	}
-
-	return false
-}
-
 func (client *Client) initRoutes() error {
 	var err error
 	handle := func(pattern string, h http.HandlerFunc) {
@@ -163,7 +142,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if tag == nil {
-		logs.Debugf("查找的标签[%s]不存在", slug)
+		logs.Debugf("查找的标签 %s 不存在", slug)
 		client.getRaws(w, r) // 标签不存在，则查找该文件是否存在于 raws 目录下。
 		return
 	}

@@ -10,6 +10,14 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestIsIgnoreThemeFile(t *testing.T) {
+	a := assert.New(t)
+	a.True(isIgnoreThemeFile(templateExtension))
+	a.True(isIgnoreThemeFile(".yaml"))
+	a.False(isIgnoreThemeFile(".txt"))
+	a.False(isIgnoreThemeFile(".css"))
+}
+
 func TestStripTags(t *testing.T) {
 	a := assert.New(t)
 
