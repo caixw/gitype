@@ -197,6 +197,7 @@ func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	p := client.page(typeTags)
 	p.Title = "标签"
 	p.Canonical = vars.TagsURL()
+	p.Description = "标签列表"
 
 	p.render(w, "tags", nil)
 }
@@ -206,6 +207,8 @@ func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	p := client.page(typeArchives)
 	p.Title = "归档"
+	p.Keywords = "归档,存档,archive,archives"
+	p.Description = "网站的归档列表，按时间进行排序"
 	p.Canonical = vars.ArchivesURL()
 	p.Archives = client.archives
 
