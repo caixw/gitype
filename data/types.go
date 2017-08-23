@@ -6,8 +6,6 @@ package data
 
 import (
 	"fmt"
-
-	"github.com/caixw/typing/vars"
 )
 
 // Author 描述作者信息
@@ -25,7 +23,6 @@ type Tag struct {
 	Color       string  `yaml:"color,omitempty"` // 标签颜色。若未指定，则继承父容器
 	Content     string  `yaml:"content"`         // 对该标签的详细描述
 	Posts       []*Post `yaml:"-"`               // 关联的文章
-	Permalink   string  `yaml:"-"`               // 唯一链接
 	Keywords    string  `yaml:"-"`               // meta.keywords 标签的内容，如果为空，使用 Title 属性的值
 	Description string  `yaml:"-"`               // meta.description 标签的内容，若为空，则为 Config.Description
 	Modified    int64   `yaml:"-"`               // 所有文章中最迟修改的
@@ -102,7 +99,6 @@ func (tag *Tag) sanitize() *FieldError {
 	}
 
 	tag.Posts = make([]*Post, 0, 100)
-	tag.Permalink = vars.TagURL(tag.Slug, 0)
 
 	tag.Keywords = tag.Title
 	if tag.Title != tag.Slug {

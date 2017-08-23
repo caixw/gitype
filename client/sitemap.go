@@ -83,7 +83,7 @@ func addTagsToSitemap(w *xmlWriter, client *Client) error {
 	addItemToSitemap(w, loc, sitemap.Changefreq, client.Created, sitemap.Priority)
 
 	for _, tag := range client.data.Tags {
-		loc = client.data.Config.URL + tag.Permalink
+		loc = client.data.Config.URL + vars.TagURL(tag.Slug, 1)
 		addItemToSitemap(w, loc, sitemap.Changefreq, tag.Modified, sitemap.Priority)
 	}
 	return nil

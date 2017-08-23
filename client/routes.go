@@ -286,6 +286,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p.Q = q
 	p.Keywords = q + ",搜索,search"
 	p.Description = "搜索关键字" + q + "的结果"
+	p.Canonical = vars.SearchURL(p.Q, page)
 	start, end, ok := client.getPostsRange(len(posts), page, w)
 	if !ok {
 		return
