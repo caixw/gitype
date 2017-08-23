@@ -44,6 +44,7 @@ type Post struct {
 	TagsString     string  `yaml:"tags"`               // 关联标签的列表
 	Path           string  `yaml:"path"`               // 正文的文件名，相对于 meta.yaml 所在的目录
 	Permalink      string  `yaml:"-"`                  // 文章的唯一链接
+	License        *Link   `yaml:"license,omitempty"`  // 版本信息
 }
 
 func loadPosts(dir string) ([]*Post, error) {

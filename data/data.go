@@ -146,8 +146,7 @@ func (d *Data) sanitize2() error {
 		tag.Modified = d.Config.Uptime
 	}
 
-	// 关联文章与标签
-	if err := d.attachPostTags(); err != nil {
+	if err := d.attachPostMeta(); err != nil {
 		return err
 	}
 
@@ -166,10 +165,15 @@ func (d *Data) sanitize2() error {
 	return nil
 }
 
-func (d *Data) attachPostTags() *FieldError {
+// 关联文章的相关属性
+func (d *Data) attachPostMeta() *FieldError {
 	for _, post := range d.Posts {
 		if post.Author == nil {
 			post.Author = d.Config.Author
+		}
+
+		if post.License == nil {
+			post.License = d.Config.License
 		}
 
 		// tags

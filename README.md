@@ -6,7 +6,8 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 1. 无数据库，通过 Git 管理发布的内容；
 1. 无分类，通过标签来归类；
 1. 不区分页面和普通文章；
-1. 可以实时搜索内容。
+1. 可以实时搜索内容；
+1. 自定义主题。
 
 
 
@@ -109,7 +110,8 @@ theme           | string      | 默认主题
 type            | string      | 所有 html 页面的 mime type，默认使用 vars.ContentTypeHTML
 icon            | Icon        | 网站的图标
 menus           | []Link      | 菜单内容，格式与 links.yaml 的相同
-author          | Author      | 默认的作者信息
+author          | Author      | 文章的默认作者信息
+license         | Link        | 文章的默认版权信息
 archive         | Archive     | 存档页的相关配置
 rss             | RSS         | rss 配置，若不需要，则不指定该值即可
 atom            | RSS         | atom 配置，若不需要，则不指定该值即可
