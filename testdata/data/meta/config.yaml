@@ -8,9 +8,13 @@ pageSize: 20
 longDateFormat: 2006-01-02
 shortDateFormat: 2006
 theme: default
+type: text/html
 author:
     name: name
     email: aaa
+license:
+    url: https://caixw.io/license
+    text: license
 menus:
   - url: url1
     title: title1

@@ -45,15 +45,17 @@ type page struct {
 	client *Client
 	Info   *info
 
-	Title       string     // 文章标题，可以为空
-	Subtitle    string     // 副标题
-	Canonical   string     // 当前页的唯一链接
-	Keywords    string     // meta.keywords 的值
-	Q           string     // 搜索关键字
-	Description string     // meta.description 的值
-	PrevPage    *data.Link // 前一页
-	NextPage    *data.Link // 下一页
-	Type        string     // 当前页面类型
+	Title       string       // 文章标题，可以为空
+	Subtitle    string       // 副标题
+	Canonical   string       // 当前页的唯一链接
+	Keywords    string       // meta.keywords 的值
+	Q           string       // 搜索关键字
+	Description string       // meta.description 的值
+	PrevPage    *data.Link   // 前一页
+	NextPage    *data.Link   // 下一页
+	Type        string       // 当前页面类型
+	Author      *data.Author // 作者
+	License     *data.Link   // 当前页的版本信息，可以为空
 
 	// 以下内容，仅在对应的页面才会有内容
 	Tag      *data.Tag    // 标签详细页面，非标签详细页，则为空
@@ -140,6 +142,8 @@ func (client *Client) page(typ string) *page {
 		Keywords:    conf.Keywords,
 		Description: conf.Description,
 		Type:        typ,
+		Author:      conf.Author,
+		License:     conf.License,
 	}
 }
 
