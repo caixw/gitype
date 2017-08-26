@@ -77,6 +77,9 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Canonical = post.Permalink
 	p.License = post.License // 文章可具体指定协议
 	p.Author = post.Author   // 文章可具体指定作者
+	if post.Outdated {
+		p.Outdated = client.data.Config.Outdated.Content
+	}
 
 	if index > 0 {
 		prev := client.data.Posts[index-1]

@@ -7,6 +7,7 @@ package data
 import (
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/is"
@@ -20,25 +21,31 @@ const (
 	ArchiveTypeMonth = "month"
 )
 
+const (
+	outdatedTypeCreated  = "created"
+	outdatedTypeModified = "modified"
+)
+
 // Config 一些基本配置项。
 type Config struct {
-	Title           string   `yaml:"title"`                 // 网站标题
-	Language        string   `yaml:"language"`              // 语言标记，比如 zh-cmn-Hans
-	Subtitle        string   `yaml:"subtitle,omitempty"`    // 网站副标题
-	URL             string   `yaml:"url"`                   // 网站的地址，不包含最后的斜杠，仅在生成地址时使用
-	Keywords        string   `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
-	Description     string   `yaml:"description,omitempty"` // 默认情况下的 descrription 内容
-	Beian           string   `yaml:"beian,omitempty"`       // 备案号
-	Uptime          int64    `yaml:"-"`                     // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
-	UptimeFormat    string   `yaml:"uptime"`                // 上线时间，字符串表示
-	PageSize        int      `yaml:"pageSize"`              // 每页显示的数量
-	LongDateFormat  string   `yaml:"longDateFormat"`        // 长时间的显示格式
-	ShortDateFormat string   `yaml:"shortDateFormat"`       // 短时间的显示格式
-	Theme           string   `yaml:"theme"`                 // 默认主题
-	Type            string   `yaml:"type,omitempty"`        // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
-	Icon            *Icon    `yaml:"icon,omitempty"`        // 程序默认的图标
-	Menus           []*Link  `yaml:"menus,omitempty"`       // 导航菜单
-	Archive         *Archive `yaml:"archive,omitempty"`     // 归档页的配置内容
+	Title           string    `yaml:"title"`                 // 网站标题
+	Language        string    `yaml:"language"`              // 语言标记，比如 zh-cmn-Hans
+	Subtitle        string    `yaml:"subtitle,omitempty"`    // 网站副标题
+	URL             string    `yaml:"url"`                   // 网站的地址，不包含最后的斜杠，仅在生成地址时使用
+	Keywords        string    `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
+	Description     string    `yaml:"description,omitempty"` // 默认情况下的 descrription 内容
+	Beian           string    `yaml:"beian,omitempty"`       // 备案号
+	Uptime          int64     `yaml:"-"`                     // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	UptimeFormat    string    `yaml:"uptime"`                // 上线时间，字符串表示
+	PageSize        int       `yaml:"pageSize"`              // 每页显示的数量
+	LongDateFormat  string    `yaml:"longDateFormat"`        // 长时间的显示格式
+	ShortDateFormat string    `yaml:"shortDateFormat"`       // 短时间的显示格式
+	Theme           string    `yaml:"theme"`                 // 默认主题
+	Type            string    `yaml:"type,omitempty"`        // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
+	Icon            *Icon     `yaml:"icon,omitempty"`        // 程序默认的图标
+	Menus           []*Link   `yaml:"menus,omitempty"`       // 导航菜单
+	Archive         *Archive  `yaml:"archive,omitempty"`     // 归档页的配置内容
+	Outdated        *Outdated `yaml:"outdated,omitempty"`    // 文章过时内容的设置
 
 	// 一些默认值，可在各自的配置中覆盖此值
 	Author  *Author `yaml:"author"`  // 默认作者信息
@@ -49,6 +56,14 @@ type Config struct {
 	Atom       *RSS        `yaml:"atom,omitempty"`
 	Sitemap    *Sitemap    `yaml:"sitemap,omitempty"`
 	Opensearch *Opensearch `yaml:"opensearch,omitempty"`
+}
+
+// Outdated 描述过时文章的提示信息
+type Outdated struct {
+	Type           string `yaml:"type"`     // 比较的类型，创建时间或是修改时间
+	DurationFormat string `yaml:"duration"` // Duration 的字符中形式，用于解析，可以使用 time.Duration 字符串，比如 100h
+	Duration       int64  `yaml:"-"`        // 超时的时间，秒数
+	Content        string `yaml:"content"`  // 提示的内容，普通文字，不能为 html
 }
 
 // Archive 存档页的配置内容
@@ -214,6 +229,24 @@ func (conf *Config) sanitize() *FieldError {
 			return err
 		}
 	}
+
+	return nil
+}
+
+func (o *Outdated) sanitize() *FieldError {
+	if o.Type != outdatedTypeCreated && o.Type != outdatedTypeModified {
+		return &FieldError{File: confFilename, Message: "无效的值", Field: "Outdated.Type"}
+	}
+
+	if len(o.Content) == 0 {
+		return &FieldError{File: confFilename, Message: "不能为空", Field: "Outdated.Content"}
+	}
+
+	dur, err := time.ParseDuration(o.DurationFormat)
+	if err != nil {
+		return &FieldError{File: confFilename, Message: err.Error(), Field: "Outdated.Duration"}
+	}
+	o.Duration = int64(dur.Seconds())
 
 	return nil
 }

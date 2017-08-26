@@ -30,7 +30,7 @@ const (
 type Post struct {
 	Slug           string `yaml:"-"`                  // 唯一名称
 	Title          string `yaml:"title"`              // 标题
-	Created        int64  `yaml:"-"`                  // 创建时间
+	Created        int64  `yaml:"-"`                  // 创建时间，用时间戳，而不是 time.Time，方便模板用户打印数据
 	Modified       int64  `yaml:"-"`                  // 修改时间
 	Tags           []*Tag `yaml:"-"`                  // 关联的标签
 	Keywords       string `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
@@ -42,6 +42,7 @@ type Post struct {
 	TagsString     string `yaml:"tags"`               // 关联标签的列表
 	Path           string `yaml:"path"`               // 正文的文件名，相对于 meta.yaml 所在的目录
 	Permalink      string `yaml:"-"`                  // 文章的唯一链接
+	Outdated       bool   `yaml:"-"`                  // 文章是否已经过时
 
 	// 以下内容不存在时，则会使用全局的默认选项
 	Author   *Author `yaml:"author,omitempty"`   // 作者
