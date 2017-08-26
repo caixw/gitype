@@ -6,6 +6,8 @@ package data
 
 import (
 	"fmt"
+
+	"github.com/caixw/typing/vars"
 )
 
 // Author 描述作者信息
@@ -26,6 +28,7 @@ type Tag struct {
 	Keywords    string  `yaml:"-"`               // meta.keywords 标签的内容，如果为空，使用 Title 属性的值
 	Description string  `yaml:"-"`               // meta.description 标签的内容，若为空，则为 Config.Description
 	Modified    int64   `yaml:"-"`               // 所有文章中最迟修改的
+	Permalink   string  `yaml:"-"`               // 唯一链接，指向第一页
 }
 
 // Link 描述链接的内容
@@ -100,6 +103,8 @@ func (tag *Tag) sanitize() *FieldError {
 
 	tag.Posts = make([]*Post, 0, 100)
 
+	tag.Permalink = vars.TagURL(tag.Slug, 1)
+
 	tag.Keywords = tag.Title
 	if tag.Title != tag.Slug {
 		tag.Keywords += ","
@@ -107,5 +112,6 @@ func (tag *Tag) sanitize() *FieldError {
 	}
 
 	tag.Description = "标签" + tag.Title + "的介绍"
+
 	return nil
 }

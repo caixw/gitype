@@ -28,23 +28,25 @@ const (
 
 // Post 表示文章的信息
 type Post struct {
-	Slug           string  `yaml:"-"`                  // 唯一名称
-	Title          string  `yaml:"title"`              // 标题
-	Created        int64   `yaml:"-"`                  // 创建时间
-	Modified       int64   `yaml:"-"`                  // 修改时间
-	Tags           []*Tag  `yaml:"-"`                  // 关联的标签
-	Keywords       string  `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
-	Author         *Author `yaml:"author,omitempty"`   // 作者
-	Template       string  `yaml:"template,omitempty"` // 使用的模板。未指定，则使用系统默认的
-	Order          string  `yaml:"order,omitempty"`    // 排序方式
-	Summary        string  `yaml:"summary"`            // 摘要，同时也作为 meta.description 的内容
-	Content        string  `yaml:"-"`                  // 内容
-	CreatedFormat  string  `yaml:"created"`            // 创建时间的字符串表示形式
-	ModifiedFormat string  `yaml:"modified"`           // 修改时间的字符串表示形式
-	TagsString     string  `yaml:"tags"`               // 关联标签的列表
-	Path           string  `yaml:"path"`               // 正文的文件名，相对于 meta.yaml 所在的目录
-	Permalink      string  `yaml:"-"`                  // 文章的唯一链接
-	License        *Link   `yaml:"license,omitempty"`  // 版本信息
+	Slug           string `yaml:"-"`                  // 唯一名称
+	Title          string `yaml:"title"`              // 标题
+	Created        int64  `yaml:"-"`                  // 创建时间
+	Modified       int64  `yaml:"-"`                  // 修改时间
+	Tags           []*Tag `yaml:"-"`                  // 关联的标签
+	Keywords       string `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
+	Order          string `yaml:"order,omitempty"`    // 排序方式
+	Summary        string `yaml:"summary"`            // 摘要，同时也作为 meta.description 的内容
+	Content        string `yaml:"-"`                  // 内容
+	CreatedFormat  string `yaml:"created"`            // 创建时间的字符串表示形式
+	ModifiedFormat string `yaml:"modified"`           // 修改时间的字符串表示形式
+	TagsString     string `yaml:"tags"`               // 关联标签的列表
+	Path           string `yaml:"path"`               // 正文的文件名，相对于 meta.yaml 所在的目录
+	Permalink      string `yaml:"-"`                  // 文章的唯一链接
+
+	// 以下内容不存在时，则会使用全局的默认选项
+	Author   *Author `yaml:"author,omitempty"`   // 作者
+	License  *Link   `yaml:"license,omitempty"`  // 版本信息
+	Template string  `yaml:"template,omitempty"` // 使用的模板
 }
 
 func loadPosts(dir string) ([]*Post, error) {

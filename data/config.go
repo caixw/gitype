@@ -40,9 +40,9 @@ type Config struct {
 	Menus           []*Link  `yaml:"menus,omitempty"`       // 导航菜单
 	Archive         *Archive `yaml:"archive,omitempty"`     // 归档页的配置内容
 
-	// 一些文章的默认值，可在文章中覆盖此值
-	Author  *Author `yaml:"author"`  // 文章的默认作者信息
-	License *Link   `yaml:"license"` // 文章的默认版权信息
+	// 一些默认值，可在各自的配置中覆盖此值
+	Author  *Author `yaml:"author"`  // 默认作者信息
+	License *Link   `yaml:"license"` // 默认版权信息
 
 	// feeds
 	RSS        *RSS        `yaml:"rss,omitempty"`
