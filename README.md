@@ -113,6 +113,7 @@ menus           | []Link      | 菜单内容，格式与 links.yaml 的相同
 author          | Author      | 文章的默认作者信息
 license         | Link        | 文章的默认版权信息
 archive         | Archive     | 存档页的相关配置
+outdated        | Outdated    | 文章过时提示信息设置
 rss             | RSS         | rss 配置，若不需要，则不指定该值即可
 atom            | RSS         | atom 配置，若不需要，则不指定该值即可
 sitemap         | Sitemap     | sitemap 相关配置，若不需要，则不指定该值即可
@@ -126,6 +127,15 @@ name      | string      | 名称
 url       | string      | 网站地址
 email     | string      | 邮箱
 avatar    | string      | 头像
+
+
+###### Outdated
+
+名称      | 类型        | 描述
+:---------|:------------|:----------
+type      | string      | 比较方式，可以 created 或是 modified
+duration  | string      | 超过此时间值，显示提示信息，为一个可以被 time.ParseDuration 解析的字符串
+content   | string      | 提示内容，可以带上一个 %d 用于表示有多少天未被改过
 
 
 ###### Archive

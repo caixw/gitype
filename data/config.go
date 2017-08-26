@@ -59,7 +59,11 @@ type Config struct {
 	Opensearch *Opensearch `yaml:"opensearch,omitempty"`
 }
 
-// Outdated 描述过时文章的提示信息
+// Outdated 描述过时文章的提示信息。
+//
+// 理论上把有关 Outdated 的信息，直接在模板中对文章的创建时间戳进行比较，
+// 是比通过配置来比较会更加方便，也不会更任何的后期工作量。之所以把这个功能放在后端，
+// 而不是模板层面，是因为觉得模板应该只负责展示页面，而不是用于处理逻辑内容。
 type Outdated struct {
 	Type           string `yaml:"type"`     // 比较的类型，创建时间或是修改时间
 	DurationFormat string `yaml:"duration"` // Duration 的字符中形式，用于解析，可以使用 time.Duration 字符串，比如 100h
