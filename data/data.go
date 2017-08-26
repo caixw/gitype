@@ -167,8 +167,6 @@ func (d *Data) sanitize2() error {
 
 // 关联文章的相关属性
 func (d *Data) attachPostMeta() *FieldError {
-	now := time.Now().Unix()
-
 	for _, post := range d.Posts {
 		if post.Author == nil {
 			post.Author = d.Config.Author
@@ -176,15 +174,6 @@ func (d *Data) attachPostMeta() *FieldError {
 
 		if post.License == nil {
 			post.License = d.Config.License
-		}
-
-		od := d.Config.Outdated
-		if od != nil {
-			if od.Type == outdatedTypeCreated {
-				post.Outdated = post.Created+od.Duration < now
-			} else {
-				post.Outdated = post.Modified+od.Duration < now
-			}
 		}
 
 		// tags

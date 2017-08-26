@@ -56,7 +56,6 @@ type page struct {
 	Type        string       // 当前页面类型
 	Author      *data.Author // 作者
 	License     *data.Link   // 当前页的版本信息，可以为空
-	Outdated    string       // 当前页面内容可能过时的提示信息，为空表示未过进或是没有提示内容
 
 	// 以下内容，仅在对应的页面才会有内容
 	Tag      *data.Tag    // 标签详细页面，非标签详细页，则为空

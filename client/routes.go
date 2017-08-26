@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
@@ -20,6 +21,8 @@ import (
 	"github.com/issue9/mux/params"
 	"github.com/issue9/utils"
 )
+
+const day = 24 * 3600
 
 func (client *Client) initRoutes() error {
 	var err error
@@ -77,8 +80,20 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Canonical = post.Permalink
 	p.License = post.License // 文章可具体指定协议
 	p.Author = post.Author   // 文章可具体指定作者
-	if post.Outdated {
-		p.Outdated = client.data.Config.Outdated.Content
+
+	od := client.data.Config.Outdated
+	now := time.Now().Unix()
+	if od != nil {
+		var outdated int64
+		if od.Type == data.OutdatedTypeCreated {
+			outdated = now - post.Created
+		} else {
+			outdated = now - post.Modified
+		}
+		if outdated >= od.Duration {
+			// Outdated 是一个动态的值（其中的天数会变化），必须是在请求时生成。
+			post.Outdated = fmt.Sprintf(od.Content, outdated/day)
+		}
 	}
 
 	if index > 0 {

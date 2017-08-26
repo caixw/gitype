@@ -42,7 +42,7 @@ type Post struct {
 	TagsString     string `yaml:"tags"`               // 关联标签的列表
 	Path           string `yaml:"path"`               // 正文的文件名，相对于 meta.yaml 所在的目录
 	Permalink      string `yaml:"-"`                  // 文章的唯一链接
-	Outdated       bool   `yaml:"-"`                  // 文章是否已经过时
+	Outdated       string `yaml:"-"`                  // 已过时文章的提示信息，这是一个动态的值，不能提前计算
 
 	// 以下内容不存在时，则会使用全局的默认选项
 	Author   *Author `yaml:"author,omitempty"`   // 作者

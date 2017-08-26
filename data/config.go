@@ -21,9 +21,10 @@ const (
 	ArchiveTypeMonth = "month"
 )
 
+// 文章是否过时的比较方式
 const (
-	outdatedTypeCreated  = "created"
-	outdatedTypeModified = "modified"
+	OutdatedTypeCreated  = "created"  // 以创建时间作为对比
+	OutdatedTypeModified = "modified" // 以修改时间作为对比
 )
 
 // Config 一些基本配置项。
@@ -170,6 +171,13 @@ func (conf *Config) sanitize() *FieldError {
 		return &FieldError{File: confFilename, Message: "取值不正确", Field: "archive.type"}
 	}
 
+	// outdated
+	if conf.Outdated != nil {
+		if err := conf.Outdated.sanitize(); err != nil {
+			return err
+		}
+	}
+
 	// license
 	if conf.License == nil {
 		return &FieldError{File: confFilename, Message: "不能为空", Field: "license"}
@@ -234,7 +242,7 @@ func (conf *Config) sanitize() *FieldError {
 }
 
 func (o *Outdated) sanitize() *FieldError {
-	if o.Type != outdatedTypeCreated && o.Type != outdatedTypeModified {
+	if o.Type != OutdatedTypeCreated && o.Type != OutdatedTypeModified {
 		return &FieldError{File: confFilename, Message: "无效的值", Field: "Outdated.Type"}
 	}
 
