@@ -8,9 +8,14 @@
     "headers": {
         "server": "typing"
     },
+
+    "webhook": {
+        "url": "/admin/webhooks",
+        "frequency": 60,
+        "repoURL": "https://github.com/caixw/typing.git",
+        "method": "POST"
+    },
+
     "adminURL": "/admin",
-    "adminPassword": "123456",
-    "webhooksURL": "/admin/webhooks",
-    "webhooksUpdateFreq": 60,
-    "repoURL": "https://github.com/caixw/typing.git"
+    "adminPassword": "123456"
 }

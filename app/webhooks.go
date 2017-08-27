@@ -19,13 +19,10 @@ type logW struct {
 	l *log.Logger
 }
 
+// 用于表示 app.pull 中的返回状态值
 type httpError struct {
 	status  int
 	message string
-}
-
-func (err *httpError) Error() string {
-	return err.message
 }
 
 func (w *logW) Write(bs []byte) (int, error) {
@@ -35,9 +32,7 @@ func (w *logW) Write(bs []byte) (int, error) {
 
 // webhooks 的回调接口
 func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
-	err := a.pull()
-
-	if err.status >= 400 {
+	if err := a.pull(); err.status >= 400 {
 		logs.Error(err.message)
 		w.WriteHeader(err.status)
 		return
@@ -50,7 +45,7 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 func (a *app) pull() *httpError {
 	now := time.Now().Unix()
 
-	if now-a.conf.WebhooksUpdateFreq < a.client.Created {
+	if now-a.conf.Webhook.Frequency < a.client.Created {
 		return &httpError{
 			status:  http.StatusTooManyRequests,
 			message: "更新过于频繁，被中止！",
@@ -62,7 +57,7 @@ func (a *app) pull() *httpError {
 		cmd = exec.Command("git", "pull")
 		cmd.Dir = a.path.DataDir
 	} else {
-		cmd = exec.Command("git", "clone", a.conf.RepoURL, a.path.DataDir)
+		cmd = exec.Command("git", "clone", a.conf.Webhook.RepoURL, a.path.DataDir)
 		cmd.Dir = a.path.Root
 	}
 

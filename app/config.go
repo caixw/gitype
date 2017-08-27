@@ -24,13 +24,33 @@ type config struct {
 	Pprof     bool              `json:"pprof"`
 	Headers   map[string]string `json:"headers"`
 
-	WebhooksURL        string `json:"webhooksURL"`              // webhooks 接收地址
-	WebhooksUpdateFreq int64  `json:"webhooksUpdateFreq"`       // webhooks 的最小更新频率，秒数
-	WebhooksMethod     string `json:"webhooksMethod,omitempty"` // webhooks 的请求方式，默认为 POST
-	RepoURL            string `json:"repoURL"`                  // 远程仓库的地址
+	Webhook       *webhook `json:"webhook"`
+	AdminURL      string   `json:"adminURL"`      // 后台管理地址
+	AdminPassword string   `json:"adminPassword"` // 后台管理登录地址
+}
 
-	AdminURL      string `json:"adminURL"`      // 后台管理地址
-	AdminPassword string `json:"adminPassword"` // 后台管理登录地址
+type webhook struct {
+	URL       string `json:"url"`              // webhooks 接收地址
+	Frequency int64  `json:"frequency"`        // webhooks 的最小更新频率，秒数
+	Method    string `json:"method,omitempty"` // webhooks 的请求方式，默认为 POST
+	RepoURL   string `json:"repoURL"`          // 远程仓库的地址
+}
+
+func (w *webhook) sanitize() error {
+	if len(w.Method) == 0 {
+		w.Method = http.MethodPost
+	}
+
+	switch {
+	case len(w.URL) == 0 || w.URL[0] != '/':
+		return &data.FieldError{File: configFilename, Field: "webhook.URL", Message: "不能为空且只能以 / 开头"}
+	case w.Frequency < 0:
+		return &data.FieldError{File: configFilename, Field: "webhook.frequency", Message: "不能小于 0"}
+	case len(w.RepoURL) == 0:
+		return &data.FieldError{File: configFilename, Field: "webhook.repoURL", Message: "不能为空"}
+	}
+
+	return nil
 }
 
 func loadConfig(path string) (*config, error) {
@@ -44,10 +64,6 @@ func loadConfig(path string) (*config, error) {
 		return nil, err
 	}
 
-	if len(conf.WebhooksMethod) == 0 {
-		conf.WebhooksMethod = http.MethodPost
-	}
-
 	switch {
 	case conf.HTTPS && conf.HTTPState != "disable" && conf.HTTPState != "default" && conf.HTTPState != "redirect":
 		return nil, &data.FieldError{File: configFilename, Field: "httpState", Message: "无效的取值"}
@@ -57,16 +73,14 @@ func loadConfig(path string) (*config, error) {
 		return nil, &data.FieldError{File: configFilename, Field: "certFile", Message: "不能为空"}
 	case conf.HTTPS && !utils.FileExists(conf.KeyFile):
 		return nil, &data.FieldError{File: configFilename, Field: "keyFile", Message: "不能为空"}
-	case len(conf.WebhooksURL) == 0 || conf.WebhooksURL[0] != '/':
-		return nil, &data.FieldError{File: configFilename, Field: "webhooksURL", Message: "不能为空且只能以 / 开头"}
-	case conf.WebhooksUpdateFreq < 0:
-		return nil, &data.FieldError{File: configFilename, Field: "webhooksUpdateFreq", Message: "不能小于 0"}
-	case len(conf.RepoURL) == 0:
-		return nil, &data.FieldError{File: configFilename, Field: "repoURL", Message: "不能为空"}
 	case len(conf.AdminURL) == 0 || conf.AdminURL[0] != '/':
 		return nil, &data.FieldError{File: configFilename, Field: "adminURL", Message: "不能为空只能以 / 开头"}
 	case len(conf.AdminPassword) == 0:
 		return nil, &data.FieldError{File: configFilename, Field: "adminPassword", Message: "不能为空"}
+	}
+
+	if err := conf.Webhook.sanitize(); err != nil {
+		return nil, err
 	}
 
 	return conf, nil
