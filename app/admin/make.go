@@ -43,7 +43,7 @@ func main() {
 	}
 	defer file.Close()
 
-	file.WriteString("// 这是自动产生的文件，不需要修改")
+	file.WriteString("// 这是自动产生的文件，请不要修改！")
 	file.WriteString("\n\n")
 
 	file.WriteString("package ")

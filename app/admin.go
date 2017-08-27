@@ -35,9 +35,10 @@ func (a *app) postAdminPage(w http.ResponseWriter, r *http.Request) {
 		}
 
 		a.renderAdminPage(w, r, "")
-	} else {
-		a.renderAdminPage(w, r, "密码错误")
+		return
 	}
+
+	a.renderAdminPage(w, r, "密码错误！")
 }
 
 // 一个简单的后台页面，可用来手动更新数据。
@@ -45,6 +46,7 @@ func (a *app) getAdminPage(w http.ResponseWriter, r *http.Request) {
 	a.renderAdminPage(w, r, "")
 }
 
+// message 表示出错的信息，空值表示没有错误
 func (a *app) renderAdminPage(w http.ResponseWriter, r *http.Request, message string) {
 	home := strings.TrimSuffix(r.URL.Path, a.conf.AdminURL)
 	if len(home) == 0 {

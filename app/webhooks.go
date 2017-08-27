@@ -30,6 +30,7 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 
 	if now-a.conf.WebhooksUpdateFreq < a.client.Created {
 		logs.Debug("更新过于频繁，被中止！")
+		statusError(w, http.StatusTooManyRequests)
 		return
 	}
 

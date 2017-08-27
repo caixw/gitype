@@ -19,6 +19,7 @@ import (
 	"github.com/issue9/mux"
 )
 
+// 输出调试内容的地址，地址值固定，不能候。
 const debugPprof = "/debug/pprof/"
 
 const configFilename = "app.json"
