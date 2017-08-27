@@ -7,6 +7,7 @@ package data
 import (
 	"testing"
 
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
 
@@ -30,25 +31,26 @@ func TestCheckRSS(t *testing.T) {
 	a.NotError(checkRSS("RSS", rss))
 }
 
-func TestCheckSitemap(t *testing.T) {
+func TestSitemap_sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	s := &Sitemap{}
-	a.Error(checkSitemap(s))
+	a.Error(s.sanitize())
 
 	s.URL = "url"
-	a.Error(checkSitemap(s))
+	a.Error(s.sanitize())
 
 	s.Priority = -1.0
-	a.Error(checkSitemap(s))
+	a.Error(s.sanitize())
 	s.Priority = 1.1
-	a.Error(checkSitemap(s))
+	a.Error(s.sanitize())
 
 	s.Priority = .8
 	s.PostPriority = 0.9
 	s.Changefreq = "never"
 	s.PostChangefreq = "never"
-	a.NotError(checkSitemap(s))
+	a.NotError(s.sanitize())
+	a.Equal(s.Type, vars.ContentTypeXML) // 默认值
 }
 
 func TestIsChangereq(t *testing.T) {

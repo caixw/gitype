@@ -7,6 +7,7 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 1. 无分类，通过标签来归类；
 1. 不区分页面和普通文章；
 1. 可以实时搜索内容；
+1. 支持 RSS、Atom、Sitemap 以及Opensearch 等内容的生成；
 1. 自定义主题。
 
 

@@ -213,24 +213,17 @@ func (conf *Config) sanitize() *FieldError {
 	}
 
 	// sitemap
-	if err := checkSitemap(conf.Sitemap); err != nil {
-		return err
-	}
-	if conf.Sitemap != nil && len(conf.Sitemap.Type) == 0 {
-		conf.Sitemap.Type = vars.ContentTypeXML
+	if conf.Sitemap != nil {
+		if err := conf.Sitemap.sanitize(); err != nil {
+			return err
+		}
 	}
 
-	// opensearch
-	if err := checkOpensearch(conf.Opensearch); err != nil {
-		return err
-	}
-	if conf.Opensearch != nil && len(conf.Opensearch.Type) == 0 {
-		conf.Opensearch.Type = vars.ContentTypeOpensearch
-	}
-	if conf.Opensearch != nil &&
-		conf.Opensearch.Image == nil &&
-		conf.Icon != nil {
-		conf.Opensearch.Image = conf.Icon
+	// opensearch，需要用到 config.Icon 变量
+	if conf.Opensearch != nil {
+		if err := conf.Opensearch.sanitize(conf); err != nil {
+			return err
+		}
 	}
 
 	// Menus
@@ -278,36 +271,46 @@ func checkRSS(typ string, rss *RSS) *FieldError {
 }
 
 // 检测 sitemap 取值是否正确
-func checkSitemap(s *Sitemap) *FieldError {
-	if s != nil {
-		switch {
-		case len(s.URL) == 0:
-			return &FieldError{File: confFilename, Message: "不能为空", Field: "Sitemap.URL"}
-		case s.Priority > 1 || s.Priority < 0:
-			return &FieldError{File: confFilename, Message: "介于[0,1]之间的浮点数", Field: "Sitemap.priority"}
-		case s.PostPriority > 1 || s.PostPriority < 0:
-			return &FieldError{File: confFilename, Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
-		case !isChangereq(s.Changefreq):
-			return &FieldError{File: confFilename, Message: "取值不正确", Field: "Sitemap.changefreq"}
-		case !isChangereq(s.PostChangefreq):
-			return &FieldError{File: confFilename, Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
-		}
+func (s *Sitemap) sanitize() *FieldError {
+	switch {
+	case len(s.URL) == 0:
+		return &FieldError{File: confFilename, Message: "不能为空", Field: "Sitemap.URL"}
+	case s.Priority > 1 || s.Priority < 0:
+		return &FieldError{File: confFilename, Message: "介于[0,1]之间的浮点数", Field: "Sitemap.priority"}
+	case s.PostPriority > 1 || s.PostPriority < 0:
+		return &FieldError{File: confFilename, Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
+	case !isChangereq(s.Changefreq):
+		return &FieldError{File: confFilename, Message: "取值不正确", Field: "Sitemap.changefreq"}
+	case !isChangereq(s.PostChangefreq):
+		return &FieldError{File: confFilename, Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
 	}
+
+	if len(s.Type) == 0 {
+		s.Type = vars.ContentTypeXML
+	}
+
 	return nil
 }
 
 // 检测 opensearch 取值是否正确
-func checkOpensearch(s *Opensearch) *FieldError {
-	if s != nil {
-		switch {
-		case len(s.URL) == 0:
-			return &FieldError{File: confFilename, Message: "不能为空", Field: "Opensearch.URL"}
-		case len(s.ShortName) == 0:
-			return &FieldError{File: confFilename, Message: "不能为空", Field: "Opensearch.ShortName"}
-		case len(s.Description) == 0:
-			return &FieldError{File: confFilename, Message: "不能为空", Field: "Opensearch.Description"}
-		}
+func (s *Opensearch) sanitize(conf *Config) *FieldError {
+	switch {
+	case len(s.URL) == 0:
+		return &FieldError{File: confFilename, Message: "不能为空", Field: "Opensearch.URL"}
+	case len(s.ShortName) == 0:
+		return &FieldError{File: confFilename, Message: "不能为空", Field: "Opensearch.ShortName"}
+	case len(s.Description) == 0:
+		return &FieldError{File: confFilename, Message: "不能为空", Field: "Opensearch.Description"}
 	}
+
+	if len(s.Type) == 0 {
+		s.Type = vars.ContentTypeOpensearch
+	}
+
+	if s.Image == nil && conf.Icon != nil {
+		s.Image = conf.Icon
+	}
+
 	return nil
 }
 
