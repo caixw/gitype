@@ -19,6 +19,15 @@ type logW struct {
 	l *log.Logger
 }
 
+type httpError struct {
+	status  int
+	message string
+}
+
+func (err *httpError) Error() string {
+	return err.message
+}
+
 func (w *logW) Write(bs []byte) (int, error) {
 	w.l.Print(string(bs))
 	return len(bs), nil
@@ -26,12 +35,26 @@ func (w *logW) Write(bs []byte) (int, error) {
 
 // webhooks 的回调接口
 func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
+	err := a.pull()
+
+	if err.status >= 400 {
+		logs.Error(err.message)
+		w.WriteHeader(err.status)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+}
+
+// 拉取代码并重新加载
+func (a *app) pull() *httpError {
 	now := time.Now().Unix()
 
 	if now-a.conf.WebhooksUpdateFreq < a.client.Created {
-		logs.Debug("更新过于频繁，被中止！")
-		statusError(w, http.StatusTooManyRequests)
-		return
+		return &httpError{
+			status:  http.StatusTooManyRequests,
+			message: "更新过于频繁，被中止！",
+		}
 	}
 
 	var cmd *exec.Cmd
@@ -46,16 +69,20 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 	cmd.Stderr = &logW{l: logs.ERROR()}
 	cmd.Stdout = &logW{l: logs.INFO()}
 	if err := cmd.Run(); err != nil {
-		logs.Error(err)
-		statusError(w, http.StatusInternalServerError)
-		return
+		return &httpError{
+			status:  http.StatusInternalServerError,
+			message: err.Error(),
+		}
 	}
 
 	if err := a.reload(); err != nil {
-		logs.Error(err)
-		statusError(w, http.StatusInternalServerError)
-		return
+		return &httpError{
+			status:  http.StatusInternalServerError,
+			message: err.Error(),
+		}
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	return &httpError{
+		status: 0,
+	}
 }

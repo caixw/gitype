@@ -27,18 +27,18 @@ func (a *app) initAdmin() (err error) {
 }
 
 func (a *app) postAdminPage(w http.ResponseWriter, r *http.Request) {
-	if r.FormValue("password") == a.conf.AdminPassword {
-		if err := a.reload(); err != nil {
-			logs.Error(err)
-			statusError(w, http.StatusInternalServerError)
-			return
-		}
-
-		a.renderAdminPage(w, r, "")
+	if r.FormValue("password") != a.conf.AdminPassword {
+		a.renderAdminPage(w, r, "密码错误！")
 		return
 	}
 
-	a.renderAdminPage(w, r, "密码错误！")
+	if err := a.pull(); err.status >= 400 {
+		logs.Error(err.message)
+		statusError(w, err.status)
+		return
+	}
+
+	a.renderAdminPage(w, r, "")
 }
 
 // 一个简单的后台页面，可用来手动更新数据。
