@@ -7,7 +7,7 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 1. 无分类，通过标签来归类；
 1. 不区分页面和普通文章；
 1. 可以实时搜索内容；
-1. 支持 RSS、Atom、Sitemap 以及Opensearch 等内容的生成；
+1. 自动生成 RSS、Atom、Sitemap 和 Opensearch 等内容；
 1. 自定义主题。
 
 
@@ -108,7 +108,7 @@ pageSize        | int         | 每页显示的数量
 longDateFormat  | string      | 长时间的显示格式，Go 的时间格式化方式
 shortDateFormat | string      | 短时间的显示格式，Go 的时间格式化方式
 theme           | string      | 默认主题
-type            | string      | 所有 html 页面的 mime type，默认使用 vars.ContentTypeHTML
+type            | string      | 所有 HTML 页面的 mimetype，默认使用 vars.ContentTypeHTML
 icon            | Icon        | 网站的图标
 menus           | []Link      | 菜单内容，格式与 links.yaml 的相同
 author          | Author      | 文章的默认作者信息
@@ -187,7 +187,7 @@ Icon
 
 名称      | 类型        | 描述
 :---------|:------------|:----------
-type      | string      | 图标的 mime-type
+type      | string      | 图标的 mimetype
 sizes     | string      | 图标的大小
 url       | string      | 图标地址
 
@@ -215,7 +215,7 @@ tags.yaml 用于指定所有的标签内容。为一个数组，每个元素包�
 slug      | string      | 唯一名称，文章引用此值，地址中也使用此值
 title     | string      | 字面文字，可以不唯一
 color     | string      | 颜色值，在展示所有标签的页面，会以此颜色显示
-content   | string      | 用于描述该标签的详细内容，可以是**HTML**
+content   | string      | 用于描述该标签的详细内容，可以是 **HTML**
 
 
 
@@ -229,7 +229,7 @@ data/themes 下为主题文件，可定义多个主题，通过 config 中的 th
 默认情况下，使用 post 模板。
 
 
-400 及以上的错误信息，均可以自定义，方式为在当前主题目录下，新建一个与错误代码相对应的 html 文件，
+400 及以上的错误信息，均可以自定义，方式为在当前主题目录下，新建一个与错误代码相对应的 HTML 文件，
 比如 400 错误，会读取 400.html 文件，以此类推。
 
 

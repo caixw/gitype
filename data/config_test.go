@@ -11,24 +11,29 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestCheckRSS(t *testing.T) {
+func TestRSS_sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	rss := &RSS{}
-	a.Error(checkRSS("RSS", rss))
+	conf := &Config{
+		Title: "title",
+		RSS:   rss,
+	}
+	a.Error(rss.sanitize(conf, "rss"))
 
 	// Size 错误
 	rss.Size = 0
-	a.Error(checkRSS("RSS", rss))
+	a.Error(rss.sanitize(conf, "rss"))
 	rss.Size = -1
-	a.Error(checkRSS("RSS", rss))
+	a.Error(rss.sanitize(conf, "rss"))
 
 	// URL 错误
 	rss.Size = 10
-	a.Error(checkRSS("RSS", rss))
+	a.Error(rss.sanitize(conf, "RSS"))
 
 	rss.URL = "url"
-	a.NotError(checkRSS("RSS", rss))
+	a.NotError(rss.sanitize(conf, "rss"))
+	a.Equal(rss.Title, conf.Title)
 }
 
 func TestSitemap_sanitize(t *testing.T) {

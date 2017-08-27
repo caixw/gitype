@@ -117,16 +117,16 @@ func (conf *Config) sanitize() *FieldError {
 	}
 
 	if len(conf.LongDateFormat) == 0 {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "LongDateFormat"}
+		return &FieldError{File: confFilename, Message: "不能为空", Field: "longDateFormat"}
 	}
 
 	if len(conf.ShortDateFormat) == 0 {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "ShortDateFormat"}
+		return &FieldError{File: confFilename, Message: "不能为空", Field: "shortDateFormat"}
 	}
 
 	t, err := parseDate(conf.UptimeFormat)
 	if err != nil {
-		return &FieldError{File: confFilename, Message: err.Error(), Field: "UptimeFormat"}
+		return &FieldError{File: confFilename, Message: err.Error(), Field: "uptimeFormat"}
 	}
 	conf.Uptime = t
 
@@ -138,25 +138,25 @@ func (conf *Config) sanitize() *FieldError {
 	if conf.Icon != nil {
 		if err := conf.Icon.sanitize(); err != nil {
 			err.File = confFilename
-			err.Field = "Icon." + err.Field
+			err.Field = "icon." + err.Field
 			return err
 		}
 	}
 
 	// Author
 	if conf.Author == nil {
-		return &FieldError{File: confFilename, Message: "必须指定作者", Field: "Author"}
+		return &FieldError{File: confFilename, Message: "必须指定作者", Field: "author"}
 	}
 	if len(conf.Author.Name) == 0 {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "Author.Name"}
+		return &FieldError{File: confFilename, Message: "不能为空", Field: "author.name"}
 	}
 
 	if len(conf.Title) == 0 {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "Title"}
+		return &FieldError{File: confFilename, Message: "不能为空", Field: "title"}
 	}
 
 	if !is.URL(conf.URL) {
-		return &FieldError{File: confFilename, Message: "不是一个合法的域名或 IP", Field: "URL"}
+		return &FieldError{File: confFilename, Message: "不是一个合法的域名或 IP", Field: "url"}
 	}
 	if strings.HasSuffix(conf.URL, "/") {
 		conf.URL = conf.URL[:len(conf.URL)-1]
@@ -164,7 +164,7 @@ func (conf *Config) sanitize() *FieldError {
 
 	// theme
 	if len(conf.Theme) == 0 {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "Theme"}
+		return &FieldError{File: confFilename, Message: "不能为空", Field: "theme"}
 	}
 
 	// archive
@@ -191,25 +191,17 @@ func (conf *Config) sanitize() *FieldError {
 	}
 
 	// rss
-	if err := checkRSS("RSS", conf.RSS); err != nil {
-		return err
-	}
-	if conf.RSS != nil && len(conf.RSS.Title) == 0 {
-		conf.RSS.Title = conf.Title
-	}
-	if conf.RSS != nil && len(conf.RSS.Type) == 0 {
-		conf.RSS.Type = vars.ContentTypeRSS
+	if conf.RSS != nil {
+		if err := conf.RSS.sanitize(conf, "rss"); err != nil {
+			return err
+		}
 	}
 
 	// atom
-	if err := checkRSS("Atom", conf.Atom); err != nil {
-		return err
-	}
-	if conf.Atom != nil && len(conf.Atom.Title) == 0 {
-		conf.Atom.Title = conf.Title
-	}
-	if conf.Atom != nil && len(conf.Atom.Type) == 0 {
-		conf.Atom.Type = vars.ContentTypeAtom
+	if conf.Atom != nil {
+		if err := conf.Atom.sanitize(conf, "atom"); err != nil {
+			return err
+		}
 	}
 
 	// sitemap
@@ -256,15 +248,25 @@ func (o *Outdated) sanitize() *FieldError {
 	return nil
 }
 
-// 检测 RSS 是否正常
-func checkRSS(typ string, rss *RSS) *FieldError {
-	if rss != nil {
-		if rss.Size <= 0 {
-			return &FieldError{File: confFilename, Message: "必须大于 0", Field: typ + ".Size"}
-		}
-		if len(rss.URL) == 0 {
-			return &FieldError{File: confFilename, Message: "不能为空", Field: typ + ".URL"}
-		}
+func (rss *RSS) sanitize(conf *Config, typ string) *FieldError {
+	if rss.Size <= 0 {
+		return &FieldError{File: confFilename, Message: "必须大于 0", Field: typ + ".Size"}
+	}
+	if len(rss.URL) == 0 {
+		return &FieldError{File: confFilename, Message: "不能为空", Field: typ + ".URL"}
+	}
+
+	switch typ {
+	case "rss":
+		rss.Type = vars.ContentTypeRSS
+	case "atom":
+		rss.Type = vars.ContentTypeAtom
+	default:
+		panic("无效的 typ 值")
+	}
+
+	if len(rss.Title) == 0 {
+		rss.Title = conf.Title
 	}
 
 	return nil
