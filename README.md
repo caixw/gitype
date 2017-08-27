@@ -75,14 +75,20 @@ keyFile           | string      | 当 https 为 true 时，此值为必填
 port              | string      | 端口，不指定，默认为 80 或是 443
 pprof             | bool        | 是否需要在 /debug/pprof 输出调试信息
 headers           | map         | 附加的头信息，头信息可能在其它地方被修改
-webhooksURL       | string      | webhooks 的接收地址
-webhookUpdateFreq | int64       | webhooks 的最小更新频率，单位：秒
-webhooksMethod    | string      | webhooks 接收地址的接收方法，不指定，则默认为 POST
-repoURL           | string      | 远程仓库的地址
 adminURL          | string      | 后台管理的地址
 adminPassword     | string      | 后台管理密码
+webhook           | webhook     | 与 webhook 相关的设置
 
 
+
+###### webhook
+
+名称              | 类型        | 描述
+:-----------------|:------------|:------
+url               | string      | webhooks 的接收地址
+frequency         | int64       | webhooks 的最小更新频率，单位：秒
+Method            | string      | webhooks 接收地址的接收方法，不指定，则默认为 POST
+repoURL           | string      | 远程仓库的地址
 
 
 #### data 目录下内容
