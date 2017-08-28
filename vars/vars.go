@@ -9,7 +9,7 @@ import "time"
 
 const (
 	// 主版本号，符合 semver 规范
-	mainVersion = "0.11.2"
+	mainVersion = "0.11.3"
 
 	// AppName 程序名称
 	AppName = "typing"
@@ -57,4 +57,14 @@ func Version() string {
 // CommitHash 获取最后一条代码提交记录的 hash 值。
 func CommitHash() string {
 	return commitHash
+}
+
+// ParseDate 分析时间字符串，将其转换成 unix 时间戳
+func ParseDate(format string) (int64, error) {
+	t, err := time.Parse(DateFormat, format)
+	if err != nil {
+		return 0, err
+	}
+
+	return t.Unix(), nil
 }

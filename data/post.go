@@ -132,7 +132,7 @@ func (p *Post) sanitize() *FieldError {
 	}
 
 	// created
-	created, err := parseDate(p.CreatedFormat)
+	created, err := vars.ParseDate(p.CreatedFormat)
 	if err != nil {
 		return &FieldError{File: p.Slug, Message: err.Error(), Field: "created"}
 	}
@@ -140,7 +140,7 @@ func (p *Post) sanitize() *FieldError {
 	p.CreatedFormat = ""
 
 	// modified
-	modified, err := parseDate(p.ModifiedFormat)
+	modified, err := vars.ParseDate(p.ModifiedFormat)
 	if err != nil {
 		return &FieldError{File: p.Slug, Message: err.Error(), Field: "modified"}
 	}
