@@ -11,15 +11,17 @@ import (
 
 // 与 URL 相关的一些定义，方便做一些自定义操作
 const (
-	index    = "/index"    // 列表页地址
-	post     = "/posts"    // 文章详细页地址
-	tags     = "/tags"     // 标签列表页地址
-	tag      = "/tags"     // 标签详细页地址
-	links    = "/links"    // 友情链接
-	archives = "/archives" // 归档
-	search   = "/search"   // 搜索 URL，会加上 Suffix 作为后缀
-	themes   = "/themes"   // 主题地址
-	suffix   = ".html"     // 地址后缀
+	root   = "/"     // 根地址
+	suffix = ".html" // 地址后缀
+
+	index    = root + "index"    // 列表页地址
+	post     = root + "posts"    // 文章详细页地址
+	tags     = root + "tags"     // 标签列表页地址
+	tag      = root + "tags"     // 标签详细页地址
+	links    = root + "links"    // 友情链接
+	archives = root + "archives" // 归档
+	search   = root + "search"   // 搜索 URL，会加上 Suffix 作为后缀
+	themes   = root + "themes"   // 主题地址
 )
 
 // LinksURL 生成友情链接的 URL
