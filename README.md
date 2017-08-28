@@ -12,7 +12,7 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 
 
 
-### 安装
+### 使用
 
 1. 下载代码:`go get github.com/caixw/typing`；
 1. 运行程序，使用 appdir 参数指定程序的工作目录；
@@ -86,7 +86,7 @@ webhook           | webhook     | 与 webhook 相关的设置
 名称              | 类型        | 描述
 :-----------------|:------------|:------
 url               | string      | webhooks 的接收地址
-frequency         | int64       | webhooks 的最小更新频率，单位：秒
+frequency         | int         | webhooks 的最小更新频率，单位：秒
 Method            | string      | webhooks 接收地址的接收方法，不指定，则默认为 POST
 repoURL           | string      | 远程仓库的地址
 
@@ -169,9 +169,9 @@ type      | string      | 当前文件的 mimetype 若不指定，会使用 vars
 url            | string      | Sitemap 的地址
 xslURL         | string      | 为 sitemap.xml 配置的 xsl，可以为空
 enableTag      | bool        | 是否把标签放到 Sitemap 中
-priority       | float64     | 标签页的权重
+priority       | float       | 标签页的权重
 changefreq     | string      | 标签页的修改频率
-postPriority   | float64     | 文章页的权重
+postPriority   | float       | 文章页的权重
 postChangefreq | string      | 文章页的修改频率
 type           | string      | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
 
