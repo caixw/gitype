@@ -50,7 +50,7 @@ func (client *Client) buildAtom() error {
 		w.writeCloseElement("link", map[string]string{
 			"rel":   "search",
 			"type":  o.Type,
-			"href":  conf.URL + o.URL,
+			"href":  client.url(o.URL),
 			"title": o.Title,
 		})
 	}
@@ -72,14 +72,14 @@ func (client *Client) buildAtom() error {
 	return nil
 }
 
-func addPostsToAtom(w *xmlWriter, buf *Client) {
-	for _, p := range buf.data.Posts {
+func addPostsToAtom(w *xmlWriter, client *Client) {
+	for _, p := range client.data.Posts {
 		w.writeStartElement("entry", nil)
 
 		w.writeElement("id", p.Permalink, nil)
 
 		w.writeCloseElement("link", map[string]string{
-			"href": buf.data.Config.URL + p.Permalink,
+			"href": client.url(p.Permalink),
 		})
 
 		w.writeElement("title", p.Title, nil)

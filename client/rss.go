@@ -48,7 +48,7 @@ func (client *Client) buildRSS() error {
 			"rel":   "search",
 			"type":  conf.Opensearch.Type,
 			"title": conf.Opensearch.Title,
-			"href":  conf.URL + conf.Opensearch.URL,
+			"href":  client.url(conf.Opensearch.URL),
 		})
 	}
 
@@ -66,11 +66,11 @@ func (client *Client) buildRSS() error {
 	return nil
 }
 
-func addPostsToRSS(w *xmlWriter, buf *Client) {
-	for _, p := range buf.data.Posts {
+func addPostsToRSS(w *xmlWriter, client *Client) {
+	for _, p := range client.data.Posts {
 		w.writeStartElement("item", nil)
 
-		w.writeElement("link", buf.data.Config.URL+p.Permalink, nil)
+		w.writeElement("link", client.url(p.Permalink), nil)
 		w.writeElement("title", p.Title, nil)
 		w.writeElement("pubDate", formatUnix(p.Created, time.RFC1123), nil)
 		w.writeElement("description", p.Summary, nil)

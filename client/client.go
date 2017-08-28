@@ -74,6 +74,10 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 	return client, nil
 }
 
+func (client *Client) url(path string) string {
+	return client.data.Config.URL + path
+}
+
 // Free 释放 Client 内容
 func (client *Client) Free() {
 	for _, pattern := range client.patterns {
