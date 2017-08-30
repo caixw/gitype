@@ -9,7 +9,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
 	"runtime"
 
 	"github.com/caixw/typing/app"
@@ -36,7 +35,7 @@ func main() {
 	path := vars.NewPath(*appdir)
 
 	// 初始化日志
-	err := logs.InitFromXMLFile(filepath.Join(path.ConfDir, "logs.xml"))
+	err := logs.InitFromXMLFile(path.LogsConfigFile)
 	if err != nil {
 		panic(err)
 	}

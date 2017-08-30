@@ -10,7 +10,6 @@ import (
 	"html/template"
 	"net/http"
 	"net/http/pprof"
-	"path/filepath"
 	"strings"
 
 	"github.com/caixw/typing/client"
@@ -21,8 +20,6 @@ import (
 
 // 输出调试内容的地址，地址值固定，不能候。
 const debugPprof = "/debug/pprof/"
-
-const configFilename = "app.json"
 
 type app struct {
 	path     *vars.Path
@@ -41,8 +38,12 @@ func statusError(w http.ResponseWriter, status int) {
 func Run(path *vars.Path) error {
 	logs.Info("程序工作路径为:", path.Root)
 
-	conf, err := loadConfig(filepath.Join(path.ConfDir, configFilename))
+	conf, err := loadConfig(path.AppConfigFile)
 	if err != nil {
+		return err
+	}
+	if err := conf.sanitize(); err != nil {
+		err.File = path.AppConfigFile
 		return err
 	}
 

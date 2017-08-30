@@ -36,21 +36,40 @@ type webhook struct {
 	RepoURL   string `json:"repoURL"`          // 远程仓库的地址
 }
 
-func (w *webhook) sanitize() error {
+func (w *webhook) sanitize() *data.FieldError {
 	if len(w.Method) == 0 {
 		w.Method = http.MethodPost
 	}
 
 	switch {
 	case len(w.URL) == 0 || w.URL[0] != '/':
-		return &data.FieldError{File: configFilename, Field: "webhook.URL", Message: "不能为空且只能以 / 开头"}
+		return &data.FieldError{Field: "webhook.URL", Message: "不能为空且只能以 / 开头"}
 	case w.Frequency < 0:
-		return &data.FieldError{File: configFilename, Field: "webhook.frequency", Message: "不能小于 0"}
+		return &data.FieldError{Field: "webhook.frequency", Message: "不能小于 0"}
 	case len(w.RepoURL) == 0:
-		return &data.FieldError{File: configFilename, Field: "webhook.repoURL", Message: "不能为空"}
+		return &data.FieldError{Field: "webhook.repoURL", Message: "不能为空"}
 	}
 
 	return nil
+}
+
+func (conf *config) sanitize() *data.FieldError {
+	switch {
+	case conf.HTTPS && conf.HTTPState != "disable" && conf.HTTPState != "default" && conf.HTTPState != "redirect":
+		return &data.FieldError{Field: "httpState", Message: "无效的取值"}
+	case conf.HTTPS && conf.HTTPState != "disable" && conf.Port == httpPort:
+		return &data.FieldError{Field: "port", Message: "80 端口已经被被监听"}
+	case conf.HTTPS && !utils.FileExists(conf.CertFile):
+		return &data.FieldError{Field: "certFile", Message: "不能为空"}
+	case conf.HTTPS && !utils.FileExists(conf.KeyFile):
+		return &data.FieldError{Field: "keyFile", Message: "不能为空"}
+	case len(conf.AdminURL) == 0 || conf.AdminURL[0] != '/':
+		return &data.FieldError{Field: "adminURL", Message: "不能为空只能以 / 开头"}
+	case len(conf.AdminPassword) == 0:
+		return &data.FieldError{Field: "adminPassword", Message: "不能为空"}
+	}
+
+	return conf.Webhook.sanitize()
 }
 
 func loadConfig(path string) (*config, error) {
@@ -61,25 +80,6 @@ func loadConfig(path string) (*config, error) {
 
 	conf := &config{}
 	if err = json.Unmarshal(bs, conf); err != nil {
-		return nil, err
-	}
-
-	switch {
-	case conf.HTTPS && conf.HTTPState != "disable" && conf.HTTPState != "default" && conf.HTTPState != "redirect":
-		return nil, &data.FieldError{File: configFilename, Field: "httpState", Message: "无效的取值"}
-	case conf.HTTPS && conf.HTTPState != "disable" && conf.Port == httpPort:
-		return nil, &data.FieldError{File: configFilename, Field: "port", Message: "80 端口已经被被监听"}
-	case conf.HTTPS && !utils.FileExists(conf.CertFile):
-		return nil, &data.FieldError{File: configFilename, Field: "certFile", Message: "不能为空"}
-	case conf.HTTPS && !utils.FileExists(conf.KeyFile):
-		return nil, &data.FieldError{File: configFilename, Field: "keyFile", Message: "不能为空"}
-	case len(conf.AdminURL) == 0 || conf.AdminURL[0] != '/':
-		return nil, &data.FieldError{File: configFilename, Field: "adminURL", Message: "不能为空只能以 / 开头"}
-	case len(conf.AdminPassword) == 0:
-		return nil, &data.FieldError{File: configFilename, Field: "adminPassword", Message: "不能为空"}
-	}
-
-	if err := conf.Webhook.sanitize(); err != nil {
 		return nil, err
 	}
 
