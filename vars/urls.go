@@ -14,14 +14,14 @@ const (
 	root   = "/"     // 根地址
 	suffix = ".html" // 地址后缀
 
-	index    = root + "index"    // 列表页地址
-	post     = root + "posts"    // 文章详细页地址
-	tags     = root + "tags"     // 标签列表页地址
-	tag      = root + "tags"     // 标签详细页地址
+	index    = root + "index"    // 列表页
+	post     = root + "posts"    // 文章详细页
+	tags     = root + "tags"     // 标签列表页
+	tag      = root + "tags"     // 标签详细页
 	links    = root + "links"    // 友情链接
 	archives = root + "archives" // 归档
-	search   = root + "search"   // 搜索 URL，会加上 Suffix 作为后缀
-	themes   = root + "themes"   // 主题地址
+	search   = root + "search"   // 搜索
+	themes   = root + "themes"   // 主题
 )
 
 var (
@@ -56,12 +56,10 @@ func PostsURL(page int) string {
 // 首页为返回 /index.html
 // 其它页面返回 /index.html?page=xx
 func IndexURL(page int) string {
-	url := indexURL
-	if page > 1 {
-		url += "?page=" + strconv.Itoa(page)
+	if page <= 1 {
+		return indexURL
 	}
-
-	return url
+	return indexURL + "?page=" + strconv.Itoa(page)
 }
 
 // TagURL 构建标签的 URL
@@ -86,7 +84,8 @@ func ArchivesURL() string {
 
 // SearchURL 构建搜索页面的 URL
 func SearchURL(q string, page int) string {
-	url := searchURL
+	url := searchURL // 以下的 url+= 会改变 url 本身的值，所以不能直接使用 searchURL
+
 	if len(q) > 0 {
 		url += "?q=" + q
 	}
