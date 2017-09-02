@@ -30,7 +30,7 @@ type Config struct {
 	Title           string    `yaml:"title"`                 // 网站标题
 	Language        string    `yaml:"language"`              // 语言标记，比如 zh-cmn-Hans
 	Subtitle        string    `yaml:"subtitle,omitempty"`    // 网站副标题
-	URL             string    `yaml:"url"`                   // 网站的地址，不包含最后的斜杠，仅在生成地址时使用
+	URL             string    `yaml:"url"`                   // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
 	Keywords        string    `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
 	Description     string    `yaml:"description,omitempty"` // 默认情况下的 descrription 内容
 	Beian           string    `yaml:"beian,omitempty"`       // 备案号

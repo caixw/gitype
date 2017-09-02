@@ -39,7 +39,7 @@ func PostURL(slug string) string {
 // 其它页面返回 /index.html?page=xx
 func PostsURL(page int) string {
 	if page <= 1 {
-		return "/"
+		return root
 	}
 	return index + suffix + "?page=" + strconv.Itoa(page)
 }
