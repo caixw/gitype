@@ -17,7 +17,8 @@ import (
 
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
-	path   *vars.Path
+	path *vars.Path
+
 	Config *Config  // 配置内容
 	Theme  *Theme   // 当前主题
 	Tags   []*Tag   // map 对顺序是未定的，所以使用 slice

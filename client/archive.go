@@ -49,7 +49,12 @@ func (client *Client) initArchives() error {
 	} // end for
 
 	sort.SliceStable(archives, func(i, j int) bool {
-		return archives[i].date > archives[j].date
+		less := archives[i].date > archives[j].date
+		if client.data.Config.Archive.Order == data.ArchiveOrderDesc {
+			less = !less
+		}
+
+		return less
 	})
 
 	client.archives = archives

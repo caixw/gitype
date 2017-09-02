@@ -25,6 +25,12 @@ const (
 	OutdatedTypeModified = "modified" // 以修改时间作为对比
 )
 
+// 归档的排序方式
+const (
+	ArchiveOrderDesc = "desc"
+	ArchiveOrderAsc  = "asc"
+)
+
 // Config 一些基本配置项。
 type Config struct {
 	Title           string    `yaml:"title"`                 // 网站标题
@@ -43,7 +49,7 @@ type Config struct {
 	Type            string    `yaml:"type,omitempty"`        // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
 	Icon            *Icon     `yaml:"icon,omitempty"`        // 程序默认的图标
 	Menus           []*Link   `yaml:"menus,omitempty"`       // 导航菜单
-	Archive         *Archive  `yaml:"archive,omitempty"`     // 归档页的配置内容
+	Archive         *Archive  `yaml:"archive"`               // 归档页的配置内容
 	Outdated        *Outdated `yaml:"outdated,omitempty"`    // 文章过时内容的设置
 
 	// 一些默认值，可在各自的配置中覆盖此值
@@ -71,8 +77,9 @@ type Outdated struct {
 
 // Archive 存档页的配置内容
 type Archive struct {
-	Type   string `yaml:"type"`   // 存档的分类方式，可以为 year 或是 month
-	Format string `yaml:"format"` // 标题的格式化字符串
+	Order  string `yaml:"order"`            // 排序方式
+	Type   string `yaml:"type,omitempty"`   // 存档的分类方式，可以为 year 或是 month
+	Format string `yaml:"format,omitempty"` // 标题的格式化字符串
 }
 
 // Opensearch 相关定义
@@ -168,8 +175,8 @@ func (conf *Config) sanitize() *FieldError {
 	if conf.Archive == nil {
 		return &FieldError{Message: "不能为空", Field: "archive"}
 	}
-	if conf.Archive.Type != ArchiveTypeMonth && conf.Archive.Type != ArchiveTypeYear {
-		return &FieldError{Message: "取值不正确", Field: "archive.type"}
+	if err := conf.Archive.sanitize(); err != nil {
+		return err
 	}
 
 	// outdated
@@ -220,6 +227,26 @@ func (conf *Config) sanitize() *FieldError {
 		if err := link.sanitize(); err != nil {
 			err.Field = "Menus[" + strconv.Itoa(index) + "]." + err.Field
 			return err
+		}
+	}
+
+	return nil
+}
+
+func (a *Archive) sanitize() *FieldError {
+	if len(a.Type) == 0 {
+		a.Type = ArchiveTypeYear
+	} else {
+		if a.Type != ArchiveTypeMonth && a.Type != ArchiveTypeYear {
+			return &FieldError{Message: "取值不正确", Field: "archive.type"}
+		}
+	}
+
+	if len(a.Order) == 0 {
+		a.Order = ArchiveOrderAsc
+	} else {
+		if a.Order != ArchiveOrderAsc && a.Order != ArchiveOrderDesc {
+			return &FieldError{Message: "取值不正确", Field: "archive.order"}
 		}
 	}
 
