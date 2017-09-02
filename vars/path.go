@@ -10,6 +10,15 @@ import "path/filepath"
 const (
 	appConfigFilename  = "app.json"
 	logsConfigFilename = "logs.xml"
+
+	configFilename = "config.yaml"
+	tagsFilename   = "tags.yaml"
+	linksFilename  = "links.yaml"
+
+	PostMetaFilename    = "meta.yaml"
+	postContentFilename = "content.yaml"
+
+	themeMetaFilename = "theme.yaml"
 )
 
 // 一些目录名称的定义
@@ -38,6 +47,10 @@ type Path struct {
 
 	AppConfigFile  string
 	LogsConfigFile string
+
+	MetaConfigFile string
+	MetaLinksFile  string
+	MetaTagsFile   string
 }
 
 // NewPath 声明一个新的 Path
@@ -60,6 +73,10 @@ func NewPath(root string) *Path {
 	p.AppConfigFile = p.ConfPath(appConfigFilename)
 	p.LogsConfigFile = p.ConfPath(logsConfigFilename)
 
+	p.MetaConfigFile = p.MetaPath(configFilename)
+	p.MetaLinksFile = p.MetaPath(linksFilename)
+	p.MetaTagsFile = p.MetaPath(tagsFilename)
+
 	return p
 }
 
@@ -71,4 +88,28 @@ func (p *Path) MetaPath(file string) string {
 // ConfPath 获取 conf/ 下的文件
 func (p *Path) ConfPath(file string) string {
 	return filepath.Join(p.ConfDir, file)
+}
+
+// ThemeMetaPath 返回指定主题下的描述文件
+func (p *Path) ThemeMetaPath(theme string) string {
+	return filepath.Join(p.ThemesDir, theme, themeMetaFilename)
+}
+
+// PostPath 返回某一篇文章下的文件名
+func (p *Path) PostPath(slug, filename string) string {
+	slug = filepath.FromSlash(slug) // slug 有可能带路径分隔符
+	return filepath.Join(p.PostsDir, slug, filename)
+}
+
+// PostMetaPath 返回某一篇文章下的 Meta.yaml 文件地址
+func (p *Path) PostMetaPath(slug string) string {
+	return p.PostPath(slug, PostMetaFilename)
+}
+
+// PostContentPath 返回某一篇文章下的文章内容的文件地址
+func (p *Path) PostContentPath(slug string, filename string) string {
+	if len(filename) == 0 {
+		filename = postContentFilename
+	}
+	return p.PostPath(slug, filename)
 }

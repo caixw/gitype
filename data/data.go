@@ -7,18 +7,12 @@ package data
 
 import (
 	"io/ioutil"
-	"path/filepath"
 	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v2"
 
 	"github.com/caixw/typing/vars"
-)
-
-const (
-	tagsFilename  = "tags.yaml"
-	linksFilename = "links.yaml"
 )
 
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
@@ -56,30 +50,30 @@ func Load(path *vars.Path) (*Data, error) {
 // 加载所有的文件
 func (d *Data) loadFiles() error {
 	tags := make([]*Tag, 0, 100)
-	if err := loadYamlFile(d.path.MetaPath(tagsFilename), &tags); err != nil {
+	if err := loadYamlFile(d.path.MetaTagsFile, &tags); err != nil {
 		return err
 	}
 	d.Tags = tags
 
 	links := make([]*Link, 0, 20)
-	if err := loadYamlFile(d.path.MetaPath(linksFilename), &links); err != nil {
+	if err := loadYamlFile(d.path.MetaLinksFile, &links); err != nil {
 		return err
 	}
 	d.Links = links
 
 	config := &Config{}
-	if err := loadYamlFile(d.path.MetaPath(confFilename), config); err != nil {
+	if err := loadYamlFile(d.path.MetaConfigFile, config); err != nil {
 		return err
 	}
 	d.Config = config
 
-	posts, err := loadPosts(d.path.PostsDir)
+	posts, err := loadPosts(d.path)
 	if err != nil {
 		return err
 	}
 	d.Posts = posts
 
-	themes, err := loadThemes(d.path.ThemesDir)
+	themes, err := loadThemes(d.path)
 	if err != nil {
 		return err
 	}
@@ -92,7 +86,7 @@ func (d *Data) loadFiles() error {
 func (d *Data) sanitize() error {
 	for index, tag := range d.Tags {
 		if err := tag.sanitize(); err != nil {
-			err.File = tagsFilename
+			err.File = d.path.MetaTagsFile
 			err.Field = "[" + strconv.Itoa(index) + "]." + err.Field
 			return err
 		}
@@ -100,19 +94,20 @@ func (d *Data) sanitize() error {
 
 	for index, link := range d.Links {
 		if err := link.sanitize(); err != nil {
-			err.File = linksFilename
+			err.File = d.path.MetaLinksFile
 			err.Field = "[" + strconv.Itoa(index) + "]." + err.Field
 			return err
 		}
 	}
 
 	if err := d.Config.sanitize(); err != nil {
+		err.Field = d.path.MetaConfigFile
 		return err
 	}
 
 	for _, theme := range d.Themes {
 		if err := theme.sanitize(); err != nil {
-			err.File = filepath.Join(theme.Path, theme.ID)
+			err.File = theme.Path
 			return err
 		}
 	}
@@ -137,7 +132,7 @@ func (d *Data) sanitize2() error {
 		}
 	}
 	if d.Theme == nil {
-		return &FieldError{File: confFilename, Message: "该主题并不存在", Field: "theme"}
+		return &FieldError{File: d.path.MetaConfigFile, Message: "该主题并不存在", Field: "theme"}
 	}
 
 	// 将标签的修改时间设置为网站的上线时间

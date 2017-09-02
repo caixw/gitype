@@ -14,11 +14,6 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-const (
-	postMetaFilename    = "meta.yaml"
-	postContentFilename = "content.html"
-)
-
 // 表示 Post.Order 的各类值
 const (
 	orderTop     = "top"     // 置顶
@@ -50,7 +45,8 @@ type Post struct {
 	Template string  `yaml:"template,omitempty"` // 使用的模板
 }
 
-func loadPosts(dir string) ([]*Post, error) {
+func loadPosts(path *vars.Path) ([]*Post, error) {
+	dir := path.PostsDir
 	paths := make([]string, 0, 100)
 
 	// 遍历 data/posts 目录，查找所有的 meta.yaml 文章。
@@ -59,7 +55,7 @@ func loadPosts(dir string) ([]*Post, error) {
 			return err
 		}
 
-		if info.Name() == postMetaFilename {
+		if info.Name() == vars.PostMetaFilename {
 			paths = append(paths, path)
 		}
 		return nil
@@ -70,11 +66,10 @@ func loadPosts(dir string) ([]*Post, error) {
 	}
 
 	// 开始加载文章的具体内容。
-	dir = filepath.Clean(dir)
 	posts := make([]*Post, 0, len(paths))
 	for _, p := range paths {
 		p = filepath.Clean(p)
-		post, err := loadPost(dir, p)
+		post, err := loadPost(path, p)
 		if err != nil {
 			return nil, err
 		}
@@ -85,7 +80,8 @@ func loadPosts(dir string) ([]*Post, error) {
 	return posts, nil
 }
 
-func loadPost(postsDir, path string) (*Post, error) {
+func loadPost(pp *vars.Path, path string) (*Post, error) {
+	postsDir := filepath.Clean(pp.PostsDir)
 	dir := filepath.Dir(path)                 // 获取路径部分
 	slug := strings.TrimPrefix(dir, postsDir) // 获取相对于 data/posts 的名称
 	slug = strings.Trim(filepath.ToSlash(slug), "/")
@@ -96,15 +92,13 @@ func loadPost(postsDir, path string) (*Post, error) {
 	}
 	p.Slug = slug
 
-	// path
-	if len(p.Path) == 0 {
-		p.Path = postContentFilename
-	}
-	data, err := ioutil.ReadFile(filepath.Join(dir, p.Path))
+	// 加载内容
+	data, err := ioutil.ReadFile(pp.PostContentPath(slug, p.Path))
 	if err != nil {
 		return nil, &FieldError{File: p.Slug, Message: err.Error(), Field: "path"}
 	}
 	p.Content = string(data)
+	p.Path = ""
 
 	return p, nil
 }

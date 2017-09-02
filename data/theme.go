@@ -9,9 +9,9 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"sort"
-)
 
-const themeMetaFile = "theme.yaml"
+	"github.com/caixw/typing/vars"
+)
 
 // Theme 表示主题信息
 type Theme struct {
@@ -24,7 +24,8 @@ type Theme struct {
 	Path        string  `yaml:"-"`           // 主题所在的目录
 }
 
-func loadThemes(dir string) ([]*Theme, error) {
+func loadThemes(path *vars.Path) ([]*Theme, error) {
+	dir := path.ThemesDir
 	fs, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return nil, err
@@ -39,7 +40,7 @@ func loadThemes(dir string) ([]*Theme, error) {
 		if !file.IsDir() {
 			continue
 		}
-		theme, err := loadTheme(dir, file.Name())
+		theme, err := loadTheme(path, file.Name())
 		if err != nil {
 			return nil, err
 		}
@@ -53,17 +54,16 @@ func loadThemes(dir string) ([]*Theme, error) {
 	return themes, nil
 }
 
-// dir 主题所在的目录
 // id 主题当前目录名称
-func loadTheme(dir, id string) (*Theme, error) {
-	path := filepath.Join(dir, id, themeMetaFile)
+func loadTheme(path *vars.Path, id string) (*Theme, error) {
+	p := path.ThemeMetaPath(id)
 
 	theme := &Theme{}
-	if err := loadYamlFile(path, theme); err != nil {
+	if err := loadYamlFile(p, theme); err != nil {
 		return nil, err
 	}
 
-	theme.Path = filepath.Dir(path)
+	theme.Path = filepath.Dir(p)
 	theme.ID = id
 
 	return theme, nil
@@ -71,7 +71,7 @@ func loadTheme(dir, id string) (*Theme, error) {
 
 func (theme *Theme) sanitize() *FieldError {
 	if len(theme.Name) == 0 {
-		return &FieldError{File: filepath.Join(theme.Path, theme.ID), Message: "不能为空", Field: "name"}
+		return &FieldError{Message: "不能为空", Field: "name"}
 	}
 
 	if theme.Author != nil {

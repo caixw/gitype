@@ -13,8 +13,6 @@ import (
 	"github.com/issue9/is"
 )
 
-const confFilename = "config.yaml"
-
 // 归档的类型
 const (
 	ArchiveTypeYear  = "year"
@@ -113,20 +111,20 @@ type Sitemap struct {
 
 func (conf *Config) sanitize() *FieldError {
 	if conf.PageSize <= 0 {
-		return &FieldError{File: confFilename, Message: "必须为大于零的整数", Field: "pageSize"}
+		return &FieldError{Message: "必须为大于零的整数", Field: "pageSize"}
 	}
 
 	if len(conf.LongDateFormat) == 0 {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "longDateFormat"}
+		return &FieldError{Message: "不能为空", Field: "longDateFormat"}
 	}
 
 	if len(conf.ShortDateFormat) == 0 {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "shortDateFormat"}
+		return &FieldError{Message: "不能为空", Field: "shortDateFormat"}
 	}
 
 	t, err := vars.ParseDate(conf.UptimeFormat)
 	if err != nil {
-		return &FieldError{File: confFilename, Message: err.Error(), Field: "uptimeFormat"}
+		return &FieldError{Message: err.Error(), Field: "uptimeFormat"}
 	}
 	conf.Uptime = t
 
@@ -137,7 +135,6 @@ func (conf *Config) sanitize() *FieldError {
 	// icon
 	if conf.Icon != nil {
 		if err := conf.Icon.sanitize(); err != nil {
-			err.File = confFilename
 			err.Field = "icon." + err.Field
 			return err
 		}
@@ -145,18 +142,18 @@ func (conf *Config) sanitize() *FieldError {
 
 	// Author
 	if conf.Author == nil {
-		return &FieldError{File: confFilename, Message: "必须指定作者", Field: "author"}
+		return &FieldError{Message: "必须指定作者", Field: "author"}
 	}
 	if len(conf.Author.Name) == 0 {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "author.name"}
+		return &FieldError{Message: "不能为空", Field: "author.name"}
 	}
 
 	if len(conf.Title) == 0 {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "title"}
+		return &FieldError{Message: "不能为空", Field: "title"}
 	}
 
 	if !is.URL(conf.URL) {
-		return &FieldError{File: confFilename, Message: "不是一个合法的域名或 IP", Field: "url"}
+		return &FieldError{Message: "不是一个合法的域名或 IP", Field: "url"}
 	}
 	if strings.HasSuffix(conf.URL, "/") {
 		conf.URL = conf.URL[:len(conf.URL)-1]
@@ -164,15 +161,15 @@ func (conf *Config) sanitize() *FieldError {
 
 	// theme
 	if len(conf.Theme) == 0 {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "theme"}
+		return &FieldError{Message: "不能为空", Field: "theme"}
 	}
 
 	// archive
 	if conf.Archive == nil {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "archive"}
+		return &FieldError{Message: "不能为空", Field: "archive"}
 	}
 	if conf.Archive.Type != ArchiveTypeMonth && conf.Archive.Type != ArchiveTypeYear {
-		return &FieldError{File: confFilename, Message: "取值不正确", Field: "archive.type"}
+		return &FieldError{Message: "取值不正确", Field: "archive.type"}
 	}
 
 	// outdated
@@ -184,7 +181,7 @@ func (conf *Config) sanitize() *FieldError {
 
 	// license
 	if conf.License == nil {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "license"}
+		return &FieldError{Message: "不能为空", Field: "license"}
 	}
 	if err := conf.License.sanitize(); err != nil {
 		return err
@@ -221,7 +218,6 @@ func (conf *Config) sanitize() *FieldError {
 	// Menus
 	for index, link := range conf.Menus {
 		if err := link.sanitize(); err != nil {
-			err.File = confFilename
 			err.Field = "Menus[" + strconv.Itoa(index) + "]." + err.Field
 			return err
 		}
@@ -232,16 +228,16 @@ func (conf *Config) sanitize() *FieldError {
 
 func (o *Outdated) sanitize() *FieldError {
 	if o.Type != OutdatedTypeCreated && o.Type != OutdatedTypeModified {
-		return &FieldError{File: confFilename, Message: "无效的值", Field: "Outdated.Type"}
+		return &FieldError{Message: "无效的值", Field: "Outdated.Type"}
 	}
 
 	if len(o.Content) == 0 {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "Outdated.Content"}
+		return &FieldError{Message: "不能为空", Field: "Outdated.Content"}
 	}
 
 	dur, err := time.ParseDuration(o.DurationFormat)
 	if err != nil {
-		return &FieldError{File: confFilename, Message: err.Error(), Field: "Outdated.Duration"}
+		return &FieldError{Message: err.Error(), Field: "Outdated.Duration"}
 	}
 	o.Duration = int64(dur.Seconds())
 
@@ -250,10 +246,10 @@ func (o *Outdated) sanitize() *FieldError {
 
 func (rss *RSS) sanitize(conf *Config, typ string) *FieldError {
 	if rss.Size <= 0 {
-		return &FieldError{File: confFilename, Message: "必须大于 0", Field: typ + ".Size"}
+		return &FieldError{Message: "必须大于 0", Field: typ + ".Size"}
 	}
 	if len(rss.URL) == 0 {
-		return &FieldError{File: confFilename, Message: "不能为空", Field: typ + ".URL"}
+		return &FieldError{Message: "不能为空", Field: typ + ".URL"}
 	}
 
 	switch typ {
@@ -276,15 +272,15 @@ func (rss *RSS) sanitize(conf *Config, typ string) *FieldError {
 func (s *Sitemap) sanitize() *FieldError {
 	switch {
 	case len(s.URL) == 0:
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "Sitemap.URL"}
+		return &FieldError{Message: "不能为空", Field: "Sitemap.URL"}
 	case s.Priority > 1 || s.Priority < 0:
-		return &FieldError{File: confFilename, Message: "介于[0,1]之间的浮点数", Field: "Sitemap.priority"}
+		return &FieldError{Message: "介于[0,1]之间的浮点数", Field: "Sitemap.priority"}
 	case s.PostPriority > 1 || s.PostPriority < 0:
-		return &FieldError{File: confFilename, Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
+		return &FieldError{Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
 	case !isChangereq(s.Changefreq):
-		return &FieldError{File: confFilename, Message: "取值不正确", Field: "Sitemap.changefreq"}
+		return &FieldError{Message: "取值不正确", Field: "Sitemap.changefreq"}
 	case !isChangereq(s.PostChangefreq):
-		return &FieldError{File: confFilename, Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
+		return &FieldError{Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
 	}
 
 	if len(s.Type) == 0 {
@@ -298,11 +294,11 @@ func (s *Sitemap) sanitize() *FieldError {
 func (s *Opensearch) sanitize(conf *Config) *FieldError {
 	switch {
 	case len(s.URL) == 0:
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "Opensearch.URL"}
+		return &FieldError{Message: "不能为空", Field: "Opensearch.URL"}
 	case len(s.ShortName) == 0:
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "Opensearch.ShortName"}
+		return &FieldError{Message: "不能为空", Field: "Opensearch.ShortName"}
 	case len(s.Description) == 0:
-		return &FieldError{File: confFilename, Message: "不能为空", Field: "Opensearch.Description"}
+		return &FieldError{Message: "不能为空", Field: "Opensearch.Description"}
 	}
 
 	if len(s.Type) == 0 {

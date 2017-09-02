@@ -7,13 +7,15 @@ package data
 import (
 	"testing"
 
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
 
 func TestLoadTheme(t *testing.T) {
 	a := assert.New(t)
+	p := vars.NewPath("./testdata")
 
-	theme, err := loadTheme("./testdata/data/themes", "t1")
+	theme, err := loadTheme(p, "t1")
 	a.NotError(err).NotNil(theme)
 
 	a.Equal(theme.Name, "name")
