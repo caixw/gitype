@@ -24,9 +24,17 @@ const (
 	themes   = root + "themes"   // 主题地址
 )
 
+var (
+	linksURL    = links + suffix
+	indexURL    = index + suffix
+	tagsURL     = tags + suffix
+	archivesURL = archives + suffix
+	searchURL   = search + suffix
+)
+
 // LinksURL 生成友情链接的 URL
 func LinksURL() string {
-	return links + suffix
+	return linksURL
 }
 
 // PostURL 构建文章的 URL
@@ -41,14 +49,14 @@ func PostsURL(page int) string {
 	if page <= 1 {
 		return root
 	}
-	return index + suffix + "?page=" + strconv.Itoa(page)
+	return indexURL + "?page=" + strconv.Itoa(page)
 }
 
 // IndexURL 构建索引首页的 URL
 // 首页为返回 /index.html
 // 其它页面返回 /index.html?page=xx
 func IndexURL(page int) string {
-	url := index + suffix
+	url := indexURL
 	if page > 1 {
 		url += "?page=" + strconv.Itoa(page)
 	}
@@ -68,17 +76,17 @@ func TagURL(slug string, page int) string {
 
 // TagsURL 生成标签列表的 URL
 func TagsURL() string {
-	return tags + suffix
+	return tagsURL
 }
 
 // ArchivesURL 生成归档页面的 URL
 func ArchivesURL() string {
-	return archives + suffix
+	return archivesURL
 }
 
 // SearchURL 构建搜索页面的 URL
 func SearchURL(q string, page int) string {
-	url := search + suffix
+	url := searchURL
 	if len(q) > 0 {
 		url += "?q=" + q
 	}
