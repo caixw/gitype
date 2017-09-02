@@ -268,7 +268,6 @@ func (client *Client) getThemes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client.renderError(w, http.StatusNotFound)
-	return
 }
 
 // /search.html?q=key&page=2

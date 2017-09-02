@@ -27,7 +27,7 @@ const (
 	confDir = "conf"
 
 	postsDir  = "posts"
-	themesDir = "themes" // NOTE: 此值需要与 themes 保持一致
+	themesDir = "themes"
 	metaDir   = "meta"
 	rawsDir   = "raws"
 )
