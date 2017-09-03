@@ -23,25 +23,23 @@ const (
 
 // Post 表示文章的信息
 type Post struct {
-	Slug           string `yaml:"-"`                  // 唯一名称
-	Title          string `yaml:"title"`              // 标题
-	Created        int64  `yaml:"-"`                  // 创建时间，用时间戳，而不是 time.Time，方便模板用户打印数据
-	Modified       int64  `yaml:"-"`                  // 修改时间
-	Tags           []*Tag `yaml:"-"`                  // 关联的标签
-	Keywords       string `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
-	Order          string `yaml:"order,omitempty"`    // 排序方式
-	Summary        string `yaml:"summary"`            // 摘要，同时也作为 meta.description 的内容
-	Content        string `yaml:"path"`               // 内容，在没有内容之前，保存着 yaml 文件中的 path 对应的内容
-	CreatedFormat  string `yaml:"created"`            // 创建时间的字符串表示形式
-	ModifiedFormat string `yaml:"modified"`           // 修改时间的字符串表示形式
-	TagsString     string `yaml:"tags"`               // 关联标签的列表
-	Permalink      string `yaml:"-"`                  // 文章的唯一链接
-	Outdated       string `yaml:"-"`                  // 已过时文章的提示信息，这是一个动态的值，不能提前计算
+	Slug       string `yaml:"-"`               // 唯一名称
+	Title      string `yaml:"title"`           // 标题
+	Created    int64  `yaml:"-"`               // 创建时间，用时间戳，而不是 time.Time，方便模板用户打印数据
+	Modified   int64  `yaml:"-"`               // 修改时间
+	Tags       []*Tag `yaml:"-"`               // 关联的标签
+	Summary    string `yaml:"summary"`         // 摘要，同时也作为 meta.description 的内容
+	Content    string `yaml:"path"`            // 内容，在没有内容之前，保存着 yaml 文件中的 path 对应的内容
+	TagsString string `yaml:"tags"`            // 关联标签的列表
+	Permalink  string `yaml:"created"`         // 文章的唯一链接，同时当作 created 的原始值
+	Outdated   string `yaml:"modified"`        // 已过时文章的提示信息，这是一个动态的值，不能提前计算，同时当作 outdated 的原始值
+	Order      string `yaml:"order,omitempty"` // 排序方式
 
 	// 以下内容不存在时，则会使用全局的默认选项
 	Author   *Author `yaml:"author,omitempty"`   // 作者
 	License  *Link   `yaml:"license,omitempty"`  // 版本信息
 	Template string  `yaml:"template,omitempty"` // 使用的模板
+	Keywords string  `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
 }
 
 func loadPosts(path *vars.Path) ([]*Post, error) {
@@ -104,12 +102,27 @@ func loadPost(pp *vars.Path, path string) (*Post, error) {
 }
 
 func (p *Post) sanitize() *FieldError {
+	// created
+	// permalink 还用作其它功能，需要首先解析其值
+	created, err := vars.ParseDate(p.Permalink)
+	if err != nil {
+		return &FieldError{File: p.Slug, Message: err.Error(), Field: "created"}
+	}
+	p.Created = created
+	p.Permalink = ""
+
+	// modified
+	// outdated 还用作其它功能，需要首先解析其值
+	modified, err := vars.ParseDate(p.Outdated)
+	if err != nil {
+		return &FieldError{File: p.Slug, Message: err.Error(), Field: "modified"}
+	}
+	p.Modified = modified
+	p.Outdated = ""
+
 	if len(p.Title) == 0 {
 		return &FieldError{File: p.Slug, Message: "不能为空", Field: "title"}
 	}
-
-	// permalink
-	p.Permalink = vars.PostURL(p.Slug)
 
 	// content
 	if len(p.Content) == 0 {
@@ -125,21 +138,8 @@ func (p *Post) sanitize() *FieldError {
 		p.Keywords = strings.Join(keywords, ",")
 	}
 
-	// created
-	created, err := vars.ParseDate(p.CreatedFormat)
-	if err != nil {
-		return &FieldError{File: p.Slug, Message: err.Error(), Field: "created"}
-	}
-	p.Created = created
-	p.CreatedFormat = ""
-
-	// modified
-	modified, err := vars.ParseDate(p.ModifiedFormat)
-	if err != nil {
-		return &FieldError{File: p.Slug, Message: err.Error(), Field: "modified"}
-	}
-	p.Modified = modified
-	p.ModifiedFormat = ""
+	// permalink
+	p.Permalink = vars.PostURL(p.Slug)
 
 	// template
 	if len(p.Template) == 0 {
