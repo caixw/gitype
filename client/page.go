@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"time"
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
@@ -81,8 +82,8 @@ type info struct {
 	Language    string       // 页面语言
 	PostSize    int          // 总文章数量
 	Beian       string       // 备案号
-	Uptime      int64        // 上线时间
-	LastUpdated int64        // 最后更新时间
+	Uptime      time.Time    // 上线时间
+	LastUpdated time.Time    // 最后更新时间
 	RSS         *data.Link   // RSS，NOTICE:指针方便模板判断其值是否为空
 	Atom        *data.Link   // Atom
 	Opensearch  *data.Link   // Opensearch

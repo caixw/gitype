@@ -89,11 +89,11 @@ func addTagsToSitemap(w *xmlWriter, client *Client) error {
 	return nil
 }
 
-func addItemToSitemap(w *xmlWriter, loc, changefreq string, lastmod int64, priority float64) {
+func addItemToSitemap(w *xmlWriter, loc, changefreq string, lastmod time.Time, priority float64) {
 	w.writeStartElement("url", nil)
 
 	w.writeElement("loc", loc, nil)
-	w.writeElement("lastmod", formatUnix(lastmod, time.RFC3339), nil)
+	w.writeElement("lastmod", lastmod.Format(time.RFC3339), nil)
 	w.writeElement("changefreq", changefreq, nil)
 	w.writeElement("priority", strconv.FormatFloat(priority, 'f', 1, 32), nil)
 

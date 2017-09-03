@@ -33,7 +33,7 @@ type Client struct {
 	opensearch []byte
 	archives   []*archive
 
-	Created int64 // 当前数据的加载时间
+	Created time.Time // 当前数据的加载时间
 }
 
 // New 声明一个新的 Client 实例
@@ -43,11 +43,11 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 		return nil, err
 	}
 
-	now := time.Now().Unix()
+	now := time.Now()
 	client := &Client{
 		path:    path,
 		mux:     mux,
-		etag:    strconv.FormatInt(now, 10),
+		etag:    strconv.FormatInt(now.Unix(), 10),
 		Created: now,
 		data:    d,
 	}

@@ -6,6 +6,7 @@ package data
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/caixw/typing/vars"
 )
@@ -20,15 +21,15 @@ type Author struct {
 
 // Tag 描述标签信息
 type Tag struct {
-	Slug        string  `yaml:"slug"`            // 唯一名称
-	Title       string  `yaml:"title"`           // 名称
-	Color       string  `yaml:"color,omitempty"` // 标签颜色。若未指定，则继承父容器
-	Content     string  `yaml:"content"`         // 对该标签的详细描述
-	Posts       []*Post `yaml:"-"`               // 关联的文章
-	Keywords    string  `yaml:"-"`               // meta.keywords 标签的内容，如果为空，使用 Title 属性的值
-	Description string  `yaml:"-"`               // meta.description 标签的内容，若为空，则为 Config.Description
-	Modified    int64   `yaml:"-"`               // 所有文章中最迟修改的
-	Permalink   string  `yaml:"-"`               // 唯一链接，指向第一页
+	Slug        string    `yaml:"slug"`            // 唯一名称
+	Title       string    `yaml:"title"`           // 名称
+	Color       string    `yaml:"color,omitempty"` // 标签颜色。若未指定，则继承父容器
+	Content     string    `yaml:"content"`         // 对该标签的详细描述
+	Posts       []*Post   `yaml:"-"`               // 关联的文章
+	Keywords    string    `yaml:"-"`               // meta.keywords 标签的内容，如果为空，使用 Title 属性的值
+	Description string    `yaml:"-"`               // meta.description 标签的内容，若为空，则为 Config.Description
+	Modified    time.Time `yaml:"-"`               // 所有文章中最迟修改的
+	Permalink   string    `yaml:"-"`               // 唯一链接，指向第一页
 }
 
 // Link 描述链接的内容

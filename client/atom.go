@@ -57,7 +57,7 @@ func (client *Client) buildAtom() error {
 
 	w.writeElement("title", conf.Title, nil)
 	w.writeElement("subtitle", conf.Subtitle, nil)
-	w.writeElement("update", formatUnix(client.Created, time.RFC3339), nil)
+	w.writeElement("update", client.Created.Format(time.RFC3339), nil)
 
 	addPostsToAtom(w, client)
 
@@ -84,7 +84,7 @@ func addPostsToAtom(w *xmlWriter, client *Client) {
 
 		w.writeElement("title", p.Title, nil)
 
-		w.writeElement("update", formatUnix(p.Modified, time.RFC3339), nil)
+		w.writeElement("update", p.Modified.Format(time.RFC3339), nil)
 
 		w.writeElement("summary", p.Summary, map[string]string{
 			"type": "html",

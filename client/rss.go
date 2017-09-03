@@ -72,7 +72,7 @@ func addPostsToRSS(w *xmlWriter, client *Client) {
 
 		w.writeElement("link", client.url(p.Permalink), nil)
 		w.writeElement("title", p.Title, nil)
-		w.writeElement("pubDate", formatUnix(p.Created, time.RFC1123), nil)
+		w.writeElement("pubDate", p.Created.Format(time.RFC1123), nil)
 		w.writeElement("description", p.Summary, nil)
 
 		w.writeEndElement("item")

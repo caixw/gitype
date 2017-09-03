@@ -124,6 +124,9 @@ func (d *Data) sanitize() error {
 
 // 对各个数据再次进行检测，主要是一些关联数据的相互初始化
 func (d *Data) sanitize2() error {
+	// 对文章进行排序，需保证 created 已经被初始化
+	sortPosts(d.Posts)
+
 	// 检测配置文件中的主题是否存在
 	for _, theme := range d.Themes {
 		if theme.ID == d.Config.Theme {
@@ -182,7 +185,7 @@ func (d *Data) attachPostMeta() *FieldError {
 				post.Tags = append(post.Tags, tag)
 				tag.Posts = append(tag.Posts, post)
 
-				if tag.Modified < post.Modified {
+				if tag.Modified.Before(post.Modified) {
 					tag.Modified = post.Modified
 				}
 				break

@@ -21,7 +21,7 @@ func (client *Client) initArchives() error {
 	archives := make([]*archive, 0, 10)
 
 	for _, post := range client.data.Posts {
-		t := time.Unix(post.Created, 0)
+		t := post.Created
 		var date int64
 
 		switch client.data.Config.Archive.Type {

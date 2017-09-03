@@ -9,7 +9,7 @@ import "time"
 
 const (
 	// 主版本号，符合 semver 规范
-	mainVersion = "0.11.7"
+	mainVersion = "0.11.8"
 
 	// AppName 程序名称
 	AppName = "typing"
@@ -60,11 +60,6 @@ func CommitHash() string {
 }
 
 // ParseDate 分析时间字符串，将其转换成 unix 时间戳
-func ParseDate(format string) (int64, error) {
-	t, err := time.Parse(DateFormat, format)
-	if err != nil {
-		return 0, err
-	}
-
-	return t.Unix(), nil
+func ParseDate(format string) (time.Time, error) {
+	return time.Parse(DateFormat, format)
 }

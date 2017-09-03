@@ -53,6 +53,7 @@ func (client *Client) compileTemplate() error {
 	funcMap := template.FuncMap{
 		"strip":    stripTags,
 		"html":     htmlEscaped,
+		"unix":     unix,
 		"ldate":    client.longDateFormat,
 		"sdate":    client.shortDateFormat,
 		"rfc3339":  rfc3339DateFormat,
@@ -92,16 +93,21 @@ func (client *Client) checkTemplatesExists() error {
 	return nil
 }
 
-func rfc3339DateFormat(t int64) interface{} {
-	return time.Unix(t, 0).Format(time.RFC3339)
+func rfc3339DateFormat(t time.Time) interface{} {
+	return t.Format(time.RFC3339)
 }
 
-func (client *Client) longDateFormat(t int64) interface{} {
-	return time.Unix(t, 0).Format(client.data.Config.LongDateFormat)
+// 转换成 unix 时间戳
+func unix(t time.Time) interface{} {
+	return t.Unix()
 }
 
-func (client *Client) shortDateFormat(t int64) interface{} {
-	return time.Unix(t, 0).Format(client.data.Config.ShortDateFormat)
+func (client *Client) longDateFormat(t time.Time) interface{} {
+	return t.Format(client.data.Config.LongDateFormat)
+}
+
+func (client *Client) shortDateFormat(t time.Time) interface{} {
+	return t.Format(client.data.Config.ShortDateFormat)
 }
 
 // 将内容显示为 HTML 内容

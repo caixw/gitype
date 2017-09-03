@@ -82,13 +82,13 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Author = post.Author   // 文章可具体指定作者
 
 	od := client.data.Config.Outdated
-	now := time.Now().Unix()
+	now := time.Now()
 	if od != nil {
 		var outdated int64
 		if od.Type == data.OutdatedTypeCreated {
-			outdated = now - post.Created
+			outdated = now.Unix() - post.Created.Unix()
 		} else {
-			outdated = now - post.Modified
+			outdated = now.Unix() - post.Modified.Unix()
 		}
 		if outdated >= od.Duration {
 			// Outdated 是一个动态的值（其中的天数会变化），必须是在请求时生成。

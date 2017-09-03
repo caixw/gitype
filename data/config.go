@@ -40,7 +40,7 @@ type Config struct {
 	Keywords        string    `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
 	Description     string    `yaml:"description,omitempty"` // 默认情况下的 descrription 内容
 	Beian           string    `yaml:"beian,omitempty"`       // 备案号
-	Uptime          int64     `yaml:"-"`                     // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	Uptime          time.Time `yaml:"-"`                     // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
 	UptimeFormat    string    `yaml:"uptime"`                // 上线时间，字符串表示
 	PageSize        int       `yaml:"pageSize"`              // 每页显示的数量
 	LongDateFormat  string    `yaml:"longDateFormat"`        // 长时间的显示格式

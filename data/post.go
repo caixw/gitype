@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/caixw/typing/vars"
 )
@@ -23,17 +24,17 @@ const (
 
 // Post 表示文章的信息
 type Post struct {
-	Slug       string `yaml:"-"`               // 唯一名称
-	Title      string `yaml:"title"`           // 标题
-	Created    int64  `yaml:"-"`               // 创建时间，用时间戳，而不是 time.Time，方便模板用户打印数据
-	Modified   int64  `yaml:"-"`               // 修改时间
-	Tags       []*Tag `yaml:"-"`               // 关联的标签
-	Summary    string `yaml:"summary"`         // 摘要，同时也作为 meta.description 的内容
-	Content    string `yaml:"path"`            // 内容，在没有内容之前，保存着 yaml 文件中的 path 对应的内容
-	TagsString string `yaml:"tags"`            // 关联标签的列表
-	Permalink  string `yaml:"created"`         // 文章的唯一链接，同时当作 created 的原始值
-	Outdated   string `yaml:"modified"`        // 已过时文章的提示信息，这是一个动态的值，不能提前计算，同时当作 outdated 的原始值
-	Order      string `yaml:"order,omitempty"` // 排序方式
+	Slug       string    `yaml:"-"`               // 唯一名称
+	Title      string    `yaml:"title"`           // 标题
+	Created    time.Time `yaml:"-"`               // 创建时间
+	Modified   time.Time `yaml:"-"`               // 修改时间
+	Tags       []*Tag    `yaml:"-"`               // 关联的标签
+	Summary    string    `yaml:"summary"`         // 摘要，同时也作为 meta.description 的内容
+	Content    string    `yaml:"path"`            // 内容，在没有内容之前，保存着 yaml 文件中的 path 对应的内容
+	TagsString string    `yaml:"tags"`            // 关联标签的列表
+	Permalink  string    `yaml:"created"`         // 文章的唯一链接，同时当作 created 的原始值
+	Outdated   string    `yaml:"modified"`        // 已过时文章的提示信息，这是一个动态的值，不能提前计算，同时当作 modified 的原始值
+	Order      string    `yaml:"order,omitempty"` // 排序方式
 
 	// 以下内容不存在时，则会使用全局的默认选项
 	Author   *Author `yaml:"author,omitempty"`   // 作者
@@ -73,8 +74,6 @@ func loadPosts(path *vars.Path) ([]*Post, error) {
 
 		posts = append(posts, post)
 	}
-
-	sortPosts(posts)
 
 	return posts, nil
 }
@@ -156,17 +155,16 @@ func (p *Post) sanitize() *FieldError {
 	return nil
 }
 
+// 对文章进行排序，需保证 created 已经被初始化
 func sortPosts(posts []*Post) {
 	sort.SliceStable(posts, func(i, j int) bool {
 		switch {
-		case posts[i].Order == posts[j].Order:
-			return posts[i].Created >= posts[j].Created
 		case (posts[i].Order == orderTop) || (posts[j].Order == orderLast):
 			return true
 		case (posts[i].Order == orderLast) || (posts[j].Order == orderTop):
 			return false
 		default:
-			return posts[i].Created >= posts[j].Created
+			return posts[i].Created.After(posts[j].Created)
 		}
 	})
 }
