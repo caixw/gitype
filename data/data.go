@@ -118,7 +118,6 @@ func (d *Data) sanitize() error {
 			return err
 		}
 	}
-	sortPosts(d.Posts)
 
 	return nil
 }
@@ -151,8 +150,6 @@ func (d *Data) sanitize2() error {
 		if len(tag.Posts) == 0 {
 			continue
 		}
-
-		sortPosts(tag.Posts)
 		tags = append(tags, tag)
 	}
 	d.Tags = tags

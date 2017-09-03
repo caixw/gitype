@@ -77,6 +77,8 @@ func loadPosts(path *vars.Path) ([]*Post, error) {
 		posts = append(posts, post)
 	}
 
+	sortPosts(posts)
+
 	return posts, nil
 }
 
