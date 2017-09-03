@@ -97,3 +97,18 @@ func (client *Client) initOpensearch() error {
 
 	return nil
 }
+
+func (client *Client) initSitemap() error {
+	if client.data.Sitemap == nil {
+		return nil
+	}
+
+	s := client.data.Sitemap
+	client.patterns = append(client.patterns, s.URL)
+	client.mux.GetFunc(s.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, s.Type)
+		w.Write(s.Content)
+	}))
+
+	return nil
+}

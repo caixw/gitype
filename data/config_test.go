@@ -39,7 +39,7 @@ func TestRSS_sanitize(t *testing.T) {
 func TestSitemap_sanitize(t *testing.T) {
 	a := assert.New(t)
 
-	s := &Sitemap{}
+	s := &sitemapConfig{}
 	a.Error(s.sanitize())
 
 	s.URL = "url"

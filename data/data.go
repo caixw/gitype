@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"strconv"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v2"
 
@@ -17,7 +18,8 @@ import (
 
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
-	path *vars.Path
+	path    *vars.Path
+	Created time.Time
 
 	Config *Config  // 配置内容
 	Theme  *Theme   // 当前主题
@@ -28,12 +30,14 @@ type Data struct {
 
 	Archives   []*Archive // 存档信息
 	Opensearch *Opensearch
+	Sitemap    *Sitemap
 }
 
 // Load 函数用于加载一份新的数据。
 func Load(path *vars.Path) (*Data, error) {
 	d := &Data{
-		path: path,
+		path:    path,
+		Created: time.Now(),
 	}
 
 	if err := d.loadFiles(); err != nil {
@@ -216,6 +220,10 @@ func (d *Data) buildData() error {
 		return err
 	}
 
+	if err := d.buildSitemap(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -227,4 +235,8 @@ func loadYamlFile(path string, obj interface{}) error {
 	}
 
 	return yaml.Unmarshal(bs, obj)
+}
+
+func (d *Data) url(path string) string {
+	return d.Config.URL + path
 }

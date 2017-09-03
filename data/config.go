@@ -47,7 +47,7 @@ type Config struct {
 	// feeds
 	RSS        *RSS              `yaml:"rss,omitempty"`
 	Atom       *RSS              `yaml:"atom,omitempty"`
-	Sitemap    *Sitemap          `yaml:"sitemap,omitempty"`
+	Sitemap    *sitemapConfig    `yaml:"sitemap,omitempty"`
 	Opensearch *opensearchConfig `yaml:"opensearch,omitempty"`
 }
 
@@ -68,20 +68,6 @@ type RSS struct {
 	Size  int    `yaml:"size"`           // 显示数量
 	URL   string `yaml:"url"`            // 地址，不能包含域名
 	Type  string `yaml:"type,omitempty"` // mimeType
-}
-
-// Sitemap 表示 sitemap 的相关配置项
-type Sitemap struct {
-	URL        string  `yaml:"url"`                 // 展示给用户的地址，不能包含域名
-	XslURL     string  `yaml:"xslURL,omitempty"`    // 为 sitemap 指定一个 xsl 文件
-	Priority   float64 `yaml:"priority"`            // 默认的优先级
-	Changefreq string  `yaml:"changefreq"`          // 默认的更新频率
-	Type       string  `yaml:"type,omitempty"`      // mimeType
-	EnableTag  bool    `yaml:"enableTag,omitempty"` // 是否将标签相关的页面写入 sitemap
-
-	// 文章可以指定一个专门的值
-	PostPriority   float64 `yaml:"postPriority"`
-	PostChangefreq string  `yaml:"postChangefreq"`
 }
 
 func (conf *Config) sanitize() *FieldError {
@@ -235,45 +221,4 @@ func (rss *RSS) sanitize(conf *Config, typ string) *FieldError {
 	}
 
 	return nil
-}
-
-// 检测 sitemap 取值是否正确
-func (s *Sitemap) sanitize() *FieldError {
-	switch {
-	case len(s.URL) == 0:
-		return &FieldError{Message: "不能为空", Field: "Sitemap.URL"}
-	case s.Priority > 1 || s.Priority < 0:
-		return &FieldError{Message: "介于[0,1]之间的浮点数", Field: "Sitemap.priority"}
-	case s.PostPriority > 1 || s.PostPriority < 0:
-		return &FieldError{Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
-	case !isChangereq(s.Changefreq):
-		return &FieldError{Message: "取值不正确", Field: "Sitemap.changefreq"}
-	case !isChangereq(s.PostChangefreq):
-		return &FieldError{Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
-	}
-
-	if len(s.Type) == 0 {
-		s.Type = vars.ContentTypeXML
-	}
-
-	return nil
-}
-
-var changereqs = []string{
-	"never",
-	"yearly",
-	"monthly",
-	"weekly",
-	"daily",
-	"hourly",
-	"always",
-}
-
-func isChangereq(val string) bool {
-	for _, v := range changereqs {
-		if v == val {
-			return true
-		}
-	}
-	return false
 }

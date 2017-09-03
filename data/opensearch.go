@@ -29,9 +29,9 @@ type opensearchConfig struct {
 }
 
 // 用于生成一个符合 atom 规范的 XML 文本。
-func (client *Data) buildOpensearch() error {
+func (d *Data) buildOpensearch() error {
 	w := xmlwriter.New()
-	o := client.Config.Opensearch
+	o := d.Config.Opensearch
 
 	w.WriteStartElement("OpenSearchDescription", map[string]string{
 		"xmlns": "http://a9.com/-/spec/opensearch/1.1/",
@@ -53,12 +53,12 @@ func (client *Data) buildOpensearch() error {
 	}
 
 	w.WriteCloseElement("Url", map[string]string{
-		"type":     client.Config.Type,
+		"type":     d.Config.Type,
 		"template": vars.SearchURL("{searchTerms}", 0),
 	})
 
 	w.WriteElement("Developer", vars.AppName, nil)
-	w.WriteElement("Language", client.Config.Language, nil)
+	w.WriteElement("Language", d.Config.Language, nil)
 
 	w.WriteEndElement("OpenSearchDescription")
 
@@ -66,10 +66,10 @@ func (client *Data) buildOpensearch() error {
 	if err != nil {
 		return err
 	}
-	client.Opensearch = &Opensearch{
-		URL:     client.Config.Opensearch.URL,
-		Type:    client.Config.Opensearch.Type,
-		Title:   client.Config.Opensearch.Title,
+	d.Opensearch = &Opensearch{
+		URL:     d.Config.Opensearch.URL,
+		Type:    d.Config.Opensearch.Type,
+		Title:   d.Config.Opensearch.Title,
 		Content: bs,
 	}
 
