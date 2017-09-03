@@ -2,8 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package client 是对 data 数据的再次加工以及所有非固定路由的处理，
-// 方便重新加载数据时，可以直接释放整个 client 再重新生成。
+// Package client 客户路由处理
 package client
 
 import (

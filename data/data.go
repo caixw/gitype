@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package data 负责加载 data 目录下的数据，以及一些固有格式的转换，比如时间格式。
+// Package data 加载和再加工所有数据
 package data
 
 import (
