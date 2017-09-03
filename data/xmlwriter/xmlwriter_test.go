@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package client
+package xmlwriter
 
 import (
 	"bytes"
@@ -11,15 +11,15 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestWriter_writePI(t *testing.T) {
+func TestWriter_WritePI(t *testing.T) {
 	a := assert.New(t)
 	test := func(name string, kv map[string]string, want string) {
-		w := &xmlWriter{
+		w := &XMLWriter{
 			buf: new(bytes.Buffer),
 		}
 
-		w.writePI(name, kv)
-		bs, err := w.bytes()
+		w.WritePI(name, kv)
+		bs, err := w.Bytes()
 		a.NotError(err).Equal(string(bs), want)
 	}
 
@@ -27,15 +27,15 @@ func TestWriter_writePI(t *testing.T) {
 	test("xml-stylesheet", map[string]string{"type": "text/xsl"}, `<?xml-stylesheet type="text/xsl"?>`+"\n")
 }
 
-func TestWriter_writeElement(t *testing.T) {
+func TestWriter_WriteElement(t *testing.T) {
 	a := assert.New(t)
 	test := func(name, val string, kv map[string]string, want string) {
-		w := &xmlWriter{
+		w := &XMLWriter{
 			buf: new(bytes.Buffer),
 		}
 
-		w.writeElement(name, val, kv)
-		bs, err := w.bytes()
+		w.WriteElement(name, val, kv)
+		bs, err := w.Bytes()
 		a.NotError(err).Equal(string(bs), want)
 	}
 
@@ -44,15 +44,15 @@ func TestWriter_writeElement(t *testing.T) {
 	test("xml", "text", map[string]string{"type": "text/xsl"}, `<xml type="text/xsl">text</xml>`+"\n")
 }
 
-func TestWriter_writeCloseElement(t *testing.T) {
+func TestWriter_WriteCloseElement(t *testing.T) {
 	a := assert.New(t)
 	test := func(name string, kv map[string]string, want string) {
-		w := &xmlWriter{
+		w := &XMLWriter{
 			buf: new(bytes.Buffer),
 		}
 
-		w.writeCloseElement(name, kv)
-		bs, err := w.bytes()
+		w.WriteCloseElement(name, kv)
+		bs, err := w.Bytes()
 		a.NotError(err).Equal(string(bs), want)
 	}
 

@@ -226,7 +226,7 @@ func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	p.Keywords = "归档,存档,archive,archives"
 	p.Description = "网站的归档列表，按时间进行排序"
 	p.Canonical = vars.ArchivesURL()
-	p.Archives = client.archives
+	p.Archives = client.data.Archives
 
 	p.render(w, "archives", nil)
 }

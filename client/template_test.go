@@ -7,27 +7,14 @@ package client
 import (
 	"testing"
 
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
 
 func TestIsIgnoreThemeFile(t *testing.T) {
 	a := assert.New(t)
-	a.True(isIgnoreThemeFile(templateExtension))
+	a.True(isIgnoreThemeFile(vars.TemplateExtension))
 	a.True(isIgnoreThemeFile(".yaml"))
 	a.False(isIgnoreThemeFile(".txt"))
 	a.False(isIgnoreThemeFile(".css"))
-}
-
-func TestStripTags(t *testing.T) {
-	a := assert.New(t)
-
-	tests := map[string]string{
-		"<div>str</div>":        "str",
-		"str<br />":             "str",
-		"<div><p>str</p></div>": "str",
-	}
-
-	for expr, val := range tests {
-		a.Equal(stripTags(expr), val, "测试[%v]时出错", expr)
-	}
 }

@@ -14,7 +14,7 @@ import (
 func TestRSS_sanitize(t *testing.T) {
 	a := assert.New(t)
 
-	rss := &RSS{}
+	rss := &rssConfig{}
 	conf := &Config{
 		Title: "title",
 		RSS:   rss,
@@ -39,7 +39,7 @@ func TestRSS_sanitize(t *testing.T) {
 func TestSitemap_sanitize(t *testing.T) {
 	a := assert.New(t)
 
-	s := &Sitemap{}
+	s := &sitemapConfig{}
 	a.Error(s.sanitize())
 
 	s.URL = "url"

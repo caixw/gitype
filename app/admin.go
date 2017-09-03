@@ -54,7 +54,7 @@ func (a *app) renderAdminPage(w http.ResponseWriter, r *http.Request, message st
 	}
 
 	s := map[string]interface{}{
-		"lastUpdate": a.client.Created.Format(time.RFC3339),
+		"lastUpdate": a.client.Created().Format(time.RFC3339),
 		"homeURL":    home,
 		"message":    message,
 	}

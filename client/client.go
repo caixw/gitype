@@ -2,12 +2,11 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package client 是对 data 数据的再次加工以及所有非固定路由的处理，
-// 方便重新加载数据时，可以直接释放整个 client 再重新生成。
+// Package client 客户路由处理
 package client
 
 import (
-	"html/template"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -23,17 +22,7 @@ type Client struct {
 	mux      *mux.Mux
 	patterns []string // 记录所有的路由项，方便释放时删除
 	etag     string
-
-	// 由 data 延伸出的数据
-	info       *info
-	template   *template.Template // 主题编译后的模板
-	rss        []byte
-	atom       []byte
-	sitemap    []byte
-	opensearch []byte
-	archives   []*archive
-
-	Created time.Time // 当前数据的加载时间
+	info     *info
 }
 
 // New 声明一个新的 Client 实例
@@ -43,13 +32,11 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 		return nil, err
 	}
 
-	now := time.Now()
 	client := &Client{
-		path:    path,
-		mux:     mux,
-		etag:    strconv.FormatInt(now.Unix(), 10),
-		Created: now,
-		data:    d,
+		path: path,
+		mux:  mux,
+		etag: strconv.FormatInt(d.Created.Unix(), 10),
+		data: d,
 	}
 	client.info = client.newInfo()
 
@@ -60,8 +47,6 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 	}
 
 	// 依赖 data.Data 数据的相关操作
-	errFilter(client.compileTemplate)
-	errFilter(client.initArchives)
 	errFilter(client.initRSS)
 	errFilter(client.initAtom)
 	errFilter(client.initSitemap)
@@ -74,8 +59,9 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 	return client, nil
 }
 
-func (client *Client) url(path string) string {
-	return client.data.Config.URL + path
+// Created 返回当前数据的创建时间
+func (client *Client) Created() time.Time {
+	return client.data.Created
 }
 
 // Free 释放 Client 内容
@@ -83,4 +69,63 @@ func (client *Client) Free() {
 	for _, pattern := range client.patterns {
 		client.mux.Remove(pattern)
 	}
+}
+
+func (client *Client) initOpensearch() error {
+	if client.data.Opensearch == nil {
+		return nil
+	}
+
+	o := client.data.Opensearch
+	client.patterns = append(client.patterns, o.URL)
+	client.mux.GetFunc(o.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, o.Type)
+		w.Write(o.Content)
+	}))
+
+	return nil
+}
+
+func (client *Client) initSitemap() error {
+	if client.data.Sitemap == nil {
+		return nil
+	}
+
+	s := client.data.Sitemap
+	client.patterns = append(client.patterns, s.URL)
+	client.mux.GetFunc(s.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, s.Type)
+		w.Write(s.Content)
+	}))
+
+	return nil
+}
+
+func (client *Client) initRSS() error {
+	if client.data.RSS == nil {
+		return nil
+	}
+
+	rss := client.data.RSS
+	client.patterns = append(client.patterns, rss.URL)
+	client.mux.GetFunc(rss.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, rss.Type)
+		w.Write(rss.Content)
+	}))
+
+	return nil
+}
+
+func (client *Client) initAtom() error {
+	if client.data.Atom == nil { // 不需要生成 atom
+		return nil
+	}
+
+	atom := client.data.Atom
+	client.patterns = append(client.patterns, atom.URL)
+	client.mux.GetFunc(atom.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, atom.Type)
+		w.Write(atom.Content)
+	}))
+	return nil
 }

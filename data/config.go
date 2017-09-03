@@ -13,109 +13,79 @@ import (
 	"github.com/issue9/is"
 )
 
-// 归档的类型
-const (
-	ArchiveTypeYear  = "year"
-	ArchiveTypeMonth = "month"
-)
-
-// 文章是否过时的比较方式
-const (
-	OutdatedTypeCreated  = "created"  // 以创建时间作为对比
-	OutdatedTypeModified = "modified" // 以修改时间作为对比
-)
-
-// 归档的排序方式
-const (
-	ArchiveOrderDesc = "desc"
-	ArchiveOrderAsc  = "asc"
-)
-
-// Config 一些基本配置项。
+// Config 配置信息
 type Config struct {
-	Title           string    `yaml:"title"`                 // 网站标题
-	Language        string    `yaml:"language"`              // 语言标记，比如 zh-cmn-Hans
-	Subtitle        string    `yaml:"subtitle,omitempty"`    // 网站副标题
-	URL             string    `yaml:"url"`                   // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
-	Keywords        string    `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
-	Description     string    `yaml:"description,omitempty"` // 默认情况下的 descrription 内容
-	Beian           string    `yaml:"beian,omitempty"`       // 备案号
-	Uptime          time.Time `yaml:"-"`                     // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
-	UptimeFormat    string    `yaml:"uptime"`                // 上线时间，字符串表示
-	PageSize        int       `yaml:"pageSize"`              // 每页显示的数量
-	LongDateFormat  string    `yaml:"longDateFormat"`        // 长时间的显示格式
-	ShortDateFormat string    `yaml:"shortDateFormat"`       // 短时间的显示格式
-	Theme           string    `yaml:"theme"`                 // 默认主题
-	Type            string    `yaml:"type,omitempty"`        // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
-	Icon            *Icon     `yaml:"icon,omitempty"`        // 程序默认的图标
-	Menus           []*Link   `yaml:"menus,omitempty"`       // 导航菜单
-	Archive         *Archive  `yaml:"archive"`               // 归档页的配置内容
-	Outdated        *Outdated `yaml:"outdated,omitempty"`    // 文章过时内容的设置
+	Title           string    // 网站标题
+	Language        string    // 语言标记，比如 zh-cmn-Hans
+	Subtitle        string    // 网站副标题
+	URL             string    // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
+	Keywords        string    // 默认情况下的 keyword 内容
+	Description     string    // 默认情况下的 descrription 内容
+	Beian           string    // 备案号
+	Uptime          time.Time // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	PageSize        int       // 每页显示的数量
+	LongDateFormat  string    // 长时间的显示格式
+	ShortDateFormat string    // 短时间的显示格式
+	Type            string    // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
+	Icon            *Icon     // 程序默认的图标
+	Menus           []*Link   // 导航菜单
+	Outdated        *Outdated // 文章过时内容的设置
+	Author          *Author   // 默认作者信息
+	License         *Link     // 默认版权信息
+}
+
+type config struct {
+	Title           string         `yaml:"title"`                 // 网站标题
+	Language        string         `yaml:"language"`              // 语言标记，比如 zh-cmn-Hans
+	Subtitle        string         `yaml:"subtitle,omitempty"`    // 网站副标题
+	URL             string         `yaml:"url"`                   // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
+	Keywords        string         `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
+	Description     string         `yaml:"description,omitempty"` // 默认情况下的 descrription 内容
+	Beian           string         `yaml:"beian,omitempty"`       // 备案号
+	Uptime          time.Time      `yaml:"-"`                     // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	UptimeFormat    string         `yaml:"uptime"`                // 上线时间，字符串表示
+	PageSize        int            `yaml:"pageSize"`              // 每页显示的数量
+	LongDateFormat  string         `yaml:"longDateFormat"`        // 长时间的显示格式
+	ShortDateFormat string         `yaml:"shortDateFormat"`       // 短时间的显示格式
+	Theme           string         `yaml:"theme"`                 // 默认主题
+	Type            string         `yaml:"type,omitempty"`        // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
+	Icon            *Icon          `yaml:"icon,omitempty"`        // 程序默认的图标
+	Menus           []*Link        `yaml:"menus,omitempty"`       // 导航菜单
+	Archive         *archiveConfig `yaml:"archive"`               // 归档页的配置内容
+	Outdated        *Outdated      `yaml:"outdated,omitempty"`    // 文章过时内容的设置
 
 	// 一些默认值，可在各自的配置中覆盖此值
 	Author  *Author `yaml:"author"`  // 默认作者信息
 	License *Link   `yaml:"license"` // 默认版权信息
 
 	// feeds
-	RSS        *RSS        `yaml:"rss,omitempty"`
-	Atom       *RSS        `yaml:"atom,omitempty"`
-	Sitemap    *Sitemap    `yaml:"sitemap,omitempty"`
-	Opensearch *Opensearch `yaml:"opensearch,omitempty"`
+	RSS        *rssConfig        `yaml:"rss,omitempty"`
+	Atom       *rssConfig        `yaml:"atom,omitempty"`
+	Sitemap    *sitemapConfig    `yaml:"sitemap,omitempty"`
+	Opensearch *opensearchConfig `yaml:"opensearch,omitempty"`
 }
 
-// Outdated 描述过时文章的提示信息。
-//
-// 理论上把有关 Outdated 的信息，直接在模板中对文章的创建时间戳进行比较，
-// 是比通过配置来比较会更加方便，也不会更任何的后期工作量。之所以把这个功能放在后端，
-// 而不是模板层面，是因为觉得模板应该只负责展示页面，而不是用于处理逻辑内容。
-type Outdated struct {
-	Type     string        `yaml:"type"`     // 比较的类型，创建时间或是修改时间
-	Duration time.Duration `yaml:"duration"` // 超时的时间，可以使用 time.Duration 的字符串值
-	Content  string        `yaml:"content"`  // 提示的内容，普通文字，不能为 html
+func newConfig(conf *config) *Config {
+	return &Config{
+		Title:           conf.Title,
+		Language:        conf.Language,
+		Subtitle:        conf.Subtitle,
+		URL:             conf.URL,
+		Keywords:        conf.Keywords,
+		Description:     conf.Description,
+		Beian:           conf.Beian,
+		Uptime:          conf.Uptime,
+		PageSize:        conf.PageSize,
+		LongDateFormat:  conf.LongDateFormat,
+		ShortDateFormat: conf.ShortDateFormat,
+		Type:            conf.Type,
+		Icon:            conf.Icon,
+		Menus:           conf.Menus,
+		Outdated:        conf.Outdated,
+	}
 }
 
-// Archive 存档页的配置内容
-type Archive struct {
-	Order  string `yaml:"order"`            // 排序方式
-	Type   string `yaml:"type,omitempty"`   // 存档的分类方式，可以为 year 或是 month
-	Format string `yaml:"format,omitempty"` // 标题的格式化字符串
-}
-
-// Opensearch 相关定义
-type Opensearch struct {
-	URL   string `yaml:"url"`             // opensearch 的地址，不能包含域名
-	Title string `yaml:"title,omitempty"` // 出现于 html>head>link.title 属性中
-
-	ShortName   string `yaml:"shortName"`
-	Description string `yaml:"description"`
-	LongName    string `yaml:"longName,omitempty"`
-	Type        string `yaml:"type,omitempty"` // mimeType 默认取 vars.ContentTypeOpensearch
-	Image       *Icon  `yaml:"image,omitempty"`
-}
-
-// RSS 表示 rss 或是 atom 等 feed 的信息
-type RSS struct {
-	Title string `yaml:"title"`          // 标题
-	Size  int    `yaml:"size"`           // 显示数量
-	URL   string `yaml:"url"`            // 地址，不能包含域名
-	Type  string `yaml:"type,omitempty"` // mimeType
-}
-
-// Sitemap 表示 sitemap 的相关配置项
-type Sitemap struct {
-	URL        string  `yaml:"url"`                 // 展示给用户的地址，不能包含域名
-	XslURL     string  `yaml:"xslURL,omitempty"`    // 为 sitemap 指定一个 xsl 文件
-	Priority   float64 `yaml:"priority"`            // 默认的优先级
-	Changefreq string  `yaml:"changefreq"`          // 默认的更新频率
-	Type       string  `yaml:"type,omitempty"`      // mimeType
-	EnableTag  bool    `yaml:"enableTag,omitempty"` // 是否将标签相关的页面写入 sitemap
-
-	// 文章可以指定一个专门的值
-	PostPriority   float64 `yaml:"postPriority"`
-	PostChangefreq string  `yaml:"postChangefreq"`
-}
-
-func (conf *Config) sanitize() *FieldError {
+func (conf *config) sanitize() *FieldError {
 	if conf.PageSize <= 0 {
 		return &FieldError{Message: "必须为大于零的整数", Field: "pageSize"}
 	}
@@ -230,123 +200,4 @@ func (conf *Config) sanitize() *FieldError {
 	}
 
 	return nil
-}
-
-func (a *Archive) sanitize() *FieldError {
-	if len(a.Type) == 0 {
-		a.Type = ArchiveTypeYear
-	} else {
-		if a.Type != ArchiveTypeMonth && a.Type != ArchiveTypeYear {
-			return &FieldError{Message: "取值不正确", Field: "archive.type"}
-		}
-	}
-
-	if len(a.Order) == 0 {
-		a.Order = ArchiveOrderAsc
-	} else {
-		if a.Order != ArchiveOrderAsc && a.Order != ArchiveOrderDesc {
-			return &FieldError{Message: "取值不正确", Field: "archive.order"}
-		}
-	}
-
-	return nil
-}
-
-func (o *Outdated) sanitize() *FieldError {
-	if o.Type != OutdatedTypeCreated && o.Type != OutdatedTypeModified {
-		return &FieldError{Message: "无效的值", Field: "Outdated.Type"}
-	}
-
-	if len(o.Content) == 0 {
-		return &FieldError{Message: "不能为空", Field: "Outdated.Content"}
-	}
-
-	return nil
-}
-
-func (rss *RSS) sanitize(conf *Config, typ string) *FieldError {
-	if rss.Size <= 0 {
-		return &FieldError{Message: "必须大于 0", Field: typ + ".Size"}
-	}
-	if len(rss.URL) == 0 {
-		return &FieldError{Message: "不能为空", Field: typ + ".URL"}
-	}
-
-	switch typ {
-	case "rss":
-		rss.Type = vars.ContentTypeRSS
-	case "atom":
-		rss.Type = vars.ContentTypeAtom
-	default:
-		panic("无效的 typ 值")
-	}
-
-	if len(rss.Title) == 0 {
-		rss.Title = conf.Title
-	}
-
-	return nil
-}
-
-// 检测 sitemap 取值是否正确
-func (s *Sitemap) sanitize() *FieldError {
-	switch {
-	case len(s.URL) == 0:
-		return &FieldError{Message: "不能为空", Field: "Sitemap.URL"}
-	case s.Priority > 1 || s.Priority < 0:
-		return &FieldError{Message: "介于[0,1]之间的浮点数", Field: "Sitemap.priority"}
-	case s.PostPriority > 1 || s.PostPriority < 0:
-		return &FieldError{Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
-	case !isChangereq(s.Changefreq):
-		return &FieldError{Message: "取值不正确", Field: "Sitemap.changefreq"}
-	case !isChangereq(s.PostChangefreq):
-		return &FieldError{Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
-	}
-
-	if len(s.Type) == 0 {
-		s.Type = vars.ContentTypeXML
-	}
-
-	return nil
-}
-
-// 检测 opensearch 取值是否正确
-func (s *Opensearch) sanitize(conf *Config) *FieldError {
-	switch {
-	case len(s.URL) == 0:
-		return &FieldError{Message: "不能为空", Field: "Opensearch.URL"}
-	case len(s.ShortName) == 0:
-		return &FieldError{Message: "不能为空", Field: "Opensearch.ShortName"}
-	case len(s.Description) == 0:
-		return &FieldError{Message: "不能为空", Field: "Opensearch.Description"}
-	}
-
-	if len(s.Type) == 0 {
-		s.Type = vars.ContentTypeOpensearch
-	}
-
-	if s.Image == nil && conf.Icon != nil {
-		s.Image = conf.Icon
-	}
-
-	return nil
-}
-
-var changereqs = []string{
-	"never",
-	"yearly",
-	"monthly",
-	"weekly",
-	"daily",
-	"hourly",
-	"always",
-}
-
-func isChangereq(val string) bool {
-	for _, v := range changereqs {
-		if v == val {
-			return true
-		}
-	}
-	return false
 }
