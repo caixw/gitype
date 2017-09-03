@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package client
+package xmlwriter
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestWriter_writePI(t *testing.T) {
+func TestWriter_WritePI(t *testing.T) {
 	a := assert.New(t)
 	test := func(name string, kv map[string]string, want string) {
 		w := &XMLWriter{
@@ -27,7 +27,7 @@ func TestWriter_writePI(t *testing.T) {
 	test("xml-stylesheet", map[string]string{"type": "text/xsl"}, `<?xml-stylesheet type="text/xsl"?>`+"\n")
 }
 
-func TestWriter_writeElement(t *testing.T) {
+func TestWriter_WriteElement(t *testing.T) {
 	a := assert.New(t)
 	test := func(name, val string, kv map[string]string, want string) {
 		w := &XMLWriter{
@@ -44,7 +44,7 @@ func TestWriter_writeElement(t *testing.T) {
 	test("xml", "text", map[string]string{"type": "text/xsl"}, `<xml type="text/xsl">text</xml>`+"\n")
 }
 
-func TestWriter_writeCloseElement(t *testing.T) {
+func TestWriter_WriteCloseElement(t *testing.T) {
 	a := assert.New(t)
 	test := func(name string, kv map[string]string, want string) {
 		w := &XMLWriter{

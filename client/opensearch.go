@@ -34,36 +34,36 @@ func (client *Client) buildOpensearch() error {
 	w := newWrite()
 	o := client.data.Config.Opensearch
 
-	w.writeStartElement("OpenSearchDescription", map[string]string{
+	w.WriteStartElement("OpenSearchDescription", map[string]string{
 		"xmlns": "http://a9.com/-/spec/opensearch/1.1/",
 	})
 
-	w.writeElement("InputEncoding", "UTF-8", nil)
-	w.writeElement("OutputEncoding", "UTF-8", nil)
-	w.writeElement("ShortName", o.ShortName, nil)
-	w.writeElement("Description", o.Description, nil)
+	w.WriteElement("InputEncoding", "UTF-8", nil)
+	w.WriteElement("OutputEncoding", "UTF-8", nil)
+	w.WriteElement("ShortName", o.ShortName, nil)
+	w.WriteElement("Description", o.Description, nil)
 
 	if len(o.LongName) > 0 {
-		w.writeElement("LongName", o.LongName, nil)
+		w.WriteElement("LongName", o.LongName, nil)
 	}
 
 	if o.Image != nil {
-		w.writeElement("Image", o.Image.URL, map[string]string{
+		w.WriteElement("Image", o.Image.URL, map[string]string{
 			"type": o.Image.Type,
 		})
 	}
 
-	w.writeCloseElement("Url", map[string]string{
+	w.WriteCloseElement("Url", map[string]string{
 		"type":     client.data.Config.Type,
 		"template": vars.SearchURL("{searchTerms}", 0),
 	})
 
-	w.writeElement("Developer", vars.AppName, nil)
-	w.writeElement("Language", client.data.Config.Language, nil)
+	w.WriteElement("Developer", vars.AppName, nil)
+	w.WriteElement("Language", client.data.Config.Language, nil)
 
-	w.writeEndElement("OpenSearchDescription")
+	w.WriteEndElement("OpenSearchDescription")
 
-	bs, err := w.bytes()
+	bs, err := w.Bytes()
 	if err != nil {
 		return err
 	}

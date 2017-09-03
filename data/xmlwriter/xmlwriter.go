@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package client
+package xmlwriter
 
 import (
 	"bytes"
@@ -19,7 +19,7 @@ type XMLWriter struct {
 	indent int   // 保存当前的缩进量
 }
 
-func newWrite() *XMLWriter {
+func New() *XMLWriter {
 	w := &XMLWriter{
 		buf: bytes.NewBufferString(xmlPI),
 	}

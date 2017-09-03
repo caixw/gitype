@@ -33,18 +33,18 @@ func (client *Client) buildRSS() error {
 	conf := client.data.Config
 	w := newWrite()
 
-	w.writeStartElement("rss", map[string]string{
+	w.WriteStartElement("rss", map[string]string{
 		"version":    "2.0",
 		"xmlns:atom": "http://www.w3.org/2005/Atom",
 	})
-	w.writeStartElement("channel", nil)
+	w.WriteStartElement("channel", nil)
 
-	w.writeElement("title", conf.Title, nil)
-	w.writeElement("description", conf.Subtitle, nil)
-	w.writeElement("link", conf.URL, nil)
+	w.WriteElement("title", conf.Title, nil)
+	w.WriteElement("description", conf.Subtitle, nil)
+	w.WriteElement("link", conf.URL, nil)
 
 	if conf.Opensearch != nil {
-		w.writeCloseElement("atom:link", map[string]string{
+		w.WriteCloseElement("atom:link", map[string]string{
 			"rel":   "search",
 			"type":  conf.Opensearch.Type,
 			"title": conf.Opensearch.Title,
@@ -54,10 +54,10 @@ func (client *Client) buildRSS() error {
 
 	addPostsToRSS(w, client)
 
-	w.writeEndElement("channel")
-	w.writeEndElement("rss")
+	w.WriteEndElement("channel")
+	w.WriteEndElement("rss")
 
-	bs, err := w.bytes()
+	bs, err := w.Bytes()
 	if err != nil {
 		return err
 	}
@@ -66,15 +66,15 @@ func (client *Client) buildRSS() error {
 	return nil
 }
 
-func addPostsToRSS(w *xmlWriter, client *Client) {
+func addPostsToRSS(w *XMLWriter, client *Client) {
 	for _, p := range client.data.Posts {
-		w.writeStartElement("item", nil)
+		w.WriteStartElement("item", nil)
 
-		w.writeElement("link", client.url(p.Permalink), nil)
-		w.writeElement("title", p.Title, nil)
-		w.writeElement("pubDate", p.Created.Format(time.RFC1123), nil)
-		w.writeElement("description", p.Summary, nil)
+		w.WriteElement("link", client.url(p.Permalink), nil)
+		w.WriteElement("title", p.Title, nil)
+		w.WriteElement("pubDate", p.Created.Format(time.RFC1123), nil)
+		w.WriteElement("description", p.Summary, nil)
 
-		w.writeEndElement("item")
+		w.WriteEndElement("item")
 	}
 }

@@ -37,13 +37,13 @@ func (client *Client) buildSitemap() error {
 	w := newWrite()
 
 	if len(conf.Sitemap.XslURL) > 0 {
-		w.writePI("xml-stylesheet", map[string]string{
+		w.WritePI("xml-stylesheet", map[string]string{
 			"type": "text/xsl",
 			"href": conf.Sitemap.XslURL,
 		})
 	}
 
-	w.writeStartElement("urlset", map[string]string{
+	w.WriteStartElement("urlset", map[string]string{
 		"xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
 	})
 
@@ -57,9 +57,9 @@ func (client *Client) buildSitemap() error {
 		addTagsToSitemap(w, client)
 	}
 
-	w.writeEndElement("urlset")
+	w.WriteEndElement("urlset")
 
-	bs, err := w.bytes()
+	bs, err := w.Bytes()
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func (client *Client) buildSitemap() error {
 	return nil
 }
 
-func addPostsToSitemap(w *xmlWriter, client *Client) {
+func addPostsToSitemap(w *XMLWriter, client *Client) {
 	sitemap := client.data.Config.Sitemap
 	for _, p := range client.data.Posts {
 		loc := client.url(p.Permalink)
@@ -76,7 +76,7 @@ func addPostsToSitemap(w *xmlWriter, client *Client) {
 	}
 }
 
-func addTagsToSitemap(w *xmlWriter, client *Client) error {
+func addTagsToSitemap(w *XMLWriter, client *Client) error {
 	sitemap := client.data.Config.Sitemap
 
 	loc := client.url(vars.TagsURL())
@@ -89,13 +89,13 @@ func addTagsToSitemap(w *xmlWriter, client *Client) error {
 	return nil
 }
 
-func addItemToSitemap(w *xmlWriter, loc, changefreq string, lastmod time.Time, priority float64) {
-	w.writeStartElement("url", nil)
+func addItemToSitemap(w *XMLWriter, loc, changefreq string, lastmod time.Time, priority float64) {
+	w.WriteStartElement("url", nil)
 
-	w.writeElement("loc", loc, nil)
-	w.writeElement("lastmod", lastmod.Format(time.RFC3339), nil)
-	w.writeElement("changefreq", changefreq, nil)
-	w.writeElement("priority", strconv.FormatFloat(priority, 'f', 1, 32), nil)
+	w.WriteElement("loc", loc, nil)
+	w.WriteElement("lastmod", lastmod.Format(time.RFC3339), nil)
+	w.WriteElement("changefreq", changefreq, nil)
+	w.WriteElement("priority", strconv.FormatFloat(priority, 'f', 1, 32), nil)
 
-	w.writeEndElement("url")
+	w.WriteEndElement("url")
 }

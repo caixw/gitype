@@ -36,18 +36,18 @@ func (client *Client) buildAtom() error {
 
 	w := newWrite()
 
-	w.writeStartElement("feed", map[string]string{
+	w.WriteStartElement("feed", map[string]string{
 		"xmlns":            "http://www.w3.org/2005/Atom",
 		"xmlns:opensearch": "http://a9.com/-/spec/opensearch/1.1/",
 	})
-	w.writeElement("id", conf.URL, nil)
-	w.writeCloseElement("link", map[string]string{
+	w.WriteElement("id", conf.URL, nil)
+	w.WriteCloseElement("link", map[string]string{
 		"href": conf.URL,
 	})
 
 	if conf.Opensearch != nil {
 		o := conf.Opensearch
-		w.writeCloseElement("link", map[string]string{
+		w.WriteCloseElement("link", map[string]string{
 			"rel":   "search",
 			"type":  o.Type,
 			"href":  client.url(o.URL),
@@ -55,15 +55,15 @@ func (client *Client) buildAtom() error {
 		})
 	}
 
-	w.writeElement("title", conf.Title, nil)
-	w.writeElement("subtitle", conf.Subtitle, nil)
-	w.writeElement("update", client.Created.Format(time.RFC3339), nil)
+	w.WriteElement("title", conf.Title, nil)
+	w.WriteElement("subtitle", conf.Subtitle, nil)
+	w.WriteElement("update", client.Created.Format(time.RFC3339), nil)
 
 	addPostsToAtom(w, client)
 
-	w.writeEndElement("feed")
+	w.WriteEndElement("feed")
 
-	bs, err := w.bytes()
+	bs, err := w.Bytes()
 	if err != nil {
 		return err
 	}
@@ -72,24 +72,24 @@ func (client *Client) buildAtom() error {
 	return nil
 }
 
-func addPostsToAtom(w *xmlWriter, client *Client) {
+func addPostsToAtom(w *XMLWriter, client *Client) {
 	for _, p := range client.data.Posts {
-		w.writeStartElement("entry", nil)
+		w.WriteStartElement("entry", nil)
 
-		w.writeElement("id", p.Permalink, nil)
+		w.WriteElement("id", p.Permalink, nil)
 
-		w.writeCloseElement("link", map[string]string{
+		w.WriteCloseElement("link", map[string]string{
 			"href": client.url(p.Permalink),
 		})
 
-		w.writeElement("title", p.Title, nil)
+		w.WriteElement("title", p.Title, nil)
 
-		w.writeElement("update", p.Modified.Format(time.RFC3339), nil)
+		w.WriteElement("update", p.Modified.Format(time.RFC3339), nil)
 
-		w.writeElement("summary", p.Summary, map[string]string{
+		w.WriteElement("summary", p.Summary, map[string]string{
 			"type": "html",
 		})
 
-		w.writeEndElement("entry")
+		w.WriteEndElement("entry")
 	}
 }
