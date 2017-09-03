@@ -45,10 +45,10 @@ type Config struct {
 	License *Link   `yaml:"license"` // 默认版权信息
 
 	// feeds
-	RSS        *RSS        `yaml:"rss,omitempty"`
-	Atom       *RSS        `yaml:"atom,omitempty"`
-	Sitemap    *Sitemap    `yaml:"sitemap,omitempty"`
-	Opensearch *Opensearch `yaml:"opensearch,omitempty"`
+	RSS        *RSS              `yaml:"rss,omitempty"`
+	Atom       *RSS              `yaml:"atom,omitempty"`
+	Sitemap    *Sitemap          `yaml:"sitemap,omitempty"`
+	Opensearch *opensearchConfig `yaml:"opensearch,omitempty"`
 }
 
 // Outdated 描述过时文章的提示信息。
@@ -60,18 +60,6 @@ type Outdated struct {
 	Type     string        `yaml:"type"`     // 比较的类型，创建时间或是修改时间
 	Duration time.Duration `yaml:"duration"` // 超时的时间，可以使用 time.Duration 的字符串值
 	Content  string        `yaml:"content"`  // 提示的内容，普通文字，不能为 html
-}
-
-// Opensearch 相关定义
-type Opensearch struct {
-	URL   string `yaml:"url"`             // opensearch 的地址，不能包含域名
-	Title string `yaml:"title,omitempty"` // 出现于 html>head>link.title 属性中
-
-	ShortName   string `yaml:"shortName"`
-	Description string `yaml:"description"`
-	LongName    string `yaml:"longName,omitempty"`
-	Type        string `yaml:"type,omitempty"` // mimeType 默认取 vars.ContentTypeOpensearch
-	Image       *Icon  `yaml:"image,omitempty"`
 }
 
 // RSS 表示 rss 或是 atom 等 feed 的信息
@@ -266,28 +254,6 @@ func (s *Sitemap) sanitize() *FieldError {
 
 	if len(s.Type) == 0 {
 		s.Type = vars.ContentTypeXML
-	}
-
-	return nil
-}
-
-// 检测 opensearch 取值是否正确
-func (s *Opensearch) sanitize(conf *Config) *FieldError {
-	switch {
-	case len(s.URL) == 0:
-		return &FieldError{Message: "不能为空", Field: "Opensearch.URL"}
-	case len(s.ShortName) == 0:
-		return &FieldError{Message: "不能为空", Field: "Opensearch.ShortName"}
-	case len(s.Description) == 0:
-		return &FieldError{Message: "不能为空", Field: "Opensearch.Description"}
-	}
-
-	if len(s.Type) == 0 {
-		s.Type = vars.ContentTypeOpensearch
-	}
-
-	if s.Image == nil && conf.Icon != nil {
-		s.Image = conf.Icon
 	}
 
 	return nil

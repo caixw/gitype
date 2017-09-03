@@ -8,6 +8,7 @@ package client
 
 import (
 	"html/template"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -25,12 +26,11 @@ type Client struct {
 	etag     string
 
 	// 由 data 延伸出的数据
-	info       *info
-	template   *template.Template // 主题编译后的模板
-	rss        []byte
-	atom       []byte
-	sitemap    []byte
-	opensearch []byte
+	info     *info
+	template *template.Template // 主题编译后的模板
+	rss      []byte
+	atom     []byte
+	sitemap  []byte
 
 	Created time.Time // 当前数据的加载时间
 }
@@ -81,4 +81,19 @@ func (client *Client) Free() {
 	for _, pattern := range client.patterns {
 		client.mux.Remove(pattern)
 	}
+}
+
+func (client *Client) initOpensearch() error {
+	if client.data.Opensearch == nil {
+		return nil
+	}
+
+	o := client.data.Opensearch
+	client.patterns = append(client.patterns, o.URL)
+	client.mux.GetFunc(o.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, o.Type)
+		w.Write(o.Content)
+	}))
+
+	return nil
 }

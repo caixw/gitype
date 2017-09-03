@@ -19,13 +19,15 @@ import (
 type Data struct {
 	path *vars.Path
 
-	Config   *Config    // 配置内容
-	Theme    *Theme     // 当前主题
-	Tags     []*Tag     // map 对顺序是未定的，所以使用 slice
-	Links    []*Link    // 友情链接
-	Posts    []*Post    // 所有的文章列表
-	Themes   []*Theme   // 主题，使用 slice，方便排序
-	Archives []*Archive // 存档信息
+	Config *Config  // 配置内容
+	Theme  *Theme   // 当前主题
+	Tags   []*Tag   // map 对顺序是未定的，所以使用 slice
+	Links  []*Link  // 友情链接
+	Posts  []*Post  // 所有的文章列表
+	Themes []*Theme // 主题，使用 slice，方便排序
+
+	Archives   []*Archive // 存档信息
+	Opensearch *Opensearch
 }
 
 // Load 函数用于加载一份新的数据。
@@ -207,6 +209,10 @@ func (d *Data) attachPostMeta() *FieldError {
 
 func (d *Data) buildData() error {
 	if err := d.buildArchives(); err != nil {
+		return err
+	}
+
+	if err := d.buildOpensearch(); err != nil {
 		return err
 	}
 
