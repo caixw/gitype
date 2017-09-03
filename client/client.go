@@ -31,7 +31,6 @@ type Client struct {
 	atom       []byte
 	sitemap    []byte
 	opensearch []byte
-	archives   []*archive
 
 	Created time.Time // 当前数据的加载时间
 }
@@ -61,7 +60,6 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 
 	// 依赖 data.Data 数据的相关操作
 	errFilter(client.compileTemplate)
-	errFilter(client.initArchives)
 	errFilter(client.initRSS)
 	errFilter(client.initAtom)
 	errFilter(client.initSitemap)

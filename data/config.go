@@ -13,44 +13,32 @@ import (
 	"github.com/issue9/is"
 )
 
-// 归档的类型
-const (
-	ArchiveTypeYear  = "year"
-	ArchiveTypeMonth = "month"
-)
-
 // 文章是否过时的比较方式
 const (
 	OutdatedTypeCreated  = "created"  // 以创建时间作为对比
 	OutdatedTypeModified = "modified" // 以修改时间作为对比
 )
 
-// 归档的排序方式
-const (
-	ArchiveOrderDesc = "desc"
-	ArchiveOrderAsc  = "asc"
-)
-
 // Config 一些基本配置项。
 type Config struct {
-	Title           string    `yaml:"title"`                 // 网站标题
-	Language        string    `yaml:"language"`              // 语言标记，比如 zh-cmn-Hans
-	Subtitle        string    `yaml:"subtitle,omitempty"`    // 网站副标题
-	URL             string    `yaml:"url"`                   // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
-	Keywords        string    `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
-	Description     string    `yaml:"description,omitempty"` // 默认情况下的 descrription 内容
-	Beian           string    `yaml:"beian,omitempty"`       // 备案号
-	Uptime          time.Time `yaml:"-"`                     // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
-	UptimeFormat    string    `yaml:"uptime"`                // 上线时间，字符串表示
-	PageSize        int       `yaml:"pageSize"`              // 每页显示的数量
-	LongDateFormat  string    `yaml:"longDateFormat"`        // 长时间的显示格式
-	ShortDateFormat string    `yaml:"shortDateFormat"`       // 短时间的显示格式
-	Theme           string    `yaml:"theme"`                 // 默认主题
-	Type            string    `yaml:"type,omitempty"`        // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
-	Icon            *Icon     `yaml:"icon,omitempty"`        // 程序默认的图标
-	Menus           []*Link   `yaml:"menus,omitempty"`       // 导航菜单
-	Archive         *Archive  `yaml:"archive"`               // 归档页的配置内容
-	Outdated        *Outdated `yaml:"outdated,omitempty"`    // 文章过时内容的设置
+	Title           string         `yaml:"title"`                 // 网站标题
+	Language        string         `yaml:"language"`              // 语言标记，比如 zh-cmn-Hans
+	Subtitle        string         `yaml:"subtitle,omitempty"`    // 网站副标题
+	URL             string         `yaml:"url"`                   // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
+	Keywords        string         `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
+	Description     string         `yaml:"description,omitempty"` // 默认情况下的 descrription 内容
+	Beian           string         `yaml:"beian,omitempty"`       // 备案号
+	Uptime          time.Time      `yaml:"-"`                     // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	UptimeFormat    string         `yaml:"uptime"`                // 上线时间，字符串表示
+	PageSize        int            `yaml:"pageSize"`              // 每页显示的数量
+	LongDateFormat  string         `yaml:"longDateFormat"`        // 长时间的显示格式
+	ShortDateFormat string         `yaml:"shortDateFormat"`       // 短时间的显示格式
+	Theme           string         `yaml:"theme"`                 // 默认主题
+	Type            string         `yaml:"type,omitempty"`        // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
+	Icon            *Icon          `yaml:"icon,omitempty"`        // 程序默认的图标
+	Menus           []*Link        `yaml:"menus,omitempty"`       // 导航菜单
+	Archive         *archiveConfig `yaml:"archive"`               // 归档页的配置内容
+	Outdated        *Outdated      `yaml:"outdated,omitempty"`    // 文章过时内容的设置
 
 	// 一些默认值，可在各自的配置中覆盖此值
 	Author  *Author `yaml:"author"`  // 默认作者信息
@@ -72,13 +60,6 @@ type Outdated struct {
 	Type     string        `yaml:"type"`     // 比较的类型，创建时间或是修改时间
 	Duration time.Duration `yaml:"duration"` // 超时的时间，可以使用 time.Duration 的字符串值
 	Content  string        `yaml:"content"`  // 提示的内容，普通文字，不能为 html
-}
-
-// Archive 存档页的配置内容
-type Archive struct {
-	Order  string `yaml:"order"`            // 排序方式
-	Type   string `yaml:"type,omitempty"`   // 存档的分类方式，可以为 year 或是 month
-	Format string `yaml:"format,omitempty"` // 标题的格式化字符串
 }
 
 // Opensearch 相关定义
@@ -226,26 +207,6 @@ func (conf *Config) sanitize() *FieldError {
 		if err := link.sanitize(); err != nil {
 			err.Field = "Menus[" + strconv.Itoa(index) + "]." + err.Field
 			return err
-		}
-	}
-
-	return nil
-}
-
-func (a *Archive) sanitize() *FieldError {
-	if len(a.Type) == 0 {
-		a.Type = ArchiveTypeYear
-	} else {
-		if a.Type != ArchiveTypeMonth && a.Type != ArchiveTypeYear {
-			return &FieldError{Message: "取值不正确", Field: "archive.type"}
-		}
-	}
-
-	if len(a.Order) == 0 {
-		a.Order = ArchiveOrderAsc
-	} else {
-		if a.Order != ArchiveOrderAsc && a.Order != ArchiveOrderDesc {
-			return &FieldError{Message: "取值不正确", Field: "archive.order"}
 		}
 	}
 
