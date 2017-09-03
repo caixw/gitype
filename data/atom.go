@@ -2,39 +2,22 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package client
+package data
 
 import (
-	"net/http"
 	"time"
+
+	"github.com/caixw/typing/data/xmlwriter"
 )
 
-func (client *Client) initAtom() error {
-	if client.data.Config.Atom == nil { // 不需要生成 atom
-		return nil
-	}
-
-	if err := client.buildAtom(); err != nil {
-		return err
-	}
-
-	conf := client.data.Config
-	client.patterns = append(client.patterns, conf.Atom.URL)
-	client.mux.GetFunc(conf.Atom.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-		setContentType(w, conf.Atom.Type)
-		w.Write(client.atom)
-	}))
-	return nil
-}
-
 // 用于生成一个符合 atom 规范的 XML 文本。
-func (client *Client) buildAtom() error {
-	conf := client.data.Config
+func (d *Data) buildAtom() error {
+	conf := d.Config
 	if conf.Atom == nil { // 不需要生成 atom
 		return nil
 	}
 
-	w := newWrite()
+	w := xmlwriter.New()
 
 	w.WriteStartElement("feed", map[string]string{
 		"xmlns":            "http://www.w3.org/2005/Atom",
@@ -50,16 +33,16 @@ func (client *Client) buildAtom() error {
 		w.WriteCloseElement("link", map[string]string{
 			"rel":   "search",
 			"type":  o.Type,
-			"href":  client.url(o.URL),
+			"href":  d.url(o.URL),
 			"title": o.Title,
 		})
 	}
 
 	w.WriteElement("title", conf.Title, nil)
 	w.WriteElement("subtitle", conf.Subtitle, nil)
-	w.WriteElement("update", client.Created.Format(time.RFC3339), nil)
+	w.WriteElement("update", d.Created.Format(time.RFC3339), nil)
 
-	addPostsToAtom(w, client)
+	addPostsToAtom(w, d)
 
 	w.WriteEndElement("feed")
 
@@ -67,19 +50,24 @@ func (client *Client) buildAtom() error {
 	if err != nil {
 		return err
 	}
-	client.atom = bs
+	d.Atom = &RSS{
+		Title:   d.Config.Atom.Title,
+		URL:     d.Config.Atom.URL,
+		Type:    d.Config.Atom.Type,
+		Content: bs,
+	}
 
 	return nil
 }
 
-func addPostsToAtom(w *XMLWriter, client *Client) {
-	for _, p := range client.data.Posts {
+func addPostsToAtom(w *xmlwriter.XMLWriter, d *Data) {
+	for _, p := range d.Posts {
 		w.WriteStartElement("entry", nil)
 
 		w.WriteElement("id", p.Permalink, nil)
 
 		w.WriteCloseElement("link", map[string]string{
-			"href": client.url(p.Permalink),
+			"href": d.url(p.Permalink),
 		})
 
 		w.WriteElement("title", p.Title, nil)

@@ -127,3 +127,17 @@ func (client *Client) initRSS() error {
 
 	return nil
 }
+
+func (client *Client) initAtom() error {
+	if client.data.Atom == nil { // 不需要生成 atom
+		return nil
+	}
+
+	atom := client.data.Atom
+	client.patterns = append(client.patterns, atom.URL)
+	client.mux.GetFunc(atom.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, atom.Type)
+		w.Write(atom.Content)
+	}))
+	return nil
+}

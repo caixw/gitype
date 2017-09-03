@@ -230,6 +230,10 @@ func (d *Data) buildData() error {
 		return err
 	}
 
+	if err := d.buildAtom(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
