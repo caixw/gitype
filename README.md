@@ -109,7 +109,7 @@ url             | string      | 网站的地址
 keywords        | string      | 默认情况下的 keyword 内容
 description     | string      | 默认情况下的 descrription 内容
 beian           | string      | 备案号
-uptimeFormat    | string      | 上线时间，字符串表示
+uptime          | string      | 上线时间，字符串表示
 pageSize        | int         | 每页显示的数量
 longDateFormat  | string      | 长时间的显示格式，Go 的时间格式化方式
 shortDateFormat | string      | 短时间的显示格式，Go 的时间格式化方式

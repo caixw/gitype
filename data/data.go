@@ -39,16 +39,16 @@ type Data struct {
 
 // Load 函数用于加载一份新的数据。
 func Load(path *vars.Path) (*Data, error) {
+	conf := &config{}
+	if err := loadYamlFile(path.MetaConfigFile, conf); err != nil {
+		return nil, err
+	}
+
 	d := &Data{
 		path:    path,
 		Created: time.Now(),
+		Config:  newConfig(conf),
 	}
-
-	conf := &config{}
-	if err := loadYamlFile(d.path.MetaConfigFile, conf); err != nil {
-		return nil, err
-	}
-	d.Config = newConfig(conf)
 
 	if err := d.loadFiles(); err != nil {
 		return nil, err
@@ -215,24 +215,20 @@ func (d *Data) attachPostMeta(conf *config) *FieldError {
 	return nil
 }
 
-func (d *Data) buildData(conf *config) error {
-	if err := d.buildArchives(conf); err != nil {
-		return err
+func (d *Data) buildData(conf *config) (err error) {
+	errFilter := func(fn func(*config) error) {
+		if err != nil {
+			return
+		}
+		err = fn(conf)
 	}
 
-	if err := d.buildOpensearch(conf); err != nil {
-		return err
-	}
-
-	if err := d.buildSitemap(conf); err != nil {
-		return err
-	}
-
-	if err := d.buildRSS(conf); err != nil {
-		return err
-	}
-
-	if err := d.buildAtom(conf); err != nil {
+	errFilter(d.buildArchives)
+	errFilter(d.buildOpensearch)
+	errFilter(d.buildSitemap)
+	errFilter(d.buildRSS)
+	errFilter(d.buildAtom)
+	if err != nil {
 		return err
 	}
 
