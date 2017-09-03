@@ -11,8 +11,7 @@ import (
 )
 
 // 用于生成一个符合 atom 规范的 XML 文本。
-func (d *Data) buildAtom() error {
-	conf := d.Config
+func (d *Data) buildAtom(conf *config) error {
 	if conf.Atom == nil { // 不需要生成 atom
 		return nil
 	}
@@ -51,9 +50,9 @@ func (d *Data) buildAtom() error {
 		return err
 	}
 	d.Atom = &RSS{
-		Title:   d.Config.Atom.Title,
-		URL:     d.Config.Atom.URL,
-		Type:    d.Config.Atom.Type,
+		Title:   conf.Atom.Title,
+		URL:     conf.Atom.URL,
+		Type:    conf.Atom.Type,
 		Content: bs,
 	}
 

@@ -22,7 +22,7 @@ type Data struct {
 	path    *vars.Path
 	Created time.Time
 
-	Config   *Config            // 配置内容
+	Config   *Config
 	Theme    *Theme             // 当前主题
 	Template *template.Template // 当前主题的模板
 	Themes   []*Theme           // 主题列表
@@ -44,19 +44,25 @@ func Load(path *vars.Path) (*Data, error) {
 		Created: time.Now(),
 	}
 
+	conf := &config{}
+	if err := loadYamlFile(d.path.MetaConfigFile, conf); err != nil {
+		return nil, err
+	}
+	d.Config = newConfig(conf)
+
 	if err := d.loadFiles(); err != nil {
 		return nil, err
 	}
 
-	if err := d.sanitize(); err != nil {
+	if err := d.sanitize(conf); err != nil {
 		return nil, err
 	}
 
-	if err := d.sanitize2(); err != nil {
+	if err := d.sanitize2(conf); err != nil {
 		return nil, err
 	}
 
-	if err := d.buildData(); err != nil {
+	if err := d.buildData(conf); err != nil {
 		return nil, err
 	}
 
@@ -77,12 +83,6 @@ func (d *Data) loadFiles() error {
 	}
 	d.Links = links
 
-	config := &Config{}
-	if err := loadYamlFile(d.path.MetaConfigFile, config); err != nil {
-		return err
-	}
-	d.Config = config
-
 	posts, err := loadPosts(d.path)
 	if err != nil {
 		return err
@@ -99,7 +99,7 @@ func (d *Data) loadFiles() error {
 }
 
 // 对各个加载的数据进行转换、审查等操作。
-func (d *Data) sanitize() error {
+func (d *Data) sanitize(conf *config) error {
 	for index, tag := range d.Tags {
 		if err := tag.sanitize(); err != nil {
 			err.File = d.path.MetaTagsFile
@@ -116,7 +116,7 @@ func (d *Data) sanitize() error {
 		}
 	}
 
-	if err := d.Config.sanitize(); err != nil {
+	if err := conf.sanitize(); err != nil {
 		err.Field = d.path.MetaConfigFile
 		return err
 	}
@@ -138,13 +138,13 @@ func (d *Data) sanitize() error {
 }
 
 // 对各个数据再次进行检测，主要是一些关联数据的相互初始化
-func (d *Data) sanitize2() error {
+func (d *Data) sanitize2(conf *config) error {
 	// 对文章进行排序，需保证 created 已经被初始化
 	sortPosts(d.Posts)
 
 	// 检测配置文件中的主题是否存在
 	for _, theme := range d.Themes {
-		if theme.ID == d.Config.Theme {
+		if theme.ID == conf.Theme {
 			d.Theme = theme
 			break
 		}
@@ -155,10 +155,10 @@ func (d *Data) sanitize2() error {
 
 	// 将标签的修改时间设置为网站的上线时间
 	for _, tag := range d.Tags {
-		tag.Modified = d.Config.Uptime
+		tag.Modified = conf.Uptime
 	}
 
-	if err := d.attachPostMeta(); err != nil {
+	if err := d.attachPostMeta(conf); err != nil {
 		return err
 	}
 
@@ -176,14 +176,14 @@ func (d *Data) sanitize2() error {
 }
 
 // 关联文章的相关属性
-func (d *Data) attachPostMeta() *FieldError {
+func (d *Data) attachPostMeta(conf *config) *FieldError {
 	for _, post := range d.Posts {
 		if post.Author == nil {
-			post.Author = d.Config.Author
+			post.Author = conf.Author
 		}
 
 		if post.License == nil {
-			post.License = d.Config.License
+			post.License = conf.License
 		}
 
 		// tags
@@ -215,24 +215,24 @@ func (d *Data) attachPostMeta() *FieldError {
 	return nil
 }
 
-func (d *Data) buildData() error {
-	if err := d.buildArchives(); err != nil {
+func (d *Data) buildData(conf *config) error {
+	if err := d.buildArchives(conf); err != nil {
 		return err
 	}
 
-	if err := d.buildOpensearch(); err != nil {
+	if err := d.buildOpensearch(conf); err != nil {
 		return err
 	}
 
-	if err := d.buildSitemap(); err != nil {
+	if err := d.buildSitemap(conf); err != nil {
 		return err
 	}
 
-	if err := d.buildRSS(); err != nil {
+	if err := d.buildRSS(conf); err != nil {
 		return err
 	}
 
-	if err := d.buildAtom(); err != nil {
+	if err := d.buildAtom(conf); err != nil {
 		return err
 	}
 

@@ -29,9 +29,9 @@ type opensearchConfig struct {
 }
 
 // 用于生成一个符合 atom 规范的 XML 文本。
-func (d *Data) buildOpensearch() error {
+func (d *Data) buildOpensearch(conf *config) error {
 	w := xmlwriter.New()
-	o := d.Config.Opensearch
+	o := conf.Opensearch
 
 	w.WriteStartElement("OpenSearchDescription", map[string]string{
 		"xmlns": "http://a9.com/-/spec/opensearch/1.1/",
@@ -53,12 +53,12 @@ func (d *Data) buildOpensearch() error {
 	}
 
 	w.WriteCloseElement("Url", map[string]string{
-		"type":     d.Config.Type,
+		"type":     conf.Type,
 		"template": vars.SearchURL("{searchTerms}", 0),
 	})
 
 	w.WriteElement("Developer", vars.AppName, nil)
-	w.WriteElement("Language", d.Config.Language, nil)
+	w.WriteElement("Language", conf.Language, nil)
 
 	w.WriteEndElement("OpenSearchDescription")
 
@@ -67,9 +67,9 @@ func (d *Data) buildOpensearch() error {
 		return err
 	}
 	d.Opensearch = &Opensearch{
-		URL:     d.Config.Opensearch.URL,
-		Type:    d.Config.Opensearch.Type,
-		Title:   d.Config.Opensearch.Title,
+		URL:     conf.Opensearch.URL,
+		Type:    conf.Opensearch.Type,
+		Title:   conf.Opensearch.Title,
 		Content: bs,
 	}
 
@@ -77,7 +77,7 @@ func (d *Data) buildOpensearch() error {
 }
 
 // 检测 opensearch 取值是否正确
-func (s *opensearchConfig) sanitize(conf *Config) *FieldError {
+func (s *opensearchConfig) sanitize(conf *config) *FieldError {
 	switch {
 	case len(s.URL) == 0:
 		return &FieldError{Message: "不能为空", Field: "Opensearch.URL"}

@@ -35,14 +35,14 @@ type archiveConfig struct {
 	Format string `yaml:"format,omitempty"` // 标题的格式化字符串
 }
 
-func (d *Data) buildArchives() error {
+func (d *Data) buildArchives(conf *config) error {
 	archives := make([]*Archive, 0, 10)
 
 	for _, post := range d.Posts {
 		t := post.Created
 		var date int64
 
-		switch d.Config.Archive.Type {
+		switch conf.Archive.Type {
 		case archiveTypeMonth:
 			date = time.Date(t.Year(), t.Month(), 2, 0, 0, 0, 0, t.Location()).Unix()
 		case archiveTypeYear:
@@ -60,7 +60,7 @@ func (d *Data) buildArchives() error {
 		if !found {
 			archives = append(archives, &Archive{
 				date:  date,
-				Title: time.Unix(date, 0).Format(d.Config.Archive.Format),
+				Title: time.Unix(date, 0).Format(conf.Archive.Format),
 				Posts: []*Post{post},
 			})
 		}
@@ -68,7 +68,7 @@ func (d *Data) buildArchives() error {
 
 	sort.SliceStable(archives, func(i, j int) bool {
 		less := archives[i].date > archives[j].date
-		if d.Config.Archive.Order == archiveOrderDesc {
+		if conf.Archive.Order == archiveOrderDesc {
 			less = !less
 		}
 

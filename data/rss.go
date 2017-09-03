@@ -27,8 +27,7 @@ type rssConfig struct {
 }
 
 // 生成一个符合 rss 规范的 XML 文本。
-func (d *Data) buildRSS() error {
-	conf := d.Config
+func (d *Data) buildRSS(conf *config) error {
 	w := xmlwriter.New()
 
 	w.WriteStartElement("rss", map[string]string{
@@ -60,9 +59,9 @@ func (d *Data) buildRSS() error {
 		return err
 	}
 	d.RSS = &RSS{
-		Title:   d.Config.RSS.Title,
-		URL:     d.Config.RSS.URL,
-		Type:    d.Config.RSS.Type,
+		Title:   conf.RSS.Title,
+		URL:     conf.RSS.URL,
+		Type:    conf.RSS.Type,
 		Content: bs,
 	}
 
@@ -82,7 +81,7 @@ func addPostsToRSS(w *xmlwriter.XMLWriter, d *Data) {
 	}
 }
 
-func (rss *rssConfig) sanitize(conf *Config, typ string) *FieldError {
+func (rss *rssConfig) sanitize(conf *config, typ string) *FieldError {
 	if rss.Size <= 0 {
 		return &FieldError{Message: "必须大于 0", Field: typ + ".Size"}
 	}

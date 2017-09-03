@@ -34,8 +34,7 @@ type sitemapConfig struct {
 }
 
 // 生成一个符合 sitemap 规范的 XML 文本。
-func (d *Data) buildSitemap() error {
-	conf := d.Config
+func (d *Data) buildSitemap(conf *config) error {
 	w := xmlwriter.New()
 
 	if len(conf.Sitemap.XslURL) > 0 {
@@ -49,14 +48,14 @@ func (d *Data) buildSitemap() error {
 		"xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
 	})
 
-	addPostsToSitemap(w, d)
+	addPostsToSitemap(w, d, conf)
 
 	// archives.html
 	loc := d.url(vars.ArchivesURL())
 	addItemToSitemap(w, loc, conf.Sitemap.Changefreq, d.Created, conf.Sitemap.Priority)
 
 	if conf.Sitemap.EnableTag {
-		addTagsToSitemap(w, d)
+		addTagsToSitemap(w, d, conf)
 	}
 
 	w.WriteEndElement("urlset")
@@ -66,30 +65,30 @@ func (d *Data) buildSitemap() error {
 		return err
 	}
 	d.Sitemap = &Sitemap{
-		URL:     d.Config.Sitemap.URL,
-		Type:    d.Config.Sitemap.Type,
+		URL:     conf.Sitemap.URL,
+		Type:    conf.Sitemap.Type,
 		Content: bs,
 	}
 
 	return nil
 }
 
-func addPostsToSitemap(w *xmlwriter.XMLWriter, d *Data) {
-	sitemap := d.Config.Sitemap
+func addPostsToSitemap(w *xmlwriter.XMLWriter, d *Data, conf *config) {
+	sitemap := conf.Sitemap
 	for _, p := range d.Posts {
 		loc := d.url(p.Permalink)
 		addItemToSitemap(w, loc, sitemap.PostChangefreq, p.Modified, sitemap.PostPriority)
 	}
 }
 
-func addTagsToSitemap(w *xmlwriter.XMLWriter, client *Data) error {
-	sitemap := client.Config.Sitemap
+func addTagsToSitemap(w *xmlwriter.XMLWriter, d *Data, conf *config) error {
+	sitemap := conf.Sitemap
 
-	loc := client.url(vars.TagsURL())
-	addItemToSitemap(w, loc, sitemap.Changefreq, client.Created, sitemap.Priority)
+	loc := d.url(vars.TagsURL())
+	addItemToSitemap(w, loc, sitemap.Changefreq, d.Created, sitemap.Priority)
 
-	for _, tag := range client.Tags {
-		loc = client.url(vars.TagURL(tag.Slug, 1))
+	for _, tag := range d.Tags {
+		loc = d.url(vars.TagURL(tag.Slug, 1))
 		addItemToSitemap(w, loc, sitemap.Changefreq, tag.Modified, sitemap.Priority)
 	}
 	return nil

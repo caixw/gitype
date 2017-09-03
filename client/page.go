@@ -118,16 +118,16 @@ func (client *Client) newInfo() *info {
 		Menus:       conf.Menus,
 	}
 
-	if conf.RSS != nil {
-		info.RSS = &data.Link{Title: conf.RSS.Title, URL: conf.RSS.URL}
+	if client.data.RSS != nil {
+		info.RSS = &data.Link{Title: client.data.RSS.Title, URL: client.data.RSS.URL}
 	}
 
-	if conf.Atom != nil {
-		info.Atom = &data.Link{Title: conf.Atom.Title, URL: conf.Atom.URL}
+	if client.data.Atom != nil {
+		info.Atom = &data.Link{Title: client.data.Atom.Title, URL: client.data.Atom.URL}
 	}
 
-	if conf.Opensearch != nil {
-		info.Opensearch = &data.Link{Title: conf.Opensearch.Title, URL: conf.Opensearch.URL}
+	if client.data.Opensearch != nil {
+		info.Opensearch = &data.Link{Title: client.data.Opensearch.Title, URL: client.data.Opensearch.URL}
 	}
 
 	return info
@@ -206,7 +206,7 @@ func (client *Client) renderError(w http.ResponseWriter, code int) {
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	filename := strconv.Itoa(code) + ".html"
-	path := filepath.Join(client.path.ThemesDir, client.data.Config.Theme, filename)
+	path := filepath.Join(client.path.ThemesDir, client.data.Theme.ID, filename)
 	if !utils.FileExists(path) {
 		logs.Errorf("模板文件 %s 不存在\n", path)
 		http.Error(w, http.StatusText(code), code)
