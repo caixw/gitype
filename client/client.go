@@ -24,15 +24,8 @@ type Client struct {
 	mux      *mux.Mux
 	patterns []string // 记录所有的路由项，方便释放时删除
 	etag     string
-
-	// 由 data 延伸出的数据
 	info     *info
 	template *template.Template // 主题编译后的模板
-	rss      []byte
-	atom     []byte
-	sitemap  []byte
-
-	Created time.Time // 当前数据的加载时间
 }
 
 // New 声明一个新的 Client 实例
@@ -42,13 +35,11 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 		return nil, err
 	}
 
-	now := time.Now()
 	client := &Client{
-		path:    path,
-		mux:     mux,
-		etag:    strconv.FormatInt(now.Unix(), 10),
-		Created: now,
-		data:    d,
+		path: path,
+		mux:  mux,
+		etag: strconv.FormatInt(d.Created.Unix(), 10),
+		data: d,
 	}
 	client.info = client.newInfo()
 
@@ -72,8 +63,9 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 	return client, nil
 }
 
-func (client *Client) url(path string) string {
-	return client.data.Config.URL + path
+// Created 返回当前数据的创建时间
+func (client *Client) Created() time.Time {
+	return client.data.Created
 }
 
 // Free 释放 Client 内容

@@ -112,7 +112,7 @@ func (client *Client) newInfo() *info {
 		PostSize:    len(client.data.Posts),
 		Beian:       conf.Beian,
 		Uptime:      conf.Uptime,
-		LastUpdated: client.Created,
+		LastUpdated: client.data.Created,
 		Tags:        client.data.Tags,
 		Links:       client.data.Links,
 		Menus:       conf.Menus,
