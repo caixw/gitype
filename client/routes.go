@@ -22,8 +22,6 @@ import (
 	"github.com/issue9/utils"
 )
 
-const day = 24 * 3600
-
 func (client *Client) initRoutes() error {
 	var err error
 	handle := func(pattern string, h http.HandlerFunc) {
@@ -84,15 +82,15 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	od := client.data.Config.Outdated
 	now := time.Now()
 	if od != nil {
-		var outdated int64
+		var outdated time.Duration
 		if od.Type == data.OutdatedTypeCreated {
-			outdated = now.Unix() - post.Created.Unix()
+			outdated = now.Sub(post.Created)
 		} else {
-			outdated = now.Unix() - post.Modified.Unix()
+			outdated = now.Sub(post.Modified)
 		}
 		if outdated >= od.Duration {
 			// Outdated 是一个动态的值（其中的天数会变化），必须是在请求时生成。
-			post.Outdated = fmt.Sprintf(od.Content, outdated/day)
+			post.Outdated = fmt.Sprintf(od.Content, int64(outdated.Hours())/24)
 		}
 	}
 
