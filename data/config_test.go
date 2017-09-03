@@ -15,7 +15,7 @@ func TestRSS_sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	rss := &rssConfig{}
-	conf := &Config{
+	conf := &config{
 		Title: "title",
 		RSS:   rss,
 	}

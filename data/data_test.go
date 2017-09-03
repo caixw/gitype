@@ -16,18 +16,10 @@ func TestData_loadFiles(t *testing.T) {
 
 	d := &Data{path: vars.NewPath("./testdata")}
 	a.NotError(d.loadFiles())
-	a.NotNil(d.Config).
-		NotNil(d.Tags).
+	a.NotNil(d.Tags).
 		NotNil(d.Posts).
 		NotNil(d.Themes).
 		NotNil(d.Links)
-
-	// Data.Config
-	conf := d.Config
-	a.Equal(conf.Title, "title")
-	a.Equal(conf.URL, "https://caixw.io")
-	a.Equal(conf.Menus[0].URL, "url1")
-	a.Equal(conf.Menus[1].Title, "title2")
 
 	// Data.Tags
 	a.Equal(d.Tags[0].Slug, "default1")
