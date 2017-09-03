@@ -31,6 +31,8 @@ type Data struct {
 	Archives   []*Archive // 存档信息
 	Opensearch *Opensearch
 	Sitemap    *Sitemap
+	RSS        *RSS
+	Atom       *RSS
 }
 
 // Load 函数用于加载一份新的数据。
@@ -221,6 +223,10 @@ func (d *Data) buildData() error {
 	}
 
 	if err := d.buildSitemap(); err != nil {
+		return err
+	}
+
+	if err := d.buildRSS(); err != nil {
 		return err
 	}
 

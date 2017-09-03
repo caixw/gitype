@@ -112,3 +112,18 @@ func (client *Client) initSitemap() error {
 
 	return nil
 }
+
+func (client *Client) initRSS() error {
+	if client.data.RSS == nil {
+		return nil
+	}
+
+	rss := client.data.RSS
+	client.patterns = append(client.patterns, rss.URL)
+	client.mux.GetFunc(rss.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, rss.Type)
+		w.Write(rss.Content)
+	}))
+
+	return nil
+}
