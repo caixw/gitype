@@ -31,11 +31,10 @@ type Post struct {
 	Keywords       string `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
 	Order          string `yaml:"order,omitempty"`    // 排序方式
 	Summary        string `yaml:"summary"`            // 摘要，同时也作为 meta.description 的内容
-	Content        string `yaml:"-"`                  // 内容
+	Content        string `yaml:"path"`               // 内容，在没有内容之前，保存着 yaml 文件中的 path 对应的内容
 	CreatedFormat  string `yaml:"created"`            // 创建时间的字符串表示形式
 	ModifiedFormat string `yaml:"modified"`           // 修改时间的字符串表示形式
 	TagsString     string `yaml:"tags"`               // 关联标签的列表
-	Path           string `yaml:"path"`               // 正文的文件名，相对于 meta.yaml 所在的目录
 	Permalink      string `yaml:"-"`                  // 文章的唯一链接
 	Outdated       string `yaml:"-"`                  // 已过时文章的提示信息，这是一个动态的值，不能提前计算
 
@@ -95,12 +94,11 @@ func loadPost(pp *vars.Path, path string) (*Post, error) {
 	p.Slug = slug
 
 	// 加载内容
-	data, err := ioutil.ReadFile(pp.PostContentPath(slug, p.Path))
+	data, err := ioutil.ReadFile(pp.PostContentPath(slug, p.Content))
 	if err != nil {
 		return nil, &FieldError{File: p.Slug, Message: err.Error(), Field: "path"}
 	}
 	p.Content = string(data)
-	p.Path = ""
 
 	return p, nil
 }
