@@ -6,6 +6,7 @@
 package data
 
 import (
+	"html/template"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -21,14 +22,15 @@ type Data struct {
 	path    *vars.Path
 	Created time.Time
 
-	Config *Config  // 配置内容
-	Theme  *Theme   // 当前主题
-	Tags   []*Tag   // map 对顺序是未定的，所以使用 slice
-	Links  []*Link  // 友情链接
-	Posts  []*Post  // 所有的文章列表
-	Themes []*Theme // 主题，使用 slice，方便排序
+	Config   *Config            // 配置内容
+	Theme    *Theme             // 当前主题
+	Template *template.Template // 当前主题的模板
+	Themes   []*Theme           // 主题列表
+	Tags     []*Tag
+	Links    []*Link
+	Posts    []*Post
+	Archives []*Archive
 
-	Archives   []*Archive // 存档信息
 	Opensearch *Opensearch
 	Sitemap    *Sitemap
 	RSS        *RSS
@@ -234,7 +236,7 @@ func (d *Data) buildData() error {
 		return err
 	}
 
-	return nil
+	return d.compileTemplate()
 }
 
 // 加载 yaml 格式的文件 path 中的内容到 obj

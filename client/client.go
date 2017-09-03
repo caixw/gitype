@@ -7,7 +7,6 @@
 package client
 
 import (
-	"html/template"
 	"net/http"
 	"strconv"
 	"time"
@@ -25,7 +24,6 @@ type Client struct {
 	patterns []string // 记录所有的路由项，方便释放时删除
 	etag     string
 	info     *info
-	template *template.Template // 主题编译后的模板
 }
 
 // New 声明一个新的 Client 实例
@@ -50,7 +48,6 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 	}
 
 	// 依赖 data.Data 数据的相关操作
-	errFilter(client.compileTemplate)
 	errFilter(client.initRSS)
 	errFilter(client.initAtom)
 	errFilter(client.initSitemap)

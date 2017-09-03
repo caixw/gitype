@@ -22,6 +22,9 @@ const (
 	//
 	// 只负责时间的解析，如果是输出时间，则其格式由 meta/config.yaml 中定义。
 	DateFormat = time.RFC3339
+
+	// TemplateExtension 模板的扩展名
+	TemplateExtension = ".html"
 )
 
 // 默认的 mime type 类型。

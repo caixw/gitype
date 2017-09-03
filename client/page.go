@@ -186,7 +186,7 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 		}
 	}
 
-	err := p.client.template.ExecuteTemplate(w, name, p)
+	err := p.client.data.Template.ExecuteTemplate(w, name, p)
 	if err != nil {
 		logs.Error(err)
 		p.client.renderError(w, http.StatusInternalServerError)
