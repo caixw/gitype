@@ -5,35 +5,35 @@
 package app
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/caixw/typing/data"
 	"github.com/issue9/utils"
+	yaml "gopkg.in/yaml.v2"
 )
 
 const httpPort = ":80"
 
 type config struct {
-	HTTPS     bool              `json:"https"`
-	HTTPState string            `json:"httpState"` // 对 80 端口的处理方式，可以 disable, redirect, default
-	CertFile  string            `json:"certFile"`
-	KeyFile   string            `json:"keyFile"`
-	Port      string            `json:"port"`
-	Pprof     bool              `json:"pprof"`
-	Headers   map[string]string `json:"headers"`
+	HTTPS     bool              `yaml:"https"`
+	HTTPState string            `yaml:"httpState"` // 对 80 端口的处理方式，可以 disable, redirect, default
+	CertFile  string            `yaml:"certFile"`
+	KeyFile   string            `yaml:"keyFile"`
+	Port      string            `yaml:"port"`
+	Pprof     bool              `yaml:"pprof"`
+	Headers   map[string]string `yaml:"headers"`
 
-	Webhook       *webhook `json:"webhook"`
-	AdminURL      string   `json:"adminURL"`      // 后台管理地址
-	AdminPassword string   `json:"adminPassword"` // 后台管理登录地址
+	Webhook       *webhook `yaml:"webhook"`
+	AdminURL      string   `yaml:"adminURL"`      // 后台管理地址
+	AdminPassword string   `yaml:"adminPassword"` // 后台管理登录地址
 }
 
 type webhook struct {
-	URL       string `json:"url"`              // webhooks 接收地址
-	Frequency int64  `json:"frequency"`        // webhooks 的最小更新频率，秒数
-	Method    string `json:"method,omitempty"` // webhooks 的请求方式，默认为 POST
-	RepoURL   string `json:"repoURL"`          // 远程仓库的地址
+	URL       string `yaml:"url"`              // webhooks 接收地址
+	Frequency int64  `yaml:"frequency"`        // webhooks 的最小更新频率，秒数
+	Method    string `yaml:"method,omitempty"` // webhooks 的请求方式，默认为 POST
+	RepoURL   string `yaml:"repoURL"`          // 远程仓库的地址
 }
 
 func (w *webhook) sanitize() *data.FieldError {
@@ -79,7 +79,7 @@ func loadConfig(path string) (*config, error) {
 	}
 
 	conf := &config{}
-	if err = json.Unmarshal(bs, conf); err != nil {
+	if err = yaml.Unmarshal(bs, conf); err != nil {
 		return nil, err
 	}
 

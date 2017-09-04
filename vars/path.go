@@ -8,7 +8,7 @@ import "path/filepath"
 
 // 一些文件名的定义
 const (
-	appConfigFilename  = "app.json"
+	appConfigFilename  = "app.yaml"
 	logsConfigFilename = "logs.xml"
 
 	configFilename = "config.yaml"

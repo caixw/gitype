@@ -13,7 +13,7 @@ import (
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
 
-	conf, err := loadConfig("./testdata/app.json")
+	conf, err := loadConfig("./testdata/app.yaml")
 	a.NotError(err).NotNil(conf)
 	a.Equal(conf.Port, ":8080")
 }
