@@ -38,7 +38,7 @@ func statusError(w http.ResponseWriter, status int) {
 func Run(path *vars.Path) error {
 	logs.Info("程序工作路径为:", path.Root)
 
-	conf, err := loadConfig(path.AppConfigFile)
+	conf, err := loadConfig(path)
 	if err != nil {
 		return err
 	}

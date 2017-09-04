@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/caixw/typing/data"
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -72,8 +73,8 @@ func (conf *config) sanitize() *data.FieldError {
 	return conf.Webhook.sanitize()
 }
 
-func loadConfig(path string) (*config, error) {
-	bs, err := ioutil.ReadFile(path)
+func loadConfig(path *vars.Path) (*config, error) {
+	bs, err := ioutil.ReadFile(path.AppConfigFile)
 	if err != nil {
 		return nil, err
 	}

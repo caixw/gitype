@@ -8,13 +8,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
 
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
+	p := vars.NewPath("./testdata/")
 
-	conf, err := loadConfig("./testdata/app.yaml")
+	conf, err := loadConfig(p)
 	a.NotError(err).NotNil(conf)
 	a.Equal(conf.Port, ":8080")
 	a.Equal(conf.Webhook.Frequency, time.Minute)

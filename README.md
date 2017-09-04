@@ -17,8 +17,7 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 1. 下载代码:`go get github.com/caixw/typing`；
 1. 运行程序，使用 appdir 参数指定程序的工作目录；
 
-*源码目录下的 testdata 为一个完整的工作目录内容，
-用户可根据自己的需求决定是否直接使用此目录，或是在其基础上作修改。*
+*源码目录下的 data/testdata 为一个完整的数据目录结构。*
 
 
 
@@ -59,7 +58,7 @@ data 为博客的实际内容，包含了文章，标签，友链以及网站名
 
 #### conf 目录下内容
 
-conf 目录下的为程序级别的配置文件，在程序加载之后，无法再次更改。其中：
+conf 目录下的为程序级别的配置文件，需要重启才能使更改生效。其中：
 - app.yaml 定义了诸如端口，证书等基本数据；
 - logs.xml 定义了日志的输出形式和保存路径，具体配置可参考 [logs](https://github.com/issue9/logs) 的相关文档。
 
