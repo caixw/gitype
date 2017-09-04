@@ -23,6 +23,7 @@ type Data struct {
 
 	Config   *Config
 	Tags     []*Tag
+	Series   []*Tag
 	Links    []*Link
 	Posts    []*Post
 	Archives []*Archive
@@ -127,7 +128,11 @@ func (d *Data) sanitize(conf *config) error {
 		}
 		tags = append(tags, tag)
 	}
-	d.Tags = tags
+
+	// 最后才分离标签和专题
+	ts, series := splitTags(tags)
+	d.Tags = ts
+	d.Series = series
 
 	return nil
 }

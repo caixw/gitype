@@ -11,6 +11,19 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestSplitTags(t *testing.T) {
+	a := assert.New(t)
+	tags := []*Tag{
+		&Tag{Slug: "1", Series: true},
+		&Tag{Slug: "2", Series: false},
+		&Tag{Slug: "3", Series: false},
+		&Tag{Slug: "4", Series: true},
+	}
+
+	ts, series := splitTags(tags)
+	a.Equal(len(ts), 2).Equal(len(series), 2)
+}
+
 func TestLoadTags(t *testing.T) {
 	a := assert.New(t)
 	p := vars.NewPath("./testdata")
