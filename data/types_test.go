@@ -25,20 +25,6 @@ func TestLoadLinks(t *testing.T) {
 	a.Equal(links[1].URL, "url1")
 }
 
-func TestLoadTags(t *testing.T) {
-	a := assert.New(t)
-	p := vars.NewPath("./testdata")
-
-	tags, err := loadTags(p)
-	a.NotError(err).NotNil(tags)
-
-	a.Equal(tags[0].Slug, "default1")
-	a.Equal(tags[0].Color, "efefef")
-	a.Equal(tags[0].Title, "默认1")
-	a.Equal(tags[1].Slug, "default2")
-	a.Equal(tags[0].Permalink, vars.TagURL("default1", 0))
-}
-
 func TestAuthor_sanitize(t *testing.T) {
 	a := assert.New(t)
 

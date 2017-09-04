@@ -5,6 +5,7 @@
 package data
 
 import (
+	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -73,6 +74,10 @@ func loadPosts(path *vars.Path) ([]*Post, error) {
 		}
 
 		posts = append(posts, post)
+	}
+
+	if err := checkPostsDup(posts); err != nil {
+		return nil, err
 	}
 
 	sortPosts(posts)
@@ -152,6 +157,26 @@ func loadPost(pp *vars.Path, path string) (*Post, error) {
 	}
 
 	return p, nil
+}
+
+// 检测是否存在同名的文章
+func checkPostsDup(posts []*Post) error {
+	count := func(slug string) (cnt int) {
+		for _, post := range posts {
+			if post.Slug == slug {
+				cnt++
+			}
+		}
+		return cnt
+	}
+
+	for _, post := range posts {
+		if count(post.Slug) > 1 {
+			return errors.New("存在同名的文章：" + post.Slug)
+		}
+	}
+
+	return nil
 }
 
 // 对文章进行排序，需保证 created 已经被初始化

@@ -12,15 +12,18 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestPost_sanitize(t *testing.T) {
+func TestCheckPostsDup(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("./testdata")
 
-	post, err := loadPost(p, filepath.Clean("./testdata/data/posts/post1/meta.yaml"))
-	a.NotError(err).NotNil(post)
+	posts := []*Post{
+		&Post{Slug: "1"},
+		&Post{Slug: "2"},
+		&Post{Slug: "3"},
+	}
+	a.NotError(checkPostsDup(posts))
 
-	a.Equal(len(post.Tags), 0)                           // 未调用 sanitize 初始化
-	a.Equal(post.Template, vars.DefaultPostTemplateName) // 默认模板
+	posts = append(posts, &Post{Slug: "1"})
+	a.Error(checkPostsDup(posts))
 }
 
 func TestLoadPost(t *testing.T) {

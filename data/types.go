@@ -37,19 +37,6 @@ type Author struct {
 	Avatar string `yaml:"avatar,omitempty"`
 }
 
-// Tag 描述标签信息
-type Tag struct {
-	Slug        string    `yaml:"slug"`            // 唯一名称
-	Title       string    `yaml:"title"`           // 名称
-	Color       string    `yaml:"color,omitempty"` // 标签颜色。若未指定，则继承父容器
-	Content     string    `yaml:"content"`         // 对该标签的详细描述
-	Posts       []*Post   `yaml:"-"`               // 关联的文章
-	Keywords    string    `yaml:"-"`               // meta.keywords 标签的内容，如果为空，使用 Title 属性的值
-	Description string    `yaml:"-"`               // meta.description 标签的内容，若为空，则为 Config.Description
-	Modified    time.Time `yaml:"-"`               // 所有文章中最迟修改的
-	Permalink   string    `yaml:"-"`               // 唯一链接，指向第一页
-}
-
 // Link 描述链接的内容
 type Link struct {
 	// 链接对应的图标名称，fontawesome 图标名称，不用带 fa- 前缀。
@@ -73,23 +60,6 @@ type FieldError struct {
 	File    string // 所在文件
 	Message string // 错误信息
 	Field   string // 所在的字段
-}
-
-func loadTags(path *vars.Path) ([]*Tag, error) {
-	tags := make([]*Tag, 0, 100)
-	if err := loadYamlFile(path.MetaTagsFile, &tags); err != nil {
-		return nil, err
-	}
-
-	for index, tag := range tags {
-		if err := tag.sanitize(); err != nil {
-			err.File = path.MetaTagsFile
-			err.Field = "[" + strconv.Itoa(index) + "]." + err.Field
-			return nil, err
-		}
-	}
-
-	return tags, nil
 }
 
 func loadLinks(path *vars.Path) ([]*Link, error) {
@@ -137,34 +107,6 @@ func (author *Author) sanitize() *FieldError {
 	if len(author.Name) == 0 {
 		return &FieldError{Field: "name", Message: "不能为空"}
 	}
-
-	return nil
-}
-
-func (tag *Tag) sanitize() *FieldError {
-	if len(tag.Slug) == 0 {
-		return &FieldError{Message: "不能为空", Field: "slug"}
-	}
-
-	if len(tag.Title) == 0 {
-		return &FieldError{Message: "不能为空", Field: "title"}
-	}
-
-	if len(tag.Content) == 0 {
-		return &FieldError{Message: "不能为空", Field: "content"}
-	}
-
-	tag.Posts = make([]*Post, 0, 100)
-
-	tag.Permalink = vars.TagURL(tag.Slug, 1)
-
-	tag.Keywords = tag.Title
-	if tag.Title != tag.Slug {
-		tag.Keywords += ","
-		tag.Keywords += tag.Slug
-	}
-
-	tag.Description = "标签" + tag.Title + "的介绍"
 
 	return nil
 }
