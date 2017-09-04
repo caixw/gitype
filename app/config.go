@@ -31,7 +31,7 @@ type config struct {
 
 type webhook struct {
 	URL       string        `yaml:"url"`              // webhooks 接收地址
-	Frequency time.Duration `yaml:"frequency"`        // webhooks 的最小更新频率，秒数
+	Frequency time.Duration `yaml:"frequency"`        // webhooks 的最小更新频率
 	Method    string        `yaml:"method,omitempty"` // webhooks 的请求方式，默认为 POST
 	RepoURL   string        `yaml:"repoURL"`          // 远程仓库的地址
 }

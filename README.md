@@ -83,12 +83,12 @@ webhook           | webhook     | 与 webhook 相关的设置
 
 ###### webhook
 
-名称              | 类型        | 描述
-:-----------------|:------------|:------
-url               | string      | webhooks 的接收地址
-frequency         | int         | webhooks 的最小更新频率，单位：秒
-method            | string      | webhooks 接收地址的接收方法，不指定，则默认为 POST
-repoURL           | string      | 远程仓库的地址
+名称              | 类型          | 描述
+:-----------------|:--------------|:------
+url               | string        | webhooks 的接收地址
+frequency         | time.Duration | webhooks 的最小更新频率
+method            | string        | webhooks 接收地址的接收方法，不指定，则默认为 POST
+repoURL           | string        | 远程仓库的地址
 
 
 #### data 目录下内容
