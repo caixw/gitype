@@ -39,8 +39,13 @@ type Data struct {
 
 // Load 函数用于加载一份新的数据。
 func Load(path *vars.Path) (*Data, error) {
+	// conf 需要先初始化
 	conf := &config{}
 	if err := loadYamlFile(path.MetaConfigFile, conf); err != nil {
+		return nil, err
+	}
+	if err := conf.sanitize(); err != nil {
+		err.Field = path.MetaConfigFile
 		return nil, err
 	}
 
@@ -114,11 +119,6 @@ func (d *Data) sanitize(conf *config) error {
 			err.Field = "[" + strconv.Itoa(index) + "]." + err.Field
 			return err
 		}
-	}
-
-	if err := conf.sanitize(); err != nil {
-		err.Field = d.path.MetaConfigFile
-		return err
 	}
 
 	for _, theme := range d.Themes {
