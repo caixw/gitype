@@ -22,6 +22,25 @@ import (
 	"github.com/issue9/utils"
 )
 
+// 模板的扩展名，在主题目录下，以下扩展名的文件，不会被展示
+var ignoreThemeFileExts = []string{
+	vars.TemplateExtension,
+	".yaml",
+	".yml",
+}
+
+func isIgnoreThemeFile(file string) bool {
+	ext := filepath.Ext(file)
+
+	for _, v := range ignoreThemeFileExts {
+		if ext == v {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (client *Client) initRoutes() error {
 	var err error
 	handle := func(pattern string, h http.HandlerFunc) {
@@ -235,38 +254,37 @@ func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 // 主题文件
 // /themes/...
 func (client *Client) getThemes(w http.ResponseWriter, r *http.Request) {
-	if isIgnoreThemeFile(r.URL.Path) { // 不展示模板文件
-		client.renderError(w, http.StatusNotFound)
+	if isIgnoreThemeFile(r.URL.Path) { // 不展示模板文件，查看 raws 中是否有同名文件
+		client.getRaws(w, r)
 		return
 	}
 
 	path := strings.TrimPrefix(r.URL.Path, vars.ThemesURL(""))
-
-	if len(path) < len(r.URL.Path) {
-		filename := filepath.Join(client.path.ThemesDir, path)
-
-		if !utils.FileExists(filename) {
-			client.renderError(w, http.StatusNotFound)
-			return
-		}
-
-		stat, err := os.Stat(filename)
-		if err != nil {
-			logs.Error(err)
-			client.renderError(w, http.StatusInternalServerError)
-			return
-		}
-
-		if stat.IsDir() {
-			client.renderError(w, http.StatusForbidden)
-			return
-		}
-
-		http.ServeFile(w, r, filename)
+	if len(path) >= len(r.URL.Path) { // path 不包含 vars.ThemesURL("") 前缀
+		client.getRaws(w, r)
 		return
 	}
 
-	client.renderError(w, http.StatusNotFound)
+	filename := filepath.Join(client.path.ThemesDir, path)
+
+	if !utils.FileExists(filename) {
+		client.getRaws(w, r)
+		return
+	}
+
+	stat, err := os.Stat(filename)
+	if err != nil {
+		logs.Error(err)
+		client.renderError(w, http.StatusInternalServerError)
+		return
+	}
+
+	if stat.IsDir() {
+		client.getRaws(w, r)
+		return
+	}
+
+	http.ServeFile(w, r, filename)
 }
 
 // /search.html?q=key&page=2

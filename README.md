@@ -97,7 +97,7 @@ repoURL           | string        | 远程仓库的地址
 涉及的时间均为 RFC3339 格式：2006-01-02T15:04:05Z07:00。
 
 
-##### config.yaml
+##### meta/config.yaml
 
 config.yaml 指定了网站的一些基本配置情况：
 
@@ -199,7 +199,7 @@ url       | string      | 图标地址
 
 
 
-##### links.yaml
+##### meta/links.yaml
 
 links.yaml 用于指定友情链接，为一个数组。每个元素包含以下字段：
 
@@ -212,7 +212,7 @@ icon      | string      | 一个 URL
 rel       | string      | 与该网站的关系，可用 [XFN](https://gmpg.org/xfn/) 的相关定义
 
 
-##### tags.yaml
+##### meta/tags.yaml
 
 tags.yaml 用于指定所有的标签内容。为一个数组，每个元素包含以下字段：
 
@@ -225,7 +225,7 @@ content   | string      | 用于描述该标签的详细内容，可以是 **HTM
 
 
 
-##### 主题
+##### themes
 
 data/themes 下为主题文件，可定义多个主题，通过 config 中的 theme 指定当前使用的主题。
 主题模板语法为 [html/template](https://golang.org/pkg/html/template/)。
@@ -238,6 +238,12 @@ data/themes 下为主题文件，可定义多个主题，通过 config 中的 th
 400 及以上的错误信息，均可以自定义，方式为在当前主题目录下，新建一个与错误代码相对应的 HTML 文件，
 比如 400 错误，会读取 400.html 文件，以此类推。
 
+
+##### raws
+
+当访问的页面不存在时，会尝试从 raws 下访问相关内容。比如 `/abc.html`，会尝试在查找 `raws/abc.html`
+文件是否存在；甚至当 `/post/2016/about.htm` 这样标准的文章路由，如果文章不存在，会也访问 `raws`
+目录，查看其下是否在正好相同的文件。 
 
 
 ### 开发
