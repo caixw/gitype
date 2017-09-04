@@ -34,7 +34,7 @@ data 为博客的实际内容，包含了文章，标签，友链以及网站名
 |     |
 |     |--- logs.xml 日志的配置文件
 |     |
-|     |--- app.json 程序的配置文件
+|     |--- app.yaml 程序的配置文件
 |
 |--- data 程序的数据目录
       |
@@ -60,11 +60,11 @@ data 为博客的实际内容，包含了文章，标签，友链以及网站名
 #### conf 目录下内容
 
 conf 目录下的为程序级别的配置文件，在程序加载之后，无法再次更改。其中：
-- app.json 定义了诸如端口，证书等基本数据；
+- app.yaml 定义了诸如端口，证书等基本数据；
 - logs.xml 定义了日志的输出形式和保存路径，具体配置可参考 [logs](https://github.com/issue9/logs) 的相关文档。
 
 
-##### app.json
+##### app.yaml
 
 名称              | 类型        | 描述
 :-----------------|:------------|:------
@@ -87,7 +87,7 @@ webhook           | webhook     | 与 webhook 相关的设置
 :-----------------|:------------|:------
 url               | string      | webhooks 的接收地址
 frequency         | int         | webhooks 的最小更新频率，单位：秒
-Method            | string      | webhooks 接收地址的接收方法，不指定，则默认为 POST
+method            | string      | webhooks 接收地址的接收方法，不指定，则默认为 POST
 repoURL           | string      | 远程仓库的地址
 
 

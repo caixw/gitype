@@ -1,0 +1,15 @@
+# app.json
+
+https: false
+httpState: disable
+port: :8080
+pprof: false
+adminURL: /admin
+adminPassword: 123456
+headers: 
+  server: typing
+
+webhook:
+  url: /admin/webhooks
+  frequency: 1m
+  repoURL: https://github.com/caixw/typing.git
