@@ -22,13 +22,18 @@ type Data struct {
 	Created time.Time
 
 	Config   *Config
-	Theme    *Theme             // 当前主题
-	Template *template.Template // 当前主题的模板
-	Themes   []*Theme           // 主题列表
 	Tags     []*Tag
 	Links    []*Link
 	Posts    []*Post
 	Archives []*Archive
+	Themes   []*Theme
+	Theme    *Theme // 当前主题
+
+	// 当前主题模板的编译结果。
+	//
+	// 每次加载时，只需要对当前主题作预编译缓存。
+	// 其它主题可能是一个未完成的半成品，不作编译检测。
+	Template *template.Template
 
 	Opensearch *Opensearch
 	Sitemap    *Sitemap

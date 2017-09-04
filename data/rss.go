@@ -13,17 +13,17 @@ import (
 
 // RSS 的相关配置
 type RSS struct {
-	Title   string
-	URL     string
-	Type    string
-	Content []byte
+	Title   string // 标题
+	URL     string // 地址，不能包含域名
+	Type    string // mimeType
+	Content []byte // RSS 的实际内容
 }
 
 type rssConfig struct {
-	Title string `yaml:"title"`          // 标题
-	URL   string `yaml:"url"`            // 地址，不能包含域名
-	Type  string `yaml:"type,omitempty"` // mimeType
-	Size  int    `yaml:"size"`           // 显示数量
+	Title string `yaml:"title"`
+	URL   string `yaml:"url"`
+	Type  string `yaml:"type,omitempty"`
+	Size  int    `yaml:"size"` // 显示数量
 }
 
 // 生成一个符合 rss 规范的 XML 文本。

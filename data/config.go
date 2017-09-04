@@ -22,7 +22,7 @@ type Config struct {
 	Keywords        string    // 默认情况下的 keyword 内容
 	Description     string    // 默认情况下的 descrription 内容
 	Beian           string    // 备案号
-	Uptime          time.Time // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	Uptime          time.Time // 上线时间
 	PageSize        int       // 每页显示的数量
 	LongDateFormat  string    // 长时间的显示格式
 	ShortDateFormat string    // 短时间的显示格式
@@ -35,34 +35,32 @@ type Config struct {
 }
 
 type config struct {
-	Title           string         `yaml:"title"`                 // 网站标题
-	Language        string         `yaml:"language"`              // 语言标记，比如 zh-cmn-Hans
-	Subtitle        string         `yaml:"subtitle,omitempty"`    // 网站副标题
-	URL             string         `yaml:"url"`                   // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
-	Keywords        string         `yaml:"keywords,omitempty"`    // 默认情况下的 keyword 内容
-	Description     string         `yaml:"description,omitempty"` // 默认情况下的 descrription 内容
-	Beian           string         `yaml:"beian,omitempty"`       // 备案号
-	Uptime          time.Time      `yaml:"-"`                     // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
-	UptimeFormat    string         `yaml:"uptime"`                // 上线时间，字符串表示
-	PageSize        int            `yaml:"pageSize"`              // 每页显示的数量
-	LongDateFormat  string         `yaml:"longDateFormat"`        // 长时间的显示格式
-	ShortDateFormat string         `yaml:"shortDateFormat"`       // 短时间的显示格式
-	Theme           string         `yaml:"theme"`                 // 默认主题
-	Type            string         `yaml:"type,omitempty"`        // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
-	Icon            *Icon          `yaml:"icon,omitempty"`        // 程序默认的图标
-	Menus           []*Link        `yaml:"menus,omitempty"`       // 导航菜单
-	Archive         *archiveConfig `yaml:"archive"`               // 归档页的配置内容
-	Outdated        *Outdated      `yaml:"outdated,omitempty"`    // 文章过时内容的设置
+	Title           string    `yaml:"title"`
+	Language        string    `yaml:"language"`
+	Subtitle        string    `yaml:"subtitle,omitempty"`
+	URL             string    `yaml:"url"`
+	Keywords        string    `yaml:"keywords,omitempty"`
+	Description     string    `yaml:"description,omitempty"`
+	Beian           string    `yaml:"beian,omitempty"`
+	Uptime          time.Time `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	PageSize        int       `yaml:"pageSize"`
+	LongDateFormat  string    `yaml:"longDateFormat"`
+	ShortDateFormat string    `yaml:"shortDateFormat"`
+	Type            string    `yaml:"type,omitempty"`
+	Icon            *Icon     `yaml:"icon,omitempty"`
+	Menus           []*Link   `yaml:"menus,omitempty"`
+	Outdated        *Outdated `yaml:"outdated,omitempty"`
+	Author          *Author   `yaml:"author"`
+	License         *Link     `yaml:"license"`
 
-	// 一些默认值，可在各自的配置中覆盖此值
-	Author  *Author `yaml:"author"`  // 默认作者信息
-	License *Link   `yaml:"license"` // 默认版权信息
-
-	// feeds
-	RSS        *rssConfig        `yaml:"rss,omitempty"`
-	Atom       *rssConfig        `yaml:"atom,omitempty"`
-	Sitemap    *sitemapConfig    `yaml:"sitemap,omitempty"`
-	Opensearch *opensearchConfig `yaml:"opensearch,omitempty"`
+	// 以下内容不存在于 Config 中
+	Theme        string            `yaml:"theme"`
+	UptimeFormat string            `yaml:"uptime"`
+	Archive      *archiveConfig    `yaml:"archive"`
+	RSS          *rssConfig        `yaml:"rss,omitempty"`
+	Atom         *rssConfig        `yaml:"atom,omitempty"`
+	Sitemap      *sitemapConfig    `yaml:"sitemap,omitempty"`
+	Opensearch   *opensearchConfig `yaml:"opensearch,omitempty"`
 }
 
 func newConfig(conf *config) *Config {

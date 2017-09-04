@@ -17,18 +17,6 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// 肯定存在的模板名称，检测模板是否存在时，会用到。
-// 该值会被 checkTemplates 改变，不能用于其它地方。
-var templates = []string{
-	vars.DefaultPostTemplateName,
-	"posts",
-	"tags",
-	"tag",
-	"links",
-	"archives",
-	"search",
-}
-
 // Theme 表示主题信息
 type Theme struct {
 	ID          string  `yaml:"-"`           // 主题的唯一 ID
@@ -121,7 +109,23 @@ func (d *Data) compileTemplate() error {
 
 // 检测模板名称是否在模板中真实存在
 func (d *Data) checkTemplatesExists() error {
+	var templates = []string{
+		vars.DefaultPostTemplateName,
+		"posts",
+		"tags",
+		"tag",
+		"links",
+		"archives",
+		"search",
+	}
+
+	// 获取文章详情页中的新模板名
 	for _, post := range d.Posts {
+		// 默认模板名，肯定已存在于 templates 变量中
+		if post.Template == vars.DefaultPostTemplateName {
+			continue
+		}
+
 		for _, tpl := range templates {
 			if tpl != post.Template {
 				templates = append(templates, post.Template)
@@ -131,11 +135,9 @@ func (d *Data) checkTemplatesExists() error {
 
 	// 模板定义未必是按文件分的，所以不能简单地判断文件是否存在
 	for _, tpl := range templates {
-		if nil != d.Template.Lookup(tpl) {
-			continue
+		if nil == d.Template.Lookup(tpl) {
+			return fmt.Errorf("模板 %s 未定义", tpl)
 		}
-
-		return fmt.Errorf("模板 %s 未定义", tpl)
 	}
 
 	return nil

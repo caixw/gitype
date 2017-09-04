@@ -21,11 +21,11 @@ const (
 	archiveOrderAsc  = "asc"
 )
 
-// Archive 存档信息
+// Archive 表示某一时间段的存档信息
 type Archive struct {
-	date  int64
-	Title string
-	Posts []*Post
+	date  int64   // 当前存档的一个日期值，可用于生成 Title 和排序用，具体取值方式，可自定义
+	Title string  // 当前存档的标题
+	Posts []*Post // 当前存档的文章列表
 }
 
 // archiveConfig 存档页的配置内容
