@@ -13,11 +13,15 @@ import (
 )
 
 // Tag 描述标签信息
+//
+// 标签系统同时包含了标签和专题两个方面，默认情况下为标签，
+// 当将 Series 指定为 true 时，表示这是一个专题。
 type Tag struct {
 	Slug        string    `yaml:"slug"`            // 唯一名称
 	Title       string    `yaml:"title"`           // 名称
 	Color       string    `yaml:"color,omitempty"` // 标签颜色。若未指定，则继承父容器
 	Content     string    `yaml:"content"`         // 对该标签的详细描述
+	Series      bool      `yaml:"series"`          // 是否为一个专题标签
 	Posts       []*Post   `yaml:"-"`               // 关联的文章
 	Keywords    string    `yaml:"-"`               // meta.keywords 标签的内容，如果为空，使用 Title 属性的值
 	Description string    `yaml:"-"`               // meta.description 标签的内容，若为空，则为 Config.Description
@@ -65,6 +69,22 @@ func checkTagsDup(tags []*Tag) error {
 	}
 
 	return nil
+}
+
+// 分离标签和专题的列表
+func splitTags(tags []*Tag) (ts []*Tag, series []*Tag) {
+	ts = make([]*Tag, 0, len(tags))
+	series = make([]*Tag, 0, len(tags))
+
+	for _, tag := range tags {
+		if tag.Series {
+			series = append(series, tag)
+		} else {
+			ts = append(ts, tag)
+		}
+	}
+
+	return ts, series
 }
 
 func (tag *Tag) sanitize() *FieldError {

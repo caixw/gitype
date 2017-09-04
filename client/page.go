@@ -76,24 +76,26 @@ type info struct {
 	ThemeURL    string       // 主题官网
 	ThemeAuthor *data.Author // 主题的作者
 
-	SiteName    string       // 网站名称
-	URL         string       // 网站地址，若是一个子目录，则需要包含该子目录
-	Icon        *data.Icon   // 网站图标
-	Language    string       // 页面语言
-	PostSize    int          // 总文章数量
-	Beian       string       // 备案号
-	Uptime      time.Time    // 上线时间
-	LastUpdated time.Time    // 最后更新时间
-	RSS         *data.Link   // RSS，NOTICE:指针方便模板判断其值是否为空
-	Atom        *data.Link   // Atom
-	Opensearch  *data.Link   // Opensearch
+	SiteName    string     // 网站名称
+	URL         string     // 网站地址，若是一个子目录，则需要包含该子目录
+	Icon        *data.Icon // 网站图标
+	Language    string     // 页面语言
+	PostSize    int        // 总文章数量
+	Beian       string     // 备案号
+	Uptime      time.Time  // 上线时间
+	LastUpdated time.Time  // 最后更新时间
+	RSS         *data.Link // RSS，NOTICE:指针方便模板判断其值是否为空
+	Atom        *data.Link
+	Opensearch  *data.Link
 	Tags        []*data.Tag  // 标签列表
+	Series      []*data.Tag  // 专题列表
 	Links       []*data.Link // 友情链接
-	Menus       []*data.Link // 菜单
+	Menus       []*data.Link // 导航菜单
 }
 
 func (client *Client) newInfo() *info {
-	conf := client.data.Config
+	d := client.data
+	conf := d.Config
 
 	info := &info{
 		AppName:    vars.AppName,
@@ -101,33 +103,34 @@ func (client *Client) newInfo() *info {
 		AppVersion: vars.Version(),
 		GoVersion:  runtime.Version(),
 
-		ThemeName:   client.data.Theme.Name,
-		ThemeURL:    client.data.Theme.URL,
-		ThemeAuthor: client.data.Theme.Author,
+		ThemeName:   d.Theme.Name,
+		ThemeURL:    d.Theme.URL,
+		ThemeAuthor: d.Theme.Author,
 
 		SiteName:    conf.Title,
 		URL:         conf.URL,
 		Icon:        conf.Icon,
 		Language:    conf.Language,
-		PostSize:    len(client.data.Posts),
+		PostSize:    len(d.Posts),
 		Beian:       conf.Beian,
 		Uptime:      conf.Uptime,
-		LastUpdated: client.data.Created,
-		Tags:        client.data.Tags,
-		Links:       client.data.Links,
+		LastUpdated: d.Created,
+		Tags:        d.Tags,
+		Series:      d.Series,
+		Links:       d.Links,
 		Menus:       conf.Menus,
 	}
 
-	if client.data.RSS != nil {
-		info.RSS = &data.Link{Title: client.data.RSS.Title, URL: client.data.RSS.URL}
+	if d.RSS != nil {
+		info.RSS = &data.Link{Title: d.RSS.Title, URL: d.RSS.URL}
 	}
 
-	if client.data.Atom != nil {
-		info.Atom = &data.Link{Title: client.data.Atom.Title, URL: client.data.Atom.URL}
+	if d.Atom != nil {
+		info.Atom = &data.Link{Title: d.Atom.Title, URL: d.Atom.URL}
 	}
 
-	if client.data.Opensearch != nil {
-		info.Opensearch = &data.Link{Title: client.data.Opensearch.Title, URL: client.data.Opensearch.URL}
+	if d.Opensearch != nil {
+		info.Opensearch = &data.Link{Title: d.Opensearch.Title, URL: d.Opensearch.URL}
 	}
 
 	return info
