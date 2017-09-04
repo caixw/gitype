@@ -38,7 +38,6 @@ type Data struct {
 
 // Load 函数用于加载一份新的数据。
 func Load(path *vars.Path) (*Data, error) {
-	// conf 需要先初始化
 	conf, err := loadConfig(path)
 	if err != nil {
 		return nil, err
@@ -101,8 +100,18 @@ func (d *Data) sanitize(conf *config) error {
 		tag.Modified = conf.Uptime
 	}
 
-	if err := d.attachPostMeta(conf); err != nil {
-		return err
+	for _, post := range d.Posts {
+		if post.Author == nil {
+			post.Author = conf.Author
+		}
+
+		if post.License == nil {
+			post.License = conf.License
+		}
+
+		if err := d.attachPostTag(post, conf); err != nil {
+			return err
+		}
 	}
 
 	// 过滤空标签
@@ -118,38 +127,27 @@ func (d *Data) sanitize(conf *config) error {
 	return nil
 }
 
-// 关联文章的相关属性
-func (d *Data) attachPostMeta(conf *config) *FieldError {
-	for _, post := range d.Posts {
-		if post.Author == nil {
-			post.Author = conf.Author
-		}
-
-		if post.License == nil {
-			post.License = conf.License
-		}
-
-		// tags
-		ts := strings.Split(post.TagsString, ",")
-		for _, tag := range d.Tags {
-			for _, slug := range ts {
-				if tag.Slug != slug {
-					continue
-				}
-
-				post.Tags = append(post.Tags, tag)
-				tag.Posts = append(tag.Posts, post)
-
-				if tag.Modified.Before(post.Modified) {
-					tag.Modified = post.Modified
-				}
-				break
+// 关联文章与标签的相关信息
+func (d *Data) attachPostTag(post *Post, conf *config) *FieldError {
+	ts := strings.Split(post.TagsString, ",")
+	for _, tag := range d.Tags {
+		for _, slug := range ts {
+			if tag.Slug != slug {
+				continue
 			}
-		} // end for tags
 
-		if len(post.Tags) == 0 {
-			return &FieldError{File: post.Slug, Message: "未指定任何关联标签信息", Field: "tags"}
+			post.Tags = append(post.Tags, tag)
+			tag.Posts = append(tag.Posts, post)
+
+			if tag.Modified.Before(post.Modified) {
+				tag.Modified = post.Modified
+			}
+			break
 		}
+	} // end for tags
+
+	if len(post.Tags) == 0 {
+		return &FieldError{File: d.path.PostMetaPath(post.Slug), Message: "未指定任何关联标签信息", Field: "tags"}
 	}
 
 	return nil

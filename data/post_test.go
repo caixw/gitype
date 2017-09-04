@@ -19,8 +19,8 @@ func TestPost_sanitize(t *testing.T) {
 	post, err := loadPost(p, filepath.Clean("./testdata/data/posts/post1/meta.yaml"))
 	a.NotError(err).NotNil(post)
 
-	a.Equal(len(post.Tags), 0)     // 未调用 sanitize 初始化
-	a.Equal(post.Template, "post") // 默认模板
+	a.Equal(len(post.Tags), 0)                           // 未调用 sanitize 初始化
+	a.Equal(post.Template, vars.DefaultPostTemplateName) // 默认模板
 }
 
 func TestLoadPost(t *testing.T) {
@@ -31,7 +31,7 @@ func TestLoadPost(t *testing.T) {
 	a.NotError(err).NotNil(post)
 	a.Equal(len(post.Tags), 0) // 未调用 Data.sanitize 初始化
 	a.False(post.Modified.IsZero())
-	a.Equal(post.Template, "post")
+	a.Equal(post.Template, vars.DefaultPostTemplateName)
 	a.Equal(post.Content, "<article>a1</article>\n")
 
 	post, err = loadPost(p, filepath.Clean("./testdata/data/posts/folder/post2/meta.yaml"))

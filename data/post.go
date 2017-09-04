@@ -109,7 +109,9 @@ func loadPost(pp *vars.Path, path string) (*Post, error) {
 		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: err.Error(), Field: "created"}
 	}
 	p.Created = created
-	p.Permalink = ""
+
+	// permalink
+	p.Permalink = vars.PostURL(p.Slug)
 
 	// modified
 	// outdated 还用作其它功能，需要首先解析其值
@@ -137,12 +139,9 @@ func loadPost(pp *vars.Path, path string) (*Post, error) {
 		p.Keywords = strings.Join(keywords, ",")
 	}
 
-	// permalink
-	p.Permalink = vars.PostURL(p.Slug)
-
 	// template
 	if len(p.Template) == 0 {
-		p.Template = "post"
+		p.Template = vars.DefaultPostTemplateName
 	}
 
 	// order

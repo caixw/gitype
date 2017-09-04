@@ -9,7 +9,7 @@ import "time"
 
 const (
 	// 主版本号，符合 semver 规范
-	mainVersion = "0.11.12"
+	mainVersion = "0.11.13"
 
 	// AppName 程序名称
 	AppName = "typing"
@@ -25,6 +25,9 @@ const (
 
 	// TemplateExtension 模板的扩展名
 	TemplateExtension = ".html"
+
+	// DefaultPostTemplateName 默认的文章模板名称
+	DefaultPostTemplateName = "post"
 )
 
 // 默认的 mime type 类型。

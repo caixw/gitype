@@ -17,11 +17,11 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// 肯定存在的模板类型，检测模板是否存在时，会用到。
+// 肯定存在的模板名称，检测模板是否存在时，会用到。
 // 该值会被 checkTemplates 改变，不能用于其它地方。
 var templates = []string{
+	vars.DefaultPostTemplateName,
 	"posts",
-	"post",
 	"tags",
 	"tag",
 	"links",
