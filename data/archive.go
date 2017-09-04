@@ -23,9 +23,9 @@ const (
 
 // Archive 表示某一时间段的存档信息
 type Archive struct {
-	date  int64   // 当前存档的一个日期值，可用于生成 Title 和排序用，具体取值方式，可自定义
-	Title string  // 当前存档的标题
-	Posts []*Post // 当前存档的文章列表
+	date  time.Time // 当前存档的一个日期值，可用于生成 Title 和排序用，具体取值方式，可自定义
+	Title string    // 当前存档的标题
+	Posts []*Post   // 当前存档的文章列表
 }
 
 // archiveConfig 存档页的配置内容
@@ -40,18 +40,18 @@ func (d *Data) buildArchives(conf *config) error {
 
 	for _, post := range d.Posts {
 		t := post.Created
-		var date int64
+		var date time.Time
 
 		switch conf.Archive.Type {
 		case archiveTypeMonth:
-			date = time.Date(t.Year(), t.Month(), 2, 0, 0, 0, 0, t.Location()).Unix()
+			date = time.Date(t.Year(), t.Month(), 2, 0, 0, 0, 0, t.Location())
 		case archiveTypeYear:
-			date = time.Date(t.Year(), 2, 0, 0, 0, 0, 0, t.Location()).Unix()
+			date = time.Date(t.Year(), 2, 0, 0, 0, 0, 0, t.Location())
 		}
 
 		found := false
 		for _, archive := range archives {
-			if archive.date == date {
+			if archive.date.Equal(date) {
 				archive.Posts = append(archive.Posts, post)
 				found = true
 				break
@@ -60,19 +60,17 @@ func (d *Data) buildArchives(conf *config) error {
 		if !found {
 			archives = append(archives, &Archive{
 				date:  date,
-				Title: time.Unix(date, 0).Format(conf.Archive.Format),
+				Title: date.Format(conf.Archive.Format),
 				Posts: []*Post{post},
 			})
 		}
 	} // end for
 
 	sort.SliceStable(archives, func(i, j int) bool {
-		less := archives[i].date > archives[j].date
 		if conf.Archive.Order == archiveOrderDesc {
-			less = !less
+			return archives[i].date.After(archives[j].date)
 		}
-
-		return less
+		return archives[i].date.Before(archives[j].date)
 	})
 
 	d.Archives = archives

@@ -14,14 +14,14 @@ import (
 
 // Sitemap 的相关参数
 type Sitemap struct {
-	URL     string
-	Type    string
-	Content []byte
+	URL     string // 展示给用户的地址，不能包含域名
+	Type    string // mime type
+	Content []byte // 实际内容
 }
 
 type sitemapConfig struct {
-	URL  string `yaml:"url"`            // 展示给用户的地址，不能包含域名
-	Type string `yaml:"type,omitempty"` // mimeType
+	URL  string `yaml:"url"`
+	Type string `yaml:"type,omitempty"`
 
 	XslURL     string  `yaml:"xslURL,omitempty"`    // 为 sitemap 指定一个 xsl 文件
 	Priority   float64 `yaml:"priority"`            // 默认的优先级

@@ -19,7 +19,7 @@ import (
 
 // Theme 表示主题信息
 type Theme struct {
-	ID          string  `yaml:"-"`           // 主题的唯一 ID
+	ID          string  `yaml:"-"`           // 主题的唯一 ID，即当前目录名称
 	Name        string  `yaml:"name"`        // 主题名称
 	URL         string  `yaml:"url"`         // 网站
 	Version     string  `yaml:"version"`     // 主题的版本号
