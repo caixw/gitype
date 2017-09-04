@@ -8,7 +8,6 @@ package data
 import (
 	"html/template"
 	"io/ioutil"
-	"strconv"
 	"strings"
 	"time"
 
@@ -40,12 +39,28 @@ type Data struct {
 // Load 函数用于加载一份新的数据。
 func Load(path *vars.Path) (*Data, error) {
 	// conf 需要先初始化
-	conf := &config{}
-	if err := loadYamlFile(path.MetaConfigFile, conf); err != nil {
+	conf, err := loadConfig(path)
+	if err != nil {
 		return nil, err
 	}
-	if err := conf.sanitize(); err != nil {
-		err.Field = path.MetaConfigFile
+
+	tags, err := loadTags(path)
+	if err != nil {
+		return nil, err
+	}
+
+	links, err := loadLinks(path)
+	if err != nil {
+		return nil, err
+	}
+
+	posts, err := loadPosts(path)
+	if err != nil {
+		return nil, err
+	}
+
+	themes, err := loadThemes(path)
+	if err != nil {
 		return nil, err
 	}
 
@@ -53,17 +68,13 @@ func Load(path *vars.Path) (*Data, error) {
 		path:    path,
 		Created: time.Now(),
 		Config:  newConfig(conf),
-	}
-
-	if err := d.loadFiles(); err != nil {
-		return nil, err
+		Tags:    tags,
+		Links:   links,
+		Posts:   posts,
+		Themes:  themes,
 	}
 
 	if err := d.sanitize(conf); err != nil {
-		return nil, err
-	}
-
-	if err := d.sanitize2(conf); err != nil {
 		return nil, err
 	}
 
@@ -74,76 +85,9 @@ func Load(path *vars.Path) (*Data, error) {
 	return d, nil
 }
 
-// 加载所有的文件
-func (d *Data) loadFiles() error {
-	tags := make([]*Tag, 0, 100)
-	if err := loadYamlFile(d.path.MetaTagsFile, &tags); err != nil {
-		return err
-	}
-	d.Tags = tags
-
-	links := make([]*Link, 0, 20)
-	if err := loadYamlFile(d.path.MetaLinksFile, &links); err != nil {
-		return err
-	}
-	d.Links = links
-
-	posts, err := loadPosts(d.path)
-	if err != nil {
-		return err
-	}
-	d.Posts = posts
-
-	themes, err := loadThemes(d.path)
-	if err != nil {
-		return err
-	}
-	d.Themes = themes
-
-	return nil
-}
-
-// 对各个加载的数据进行转换、审查等操作。
-func (d *Data) sanitize(conf *config) error {
-	for index, tag := range d.Tags {
-		if err := tag.sanitize(); err != nil {
-			err.File = d.path.MetaTagsFile
-			err.Field = "[" + strconv.Itoa(index) + "]." + err.Field
-			return err
-		}
-	}
-
-	for index, link := range d.Links {
-		if err := link.sanitize(); err != nil {
-			err.File = d.path.MetaLinksFile
-			err.Field = "[" + strconv.Itoa(index) + "]." + err.Field
-			return err
-		}
-	}
-
-	for _, theme := range d.Themes {
-		if err := theme.sanitize(); err != nil {
-			err.File = theme.Path
-			return err
-		}
-	}
-
-	for _, post := range d.Posts {
-		if err := post.sanitize(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // 对各个数据再次进行检测，主要是一些关联数据的相互初始化
-func (d *Data) sanitize2(conf *config) error {
-	// 对文章进行排序，需保证 created 已经被初始化
-	sortPosts(d.Posts)
-
-	// 检测配置文件中的主题是否存在
-	for _, theme := range d.Themes {
+func (d *Data) sanitize(conf *config) error {
+	for _, theme := range d.Themes { // 检测配置文件中的主题是否存在
 		if theme.ID == conf.Theme {
 			d.Theme = theme
 			break
@@ -153,8 +97,7 @@ func (d *Data) sanitize2(conf *config) error {
 		return &FieldError{File: d.path.MetaConfigFile, Message: "该主题并不存在", Field: "theme"}
 	}
 
-	// 将标签的修改时间设置为网站的上线时间
-	for _, tag := range d.Tags {
+	for _, tag := range d.Tags { // 将标签的默认修改时间设置为网站的上线时间
 		tag.Modified = conf.Uptime
 	}
 
@@ -162,7 +105,7 @@ func (d *Data) sanitize2(conf *config) error {
 		return err
 	}
 
-	// 过滤空标签，排序标签关联的文章
+	// 过滤空标签
 	tags := make([]*Tag, 0, len(d.Tags))
 	for _, tag := range d.Tags {
 		if len(tag.Posts) == 0 {
@@ -188,9 +131,6 @@ func (d *Data) attachPostMeta(conf *config) *FieldError {
 
 		// tags
 		ts := strings.Split(post.TagsString, ",")
-		if len(ts) == 0 {
-			return &FieldError{File: post.Slug, Message: "未指定任何关联标签信息", Field: "tags"}
-		}
 		for _, tag := range d.Tags {
 			for _, slug := range ts {
 				if tag.Slug != slug {

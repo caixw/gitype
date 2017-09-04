@@ -85,6 +85,20 @@ func newConfig(conf *config) *Config {
 	}
 }
 
+func loadConfig(path *vars.Path) (*config, error) {
+	conf := &config{}
+	if err := loadYamlFile(path.MetaConfigFile, conf); err != nil {
+		return nil, err
+	}
+
+	if err := conf.sanitize(); err != nil {
+		err.Field = path.MetaConfigFile
+		return nil, err
+	}
+
+	return conf, nil
+}
+
 func (conf *config) sanitize() *FieldError {
 	if conf.PageSize <= 0 {
 		return &FieldError{Message: "必须为大于零的整数", Field: "pageSize"}

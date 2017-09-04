@@ -75,6 +75,8 @@ func loadPosts(path *vars.Path) ([]*Post, error) {
 		posts = append(posts, post)
 	}
 
+	sortPosts(posts)
+
 	return posts, nil
 }
 
@@ -93,19 +95,18 @@ func loadPost(pp *vars.Path, path string) (*Post, error) {
 	// 加载内容
 	data, err := ioutil.ReadFile(pp.PostContentPath(slug, p.Content))
 	if err != nil {
-		return nil, &FieldError{File: p.Slug, Message: err.Error(), Field: "path"}
+		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: err.Error(), Field: "path"}
+	}
+	if len(data) == 0 {
+		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: "不能为空", Field: "content"}
 	}
 	p.Content = string(data)
 
-	return p, nil
-}
-
-func (p *Post) sanitize() *FieldError {
 	// created
 	// permalink 还用作其它功能，需要首先解析其值
 	created, err := vars.ParseDate(p.Permalink)
 	if err != nil {
-		return &FieldError{File: p.Slug, Message: err.Error(), Field: "created"}
+		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: err.Error(), Field: "created"}
 	}
 	p.Created = created
 	p.Permalink = ""
@@ -114,18 +115,17 @@ func (p *Post) sanitize() *FieldError {
 	// outdated 还用作其它功能，需要首先解析其值
 	modified, err := vars.ParseDate(p.Outdated)
 	if err != nil {
-		return &FieldError{File: p.Slug, Message: err.Error(), Field: "modified"}
+		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: err.Error(), Field: "modified"}
 	}
 	p.Modified = modified
 	p.Outdated = ""
 
 	if len(p.Title) == 0 {
-		return &FieldError{File: p.Slug, Message: "不能为空", Field: "title"}
+		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: "不能为空", Field: "title"}
 	}
 
-	// content
-	if len(p.Content) == 0 {
-		return &FieldError{File: p.Slug, Message: "不能为空", Field: "content"}
+	if len(p.TagsString) == 0 {
+		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: "不能为空", Field: "tags"}
 	}
 
 	// keywords
@@ -149,10 +149,10 @@ func (p *Post) sanitize() *FieldError {
 	if len(p.Order) == 0 {
 		p.Order = orderDefault
 	} else if p.Order != orderDefault && p.Order != orderLast && p.Order != orderTop {
-		return &FieldError{File: p.Slug, Message: "无效的值", Field: "order"}
+		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: "无效的值", Field: "order"}
 	}
 
-	return nil
+	return p, nil
 }
 
 // 对文章进行排序，需保证 created 已经被初始化

@@ -6,6 +6,7 @@ package data
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/caixw/typing/vars"
@@ -72,6 +73,40 @@ type FieldError struct {
 	File    string // 所在文件
 	Message string // 错误信息
 	Field   string // 所在的字段
+}
+
+func loadTags(path *vars.Path) ([]*Tag, error) {
+	tags := make([]*Tag, 0, 100)
+	if err := loadYamlFile(path.MetaTagsFile, &tags); err != nil {
+		return nil, err
+	}
+
+	for index, tag := range tags {
+		if err := tag.sanitize(); err != nil {
+			err.File = path.MetaTagsFile
+			err.Field = "[" + strconv.Itoa(index) + "]." + err.Field
+			return nil, err
+		}
+	}
+
+	return tags, nil
+}
+
+func loadLinks(path *vars.Path) ([]*Link, error) {
+	links := make([]*Link, 0, 20)
+	if err := loadYamlFile(path.MetaLinksFile, &links); err != nil {
+		return nil, err
+	}
+
+	for index, link := range links {
+		if err := link.sanitize(); err != nil {
+			err.File = path.MetaLinksFile
+			err.Field = "[" + strconv.Itoa(index) + "]." + err.Field
+			return nil, err
+		}
+	}
+
+	return links, nil
 }
 
 func (err *FieldError) Error() string {
