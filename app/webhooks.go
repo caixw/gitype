@@ -43,9 +43,7 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 
 // 拉取代码并重新加载
 func (a *app) pull() *httpError {
-	now := time.Now().Unix()
-
-	if now-a.conf.Webhook.Frequency < a.client.Created().Unix() {
+	if time.Now().Sub(a.client.Created()) < a.conf.Webhook.Frequency {
 		return &httpError{
 			status:  http.StatusTooManyRequests,
 			message: "更新过于频繁，被中止！",

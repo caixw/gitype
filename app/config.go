@@ -7,6 +7,7 @@ package app
 import (
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/caixw/typing/data"
 	"github.com/issue9/utils"
@@ -16,24 +17,23 @@ import (
 const httpPort = ":80"
 
 type config struct {
-	HTTPS     bool              `yaml:"https"`
-	HTTPState string            `yaml:"httpState"` // 对 80 端口的处理方式，可以 disable, redirect, default
-	CertFile  string            `yaml:"certFile"`
-	KeyFile   string            `yaml:"keyFile"`
-	Port      string            `yaml:"port"`
-	Pprof     bool              `yaml:"pprof"`
-	Headers   map[string]string `yaml:"headers"`
-
-	Webhook       *webhook `yaml:"webhook"`
-	AdminURL      string   `yaml:"adminURL"`      // 后台管理地址
-	AdminPassword string   `yaml:"adminPassword"` // 后台管理登录地址
+	HTTPS         bool              `yaml:"https"`
+	HTTPState     string            `yaml:"httpState"` // 对 80 端口的处理方式，可以 disable, redirect, default
+	CertFile      string            `yaml:"certFile"`
+	KeyFile       string            `yaml:"keyFile"`
+	Port          string            `yaml:"port"`
+	Pprof         bool              `yaml:"pprof"`
+	Headers       map[string]string `yaml:"headers"`
+	Webhook       *webhook          `yaml:"webhook"`
+	AdminURL      string            `yaml:"adminURL"`      // 后台管理地址
+	AdminPassword string            `yaml:"adminPassword"` // 后台管理登录地址
 }
 
 type webhook struct {
-	URL       string `yaml:"url"`              // webhooks 接收地址
-	Frequency int64  `yaml:"frequency"`        // webhooks 的最小更新频率，秒数
-	Method    string `yaml:"method,omitempty"` // webhooks 的请求方式，默认为 POST
-	RepoURL   string `yaml:"repoURL"`          // 远程仓库的地址
+	URL       string        `yaml:"url"`              // webhooks 接收地址
+	Frequency time.Duration `yaml:"frequency"`        // webhooks 的最小更新频率，秒数
+	Method    string        `yaml:"method,omitempty"` // webhooks 的请求方式，默认为 POST
+	RepoURL   string        `yaml:"repoURL"`          // 远程仓库的地址
 }
 
 func (w *webhook) sanitize() *data.FieldError {

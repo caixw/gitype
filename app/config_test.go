@@ -6,6 +6,7 @@ package app
 
 import (
 	"testing"
+	"time"
 
 	"github.com/issue9/assert"
 )
@@ -16,4 +17,5 @@ func TestLoadConfig(t *testing.T) {
 	conf, err := loadConfig("./testdata/app.yaml")
 	a.NotError(err).NotNil(conf)
 	a.Equal(conf.Port, ":8080")
+	a.Equal(conf.Webhook.Frequency, time.Minute)
 }

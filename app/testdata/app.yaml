@@ -11,5 +11,5 @@ headers:
 
 webhook:
   url: /admin/webhooks
-  frequency: 60
+  frequency: 1m
   repoURL: https://github.com/caixw/typing.git
