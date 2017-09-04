@@ -35,6 +35,10 @@ type sitemapConfig struct {
 
 // 生成一个符合 sitemap 规范的 XML 文本。
 func (d *Data) buildSitemap(conf *config) error {
+	if conf.Sitemap == nil {
+		return nil
+	}
+
 	w := xmlwriter.New()
 
 	if len(conf.Sitemap.XslURL) > 0 {

@@ -9,8 +9,8 @@ longDateFormat: 2006-01-02
 shortDateFormat: 2006
 theme: t1
 author:
-    name: name
-    email: aaa
+  name: name
+  email: aaa
 menus:
   - url: url1
     title: title1
@@ -20,12 +20,20 @@ menus:
     title: title2
     text: text2
 atom:
-    title: atom
-    size: 20
-    url: /atom.xml
+  title: atom
+  size: 20
+  url: /atom.xml
 
 opensearch:
-    url: /opensearch.xml
-    title: web search
-    shortName: search
-    description: desc
+  url: /opensearch.xml
+  title: web search
+  shortName: search
+  description: desc
+
+archive:
+  format: 2006 year
+  type: year
+
+license:
+  url: https://caixw.io
+  text: license

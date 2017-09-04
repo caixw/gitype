@@ -11,6 +11,18 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestLoadThemes(t *testing.T) {
+	a := assert.New(t)
+	p := vars.NewPath("./testdata")
+
+	ts, err := loadThemes(p)
+	a.NotError(err).NotNil(ts).Equal(len(ts), 2)
+
+	// 排序是否正常
+	a.Equal(ts[0].ID, "t1")
+	a.Equal(ts[1].ID, "t2")
+}
+
 func TestLoadTheme(t *testing.T) {
 	a := assert.New(t)
 	p := vars.NewPath("./testdata")

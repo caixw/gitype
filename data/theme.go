@@ -52,7 +52,7 @@ func loadThemes(path *vars.Path) ([]*Theme, error) {
 	}
 
 	sort.SliceStable(themes, func(i, j int) bool {
-		return themes[i].Name >= themes[j].Name
+		return themes[i].Name < themes[j].Name
 	})
 
 	return themes, nil

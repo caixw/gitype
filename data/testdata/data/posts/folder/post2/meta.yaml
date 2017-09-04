@@ -4,11 +4,13 @@ title: 文章1
 author:
     name: name
     email: email
-top: true
+order: top
 path: content.html
 created: 2016-01-02T13:14:11+08:00
 modified: 2016-01-02T13:14:11+08:00
 summary: summary
 
 tags: default1
-template: t1
+
+# 对应 themes/t1 下的模板定义
+template: t1post

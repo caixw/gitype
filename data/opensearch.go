@@ -11,16 +11,16 @@ import (
 
 // Opensearch 相关内容
 type Opensearch struct {
-	URL     string
-	Type    string
-	Title   string
-	Content []byte
+	URL     string // opensearch 的地址，不能包含域名
+	Type    string // mimeType 默认取 vars.ContentTypeOpensearch
+	Title   string // 出现于 html>head>link.title 属性中
+	Content []byte // 实际内容
 }
 
 type opensearchConfig struct {
-	URL   string `yaml:"url"`             // opensearch 的地址，不能包含域名
-	Type  string `yaml:"type,omitempty"`  // mimeType 默认取 vars.ContentTypeOpensearch
-	Title string `yaml:"title,omitempty"` // 出现于 html>head>link.title 属性中
+	URL   string `yaml:"url"`
+	Type  string `yaml:"type,omitempty"`
+	Title string `yaml:"title,omitempty"`
 
 	ShortName   string `yaml:"shortName"`
 	Description string `yaml:"description"`
@@ -30,6 +30,10 @@ type opensearchConfig struct {
 
 // 用于生成一个符合 atom 规范的 XML 文本。
 func (d *Data) buildOpensearch(conf *config) error {
+	if conf.Opensearch == nil {
+		return nil
+	}
+
 	w := xmlwriter.New()
 	o := conf.Opensearch
 
@@ -67,9 +71,9 @@ func (d *Data) buildOpensearch(conf *config) error {
 		return err
 	}
 	d.Opensearch = &Opensearch{
-		URL:     conf.Opensearch.URL,
-		Type:    conf.Opensearch.Type,
-		Title:   conf.Opensearch.Title,
+		URL:     o.URL,
+		Type:    o.Type,
+		Title:   o.Title,
 		Content: bs,
 	}
 
@@ -80,11 +84,11 @@ func (d *Data) buildOpensearch(conf *config) error {
 func (s *opensearchConfig) sanitize(conf *config) *FieldError {
 	switch {
 	case len(s.URL) == 0:
-		return &FieldError{Message: "不能为空", Field: "Opensearch.URL"}
+		return &FieldError{Message: "不能为空", Field: "opensearch.url"}
 	case len(s.ShortName) == 0:
-		return &FieldError{Message: "不能为空", Field: "Opensearch.ShortName"}
+		return &FieldError{Message: "不能为空", Field: "opensearch.shortName"}
 	case len(s.Description) == 0:
-		return &FieldError{Message: "不能为空", Field: "Opensearch.Description"}
+		return &FieldError{Message: "不能为空", Field: "opensearch.description"}
 	}
 
 	if len(s.Type) == 0 {

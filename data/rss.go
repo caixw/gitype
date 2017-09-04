@@ -28,6 +28,10 @@ type rssConfig struct {
 
 // 生成一个符合 rss 规范的 XML 文本。
 func (d *Data) buildRSS(conf *config) error {
+	if conf.RSS == nil {
+		return nil
+	}
+
 	w := xmlwriter.New()
 
 	w.WriteStartElement("rss", map[string]string{

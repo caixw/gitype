@@ -113,11 +113,11 @@ func (author *Author) sanitize() *FieldError {
 
 func (o *Outdated) sanitize() *FieldError {
 	if o.Type != OutdatedTypeCreated && o.Type != OutdatedTypeModified {
-		return &FieldError{Message: "无效的值", Field: "Outdated.Type"}
+		return &FieldError{Message: "无效的值", Field: "outdated.type"}
 	}
 
 	if len(o.Content) == 0 {
-		return &FieldError{Message: "不能为空", Field: "Outdated.Content"}
+		return &FieldError{Message: "不能为空", Field: "outdated.content"}
 	}
 
 	return nil

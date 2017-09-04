@@ -90,7 +90,7 @@ func loadConfig(path *vars.Path) (*config, error) {
 	}
 
 	if err := conf.sanitize(); err != nil {
-		err.Field = path.MetaConfigFile
+		err.File = path.MetaConfigFile
 		return nil, err
 	}
 
@@ -172,6 +172,7 @@ func (conf *config) sanitize() *FieldError {
 		return &FieldError{Message: "不能为空", Field: "license"}
 	}
 	if err := conf.License.sanitize(); err != nil {
+		err.Field = "license." + err.Field
 		return err
 	}
 

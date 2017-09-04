@@ -25,6 +25,22 @@ func TestLoadLinks(t *testing.T) {
 	a.Equal(links[1].URL, "url1")
 }
 
+func TestOutdated_sanitize(t *testing.T) {
+	a := assert.New(t)
+	o := &Outdated{}
+
+	a.Error(o.sanitize())
+
+	o.Type = "not exits"
+	a.Error(o.sanitize())
+	o.Type = OutdatedTypeCreated
+
+	a.Error(o.sanitize())
+	o.Content = "test"
+
+	a.NotError(o.sanitize())
+}
+
 func TestAuthor_sanitize(t *testing.T) {
 	a := assert.New(t)
 

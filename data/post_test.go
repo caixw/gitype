@@ -40,7 +40,7 @@ func TestLoadPost(t *testing.T) {
 	post, err = loadPost(p, filepath.Clean("./testdata/data/posts/folder/post2/meta.yaml"))
 	a.NotError(err).NotNil(post)
 	a.Equal(post.Slug, "folder/post2")
-	a.Equal(post.Template, "t1") // 模板
+	a.Equal(post.Template, "t1post") // 模板
 }
 
 func TestLoadPosts(t *testing.T) {

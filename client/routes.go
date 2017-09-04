@@ -336,7 +336,6 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p.render(w, "search", nil)
 }
 
-// 读取根下的文件
 // /...
 func (client *Client) getRaws(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
