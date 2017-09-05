@@ -248,7 +248,7 @@ data/themes 下为主题文件，可定义多个主题，通过 config 中的 th
 
 ### 开发
 
-typing 以自用为主，暂时*不支持新功能的 PR*。
+typing 以自用为主，原则上*不支持新功能的 PR*。
 BUG 可在[此处](https://github.com/caixw/typing/issues)提交或是直接 PR。
 
 
