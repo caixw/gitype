@@ -5,6 +5,8 @@
 package data
 
 import (
+	"net/http"
+
 	"github.com/caixw/typing/data/xmlwriter"
 	"github.com/caixw/typing/vars"
 )
@@ -57,8 +59,11 @@ func (d *Data) buildOpensearch(conf *config) error {
 	}
 
 	w.WriteCloseElement("Url", map[string]string{
-		"type":     conf.Type,
-		"template": vars.SearchURL("{searchTerms}", 0),
+		"type":   conf.Type,
+		"method": http.MethodGet,
+		// 需要全链接，否则 Firefox 的搜索框不认。
+		// https://github.com/caixw/typing/issues/18
+		"template": d.url(vars.SearchURL("{searchTerms}", 0)),
 	})
 
 	w.WriteElement("Developer", vars.AppName, nil)
