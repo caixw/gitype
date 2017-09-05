@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/caixw/typing/data"
+	"github.com/caixw/typing/helper"
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
 )
 
@@ -30,6 +32,20 @@ type webhook struct {
 	Frequency time.Duration `yaml:"frequency"`        // webhooks 的最小更新频率
 	Method    string        `yaml:"method,omitempty"` // webhooks 的请求方式，默认为 POST
 	RepoURL   string        `yaml:"repoURL"`          // 远程仓库的地址
+}
+
+func loadConfig(path *vars.Path) (*config, error) {
+	conf := &config{}
+	if err := helper.LoadYAMLFile(path.AppConfigFile, conf); err != nil {
+		return nil, err
+	}
+
+	if err := conf.sanitize(); err != nil {
+		err.File = path.AppConfigFile
+		return nil, err
+	}
+
+	return conf, nil
 }
 
 func (w *webhook) sanitize() *data.FieldError {

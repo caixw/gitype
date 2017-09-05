@@ -15,7 +15,6 @@ import (
 	"strings"
 
 	"github.com/caixw/typing/client"
-	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
@@ -36,12 +35,8 @@ type app struct {
 func Run(path *vars.Path) error {
 	logs.Info("程序工作路径为:", path.Root)
 
-	conf := &config{}
-	if err := helper.LoadYAMLFile(path.AppConfigFile, conf); err != nil {
-		return err
-	}
-	if err := conf.sanitize(); err != nil {
-		err.File = path.AppConfigFile
+	conf, err := loadConfig(path)
+	if err != nil {
 		return err
 	}
 
@@ -52,10 +47,13 @@ func Run(path *vars.Path) error {
 	}
 
 	// 初始化 webhooks
-	a.mux.HandleFunc(a.conf.Webhook.URL, a.postWebhooks, a.conf.Webhook.Method)
+	err = a.mux.HandleFunc(a.conf.Webhook.URL, a.postWebhooks, a.conf.Webhook.Method)
+	if err != nil {
+		return err
+	}
 
-	// 加载数据
-	if err := a.reload(); err != nil {
+	// 加载数据，此时出错，只记录错误信息，但不中断执行
+	if err = a.reload(); err != nil {
 		logs.Error(err)
 	}
 
