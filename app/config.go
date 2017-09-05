@@ -18,16 +18,14 @@ import (
 const httpPort = ":80"
 
 type config struct {
-	HTTPS         bool              `yaml:"https"`
-	HTTPState     string            `yaml:"httpState"` // 对 80 端口的处理方式，可以 disable, redirect, default
-	CertFile      string            `yaml:"certFile"`
-	KeyFile       string            `yaml:"keyFile"`
-	Port          string            `yaml:"port"`
-	Pprof         bool              `yaml:"pprof"`
-	Headers       map[string]string `yaml:"headers"`
-	Webhook       *webhook          `yaml:"webhook"`
-	AdminURL      string            `yaml:"adminURL"`      // 后台管理地址
-	AdminPassword string            `yaml:"adminPassword"` // 后台管理登录地址
+	HTTPS     bool              `yaml:"https"`
+	HTTPState string            `yaml:"httpState"` // 对 80 端口的处理方式，可以 disable, redirect, default
+	CertFile  string            `yaml:"certFile"`
+	KeyFile   string            `yaml:"keyFile"`
+	Port      string            `yaml:"port"`
+	Pprof     bool              `yaml:"pprof"`
+	Headers   map[string]string `yaml:"headers"`
+	Webhook   *webhook          `yaml:"webhook"`
 }
 
 type webhook struct {
@@ -64,10 +62,6 @@ func (conf *config) sanitize() *data.FieldError {
 		return &data.FieldError{Field: "certFile", Message: "不能为空"}
 	case conf.HTTPS && !utils.FileExists(conf.KeyFile):
 		return &data.FieldError{Field: "keyFile", Message: "不能为空"}
-	case len(conf.AdminURL) == 0 || conf.AdminURL[0] != '/':
-		return &data.FieldError{Field: "adminURL", Message: "不能为空只能以 / 开头"}
-	case len(conf.AdminPassword) == 0:
-		return &data.FieldError{Field: "adminPassword", Message: "不能为空"}
 	}
 
 	return conf.Webhook.sanitize()

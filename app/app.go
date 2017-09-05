@@ -18,7 +18,7 @@ import (
 	"github.com/issue9/mux"
 )
 
-// 输出调试内容的地址，地址值固定，不能候。
+// 输出调试内容的地址，地址值固定，不能修改。
 const debugPprof = "/debug/pprof/"
 
 type app struct {
@@ -55,11 +55,6 @@ func Run(path *vars.Path) error {
 
 	// 初始化 webhooks
 	a.mux.HandleFunc(a.conf.Webhook.URL, a.postWebhooks, a.conf.Webhook.Method)
-
-	// 初始化控制台相关操作
-	if err := a.initAdmin(); err != nil {
-		return err
-	}
 
 	// 加载数据
 	if err = a.reload(); err != nil {
