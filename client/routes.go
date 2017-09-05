@@ -93,7 +93,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Keywords = post.Keywords
 	p.Description = post.Summary
 	p.Title = post.Title
-	p.Canonical = post.Permalink
+	p.Canonical = client.data.URL(post.Permalink)
 	p.License = post.License // 文章可具体指定协议
 	p.Author = post.Author   // 文章可具体指定作者
 
@@ -129,7 +129,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 		p.Type = typePosts
 		p.Title = fmt.Sprintf("第 %d 页", page)
 	}
-	p.Canonical = vars.PostsURL(page)
+	p.Canonical = client.data.URL(vars.PostsURL(page))
 
 	start, end, ok := client.getPostsRange(len(client.data.Posts), page, w)
 	if !ok {
@@ -183,7 +183,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	p.Title = tag.Title
 	p.Keywords = tag.Keywords
 	p.Description = tag.Description
-	p.Canonical = vars.TagURL(slug, page)
+	p.Canonical = client.data.URL(vars.TagURL(slug, page))
 
 	start, end, ok := client.getPostsRange(len(tag.Posts), page, w)
 	if !ok {
@@ -205,7 +205,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 	p := client.page(typeLinks)
 	p.Title = "友情链接"
-	p.Canonical = vars.LinksURL()
+	p.Canonical = client.data.URL(vars.LinksURL())
 
 	p.render(w, "links", nil)
 }
@@ -215,7 +215,7 @@ func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	p := client.page(typeTags)
 	p.Title = "标签"
-	p.Canonical = vars.TagsURL()
+	p.Canonical = client.data.URL(vars.TagsURL())
 	p.Description = "标签列表"
 
 	p.render(w, "tags", nil)
@@ -228,7 +228,7 @@ func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	p.Title = "归档"
 	p.Keywords = "归档,存档,archive,archives"
 	p.Description = "网站的归档列表，按时间进行排序"
-	p.Canonical = vars.ArchivesURL()
+	p.Canonical = client.data.URL(vars.ArchivesURL())
 	p.Archives = client.data.Archives
 
 	p.render(w, "archives", nil)
@@ -303,7 +303,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p.Q = q
 	p.Keywords = q + ",搜索,search"
 	p.Description = "搜索关键字" + q + "的结果"
-	p.Canonical = vars.SearchURL(p.Q, page)
+	p.Canonical = client.data.URL(vars.SearchURL(p.Q, page))
 	start, end, ok := client.getPostsRange(len(posts), page, w)
 	if !ok {
 		return

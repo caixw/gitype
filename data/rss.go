@@ -41,7 +41,7 @@ func (d *Data) buildRSS(conf *config) error {
 			"rel":   "search",
 			"type":  conf.Opensearch.Type,
 			"title": conf.Opensearch.Title,
-			"href":  d.url(conf.Opensearch.URL),
+			"href":  d.URL(conf.Opensearch.URL),
 		})
 	}
 
@@ -68,7 +68,7 @@ func addPostsToRSS(w *xmlwriter.XMLWriter, d *Data) {
 	for _, p := range d.Posts {
 		w.WriteStartElement("item", nil)
 
-		w.WriteElement("link", d.url(p.Permalink), nil)
+		w.WriteElement("link", d.URL(p.Permalink), nil)
 		w.WriteElement("title", p.Title, nil)
 		w.WriteElement("pubDate", p.Created.Format(time.RFC1123), nil)
 		w.WriteElement("description", p.Summary, nil)

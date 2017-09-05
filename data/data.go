@@ -183,7 +183,8 @@ func (d *Data) buildData(conf *config) (err error) {
 	return d.compileTemplate()
 }
 
-func (d *Data) url(path string) string {
+// URL 生成一个带域名的地址
+func (d *Data) URL(path string) string {
 	return d.Config.URL + path
 }
 
