@@ -12,7 +12,7 @@ import (
 // XML 要求 version 属于必须在其它属性之前
 const xmlPI = `<?xml version="1.0" encoding="utf-8"?>`
 
-// XMLWriter 操作类，简单地封装 bytes.Buffer。
+// XMLWriter XML 操作类，简单地封装 bytes.Buffer。
 type XMLWriter struct {
 	buf    *bytes.Buffer
 	err    error // 缓存 buf.Write* 系列函数的错误信息，并阻止其再次执行

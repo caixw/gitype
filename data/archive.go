@@ -28,10 +28,10 @@ type Archive struct {
 	Posts []*Post   // 当前存档的文章列表
 }
 
-// archiveConfig 存档页的配置内容
+// 存档页的配置内容
 type archiveConfig struct {
 	Order  string `yaml:"order"`            // 排序方式
-	Type   string `yaml:"type,omitempty"`   // 存档的分类方式，可以为 year 或是 month
+	Type   string `yaml:"type,omitempty"`   // 存档的分类方式，可以按年或是按月
 	Format string `yaml:"format,omitempty"` // 标题的格式化字符串
 }
 

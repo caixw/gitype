@@ -148,7 +148,8 @@ content   | string      | 提示内容，可以带上一个 %d 用于表示有�
 
 名称      | 类型        | 描述
 :---------|:------------|:----------
-type      | string      | 存档的分类方式，可以是按年：year 或是按月：month
+order     | string      | 存档的排序方式，可以是：desc(默认) 和 month
+type      | string      | 存档的分类方式，可以是按年：year(默认) 或是按月：month
 format    | string      | 标题的格式
 
 ###### RSS
