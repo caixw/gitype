@@ -40,8 +40,7 @@ func isIgnoreThemeFile(file string) bool {
 	return false
 }
 
-func (client *Client) initRoutes() error {
-	var err error
+func (client *Client) initRoutes() (err error) {
 	handle := func(pattern string, h http.HandlerFunc) {
 		if err != nil {
 			return

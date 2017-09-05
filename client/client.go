@@ -40,19 +40,12 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 	}
 	client.info = client.newInfo()
 
-	errFilter := func(fn func() error) {
-		if err == nil {
-			err = fn()
-		}
-	}
+	client.addFeed(client.data.RSS)
+	client.addFeed(client.data.Atom)
+	client.addFeed(client.data.Sitemap)
+	client.addFeed(client.data.Opensearch)
 
-	// 依赖 data.Data 数据的相关操作
-	errFilter(client.initRSS)
-	errFilter(client.initAtom)
-	errFilter(client.initSitemap)
-	errFilter(client.initOpensearch)
-	errFilter(client.initRoutes)
-	if err != nil {
+	if err := client.initRoutes(); err != nil {
 		return nil, err
 	}
 
@@ -67,65 +60,18 @@ func (client *Client) Created() time.Time {
 // Free 释放 Client 内容
 func (client *Client) Free() {
 	for _, pattern := range client.patterns {
-		client.mux.Remove(pattern)
+		client.mux.Remove(pattern, http.MethodGet)
 	}
 }
 
-func (client *Client) initOpensearch() error {
-	if client.data.Opensearch == nil {
-		return nil
+func (client *Client) addFeed(feed *data.Feed) {
+	if feed == nil {
+		return
 	}
 
-	o := client.data.Opensearch
-	client.patterns = append(client.patterns, o.URL)
-	client.mux.GetFunc(o.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-		setContentType(w, o.Type)
-		w.Write(o.Content)
+	client.patterns = append(client.patterns, feed.URL)
+	client.mux.GetFunc(feed.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+		setContentType(w, feed.Type)
+		w.Write(feed.Content)
 	}))
-
-	return nil
-}
-
-func (client *Client) initSitemap() error {
-	if client.data.Sitemap == nil {
-		return nil
-	}
-
-	s := client.data.Sitemap
-	client.patterns = append(client.patterns, s.URL)
-	client.mux.GetFunc(s.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-		setContentType(w, s.Type)
-		w.Write(s.Content)
-	}))
-
-	return nil
-}
-
-func (client *Client) initRSS() error {
-	if client.data.RSS == nil {
-		return nil
-	}
-
-	rss := client.data.RSS
-	client.patterns = append(client.patterns, rss.URL)
-	client.mux.GetFunc(rss.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-		setContentType(w, rss.Type)
-		w.Write(rss.Content)
-	}))
-
-	return nil
-}
-
-func (client *Client) initAtom() error {
-	if client.data.Atom == nil {
-		return nil
-	}
-
-	atom := client.data.Atom
-	client.patterns = append(client.patterns, atom.URL)
-	client.mux.GetFunc(atom.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-		setContentType(w, atom.Type)
-		w.Write(atom.Content)
-	}))
-	return nil
 }

@@ -31,7 +31,7 @@ type Tag struct {
 
 func loadTags(path *vars.Path) ([]*Tag, error) {
 	tags := make([]*Tag, 0, 100)
-	if err := loadYamlFile(path.MetaTagsFile, &tags); err != nil {
+	if err := loadYAMLFile(path.MetaTagsFile, &tags); err != nil {
 		return nil, err
 	}
 

@@ -83,7 +83,7 @@ func newConfig(conf *config) *Config {
 
 func loadConfig(path *vars.Path) (*config, error) {
 	conf := &config{}
-	if err := loadYamlFile(path.MetaConfigFile, conf); err != nil {
+	if err := loadYAMLFile(path.MetaConfigFile, conf); err != nil {
 		return nil, err
 	}
 

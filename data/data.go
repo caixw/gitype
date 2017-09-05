@@ -187,7 +187,7 @@ func (d *Data) buildData(conf *config) (err error) {
 }
 
 // 加载 yaml 格式的文件 path 中的内容到 obj
-func loadYamlFile(path string, obj interface{}) error {
+func loadYAMLFile(path string, obj interface{}) error {
 	bs, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
@@ -215,6 +215,7 @@ func (d *Data) Outdated(post *Post) {
 	} else {
 		outdated = now.Sub(post.Modified)
 	}
+
 	if outdated >= d.outdated.Duration {
 		post.Outdated = fmt.Sprintf(d.outdated.Content, int64(outdated.Hours())/24)
 	}

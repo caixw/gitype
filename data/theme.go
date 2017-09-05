@@ -63,7 +63,7 @@ func loadTheme(path *vars.Path, id string) (*Theme, error) {
 	p := path.ThemeMetaPath(id)
 
 	theme := &Theme{}
-	if err := loadYamlFile(p, theme); err != nil {
+	if err := loadYAMLFile(p, theme); err != nil {
 		return nil, err
 	}
 

@@ -54,7 +54,7 @@ type FieldError struct {
 
 func loadLinks(path *vars.Path) ([]*Link, error) {
 	links := make([]*Link, 0, 20)
-	if err := loadYamlFile(path.MetaLinksFile, &links); err != nil {
+	if err := loadYAMLFile(path.MetaLinksFile, &links); err != nil {
 		return nil, err
 	}
 

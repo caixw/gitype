@@ -109,7 +109,7 @@ func loadPost(pp *vars.Path, path string) (*Post, error) {
 	slug = strings.Trim(filepath.ToSlash(slug), "/")
 
 	p := &Post{}
-	if err := loadYamlFile(path, p); err != nil {
+	if err := loadYAMLFile(path, p); err != nil {
 		return nil, err
 	}
 	p.Slug = slug
