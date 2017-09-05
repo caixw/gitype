@@ -11,14 +11,6 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// Opensearch 相关内容
-type Opensearch struct {
-	URL     string // opensearch 的地址，不能包含域名
-	Type    string // mimeType 默认取 vars.ContentTypeOpensearch
-	Title   string // 出现于 html>head>link.title 属性中
-	Content []byte // 实际内容
-}
-
 type opensearchConfig struct {
 	URL   string `yaml:"url"`
 	Type  string `yaml:"type,omitempty"`
@@ -75,7 +67,7 @@ func (d *Data) buildOpensearch(conf *config) error {
 	if err != nil {
 		return err
 	}
-	d.Opensearch = &Opensearch{
+	d.Opensearch = &Feed{
 		URL:     o.URL,
 		Type:    o.Type,
 		Title:   o.Title,

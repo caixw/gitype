@@ -29,6 +29,14 @@ type Outdated struct {
 	Content  string        `yaml:"content"`  // 提示的内容，普通文字，不能为 html
 }
 
+// Feed RSS、Atom 和 Opensearch 等的配置内容
+type Feed struct {
+	Title   string // 标题，一般出现在 html>head>link.title 属性中
+	URL     string // 地址，不能包含域名
+	Type    string // mimeType
+	Content []byte // RSS 的实际内容
+}
+
 // Author 描述作者信息
 type Author struct {
 	Name   string `yaml:"name"`

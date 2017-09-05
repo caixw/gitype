@@ -49,7 +49,7 @@ func (d *Data) buildAtom(conf *config) error {
 	if err != nil {
 		return err
 	}
-	d.Atom = &RSS{
+	d.Atom = &Feed{
 		Title:   conf.Atom.Title,
 		URL:     conf.Atom.URL,
 		Type:    conf.Atom.Type,

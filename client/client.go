@@ -117,7 +117,7 @@ func (client *Client) initRSS() error {
 }
 
 func (client *Client) initAtom() error {
-	if client.data.Atom == nil { // 不需要生成 atom
+	if client.data.Atom == nil {
 		return nil
 	}
 

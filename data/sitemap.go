@@ -12,13 +12,6 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// Sitemap 的相关参数
-type Sitemap struct {
-	URL     string // 展示给用户的地址，不能包含域名
-	Type    string // mime type
-	Content []byte // 实际内容
-}
-
 type sitemapConfig struct {
 	URL  string `yaml:"url"`
 	Type string `yaml:"type,omitempty"`
@@ -68,7 +61,7 @@ func (d *Data) buildSitemap(conf *config) error {
 	if err != nil {
 		return err
 	}
-	d.Sitemap = &Sitemap{
+	d.Sitemap = &Feed{
 		URL:     conf.Sitemap.URL,
 		Type:    conf.Sitemap.Type,
 		Content: bs,

@@ -11,14 +11,6 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// RSS 的相关配置
-type RSS struct {
-	Title   string // 标题
-	URL     string // 地址，不能包含域名
-	Type    string // mimeType
-	Content []byte // RSS 的实际内容
-}
-
 type rssConfig struct {
 	Title string `yaml:"title"`
 	URL   string `yaml:"url"`
@@ -62,7 +54,7 @@ func (d *Data) buildRSS(conf *config) error {
 	if err != nil {
 		return err
 	}
-	d.RSS = &RSS{
+	d.RSS = &Feed{
 		Title:   conf.RSS.Title,
 		URL:     conf.RSS.URL,
 		Type:    conf.RSS.Type,

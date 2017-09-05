@@ -36,10 +36,10 @@ type Data struct {
 	// 其它主题可能是一个未完成的半成品，不作编译检测。
 	Template *template.Template
 
-	Opensearch *Opensearch
-	Sitemap    *Sitemap
-	RSS        *RSS
-	Atom       *RSS
+	Opensearch *Feed
+	Sitemap    *Feed
+	RSS        *Feed
+	Atom       *Feed
 }
 
 // Load 函数用于加载一份新的数据。
