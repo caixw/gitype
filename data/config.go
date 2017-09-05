@@ -29,7 +29,6 @@ type Config struct {
 	Type            string    // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
 	Icon            *Icon     // 程序默认的图标
 	Menus           []*Link   // 导航菜单
-	Outdated        *Outdated // 文章过时内容的设置
 	Author          *Author   // 默认作者信息
 	License         *Link     // 默认版权信息
 }
@@ -49,11 +48,11 @@ type config struct {
 	Type            string    `yaml:"type,omitempty"`
 	Icon            *Icon     `yaml:"icon,omitempty"`
 	Menus           []*Link   `yaml:"menus,omitempty"`
-	Outdated        *Outdated `yaml:"outdated,omitempty"`
 	Author          *Author   `yaml:"author"`
 	License         *Link     `yaml:"license"`
 
 	// 以下内容不存在于 Config 中
+	Outdated     *outdatedConfig   `yaml:"outdated,omitempty"`
 	Theme        string            `yaml:"theme"`
 	UptimeFormat string            `yaml:"uptime"`
 	Archive      *archiveConfig    `yaml:"archive"`
@@ -79,7 +78,6 @@ func newConfig(conf *config) *Config {
 		Type:            conf.Type,
 		Icon:            conf.Icon,
 		Menus:           conf.Menus,
-		Outdated:        conf.Outdated,
 	}
 }
 

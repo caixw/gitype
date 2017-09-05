@@ -6,6 +6,7 @@
 package data
 
 import (
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"strings"
@@ -21,6 +22,7 @@ type Data struct {
 	path    *vars.Path
 	Created time.Time
 
+	outdated *outdatedConfig
 	Config   *Config
 	Tags     []*Tag
 	Series   []*Tag
@@ -70,13 +72,14 @@ func Load(path *vars.Path) (*Data, error) {
 	}
 
 	d := &Data{
-		path:    path,
-		Created: time.Now(),
-		Config:  newConfig(conf),
-		Tags:    tags,
-		Links:   links,
-		Posts:   posts,
-		Themes:  themes,
+		path:     path,
+		Created:  time.Now(),
+		outdated: conf.Outdated,
+		Config:   newConfig(conf),
+		Tags:     tags,
+		Links:    links,
+		Posts:    posts,
+		Themes:   themes,
 	}
 
 	if err := d.sanitize(conf); err != nil {
@@ -195,4 +198,24 @@ func loadYamlFile(path string, obj interface{}) error {
 
 func (d *Data) url(path string) string {
 	return d.Config.URL + path
+}
+
+// Outdated 计算指定文章的 Outdated 信息。
+// Outdated 是一个动态的值（其中的天数会变化），必须是在请求时生成。
+func (d *Data) Outdated(post *Post) {
+	if d.outdated == nil {
+		return
+	}
+
+	now := time.Now()
+	var outdated time.Duration
+
+	if d.outdated.Type == outdatedTypeCreated {
+		outdated = now.Sub(post.Created)
+	} else {
+		outdated = now.Sub(post.Modified)
+	}
+	if outdated >= d.outdated.Duration {
+		post.Outdated = fmt.Sprintf(d.outdated.Content, int64(outdated.Hours())/24)
+	}
 }

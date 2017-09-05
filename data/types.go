@@ -7,34 +7,16 @@ package data
 import (
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/caixw/typing/vars"
 )
-
-// 文章是否过时的比较方式
-const (
-	OutdatedTypeCreated  = "created"  // 以创建时间作为对比
-	OutdatedTypeModified = "modified" // 以修改时间作为对比
-)
-
-// Outdated 描述过时文章的提示信息。
-//
-// 理论上把有关 Outdated 的信息，直接在模板中对文章的创建时间戳进行比较，
-// 是比通过配置来比较会更加方便，也不会更任何的后期工作量。之所以把这个功能放在后端，
-// 而不是模板层面，是因为觉得模板应该只负责展示页面，而不是用于处理逻辑内容。
-type Outdated struct {
-	Type     string        `yaml:"type"`     // 比较的类型，创建时间或是修改时间
-	Duration time.Duration `yaml:"duration"` // 超时的时间，可以使用 time.Duration 的字符串值
-	Content  string        `yaml:"content"`  // 提示的内容，普通文字，不能为 html
-}
 
 // Feed RSS、Atom 和 Opensearch 等的配置内容
 type Feed struct {
 	Title   string // 标题，一般出现在 html>head>link.title 属性中
 	URL     string // 地址，不能包含域名
 	Type    string // mimeType
-	Content []byte // RSS 的实际内容
+	Content []byte // 的实际内容
 }
 
 // Author 描述作者信息
@@ -119,8 +101,8 @@ func (author *Author) sanitize() *FieldError {
 	return nil
 }
 
-func (o *Outdated) sanitize() *FieldError {
-	if o.Type != OutdatedTypeCreated && o.Type != OutdatedTypeModified {
+func (o *outdatedConfig) sanitize() *FieldError {
+	if o.Type != outdatedTypeCreated && o.Type != outdatedTypeModified {
 		return &FieldError{Message: "无效的值", Field: "outdated.type"}
 	}
 

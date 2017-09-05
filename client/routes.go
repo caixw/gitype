@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
@@ -90,6 +89,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	post := client.data.Posts[index]
 	p := client.page(typePost)
 
+	client.data.Outdated(post)
 	p.Post = post
 	p.Keywords = post.Keywords
 	p.Description = post.Summary
@@ -97,22 +97,6 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Canonical = post.Permalink
 	p.License = post.License // 文章可具体指定协议
 	p.Author = post.Author   // 文章可具体指定作者
-
-	// Outdated 是一个动态的值（其中的天数会变化），必须是在请求时生成。
-	od := client.data.Config.Outdated
-	if od != nil {
-		now := time.Now()
-		var outdated time.Duration
-
-		if od.Type == data.OutdatedTypeCreated {
-			outdated = now.Sub(post.Created)
-		} else {
-			outdated = now.Sub(post.Modified)
-		}
-		if outdated >= od.Duration {
-			post.Outdated = fmt.Sprintf(od.Content, int64(outdated.Hours())/24)
-		}
-	}
 
 	if index > 0 {
 		prev := client.data.Posts[index-1]
