@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 )
 
@@ -31,7 +32,7 @@ type Tag struct {
 
 func loadTags(path *vars.Path) ([]*Tag, error) {
 	tags := make([]*Tag, 0, 100)
-	if err := loadYAMLFile(path.MetaTagsFile, &tags); err != nil {
+	if err := helper.LoadYAMLFile(path.MetaTagsFile, &tags); err != nil {
 		return nil, err
 	}
 

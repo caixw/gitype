@@ -8,11 +8,8 @@ package data
 import (
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"strings"
 	"time"
-
-	"gopkg.in/yaml.v2"
 
 	"github.com/caixw/typing/vars"
 )
@@ -184,16 +181,6 @@ func (d *Data) buildData(conf *config) (err error) {
 	}
 
 	return d.compileTemplate()
-}
-
-// 加载 yaml 格式的文件 path 中的内容到 obj
-func loadYAMLFile(path string, obj interface{}) error {
-	bs, err := ioutil.ReadFile(path)
-	if err != nil {
-		return err
-	}
-
-	return yaml.Unmarshal(bs, obj)
 }
 
 func (d *Data) url(path string) string {

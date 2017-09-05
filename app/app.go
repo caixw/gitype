@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/caixw/typing/client"
+	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
@@ -31,17 +32,12 @@ type app struct {
 	client   *client.Client
 }
 
-// 标准的错误状态码输出函数，略作封装。
-func statusError(w http.ResponseWriter, status int) {
-	http.Error(w, http.StatusText(status), status)
-}
-
 // Run 运行程序
 func Run(path *vars.Path) error {
 	logs.Info("程序工作路径为:", path.Root)
 
-	conf, err := loadConfig(path)
-	if err != nil {
+	conf := &config{}
+	if err := helper.LoadYAMLFile(path.AppConfigFile, conf); err != nil {
 		return err
 	}
 	if err := conf.sanitize(); err != nil {
@@ -59,7 +55,7 @@ func Run(path *vars.Path) error {
 	a.mux.HandleFunc(a.conf.Webhook.URL, a.postWebhooks, a.conf.Webhook.Method)
 
 	// 加载数据
-	if err = a.reload(); err != nil {
+	if err := a.reload(); err != nil {
 		logs.Error(err)
 	}
 

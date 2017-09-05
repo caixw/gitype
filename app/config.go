@@ -5,14 +5,11 @@
 package app
 
 import (
-	"io/ioutil"
 	"net/http"
 	"time"
 
 	"github.com/caixw/typing/data"
-	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
-	yaml "gopkg.in/yaml.v2"
 )
 
 const httpPort = ":80"
@@ -65,18 +62,4 @@ func (conf *config) sanitize() *data.FieldError {
 	}
 
 	return conf.Webhook.sanitize()
-}
-
-func loadConfig(path *vars.Path) (*config, error) {
-	bs, err := ioutil.ReadFile(path.AppConfigFile)
-	if err != nil {
-		return nil, err
-	}
-
-	conf := &config{}
-	if err = yaml.Unmarshal(bs, conf); err != nil {
-		return nil, err
-	}
-
-	return conf, nil
 }

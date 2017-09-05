@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 )
 
@@ -54,7 +55,7 @@ type FieldError struct {
 
 func loadLinks(path *vars.Path) ([]*Link, error) {
 	links := make([]*Link, 0, 20)
-	if err := loadYAMLFile(path.MetaLinksFile, &links); err != nil {
+	if err := helper.LoadYAMLFile(path.MetaLinksFile, &links); err != nil {
 		return nil, err
 	}
 

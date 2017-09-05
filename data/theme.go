@@ -14,6 +14,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 )
 
@@ -63,7 +64,7 @@ func loadTheme(path *vars.Path, id string) (*Theme, error) {
 	p := path.ThemeMetaPath(id)
 
 	theme := &Theme{}
-	if err := loadYAMLFile(p, theme); err != nil {
+	if err := helper.LoadYAMLFile(p, theme); err != nil {
 		return nil, err
 	}
 

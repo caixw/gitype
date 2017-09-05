@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"time"
 
+	"github.com/caixw/typing/helper"
 	"github.com/issue9/logs"
 	"github.com/issue9/utils"
 )
@@ -28,7 +29,7 @@ func (w *logW) Write(bs []byte) (int, error) {
 func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 	if time.Now().Sub(a.client.Created()) < a.conf.Webhook.Frequency {
 		logs.Error("更新过于频繁，被中止！")
-		statusError(w, http.StatusForbidden)
+		helper.StatusError(w, http.StatusTooManyRequests)
 		return
 	}
 
@@ -45,13 +46,13 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 	cmd.Stdout = &logW{l: logs.INFO()}
 	if err := cmd.Run(); err != nil {
 		logs.Error(err)
-		statusError(w, http.StatusInternalServerError)
+		helper.StatusError(w, http.StatusInternalServerError)
 		return
 	}
 
 	if err := a.reload(); err != nil {
 		logs.Error(err)
-		statusError(w, http.StatusInternalServerError)
+		helper.StatusError(w, http.StatusInternalServerError)
 		return
 	}
 

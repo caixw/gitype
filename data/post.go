@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 )
 
@@ -109,7 +110,7 @@ func loadPost(pp *vars.Path, path string) (*Post, error) {
 	slug = strings.Trim(filepath.ToSlash(slug), "/")
 
 	p := &Post{}
-	if err := loadYAMLFile(path, p); err != nil {
+	if err := helper.LoadYAMLFile(path, p); err != nil {
 		return nil, err
 	}
 	p.Slug = slug

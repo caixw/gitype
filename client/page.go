@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/caixw/typing/data"
+	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/utils"
@@ -212,14 +213,14 @@ func (client *Client) renderError(w http.ResponseWriter, code int) {
 	path := filepath.Join(client.path.ThemesDir, client.data.Theme.ID, filename)
 	if !utils.FileExists(path) {
 		logs.Errorf("模板文件 %s 不存在\n", path)
-		http.Error(w, http.StatusText(code), code)
+		helper.StatusError(w, code)
 		return
 	}
 
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		logs.Errorf("读取模板文件 %s 时出现以下错误: %v\n", path, err)
-		http.Error(w, http.StatusText(code), code)
+		helper.StatusError(w, code)
 		return
 	}
 
