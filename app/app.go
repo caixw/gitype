@@ -2,7 +2,9 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package app 核心处理模块，包括路由函数和页面渲染等。
+// Package app 核心处理模块。
+//
+// 包括 webhook 的处理以及整个 client 数据的替换等操作。
 // 依赖 github.com/issue9/logs，确保该包已经被初始化。
 package app
 

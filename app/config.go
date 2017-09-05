@@ -42,7 +42,7 @@ func (w *webhook) sanitize() *data.FieldError {
 
 	switch {
 	case len(w.URL) == 0 || w.URL[0] != '/':
-		return &data.FieldError{Field: "webhook.URL", Message: "不能为空且只能以 / 开头"}
+		return &data.FieldError{Field: "webhook.url", Message: "不能为空且只能以 / 开头"}
 	case w.Frequency < 0:
 		return &data.FieldError{Field: "webhook.frequency", Message: "不能小于 0"}
 	case len(w.RepoURL) == 0:
