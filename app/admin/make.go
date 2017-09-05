@@ -7,6 +7,8 @@
 package main
 
 import (
+	"bytes"
+	"go/format"
 	"io/ioutil"
 	"os"
 )
@@ -21,38 +23,49 @@ var templates = map[string]string{
 	"./admin.html": "AdminHTML",
 }
 
-func compile(file *os.File, templateFile, varName string) error {
+func compile(buf *bytes.Buffer, templateFile, varName string) error {
 	src, err := ioutil.ReadFile(templateFile)
 	if err != nil {
 		return err
 	}
 
-	file.WriteString("var ")
-	file.WriteString(varName)
-	file.WriteString(" = `")
-	file.Write(src)
-	file.WriteString("`")
+	buf.WriteString("var ")
+	buf.WriteString(varName)
+	buf.WriteString(" = `")
+	buf.Write(src)
+	buf.WriteString("`")
 
 	return nil
 }
 
 func main() {
+	buf := bytes.NewBufferString("// 这是自动产生的文件，请不要修改！")
+	buf.WriteString("\n\n")
+
+	buf.WriteString("package ")
+	buf.WriteString(pkgName)
+	buf.WriteString("\n\n")
+
+	for filename, varName := range templates {
+		if err := compile(buf, filename, varName); err != nil {
+			panic(err)
+		}
+	}
+
+	// 格式化
+	bs, err := format.Source(buf.Bytes())
+	if err != nil {
+		panic(err)
+	}
+
 	file, err := os.Create(file)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
-	file.WriteString("// 这是自动产生的文件，请不要修改！")
-	file.WriteString("\n\n")
-
-	file.WriteString("package ")
-	file.WriteString(pkgName)
-	file.WriteString("\n\n")
-
-	for filename, varName := range templates {
-		if err := compile(file, filename, varName); err != nil {
-			panic(err)
-		}
+	_, err = file.Write(bs)
+	if err != nil {
+		panic(err)
 	}
 }

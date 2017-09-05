@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // Package app 核心处理模块，包括路由函数和页面渲染等。
-// 会调用 github.com/issue9/logs 包的内容，调用之前需要初始化该包。
+// 依赖 github.com/issue9/logs，确保该包已经被初始化。
 package app
 
 import (
