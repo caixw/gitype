@@ -14,7 +14,8 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 
 ### 使用
 
-1. 下载代码:`go get github.com/caixw/typing`；
+1. 下载代码：`go get github.com/caixw/typing`；
+1. 运行 `scripts/build.sh` 编译代码；
 1. 根据以下的目录结构创建相应的文件，也可以直接基于源码目录 `/app/testdata` 和 `/data/testdata` 修改数据；
 1. 运行程序，使用 appdir 参数指定程序的工作目录。
 

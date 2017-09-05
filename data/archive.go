@@ -88,7 +88,7 @@ func (a *archiveConfig) sanitize() *FieldError {
 	}
 
 	if len(a.Order) == 0 {
-		a.Order = archiveOrderAsc
+		a.Order = archiveOrderDesc
 	} else {
 		if a.Order != archiveOrderAsc && a.Order != archiveOrderDesc {
 			return &FieldError{Message: "取值不正确", Field: "archive.order"}
