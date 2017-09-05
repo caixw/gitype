@@ -19,7 +19,7 @@ import (
 func main() {
 	help := flag.Bool("h", false, "显示当前信息")
 	version := flag.Bool("v", false, "显示程序的版本信息")
-	appdir := flag.String("appdir", "./testdata", "指定运行的数据目录")
+	appdir := flag.String("appdir", "./", "指定运行的数据目录")
 	flag.Usage = usage
 	flag.Parse()
 
@@ -56,6 +56,6 @@ func usage() {
 func printVersion() {
 	fmt.Fprintf(os.Stdout, "%s:%s build with %s\n", vars.AppName, vars.Version(), runtime.Version())
 	if len(vars.CommitHash()) > 0 {
-		fmt.Fprintf(os.Stdout, "git commit hash:%s\n", vars.CommitHash())
+		fmt.Fprintf(os.Stdout, "Git commit hash:%s\n", vars.CommitHash())
 	}
 }
