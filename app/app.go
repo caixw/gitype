@@ -115,9 +115,9 @@ func (a *app) buildPprof(h http.Handler) http.Handler {
 // 对 80 端口的处理方式
 func serveHTTP(a *app) {
 	switch a.conf.HTTPState {
-	case "default":
+	case httpStateDefault:
 		logs.Error(http.ListenAndServe(httpPort, a.mux))
-	case "redirect":
+	case httpStateRedirect:
 		logs.Error(http.ListenAndServe(httpPort, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// 构建跳转链接
 			url := r.URL
@@ -126,9 +126,7 @@ func serveHTTP(a *app) {
 
 			http.Redirect(w, r, url.String(), http.StatusMovedPermanently)
 		})))
-	case "disable":
-		return
-	}
+	} // end switch
 }
 
 // 重新加载数据

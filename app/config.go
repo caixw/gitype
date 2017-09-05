@@ -16,6 +16,12 @@ import (
 
 const httpPort = ":80"
 
+const (
+	httpStateDefault  = "default"
+	httpStateDisable  = "disable"
+	httpStateRedirect = "redirect"
+)
+
 type config struct {
 	HTTPS     bool              `yaml:"https"`
 	HTTPState string            `yaml:"httpState"` // 对 80 端口的处理方式，可以 disable, redirect, default
@@ -67,9 +73,14 @@ func (w *webhook) sanitize() *data.FieldError {
 
 func (conf *config) sanitize() *data.FieldError {
 	switch {
-	case conf.HTTPS && conf.HTTPState != "disable" && conf.HTTPState != "default" && conf.HTTPState != "redirect":
+	case conf.HTTPS &&
+		conf.HTTPState != httpStateDefault &&
+		conf.HTTPState != httpStateDisable &&
+		conf.HTTPState != httpStateRedirect:
 		return &data.FieldError{Field: "httpState", Message: "无效的取值"}
-	case conf.HTTPS && conf.HTTPState != "disable" && conf.Port == httpPort:
+	case conf.HTTPS &&
+		conf.HTTPState != httpStateDisable &&
+		conf.Port == httpPort:
 		return &data.FieldError{Field: "port", Message: "80 端口已经被被监听"}
 	case conf.HTTPS && !utils.FileExists(conf.CertFile):
 		return &data.FieldError{Field: "certFile", Message: "不能为空"}
