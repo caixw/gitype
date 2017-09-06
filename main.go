@@ -8,7 +8,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	"runtime"
 
 	"github.com/caixw/typing/app"
@@ -49,17 +48,17 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stdout, "%s 一个简单博客程序。\n", vars.AppName)
-	fmt.Fprintf(os.Stdout, "源代码以 MIT 开源许可，并发布于 Github: %s\n", vars.URL)
+	fmt.Fprintf(vars.CMDOutput, "%s 一个简单博客程序。\n", vars.AppName)
+	fmt.Fprintf(vars.CMDOutput, "源代码以 MIT 开源许可，并发布于 Github: %s\n", vars.URL)
 
-	fmt.Fprintln(os.Stdout, "\n参数:")
-	flag.CommandLine.SetOutput(os.Stdout)
+	fmt.Fprintln(vars.CMDOutput, "\n参数:")
+	flag.CommandLine.SetOutput(vars.CMDOutput)
 	flag.PrintDefaults()
 }
 
 func printVersion() {
-	fmt.Fprintf(os.Stdout, "%s:%s build with %s\n", vars.AppName, vars.Version(), runtime.Version())
+	fmt.Fprintf(vars.CMDOutput, "%s:%s build with %s\n", vars.AppName, vars.Version(), runtime.Version())
 	if len(vars.CommitHash()) > 0 {
-		fmt.Fprintf(os.Stdout, "Git commit hash:%s\n", vars.CommitHash())
+		fmt.Fprintf(vars.CMDOutput, "Git commit hash:%s\n", vars.CommitHash())
 	}
 }

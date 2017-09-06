@@ -5,19 +5,25 @@
 package init
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
 )
 
-// Init 指行初始化命令
+// Init 执行初始化命令
 func Init(path *vars.Path) error {
 	if err := initConfDir(path); err != nil {
 		return err
 	}
 
-	return initDataDir(path)
+	if err := initDataDir(path); err != nil {
+		return err
+	}
+
+	_, err := fmt.Fprintf(vars.CMDOutput, "操作成功，你现在可以在 %s 中修改具体的参数配置！", path.Root)
+	return err
 }
 
 // 初始化 conf 目录下的数据
