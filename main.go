@@ -20,8 +20,8 @@ import (
 func main() {
 	help := flag.Bool("h", false, "显示当前信息")
 	version := flag.Bool("v", false, "显示程序的版本信息")
-	init := flag.Bool("init", false, "初始化一个工作目录")
 	appdir := flag.String("appdir", "./", "指定运行的工作目录")
+	init := flag.String("init", "", "指定初始化的工作目录")
 	flag.Usage = usage
 	flag.Parse()
 
@@ -32,14 +32,13 @@ func main() {
 	case *version:
 		printVersion()
 		return
-	case *init:
-		i.Init(vars.NewPath(*appdir))
+	case len(*init) > 0:
+		i.Init(vars.NewPath(*init))
 		return
 	}
 
 	path := vars.NewPath(*appdir)
 
-	// 初始化日志
 	err := logs.InitFromXMLFile(path.LogsConfigFile)
 	if err != nil {
 		panic(err)
