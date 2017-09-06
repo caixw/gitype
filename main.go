@@ -11,7 +11,6 @@ import (
 	"runtime"
 
 	"github.com/caixw/typing/app"
-	i "github.com/caixw/typing/init"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 )
@@ -32,7 +31,7 @@ func main() {
 		printVersion()
 		return
 	case len(*init) > 0:
-		i.Init(vars.NewPath(*init))
+		app.Init(vars.NewPath(*init))
 		return
 	}
 
