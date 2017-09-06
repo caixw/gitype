@@ -6,11 +6,33 @@ package app
 
 import (
 	"fmt"
+	"net/http"
 	"os"
+	"time"
 
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
+	yaml "gopkg.in/yaml.v2"
 )
+
+// 输出的默认配置内容
+var defaultConfig = &config{
+	HTTPS:     true,
+	HTTPState: httpStateRedirect,
+	CertFile:  "cert",
+	KeyFile:   "key",
+	Port:      ":443",
+	Pprof:     false,
+	Headers: map[string]string{
+		"Server": vars.AppName + vars.Version(),
+	},
+	Webhook: &webhook{
+		URL:       "/webhooks",
+		Frequency: time.Minute,
+		Method:    http.MethodPost,
+		RepoURL:   "https://github.com/caixw/blogs",
+	},
+}
 
 // Init 执行初始化命令
 func Init(path *vars.Path) error {
@@ -34,9 +56,31 @@ func initConfDir(path *vars.Path) error {
 		}
 	}
 
-	// TODO
+	// app.yaml
+	file, err := os.Create(path.AppConfigFile)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
 
-	return nil
+	bs, err := yaml.Marshal(defaultConfig)
+	if err != nil {
+		return err
+	}
+
+	if _, err := file.Write(bs); err != nil {
+		return err
+	}
+
+	// logs.xml
+	file, err = os.Create(path.LogsConfigFile)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(defaultLogsXML)
+	return err
 }
 
 func initDataDir(path *vars.Path) error {
