@@ -11,7 +11,7 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestSitemap_sanitize(t *testing.T) {
+func TestSitemapConfig_sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	s := &sitemapConfig{}

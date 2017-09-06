@@ -51,6 +51,10 @@ func (d *Data) buildSitemap(conf *config) error {
 	loc := d.URL(vars.ArchivesURL())
 	addItemToSitemap(w, loc, conf.Sitemap.Changefreq, d.Created, conf.Sitemap.Priority)
 
+	// links.html
+	loc = d.URL(vars.LinksURL())
+	addItemToSitemap(w, loc, conf.Sitemap.Changefreq, d.Created, conf.Sitemap.Priority)
+
 	if conf.Sitemap.EnableTag {
 		addTagsToSitemap(w, d, conf)
 	}

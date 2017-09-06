@@ -4,8 +4,6 @@ https: false
 httpState: disable
 port: :8080
 pprof: false
-adminURL: /admin
-adminPassword: 123456
 headers: 
   server: typing
 

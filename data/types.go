@@ -12,7 +12,7 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// Feed RSS、Atom 和 Opensearch 等的配置内容
+// Feed RSS、Atom、Sitempa 和 Opensearch 的配置内容
 type Feed struct {
 	Title   string // 标题，一般出现在 html>head>link.title 属性中
 	URL     string // 地址，不能包含域名

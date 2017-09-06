@@ -17,7 +17,7 @@ func StatusError(w http.ResponseWriter, status int) {
 	http.Error(w, http.StatusText(status), status)
 }
 
-// LoadYAMLFile 加载 yaml 格式的文件 path 中的内容到 obj
+// LoadYAMLFile 加载 yaml 格式的文件 path 中的内容到 obj，obj 必须量个指针。
 func LoadYAMLFile(path string, obj interface{}) error {
 	bs, err := ioutil.ReadFile(path)
 	if err != nil {

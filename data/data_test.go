@@ -16,4 +16,16 @@ func TestLoad(t *testing.T) {
 	p := vars.NewPath("./testdata")
 	d, err := Load(p)
 	a.NotError(err).NotNil(d)
+
+	a.Equal(len(d.Posts), 2)
+
+	// theme
+	a.Equal(len(d.Themes), 2)
+	a.Equal(d.Theme.ID, "t1")
+	a.Equal(d.Theme.Author.Name, "name")
+
+	// feed
+	a.Equal(d.Opensearch.URL, "/opensearch.xml")
+	a.Equal(d.Atom.URL, "/atom.xml")
+	a.Nil(d.Sitemap)
 }
