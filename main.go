@@ -12,6 +12,7 @@ import (
 	"runtime"
 
 	"github.com/caixw/typing/app"
+	i "github.com/caixw/typing/init"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 )
@@ -19,7 +20,8 @@ import (
 func main() {
 	help := flag.Bool("h", false, "显示当前信息")
 	version := flag.Bool("v", false, "显示程序的版本信息")
-	appdir := flag.String("appdir", "./", "指定运行的数据目录")
+	init := flag.Bool("init", false, "初始化一个工作目录")
+	appdir := flag.String("appdir", "./", "指定运行的工作目录")
 	flag.Usage = usage
 	flag.Parse()
 
@@ -29,6 +31,9 @@ func main() {
 		return
 	case *version:
 		printVersion()
+		return
+	case *init:
+		i.Init(vars.NewPath(*appdir))
 		return
 	}
 
