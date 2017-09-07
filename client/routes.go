@@ -270,55 +270,6 @@ func (client *Client) getThemes(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, filename)
 }
 
-// /search.html?q=key&page=2
-func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
-	p := client.page(typeSearch)
-
-	q := r.FormValue("q")
-	if len(q) == 0 {
-		http.Redirect(w, r, vars.PostsURL(1), http.StatusPermanentRedirect)
-		return
-	}
-
-	page, ok := client.queryInt(w, r, "page", 1)
-	if !ok {
-		return
-	}
-	if page < 1 {
-		logs.Debugf("参数 page: %d 小于 1", page)
-		client.renderError(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
-		return
-	}
-
-	// 查找标题和内容
-	posts := make([]*data.Post, 0, len(client.data.Posts))
-	key := strings.ToLower(q)
-	for _, v := range client.data.Posts {
-		if strings.Contains(v.Title, key) || strings.Contains(v.Content, key) {
-			posts = append(posts, v)
-		}
-	}
-
-	p.Title = "搜索:" + q
-	p.Q = q
-	p.Keywords = q + ",搜索,search"
-	p.Description = "搜索关键字" + q + "的结果"
-	p.Canonical = client.data.URL(vars.SearchURL(p.Q, page))
-	start, end, ok := client.getPostsRange(len(posts), page, w)
-	if !ok {
-		return
-	}
-	p.Posts = posts[start:end]
-	if page > 1 {
-		p.prevPage(vars.SearchURL(q, page-1), "")
-	}
-	if end < len(posts) {
-		p.nextPage(vars.SearchURL(q, page+1), "")
-	}
-
-	p.render(w, "search", nil)
-}
-
 // /...
 func (client *Client) getRaws(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
