@@ -16,7 +16,7 @@ const (
 	linksFilename  = "links.yaml"
 
 	PostMetaFilename    = "meta.yaml"
-	postContentFilename = "content.yaml"
+	postContentFilename = "content.html"
 
 	themeMetaFilename = "theme.yaml"
 )
@@ -107,9 +107,6 @@ func (p *Path) PostMetaPath(slug string) string {
 }
 
 // PostContentPath 返回某一篇文章下的文章内容的文件地址
-func (p *Path) PostContentPath(slug string, filename string) string {
-	if len(filename) == 0 {
-		filename = postContentFilename
-	}
-	return p.PostPath(slug, filename)
+func (p *Path) PostContentPath(slug string) string {
+	return p.PostPath(slug, postContentFilename)
 }

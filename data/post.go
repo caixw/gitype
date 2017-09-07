@@ -49,7 +49,7 @@ type Post struct {
 	Modified   time.Time `yaml:"-"`               // 修改时间
 	Tags       []*Tag    `yaml:"-"`               // 关联的标签
 	Summary    string    `yaml:"summary"`         // 摘要，同时也作为 meta.description 的内容
-	Content    string    `yaml:"path"`            // 内容，在没有内容之前，保存着 yaml 文件中的 path 对应的内容
+	Content    string    `yaml:"-"`               // 内容
 	TagsString string    `yaml:"tags"`            // 关联标签的列表
 	Permalink  string    `yaml:"created"`         // 文章的唯一链接，同时当作 created 的原始值
 	Outdated   string    `yaml:"modified"`        // 已过时文章的提示信息，这是一个动态的值，不能提前计算，同时当作 modified 的原始值
@@ -116,7 +116,7 @@ func loadPost(pp *vars.Path, path string) (*Post, error) {
 	p.Slug = slug
 
 	// 加载内容
-	data, err := ioutil.ReadFile(pp.PostContentPath(slug, p.Content))
+	data, err := ioutil.ReadFile(pp.PostContentPath(slug))
 	if err != nil {
 		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: err.Error(), Field: "path"}
 	}
