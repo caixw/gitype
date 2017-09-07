@@ -5,6 +5,7 @@
 package client
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -65,13 +66,13 @@ func search(q string, d *data.Data) []*data.Post {
 
 	index++
 	typ := q[:index]
-	content := strings.TrimSpace(q[index:])
+	content := strings.ToLower(strings.TrimSpace(q[index:]))
 
 	switch typ {
-	case "date:":
-		return searchDate(content, d)
 	case "tag:":
 		return searchTag(content, d)
+	case "series:":
+		return searchSeries(content, d)
 	case "title:":
 		return searchTitle(content, d)
 	}
@@ -80,38 +81,53 @@ func search(q string, d *data.Data) []*data.Post {
 	return searchDefault(q, d)
 }
 
-// 按日期进行分类
-func searchDate(date string, d *data.Data) []*data.Post {
-	// TODO
-}
-
 // 按标签进行搜索
-func searchTag(q string, d *data.Data) []*data.Post {
-	// TODO
-}
-
-// 仅搜索标题
-func searchTitle(q string, d *data.Data) []*data.Post {
+func searchSeries(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
-	key := strings.ToLower(q)
 
-	for _, v := range d.Posts {
-		if strings.Contains(v.Title, key) {
-			posts = append(posts, v)
+	for _, tag := range d.Series {
+		if strings.Contains(strings.ToLower(tag.Title), q) {
+			posts = append(posts, tag.Posts...)
 		}
 	}
 
 	return posts
 }
 
+// 按标签进行搜索
+func searchTag(q string, d *data.Data) []*data.Post {
+	posts := make([]*data.Post, 0, len(d.Posts))
+
+	for _, tag := range d.Tags {
+		if strings.Contains(strings.ToLower(tag.Title), q) {
+			posts = append(posts, tag.Posts...)
+		}
+	}
+
+	return posts
+}
+
+// 仅搜索标题
+func searchTitle(q string, d *data.Data) []*data.Post {
+	posts := make([]*data.Post, 0, len(d.Posts))
+
+	for _, post := range d.Posts {
+		if strings.Contains(strings.ToLower(post.Title), q) {
+			posts = append(posts, post)
+		}
+	}
+
+	fmt.Println(len(posts))
+	return posts
+}
+
 // 默认情况下，搜索标题和内容
 func searchDefault(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
-	key := strings.ToLower(q)
 
-	for _, v := range d.Posts {
-		if strings.Contains(v.Title, key) || strings.Contains(v.Content, key) {
-			posts = append(posts, v)
+	for _, post := range d.Posts {
+		if strings.Contains(post.Title, q) || strings.Contains(post.Content, q) {
+			posts = append(posts, post)
 		}
 	}
 
