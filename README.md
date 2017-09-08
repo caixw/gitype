@@ -12,6 +12,10 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 
 
 
+演示地址： https://caixw.io
+
+
+
 ### 使用
 
 1. 下载代码：`go get github.com/caixw/typing`；

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// 简单的博客系统。
+// 基于 Git 的博客系统。
 package main
 
 import (
@@ -47,10 +47,10 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintf(vars.CMDOutput, "%s 一个简单博客程序。\n", vars.AppName)
-	fmt.Fprintf(vars.CMDOutput, "源代码以 MIT 开源许可，并发布于 Github: %s\n", vars.URL)
+	fmt.Fprintf(vars.CMDOutput, "%s 是一个基于 Git 的博客系统。\n", vars.AppName)
+	fmt.Fprintf(vars.CMDOutput, "源代码以 MIT 开源许可发布于 Github: %s\n", vars.URL)
 
-	fmt.Fprintln(vars.CMDOutput, "\n参数:")
+	fmt.Fprintln(vars.CMDOutput, "\n参数：")
 	flag.CommandLine.SetOutput(vars.CMDOutput)
 	flag.PrintDefaults()
 }
