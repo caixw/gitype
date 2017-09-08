@@ -12,7 +12,7 @@ import (
 
 const (
 	// 主版本号，符合 semver 规范
-	mainVersion = "1.4.1"
+	mainVersion = "1.4.2"
 
 	// AppName 程序名称
 	AppName = "typing"

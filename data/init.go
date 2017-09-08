@@ -7,6 +7,9 @@ package data
 import (
 	"fmt"
 	"os"
+	"path"
+	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/caixw/typing/helper"
@@ -14,8 +17,19 @@ import (
 	"github.com/issue9/utils"
 )
 
-var robots = `User-agent:*
+var defaultRobots = `User-agent:*
 Disallow:/themes/`
+
+var defaultPostContent = `<section>about
+</section>`
+
+var defaultPostMeta = &Post{
+	Title:      "about",
+	TagsString: "default",
+	Permalink:  time.Now().Format(vars.DateFormat),
+	Outdated:   time.Now().Format(vars.DateFormat),
+	Order:      orderLast,
+}
 
 var defaultConfig = &config{
 	Title:           "Title",
@@ -100,7 +114,7 @@ func initMeta(path *vars.Path) error {
 	}
 
 	// data/meta/tags.yaml
-	return helper.DumpYAMLFile(path.MetaTagsFile, defaultLinks)
+	return helper.DumpYAMLFile(path.MetaTagsFile, defaultTags)
 }
 
 // 初始化 data/raws 目录下的数据
@@ -112,12 +126,23 @@ func initRaws(path *vars.Path) error {
 	}
 
 	// robots.txt
-	file, err := os.Create(path.RawsPath("robots.txt"))
-	if err != nil {
+	return helper.DumpTextFile(path.RawsPath("robots.txt"), defaultRobots)
+}
+
+func initPosts(p *vars.Path) error {
+	slug := path.Join(strconv.Itoa(time.Now().Year()), "about")
+
+	dir := filepath.Join(p.PostsDir, slug)
+	if !utils.FileExists(dir) {
+		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+			return err
+		}
+	}
+
+	if err := helper.DumpYAMLFile(p.PostMetaPath(slug), defaultPostMeta); err != nil {
 		return err
 	}
-	defer file.Close()
 
-	_, err = file.WriteString(robots)
-	return err
+	// content.html
+	return helper.DumpTextFile(p.PostContentPath(slug), defaultPostContent)
 }
