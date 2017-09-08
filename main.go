@@ -8,7 +8,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	"runtime"
 
 	"github.com/caixw/typing/app"
@@ -19,7 +18,8 @@ import (
 func main() {
 	help := flag.Bool("h", false, "显示当前信息")
 	version := flag.Bool("v", false, "显示程序的版本信息")
-	appdir := flag.String("appdir", "./", "指定运行的数据目录")
+	appdir := flag.String("appdir", "./", "指定运行的工作目录")
+	init := flag.String("init", "", "指定初始化的工作目录")
 	flag.Usage = usage
 	flag.Parse()
 
@@ -30,11 +30,13 @@ func main() {
 	case *version:
 		printVersion()
 		return
+	case len(*init) > 0:
+		app.Init(vars.NewPath(*init))
+		return
 	}
 
 	path := vars.NewPath(*appdir)
 
-	// 初始化日志
 	err := logs.InitFromXMLFile(path.LogsConfigFile)
 	if err != nil {
 		panic(err)
@@ -45,17 +47,17 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stdout, "%s 一个简单博客程序。\n", vars.AppName)
-	fmt.Fprintf(os.Stdout, "源代码以 MIT 开源许可，并发布于 Github: %s\n", vars.URL)
+	fmt.Fprintf(vars.CMDOutput, "%s 一个简单博客程序。\n", vars.AppName)
+	fmt.Fprintf(vars.CMDOutput, "源代码以 MIT 开源许可，并发布于 Github: %s\n", vars.URL)
 
-	fmt.Fprintln(os.Stdout, "\n参数:")
-	flag.CommandLine.SetOutput(os.Stdout)
+	fmt.Fprintln(vars.CMDOutput, "\n参数:")
+	flag.CommandLine.SetOutput(vars.CMDOutput)
 	flag.PrintDefaults()
 }
 
 func printVersion() {
-	fmt.Fprintf(os.Stdout, "%s:%s build with %s\n", vars.AppName, vars.Version(), runtime.Version())
+	fmt.Fprintf(vars.CMDOutput, "%s:%s build with %s\n", vars.AppName, vars.Version(), runtime.Version())
 	if len(vars.CommitHash()) > 0 {
-		fmt.Fprintf(os.Stdout, "Git commit hash:%s\n", vars.CommitHash())
+		fmt.Fprintf(vars.CMDOutput, "Git commit hash:%s\n", vars.CommitHash())
 	}
 }

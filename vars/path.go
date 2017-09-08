@@ -90,6 +90,11 @@ func (p *Path) ConfPath(file string) string {
 	return filepath.Join(p.ConfDir, file)
 }
 
+// RawsPath 获取 rasw/ 下的文件
+func (p *Path) RawsPath(file string) string {
+	return filepath.Join(p.RawsDir, file)
+}
+
 // ThemeMetaPath 返回指定主题下的描述文件
 func (p *Path) ThemeMetaPath(theme string) string {
 	return filepath.Join(p.ThemesDir, theme, themeMetaFilename)
