@@ -37,11 +37,13 @@ var defaultConfig = &config{
 
 // Init 执行初始化命令
 func Init(path *vars.Path) error {
-	if err := initConfDir(path); err != nil {
-		return err
+	if !utils.FileExists(path.Root) {
+		if err := os.Mkdir(path.Root, os.ModePerm); err != nil {
+			return err
+		}
 	}
 
-	if err := initRaws(path); err != nil {
+	if err := initConfDir(path); err != nil {
 		return err
 	}
 
@@ -85,24 +87,5 @@ func initConfDir(path *vars.Path) error {
 	defer file.Close()
 
 	_, err = file.WriteString(defaultLogsXML)
-	return err
-}
-
-// 初始化 raws 目录下的数据
-func initRaws(path *vars.Path) error {
-	if !utils.FileExists(path.RawsDir) {
-		if err := os.Mkdir(path.RawsDir, os.ModePerm); err != nil {
-			return err
-		}
-	}
-
-	// robots.txt
-	file, err := os.Create(path.RawsPath("robots.txt"))
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	_, err = file.WriteString(robots)
 	return err
 }

@@ -14,6 +14,9 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+var robots = `User-agent:*
+Disallow:/themes/`
+
 var defaultConfig = &config{
 	Title:           "Title",
 	Language:        "zh-cnm-Hans",
@@ -40,7 +43,7 @@ var defaultConfig = &config{
 	},
 }
 
-// Init 在 path 下初始化基本的数据
+// Init 初始化 data 下的基本数据结构
 func Init(path *vars.Path) error {
 	fmt.Println(path.DataDir)
 	if !utils.FileExists(path.DataDir) {
@@ -49,6 +52,19 @@ func Init(path *vars.Path) error {
 		}
 	}
 
+	if err := initRaws(path); err != nil {
+		return err
+	}
+
+	if err := initMeta(path); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 初始化 data/meta 目录下的数据
+func initMeta(path *vars.Path) error {
 	if !utils.FileExists(path.MetaDir) {
 		if err := os.Mkdir(path.MetaDir, os.ModePerm); err != nil {
 			return err
@@ -72,4 +88,23 @@ func Init(path *vars.Path) error {
 	}
 
 	return nil
+}
+
+// 初始化 data/raws 目录下的数据
+func initRaws(path *vars.Path) error {
+	if !utils.FileExists(path.RawsDir) {
+		if err := os.Mkdir(path.RawsDir, os.ModePerm); err != nil {
+			return err
+		}
+	}
+
+	// robots.txt
+	file, err := os.Create(path.RawsPath("robots.txt"))
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(robots)
+	return err
 }
