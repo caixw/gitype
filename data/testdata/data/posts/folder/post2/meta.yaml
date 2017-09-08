@@ -5,7 +5,6 @@ author:
     name: name
     email: email
 order: top
-path: content.html
 created: 2016-01-02T13:14:11+08:00
 modified: 2016-01-02T13:14:11+08:00
 summary: summary
