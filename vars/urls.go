@@ -22,6 +22,7 @@ const (
 	archives = root + "archives" // 归档
 	search   = root + "search"   // 搜索
 	themes   = root + "themes"   // 主题
+	asset    = root + "posts/"   // 文章资源
 )
 
 var (
@@ -31,6 +32,18 @@ var (
 	archivesURL = archives + suffix
 	searchURL   = search + suffix
 )
+
+// AssetURL 构建一条用于指向资源的 URL
+func AssetURL(p string) string {
+	if len(p) == 0 {
+		return asset
+	}
+
+	if p[0] == '/' {
+		return asset + p[1:]
+	}
+	return asset + p
+}
 
 // LinksURL 生成友情链接的 URL
 func LinksURL() string {

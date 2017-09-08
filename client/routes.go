@@ -7,10 +7,7 @@ package client
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
-	"strings"
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
@@ -18,27 +15,7 @@ import (
 	"github.com/issue9/middleware/compress"
 	"github.com/issue9/mux"
 	"github.com/issue9/mux/params"
-	"github.com/issue9/utils"
 )
-
-// 模板的扩展名，在主题目录下，以下扩展名的文件，不会被展示
-var ignoreThemeFileExts = []string{
-	vars.TemplateExtension,
-	".yaml",
-	".yml",
-}
-
-func isIgnoreThemeFile(file string) bool {
-	ext := filepath.Ext(file)
-
-	for _, v := range ignoreThemeFileExts {
-		if ext == v {
-			return true
-		}
-	}
-
-	return false
-}
 
 func (client *Client) initRoutes() (err error) {
 	handle := func(pattern string, h http.HandlerFunc) {
@@ -51,6 +28,7 @@ func (client *Client) initRoutes() (err error) {
 	}
 
 	handle(vars.PostURL("{slug}"), client.getPost)     // posts/2016/about.html   posts/{slug}.html
+	handle(vars.AssetURL("{path}"), client.getAsset)   // posts/2016/about/abc.png  posts/{path}
 	handle(vars.IndexURL(0), client.getPosts)          // index.html
 	handle(vars.LinksURL(), client.getLinks)           // links.html
 	handle(vars.TagURL("{slug}", 1), client.getTag)    // tags/tag1.html     tags/{slug}.html
@@ -232,59 +210,6 @@ func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	p.Archives = client.data.Archives
 
 	p.render(w, "archives", nil)
-}
-
-// 主题文件
-// /themes/...
-func (client *Client) getThemes(w http.ResponseWriter, r *http.Request) {
-	if isIgnoreThemeFile(r.URL.Path) { // 不展示模板文件，查看 raws 中是否有同名文件
-		client.getRaws(w, r)
-		return
-	}
-
-	path := strings.TrimPrefix(r.URL.Path, vars.ThemesURL(""))
-	if len(path) >= len(r.URL.Path) { // path 不包含 vars.ThemesURL("") 前缀
-		client.getRaws(w, r)
-		return
-	}
-
-	filename := filepath.Join(client.path.ThemesDir, path)
-
-	if !utils.FileExists(filename) {
-		client.getRaws(w, r)
-		return
-	}
-
-	stat, err := os.Stat(filename)
-	if err != nil {
-		logs.Error(err)
-		client.renderError(w, http.StatusInternalServerError)
-		return
-	}
-
-	if stat.IsDir() {
-		client.getRaws(w, r)
-		return
-	}
-
-	http.ServeFile(w, r, filename)
-}
-
-// /...
-func (client *Client) getRaws(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == "/" {
-		client.getPosts(w, r)
-		return
-	}
-
-	if !utils.FileExists(filepath.Join(client.path.RawsDir, r.URL.Path)) {
-		client.renderError(w, http.StatusNotFound)
-		return
-	}
-
-	prefix := "/"
-	root := http.Dir(client.path.RawsDir)
-	http.StripPrefix(prefix, http.FileServer(root)).ServeHTTP(w, r)
 }
 
 // 确认当前文章列表页选择范围。
