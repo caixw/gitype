@@ -10,6 +10,15 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestAssetURL(t *testing.T) {
+	a := assert.New(t)
+
+	a.Equal(AssetURL("/"), "/posts/")
+	a.Equal(AssetURL(""), "/posts/")
+	a.Equal(AssetURL("/abc.png"), "/posts/abc.png")
+	a.Equal(AssetURL("abc.png"), "/posts/abc.png")
+}
+
 func TestPostURL(t *testing.T) {
 	a := assert.New(t)
 
