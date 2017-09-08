@@ -15,9 +15,11 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 ### 使用
 
 1. 下载代码：`go get github.com/caixw/typing`；
-1. 运行 `scripts/build.sh` 编译代码；
-1. 根据以下的目录结构创建相应的文件，也可以直接基于源码目录 `/app/testdata` 和 `/data/testdata` 修改数据；
-1. 运行程序，使用 appdir 参数指定程序的工作目录。
+1. 运行 `scripts/build.sh` 编译代码（也可以直接执行 `go build` 编译，除了版本号，并无其它差别。）；
+1. 执行 `typing -init=to_path` 输出初始的数据内容；
+1. 运行 `typing -appdir=to_path`。
+
+*./script 目录下包含了部分平台下的转换成守护进程的脚本*
 
 
 
@@ -74,8 +76,6 @@ keyFile           | string      | 当 https 为 true 时，此值为必填
 port              | string      | 端口，不指定，默认为 80 或是 443
 pprof             | bool        | 是否需要在 /debug/pprof 输出调试信息
 headers           | map         | 附加的头信息，头信息可能在其它地方被修改
-adminURL          | string      | 后台管理的地址
-adminPassword     | string      | 后台管理密码
 webhook           | webhook     | 与 webhook 相关的设置
 
 
