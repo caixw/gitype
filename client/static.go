@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
@@ -49,11 +48,6 @@ func (client *Client) getAsset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if strings.HasPrefix(r.URL.Path, vars.AssetURL("")) { // path 不包含 vars.AssetURL("") 前缀
-		client.getRaws(w, r)
-		return
-	}
-
 	filename := filepath.Join(client.path.PostsDir, path)
 
 	if !utils.FileExists(filename) {
@@ -84,9 +78,8 @@ func (client *Client) getThemes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path := strings.TrimPrefix(r.URL.Path, vars.ThemesURL(""))
-	if len(path) >= len(r.URL.Path) { // path 不包含 vars.ThemesURL("") 前缀
-		client.getRaws(w, r)
+	path, found := client.paramString(w, r, "path")
+	if !found {
 		return
 	}
 
