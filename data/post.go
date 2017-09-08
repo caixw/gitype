@@ -15,6 +15,7 @@ import (
 
 	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
+	"github.com/issue9/utils"
 )
 
 // 文章是否过时的比较方式
@@ -64,16 +65,25 @@ type Post struct {
 
 func loadPosts(path *vars.Path) ([]*Post, error) {
 	dir := path.PostsDir
-	paths := make([]string, 0, 100)
+	slugs := make([]string, 0, 100)
 
-	// 遍历 data/posts 目录，查找所有的 meta.yaml 文章。
-	walk := func(path string, info os.FileInfo, err error) error {
+	// 遍历 data/posts 目录，查找所有的文章。
+	walk := func(p string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if info.Name() == vars.PostMetaFilename {
-			paths = append(paths, path)
+		if !info.IsDir() {
+			return nil
+		}
+
+		postsDir := filepath.Clean(path.PostsDir)
+		slug := strings.TrimPrefix(p, postsDir) // 获取相对于 data/posts 的名称
+		slug = strings.Trim(filepath.ToSlash(slug), "/")
+
+		if utils.FileExists(path.PostContentPath(slug)) &&
+			utils.FileExists(path.PostMetaPath(slug)) {
+			slugs = append(slugs, slug)
 		}
 		return nil
 	}
@@ -83,8 +93,8 @@ func loadPosts(path *vars.Path) ([]*Post, error) {
 	}
 
 	// 开始加载文章的具体内容。
-	posts := make([]*Post, 0, len(paths))
-	for _, p := range paths {
+	posts := make([]*Post, 0, len(slugs))
+	for _, p := range slugs {
 		p = filepath.Clean(p)
 		post, err := loadPost(path, p)
 		if err != nil {
@@ -103,78 +113,73 @@ func loadPosts(path *vars.Path) ([]*Post, error) {
 	return posts, nil
 }
 
-func loadPost(pp *vars.Path, path string) (*Post, error) {
-	postsDir := filepath.Clean(pp.PostsDir)
-	dir := filepath.Dir(path)                 // 获取路径部分
-	slug := strings.TrimPrefix(dir, postsDir) // 获取相对于 data/posts 的名称
-	slug = strings.Trim(filepath.ToSlash(slug), "/")
-
-	p := &Post{}
-	if err := helper.LoadYAMLFile(path, p); err != nil {
+func loadPost(path *vars.Path, slug string) (*Post, error) {
+	post := &Post{}
+	if err := helper.LoadYAMLFile(path.PostMetaPath(slug), post); err != nil {
 		return nil, err
 	}
-	p.Slug = slug
+	post.Slug = slug
 
 	// 加载内容
-	data, err := ioutil.ReadFile(pp.PostContentPath(slug))
+	data, err := ioutil.ReadFile(path.PostContentPath(slug))
 	if err != nil {
-		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: err.Error(), Field: "path"}
+		return nil, &FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "path"}
 	}
 	if len(data) == 0 {
-		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: "不能为空", Field: "content"}
+		return nil, &FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "content"}
 	}
-	p.Content = string(data)
+	post.Content = string(data)
 
 	// created
 	// permalink 还用作其它功能，需要首先解析其值
-	created, err := vars.ParseDate(p.Permalink)
+	created, err := vars.ParseDate(post.Permalink)
 	if err != nil {
-		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: err.Error(), Field: "created"}
+		return nil, &FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "created"}
 	}
-	p.Created = created
+	post.Created = created
 
 	// permalink
-	p.Permalink = vars.PostURL(p.Slug)
+	post.Permalink = vars.PostURL(post.Slug)
 
 	// modified
 	// outdated 还用作其它功能，需要首先解析其值
-	modified, err := vars.ParseDate(p.Outdated)
+	modified, err := vars.ParseDate(post.Outdated)
 	if err != nil {
-		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: err.Error(), Field: "modified"}
+		return nil, &FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "modified"}
 	}
-	p.Modified = modified
-	p.Outdated = ""
+	post.Modified = modified
+	post.Outdated = ""
 
-	if len(p.Title) == 0 {
-		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: "不能为空", Field: "title"}
+	if len(post.Title) == 0 {
+		return nil, &FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "title"}
 	}
 
-	if len(p.TagsString) == 0 {
-		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: "不能为空", Field: "tags"}
+	if len(post.TagsString) == 0 {
+		return nil, &FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "tags"}
 	}
 
 	// keywords
-	if len(p.Keywords) == 0 && len(p.Tags) > 0 {
-		keywords := make([]string, 0, len(p.Tags))
-		for _, v := range p.Tags {
+	if len(post.Keywords) == 0 && len(post.Tags) > 0 {
+		keywords := make([]string, 0, len(post.Tags))
+		for _, v := range post.Tags {
 			keywords = append(keywords, v.Title)
 		}
-		p.Keywords = strings.Join(keywords, ",")
+		post.Keywords = strings.Join(keywords, ",")
 	}
 
 	// template
-	if len(p.Template) == 0 {
-		p.Template = vars.DefaultPostTemplateName
+	if len(post.Template) == 0 {
+		post.Template = vars.DefaultPostTemplateName
 	}
 
 	// order
-	if len(p.Order) == 0 {
-		p.Order = orderDefault
-	} else if p.Order != orderDefault && p.Order != orderLast && p.Order != orderTop {
-		return nil, &FieldError{File: pp.PostMetaPath(slug), Message: "无效的值", Field: "order"}
+	if len(post.Order) == 0 {
+		post.Order = orderDefault
+	} else if post.Order != orderDefault && post.Order != orderLast && post.Order != orderTop {
+		return nil, &FieldError{File: path.PostMetaPath(slug), Message: "无效的值", Field: "order"}
 	}
 
-	return p, nil
+	return post, nil
 }
 
 // 检测是否存在同名的文章

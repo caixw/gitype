@@ -5,7 +5,6 @@
 package data
 
 import (
-	"path/filepath"
 	"testing"
 
 	"github.com/caixw/typing/vars"
@@ -30,16 +29,16 @@ func TestLoadPost(t *testing.T) {
 	a := assert.New(t)
 	p := vars.NewPath("./testdata")
 
-	post, err := loadPost(p, filepath.Clean("./testdata/data/posts/post1/meta.yaml"))
+	post, err := loadPost(p, "/post1")
 	a.NotError(err).NotNil(post)
 	a.Equal(len(post.Tags), 0) // 未调用 Data.sanitize 初始化
 	a.False(post.Modified.IsZero())
 	a.Equal(post.Template, vars.DefaultPostTemplateName)
 	a.Equal(post.Content, "<article>a1</article>\n")
 
-	post, err = loadPost(p, filepath.Clean("./testdata/data/posts/folder/post2/meta.yaml"))
+	post, err = loadPost(p, "/folder/post2")
 	a.NotError(err).NotNil(post)
-	a.Equal(post.Slug, "folder/post2")
+	a.Equal(post.Slug, "/folder/post2")
 	a.Equal(post.Template, "t1post") // 模板
 }
 
