@@ -10,6 +10,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
 	yaml "gopkg.in/yaml.v2"
@@ -40,7 +41,7 @@ func Init(path *vars.Path) error {
 		return err
 	}
 
-	if err := initDataDir(path); err != nil {
+	if err := data.Init(path); err != nil {
 		return err
 	}
 
@@ -81,16 +82,4 @@ func initConfDir(path *vars.Path) error {
 
 	_, err = file.WriteString(defaultLogsXML)
 	return err
-}
-
-func initDataDir(path *vars.Path) error {
-	if !utils.FileExists(path.DataDir) {
-		if err := os.Mkdir(path.DataDir, os.ModePerm); err != nil {
-			return err
-		}
-	}
-
-	// TODO
-
-	return nil
 }
