@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/caixw/typing/data"
+	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
-	yaml "gopkg.in/yaml.v2"
 )
 
 // 输出的默认配置内容
@@ -51,7 +51,7 @@ func Init(path *vars.Path) error {
 		return err
 	}
 
-	_, err := fmt.Fprintf(vars.CMDOutput, "操作成功，你现在可以在 %s 中修改具体的参数配置！", path.Root)
+	_, err := fmt.Fprintf(vars.CMDOutput, "操作成功，你现在可以在 %s 中修改具体的参数配置！\n", path.Root)
 	return err
 }
 
@@ -63,29 +63,17 @@ func initConfDir(path *vars.Path) error {
 		}
 	}
 
-	// app.yaml
-	file, err := os.Create(path.AppConfigFile)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	bs, err := yaml.Marshal(defaultConfig)
-	if err != nil {
-		return err
-	}
-
-	if _, err := file.Write(bs); err != nil {
-		return err
-	}
-
 	// logs.xml
-	file, err = os.Create(path.LogsConfigFile)
+	file, err := os.Create(path.LogsConfigFile)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	_, err = file.WriteString(defaultLogsXML)
-	return err
+	if _, err = file.WriteString(defaultLogsXML); err != nil {
+		return err
+	}
+
+	// app.yaml
+	return helper.DumpYAMLFile(path.AppConfigFile, defaultConfig)
 }

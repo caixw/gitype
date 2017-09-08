@@ -8,6 +8,7 @@ package helper
 import (
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -25,4 +26,21 @@ func LoadYAMLFile(path string, obj interface{}) error {
 	}
 
 	return yaml.Unmarshal(bs, obj)
+}
+
+// DumpYAMLFile 将 obj 转换成 yaml 格式的文本并输出到 path 指定的文件中
+func DumpYAMLFile(path string, obj interface{}) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	bs, err := yaml.Marshal(obj)
+	if err != nil {
+		return err
+	}
+
+	_, err = file.Write(bs)
+	return err
 }

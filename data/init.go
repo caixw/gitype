@@ -9,9 +9,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
-	yaml "gopkg.in/yaml.v2"
 )
 
 var robots = `User-agent:*
@@ -40,6 +40,24 @@ var defaultConfig = &config{
 	Archive: &archiveConfig{
 		Type:   archiveTypeYear,
 		Format: "2006 年",
+	},
+}
+
+var defaultLinks = []*Link{
+	&Link{
+		Text: vars.AppName,
+		URL:  vars.URL,
+	},
+	&Link{
+		Text: "caixw",
+		URL:  "https://caixw.io",
+	},
+}
+
+var defaultTags = []*Tag{
+	&Tag{
+		Title: "默认",
+		Slug:  "default",
 	},
 }
 
@@ -72,22 +90,17 @@ func initMeta(path *vars.Path) error {
 	}
 
 	// data/meta/config.yaml
-	file, err := os.Create(path.MetaConfigFile)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	bs, err := yaml.Marshal(defaultConfig)
-	if err != nil {
+	if err := helper.DumpYAMLFile(path.MetaConfigFile, defaultConfig); err != nil {
 		return err
 	}
 
-	if _, err := file.Write(bs); err != nil {
+	// data/meta/links.yaml
+	if err := helper.DumpYAMLFile(path.MetaLinksFile, defaultLinks); err != nil {
 		return err
 	}
 
-	return nil
+	// data/meta/tags.yaml
+	return helper.DumpYAMLFile(path.MetaTagsFile, defaultLinks)
 }
 
 // 初始化 data/raws 目录下的数据
