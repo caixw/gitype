@@ -21,7 +21,7 @@ const (
 	links    = root + "links"    // 友情链接
 	archives = root + "archives" // 归档
 	search   = root + "search"   // 搜索
-	themes   = root + "themes"   // 主题
+	themes   = root + "themes/"  // 主题
 	asset    = root + "posts/"   // 文章资源
 )
 
@@ -32,18 +32,6 @@ var (
 	archivesURL = archives + suffix
 	searchURL   = search + suffix
 )
-
-// AssetURL 构建一条用于指向资源的 URL
-func AssetURL(p string) string {
-	if len(p) == 0 {
-		return asset
-	}
-
-	if p[0] == '/' {
-		return asset + p[1:]
-	}
-	return asset + p
-}
 
 // LinksURL 生成友情链接的 URL
 func LinksURL() string {
@@ -116,6 +104,22 @@ func SearchURL(q string, page int) string {
 }
 
 // ThemesURL 构建主题文件 URL
-func ThemesURL(p string) string {
-	return path.Join(themes, p)
+func ThemesURL(path string) string {
+	return staticURL(themes, path)
+}
+
+// AssetURL 构建一条用于指向资源的 URL
+func AssetURL(path string) string {
+	return staticURL(asset, path)
+}
+
+func staticURL(prefix, path string) string {
+	if len(path) == 0 {
+		return prefix
+	}
+
+	if path[0] == '/' {
+		return prefix + path[1:]
+	}
+	return prefix + path
 }
