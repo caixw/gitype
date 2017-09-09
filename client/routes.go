@@ -26,16 +26,16 @@ func (client *Client) initRoutes() (err error) {
 		err = client.mux.HandleFunc(pattern, client.prepare(h), http.MethodGet)
 	}
 
-	handle(vars.PostURL("{slug}"), client.getPost)     // posts/2016/about.html   posts/{slug}.html
-	handle(vars.AssetURL("{path}"), client.getAsset)   // posts/2016/about/abc.png  posts/{path}
-	handle(vars.IndexURL(0), client.getPosts)          // index.html
-	handle(vars.LinksURL(), client.getLinks)           // links.html
-	handle(vars.TagURL("{slug}", 1), client.getTag)    // tags/tag1.html     tags/{slug}.html
-	handle(vars.TagsURL(), client.getTags)             // tags.html
-	handle(vars.ArchivesURL(), client.getArchives)     // archives.html
-	handle(vars.SearchURL("", 1), client.getSearch)    // search.html
-	handle(vars.ThemesURL("{path}"), client.getThemes) // themes/...          themes/{path}
-	handle("/{path}", client.getRaws)                  // /...                /{path}
+	handle(vars.PostURL("{slug}"), client.getPost)    // posts/2016/about.html   posts/{slug}.html
+	handle(vars.AssetURL("{path}"), client.getAsset)  // posts/2016/about/abc.png  posts/{path}
+	handle(vars.IndexURL(0), client.getPosts)         // index.html
+	handle(vars.LinksURL(), client.getLinks)          // links.html
+	handle(vars.TagURL("{slug}", 1), client.getTag)   // tags/tag1.html     tags/{slug}.html
+	handle(vars.TagsURL(), client.getTags)            // tags.html
+	handle(vars.ArchivesURL(), client.getArchives)    // archives.html
+	handle(vars.SearchURL("", 1), client.getSearch)   // search.html
+	handle(vars.ThemesURL("{path}"), client.getTheme) // themes/...          themes/{path}
+	handle("/{path}", client.getRaw)                  // /...                /{path}
 
 	return err
 }
@@ -60,7 +60,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 
 	if index < 0 {
 		logs.Debugf("并未找到与之相对应的文章：%s", slug)
-		client.getRaws(w, r) // 文章不存在，则查找 raws 目录下是否存在同名文件
+		client.getRaw(w, r) // 文章不存在，则查找 raws 目录下是否存在同名文件
 		return
 	}
 
@@ -131,7 +131,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	slug, err := mux.Params(r).String("slug")
 	if err != nil {
 		logs.Error(err)
-		client.getRaws(w, r)
+		client.getRaw(w, r)
 		return
 	}
 
@@ -145,7 +145,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 
 	if tag == nil {
 		logs.Debugf("查找的标签 %s 不存在", slug)
-		client.getRaws(w, r) // 标签不存在，则查找该文件是否存在于 raws 目录下。
+		client.getRaw(w, r) // 标签不存在，则查找该文件是否存在于 raws 目录下。
 		return
 	}
 

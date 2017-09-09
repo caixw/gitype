@@ -37,81 +37,45 @@ func isIgnoreThemeFile(file string) bool {
 // 资源内容
 // /posts/{path}
 func (client *Client) getAsset(w http.ResponseWriter, r *http.Request) {
-	path, err := mux.Params(r).String("path")
-	if err != nil {
-		logs.Error(err)
-		client.getRaws(w, r)
+	// 不展示模板文件，查看 raws 中是否有同名文件
+	name := filepath.Base(r.URL.Path)
+	if name == vars.PostMetaFilename || name == vars.PostContentFilename {
+		client.getRaw(w, r)
 		return
 	}
 
-	// 不展示模板文件，查看 raws 中是否有同名文件
-	name := filepath.Base(path)
-	if name == vars.PostMetaFilename || name == vars.PostContentFilename {
-		client.getRaws(w, r)
+	path, err := mux.Params(r).String("path")
+	if err != nil {
+		logs.Error(err)
+		client.getRaw(w, r)
 		return
 	}
 
 	filename := filepath.Join(client.path.PostsDir, path)
-
-	if !utils.FileExists(filename) {
-		client.getRaws(w, r)
-		return
-	}
-
-	stat, err := os.Stat(filename)
-	if err != nil {
-		logs.Error(err)
-		client.renderError(w, http.StatusInternalServerError)
-		return
-	}
-
-	if stat.IsDir() {
-		client.getRaws(w, r)
-		return
-	}
-
-	http.ServeFile(w, r, filename)
+	client.serveFile(w, r, filename)
 }
 
 // 主题文件
 // /themes/...
-func (client *Client) getThemes(w http.ResponseWriter, r *http.Request) {
+func (client *Client) getTheme(w http.ResponseWriter, r *http.Request) {
 	if isIgnoreThemeFile(r.URL.Path) { // 不展示模板文件，查看 raws 中是否有同名文件
-		client.getRaws(w, r)
+		client.getRaw(w, r)
 		return
 	}
 
 	path, err := mux.Params(r).String("path")
 	if err != nil {
 		logs.Error(err)
-		client.getRaws(w, r)
+		client.getRaw(w, r)
 		return
 	}
 
 	filename := filepath.Join(client.path.ThemesDir, path)
-
-	if !utils.FileExists(filename) {
-		client.getRaws(w, r)
-		return
-	}
-
-	stat, err := os.Stat(filename)
-	if err != nil {
-		logs.Error(err)
-		client.renderError(w, http.StatusInternalServerError)
-		return
-	}
-
-	if stat.IsDir() {
-		client.getRaws(w, r)
-		return
-	}
-
-	http.ServeFile(w, r, filename)
+	client.serveFile(w, r, filename)
 }
 
 // /...
-func (client *Client) getRaws(w http.ResponseWriter, r *http.Request) {
+func (client *Client) getRaw(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
 		client.getPosts(w, r)
 		return
@@ -125,4 +89,25 @@ func (client *Client) getRaws(w http.ResponseWriter, r *http.Request) {
 	prefix := "/"
 	root := http.Dir(client.path.RawsDir)
 	http.StripPrefix(prefix, http.FileServer(root)).ServeHTTP(w, r)
+}
+
+func (client *Client) serveFile(w http.ResponseWriter, r *http.Request, filename string) {
+	if !utils.FileExists(filename) {
+		client.getRaw(w, r)
+		return
+	}
+
+	stat, err := os.Stat(filename)
+	if err != nil {
+		logs.Error(err)
+		client.renderError(w, http.StatusInternalServerError)
+		return
+	}
+
+	if stat.IsDir() {
+		client.getRaw(w, r)
+		return
+	}
+
+	http.ServeFile(w, r, filename)
 }
