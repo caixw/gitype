@@ -58,7 +58,7 @@ func (d *Data) buildOpensearch(conf *config) error {
 		"template": d.URL(vars.SearchURL("{searchTerms}", 0)),
 	})
 
-	w.WriteElement("Developer", vars.AppName, nil)
+	w.WriteElement("Developer", vars.Name, nil)
 	w.WriteElement("Language", conf.Language, nil)
 
 	w.WriteEndElement("OpenSearchDescription")

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package vars 定义一些全局变量、常量。
+// Package vars 定义一些全局变量、常量。相当于一个代码级别的配置内容。
 package vars
 
 import "time"
 
 const (
-	// AppName 程序名称
-	AppName = "typing"
+	// Name 程序名称
+	Name = "typing"
 
 	// URL 项目的地址
 	URL = "https://github.com/caixw/typing"

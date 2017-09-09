@@ -36,12 +36,12 @@ var defaultConfig = &config{
 	Language:        "zh-cnm-Hans",
 	Subtitle:        "subtitle",
 	URL:             "https://caixw.io",
-	Keywords:        vars.AppName,
+	Keywords:        vars.Name,
 	PageSize:        20,
 	LongDateFormat:  "2006-01-02 15:04:05",
 	ShortDateFormat: "2006-01-02",
 	Author: &Author{
-		Name: vars.AppName,
+		Name: vars.Name,
 		URL:  vars.URL,
 	},
 	License: &Link{
@@ -59,7 +59,7 @@ var defaultConfig = &config{
 
 var defaultLinks = []*Link{
 	&Link{
-		Text: vars.AppName,
+		Text: vars.Name,
 		URL:  vars.URL,
 	},
 	&Link{

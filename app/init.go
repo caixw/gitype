@@ -59,7 +59,7 @@ var defaultConfig = &config{
 	Port:      ":443",
 	Pprof:     false,
 	Headers: map[string]string{
-		"Server": vars.AppName + vars.Version(),
+		"Server": vars.Name + vars.Version(),
 	},
 	Webhook: &webhook{
 		URL:       "/webhooks",

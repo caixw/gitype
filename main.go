@@ -46,7 +46,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Printf("%s 是一个基于 Git 的博客系统。\n", vars.AppName)
+	fmt.Printf("%s 是一个基于 Git 的博客系统。\n", vars.Name)
 	fmt.Printf("源代码以 MIT 开源许可发布于：%s\n", vars.URL)
 
 	fmt.Println("\n参数：")
@@ -54,7 +54,7 @@ func usage() {
 }
 
 func printVersion() {
-	fmt.Printf("%s %s build with %s\n", vars.AppName, vars.Version(), runtime.Version())
+	fmt.Printf("%s %s build with %s\n", vars.Name, vars.Version(), runtime.Version())
 	if len(vars.CommitHash()) > 0 {
 		fmt.Printf("Git commit hash:%s\n", vars.CommitHash())
 	}

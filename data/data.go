@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package data 加载和再加工所有数据
+// Package data 加载数据并对其进行处理。
 package data
 
 import (

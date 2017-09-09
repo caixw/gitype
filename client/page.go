@@ -99,7 +99,7 @@ func (client *Client) newInfo() *info {
 	conf := d.Config
 
 	info := &info{
-		AppName:    vars.AppName,
+		AppName:    vars.Name,
 		AppURL:     vars.URL,
 		AppVersion: vars.Version(),
 		GoVersion:  runtime.Version(),
