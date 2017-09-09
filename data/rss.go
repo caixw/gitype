@@ -7,7 +7,7 @@ package data
 import (
 	"time"
 
-	"github.com/caixw/typing/data/xmlwriter"
+	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 )
 
@@ -24,7 +24,7 @@ func (d *Data) buildRSS(conf *config) error {
 		return nil
 	}
 
-	w := xmlwriter.New()
+	w := helper.NewWriter()
 
 	w.WriteStartElement("rss", map[string]string{
 		"version":    "2.0",
@@ -64,7 +64,7 @@ func (d *Data) buildRSS(conf *config) error {
 	return nil
 }
 
-func addPostsToRSS(w *xmlwriter.XMLWriter, d *Data) {
+func addPostsToRSS(w *helper.XMLWriter, d *Data) {
 	for _, p := range d.Posts {
 		w.WriteStartElement("item", nil)
 

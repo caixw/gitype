@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/caixw/typing/data/xmlwriter"
+	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 )
 
@@ -32,7 +32,7 @@ func (d *Data) buildSitemap(conf *config) error {
 		return nil
 	}
 
-	w := xmlwriter.New()
+	w := helper.NewWriter()
 
 	if len(conf.Sitemap.XslURL) > 0 {
 		w.WritePI("xml-stylesheet", map[string]string{
@@ -74,7 +74,7 @@ func (d *Data) buildSitemap(conf *config) error {
 	return nil
 }
 
-func addPostsToSitemap(w *xmlwriter.XMLWriter, d *Data, conf *config) {
+func addPostsToSitemap(w *helper.XMLWriter, d *Data, conf *config) {
 	sitemap := conf.Sitemap
 	for _, p := range d.Posts {
 		loc := d.URL(p.Permalink)
@@ -82,7 +82,7 @@ func addPostsToSitemap(w *xmlwriter.XMLWriter, d *Data, conf *config) {
 	}
 }
 
-func addTagsToSitemap(w *xmlwriter.XMLWriter, d *Data, conf *config) error {
+func addTagsToSitemap(w *helper.XMLWriter, d *Data, conf *config) error {
 	sitemap := conf.Sitemap
 
 	loc := d.URL(vars.TagsURL())
@@ -95,7 +95,7 @@ func addTagsToSitemap(w *xmlwriter.XMLWriter, d *Data, conf *config) error {
 	return nil
 }
 
-func addItemToSitemap(w *xmlwriter.XMLWriter, loc, changefreq string, lastmod time.Time, priority float64) {
+func addItemToSitemap(w *helper.XMLWriter, loc, changefreq string, lastmod time.Time, priority float64) {
 	w.WriteStartElement("url", nil)
 
 	w.WriteElement("loc", loc, nil)

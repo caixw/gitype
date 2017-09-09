@@ -7,7 +7,7 @@ package data
 import (
 	"time"
 
-	"github.com/caixw/typing/data/xmlwriter"
+	"github.com/caixw/typing/helper"
 )
 
 // 用于生成一个符合 atom 规范的 XML 文本。
@@ -16,7 +16,7 @@ func (d *Data) buildAtom(conf *config) error {
 		return nil
 	}
 
-	w := xmlwriter.New()
+	w := helper.NewWriter()
 
 	w.WriteStartElement("feed", map[string]string{
 		"xmlns":            "http://www.w3.org/2005/Atom",
@@ -59,7 +59,7 @@ func (d *Data) buildAtom(conf *config) error {
 	return nil
 }
 
-func addPostsToAtom(w *xmlwriter.XMLWriter, d *Data) {
+func addPostsToAtom(w *helper.XMLWriter, d *Data) {
 	for _, p := range d.Posts {
 		w.WriteStartElement("entry", nil)
 

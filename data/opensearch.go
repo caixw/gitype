@@ -7,7 +7,7 @@ package data
 import (
 	"net/http"
 
-	"github.com/caixw/typing/data/xmlwriter"
+	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 )
 
@@ -28,7 +28,7 @@ func (d *Data) buildOpensearch(conf *config) error {
 		return nil
 	}
 
-	w := xmlwriter.New()
+	w := helper.NewWriter()
 	o := conf.Opensearch
 
 	w.WriteStartElement("OpenSearchDescription", map[string]string{
