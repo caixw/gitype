@@ -5,7 +5,6 @@
 package app
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -82,12 +81,7 @@ func Init(path *vars.Path) error {
 		return err
 	}
 
-	if err := data.Init(path); err != nil {
-		return err
-	}
-
-	_, err := fmt.Fprintf(vars.CMDOutput, "操作成功，你现在可以在 %s 中修改具体的参数配置！\n", path.Root)
-	return err
+	return data.Init(path)
 }
 
 // 初始化 conf 目录下的数据

@@ -8,6 +8,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"runtime"
 
 	"github.com/caixw/typing/app"
@@ -19,7 +20,7 @@ func main() {
 	help := flag.Bool("h", false, "显示当前信息")
 	version := flag.Bool("v", false, "显示程序的版本信息")
 	appdir := flag.String("appdir", "./", "指定运行的工作目录")
-	init := flag.String("init", "", "指定初始化的工作目录")
+	init := flag.String("init", "", "初始化一个工作目录")
 	flag.Usage = usage
 	flag.Parse()
 
@@ -31,7 +32,7 @@ func main() {
 		printVersion()
 		return
 	case len(*init) > 0:
-		app.Init(vars.NewPath(*init))
+		runInit(*init)
 		return
 	}
 
@@ -47,17 +48,24 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintf(vars.CMDOutput, "%s 是一个基于 Git 的博客系统。\n", vars.AppName)
-	fmt.Fprintf(vars.CMDOutput, "源代码以 MIT 开源许可发布于 Github: %s\n", vars.URL)
+	fmt.Printf("%s 是一个基于 Git 的博客系统。\n", vars.AppName)
+	fmt.Printf("源代码以 MIT 开源许可发布于：%s\n", vars.URL)
 
-	fmt.Fprintln(vars.CMDOutput, "\n参数：")
-	flag.CommandLine.SetOutput(vars.CMDOutput)
+	fmt.Println("\n参数：")
 	flag.PrintDefaults()
 }
 
 func printVersion() {
-	fmt.Fprintf(vars.CMDOutput, "%s:%s build with %s\n", vars.AppName, vars.Version(), runtime.Version())
+	fmt.Printf("%s:%s build with %s\n", vars.AppName, vars.Version(), runtime.Version())
 	if len(vars.CommitHash()) > 0 {
-		fmt.Fprintf(vars.CMDOutput, "Git commit hash:%s\n", vars.CommitHash())
+		fmt.Printf("Git commit hash:%s\n", vars.CommitHash())
 	}
+}
+
+func runInit(root string) {
+	if err := app.Init(vars.NewPath(root)); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	fmt.Printf("操作成功，你现在可以在 %s 中修改具体的参数配置！\n", root)
 }

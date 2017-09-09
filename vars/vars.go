@@ -5,14 +5,11 @@
 // Package vars 定义一些全局变量、常量。
 package vars
 
-import (
-	"os"
-	"time"
-)
+import "time"
 
 const (
 	// 主版本号，符合 semver 规范
-	mainVersion = "1.4.6"
+	mainVersion = "1.4.7"
 
 	// AppName 程序名称
 	AppName = "typing"
@@ -45,9 +42,6 @@ const (
 	ContentTypeRSS        = "application/rss+xml"
 	ContentTypeOpensearch = "application/opensearchdescription+xml"
 )
-
-// CMDOutput 命令行的输出通道
-var CMDOutput = os.Stdout
 
 var (
 	buildDate  string

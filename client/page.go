@@ -212,7 +212,7 @@ func (client *Client) renderError(w http.ResponseWriter, code int) {
 	filename := strconv.Itoa(code) + ".html"
 	path := filepath.Join(client.path.ThemesDir, client.data.Theme.ID, filename)
 	if !utils.FileExists(path) {
-		logs.Errorf("模板文件 %s 不存在\n", path)
+		logs.Debugf("模板文件 %s 不存在\n", path)
 		helper.StatusError(w, code)
 		return
 	}
