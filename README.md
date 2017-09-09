@@ -1,7 +1,7 @@
 typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](https://travis-ci.org/caixw/typing)
 ======
 
-简单的半静态博客系统，具有以下特性：
+基于 Git 的博客系统，具有以下特性：
 
 1. 无数据库，通过 Git 管理发布的内容；
 1. 无分类，通过标签来归类；

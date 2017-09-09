@@ -78,14 +78,14 @@ func (d *Data) buildOpensearch(conf *config) error {
 }
 
 // 检测 opensearch 取值是否正确
-func (s *opensearchConfig) sanitize(conf *config) *FieldError {
+func (s *opensearchConfig) sanitize(conf *config) *helper.FieldError {
 	switch {
 	case len(s.URL) == 0:
-		return &FieldError{Message: "不能为空", Field: "opensearch.url"}
+		return &helper.FieldError{Message: "不能为空", Field: "opensearch.url"}
 	case len(s.ShortName) == 0:
-		return &FieldError{Message: "不能为空", Field: "opensearch.shortName"}
+		return &helper.FieldError{Message: "不能为空", Field: "opensearch.shortName"}
 	case len(s.Description) == 0:
-		return &FieldError{Message: "不能为空", Field: "opensearch.description"}
+		return &helper.FieldError{Message: "不能为空", Field: "opensearch.description"}
 	}
 
 	if len(s.Type) == 0 {

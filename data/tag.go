@@ -88,17 +88,17 @@ func splitTags(tags []*Tag) (ts []*Tag, series []*Tag) {
 	return ts, series
 }
 
-func (tag *Tag) sanitize() *FieldError {
+func (tag *Tag) sanitize() *helper.FieldError {
 	if len(tag.Slug) == 0 {
-		return &FieldError{Message: "不能为空", Field: "slug"}
+		return &helper.FieldError{Message: "不能为空", Field: "slug"}
 	}
 
 	if len(tag.Title) == 0 {
-		return &FieldError{Message: "不能为空", Field: "title"}
+		return &helper.FieldError{Message: "不能为空", Field: "title"}
 	}
 
 	if len(tag.Content) == 0 {
-		return &FieldError{Message: "不能为空", Field: "content"}
+		return &helper.FieldError{Message: "不能为空", Field: "content"}
 	}
 
 	tag.Posts = make([]*Post, 0, 100)

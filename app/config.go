@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
@@ -54,38 +53,38 @@ func loadConfig(path *vars.Path) (*config, error) {
 	return conf, nil
 }
 
-func (w *webhook) sanitize() *data.FieldError {
+func (w *webhook) sanitize() *helper.FieldError {
 	if len(w.Method) == 0 {
 		w.Method = http.MethodPost
 	}
 
 	switch {
 	case len(w.URL) == 0 || w.URL[0] != '/':
-		return &data.FieldError{Field: "webhook.url", Message: "不能为空且只能以 / 开头"}
+		return &helper.FieldError{Field: "webhook.url", Message: "不能为空且只能以 / 开头"}
 	case w.Frequency < 0:
-		return &data.FieldError{Field: "webhook.frequency", Message: "不能小于 0"}
+		return &helper.FieldError{Field: "webhook.frequency", Message: "不能小于 0"}
 	case len(w.RepoURL) == 0:
-		return &data.FieldError{Field: "webhook.repoURL", Message: "不能为空"}
+		return &helper.FieldError{Field: "webhook.repoURL", Message: "不能为空"}
 	}
 
 	return nil
 }
 
-func (conf *config) sanitize() *data.FieldError {
+func (conf *config) sanitize() *helper.FieldError {
 	switch {
 	case conf.HTTPS &&
 		conf.HTTPState != httpStateDefault &&
 		conf.HTTPState != httpStateDisable &&
 		conf.HTTPState != httpStateRedirect:
-		return &data.FieldError{Field: "httpState", Message: "无效的取值"}
+		return &helper.FieldError{Field: "httpState", Message: "无效的取值"}
 	case conf.HTTPS &&
 		conf.HTTPState != httpStateDisable &&
 		conf.Port == httpPort:
-		return &data.FieldError{Field: "port", Message: "80 端口已经被被监听"}
+		return &helper.FieldError{Field: "port", Message: "80 端口已经被被监听"}
 	case conf.HTTPS && !utils.FileExists(conf.CertFile):
-		return &data.FieldError{Field: "certFile", Message: "不能为空"}
+		return &helper.FieldError{Field: "certFile", Message: "不能为空"}
 	case conf.HTTPS && !utils.FileExists(conf.KeyFile):
-		return &data.FieldError{Field: "keyFile", Message: "不能为空"}
+		return &helper.FieldError{Field: "keyFile", Message: "不能为空"}
 	}
 
 	return conf.Webhook.sanitize()

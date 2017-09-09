@@ -123,10 +123,10 @@ func loadPost(path *vars.Path, slug string) (*Post, error) {
 	// 加载内容
 	data, err := ioutil.ReadFile(path.PostContentPath(slug))
 	if err != nil {
-		return nil, &FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "path"}
+		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "path"}
 	}
 	if len(data) == 0 {
-		return nil, &FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "content"}
+		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "content"}
 	}
 	post.Content = string(data)
 
@@ -134,7 +134,7 @@ func loadPost(path *vars.Path, slug string) (*Post, error) {
 	// permalink 还用作其它功能，需要首先解析其值
 	created, err := time.Parse(vars.DateFormat, post.Permalink)
 	if err != nil {
-		return nil, &FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "created"}
+		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "created"}
 	}
 	post.Created = created
 
@@ -145,17 +145,17 @@ func loadPost(path *vars.Path, slug string) (*Post, error) {
 	// outdated 还用作其它功能，需要首先解析其值
 	modified, err := time.Parse(vars.DateFormat, post.Outdated)
 	if err != nil {
-		return nil, &FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "modified"}
+		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "modified"}
 	}
 	post.Modified = modified
 	post.Outdated = ""
 
 	if len(post.Title) == 0 {
-		return nil, &FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "title"}
+		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "title"}
 	}
 
 	if len(post.TagsString) == 0 {
-		return nil, &FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "tags"}
+		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "tags"}
 	}
 
 	// keywords
@@ -176,7 +176,7 @@ func loadPost(path *vars.Path, slug string) (*Post, error) {
 	if len(post.Order) == 0 {
 		post.Order = orderDefault
 	} else if post.Order != orderDefault && post.Order != orderLast && post.Order != orderTop {
-		return nil, &FieldError{File: path.PostMetaPath(slug), Message: "无效的值", Field: "order"}
+		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "无效的值", Field: "order"}
 	}
 
 	return post, nil

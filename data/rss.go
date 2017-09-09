@@ -77,12 +77,12 @@ func addPostsToRSS(w *helper.XMLWriter, d *Data) {
 	}
 }
 
-func (rss *rssConfig) sanitize(conf *config, typ string) *FieldError {
+func (rss *rssConfig) sanitize(conf *config, typ string) *helper.FieldError {
 	if rss.Size <= 0 {
-		return &FieldError{Message: "必须大于 0", Field: typ + ".Size"}
+		return &helper.FieldError{Message: "必须大于 0", Field: typ + ".Size"}
 	}
 	if len(rss.URL) == 0 {
-		return &FieldError{Message: "不能为空", Field: typ + ".URL"}
+		return &helper.FieldError{Message: "不能为空", Field: typ + ".URL"}
 	}
 
 	switch typ {

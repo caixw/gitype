@@ -107,18 +107,18 @@ func addItemToSitemap(w *helper.XMLWriter, loc, changefreq string, lastmod time.
 }
 
 // 检测 sitemap 取值是否正确
-func (s *sitemapConfig) sanitize() *FieldError {
+func (s *sitemapConfig) sanitize() *helper.FieldError {
 	switch {
 	case len(s.URL) == 0:
-		return &FieldError{Message: "不能为空", Field: "Sitemap.URL"}
+		return &helper.FieldError{Message: "不能为空", Field: "Sitemap.URL"}
 	case s.Priority > 1 || s.Priority < 0:
-		return &FieldError{Message: "介于[0,1]之间的浮点数", Field: "Sitemap.priority"}
+		return &helper.FieldError{Message: "介于[0,1]之间的浮点数", Field: "Sitemap.priority"}
 	case s.PostPriority > 1 || s.PostPriority < 0:
-		return &FieldError{Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
+		return &helper.FieldError{Message: "介于[0,1]之间的浮点数", Field: "Sitemap.PostPriority"}
 	case !isChangereq(s.Changefreq):
-		return &FieldError{Message: "取值不正确", Field: "Sitemap.changefreq"}
+		return &helper.FieldError{Message: "取值不正确", Field: "Sitemap.changefreq"}
 	case !isChangereq(s.PostChangefreq):
-		return &FieldError{Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
+		return &helper.FieldError{Message: "取值不正确", Field: "Sitemap.PostChangefreq"}
 	}
 
 	if len(s.Type) == 0 {

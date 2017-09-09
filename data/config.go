@@ -96,22 +96,22 @@ func loadConfig(path *vars.Path) (*config, error) {
 	return conf, nil
 }
 
-func (conf *config) sanitize() *FieldError {
+func (conf *config) sanitize() *helper.FieldError {
 	if conf.PageSize <= 0 {
-		return &FieldError{Message: "必须为大于零的整数", Field: "pageSize"}
+		return &helper.FieldError{Message: "必须为大于零的整数", Field: "pageSize"}
 	}
 
 	if len(conf.LongDateFormat) == 0 {
-		return &FieldError{Message: "不能为空", Field: "longDateFormat"}
+		return &helper.FieldError{Message: "不能为空", Field: "longDateFormat"}
 	}
 
 	if len(conf.ShortDateFormat) == 0 {
-		return &FieldError{Message: "不能为空", Field: "shortDateFormat"}
+		return &helper.FieldError{Message: "不能为空", Field: "shortDateFormat"}
 	}
 
 	t, err := time.Parse(vars.DateFormat, conf.UptimeFormat)
 	if err != nil {
-		return &FieldError{Message: err.Error(), Field: "uptimeFormat"}
+		return &helper.FieldError{Message: err.Error(), Field: "uptimeFormat"}
 	}
 	conf.Uptime = t
 
@@ -129,18 +129,18 @@ func (conf *config) sanitize() *FieldError {
 
 	// Author
 	if conf.Author == nil {
-		return &FieldError{Message: "必须指定作者", Field: "author"}
+		return &helper.FieldError{Message: "必须指定作者", Field: "author"}
 	}
 	if len(conf.Author.Name) == 0 {
-		return &FieldError{Message: "不能为空", Field: "author.name"}
+		return &helper.FieldError{Message: "不能为空", Field: "author.name"}
 	}
 
 	if len(conf.Title) == 0 {
-		return &FieldError{Message: "不能为空", Field: "title"}
+		return &helper.FieldError{Message: "不能为空", Field: "title"}
 	}
 
 	if !is.URL(conf.URL) {
-		return &FieldError{Message: "不是一个合法的域名或 IP", Field: "url"}
+		return &helper.FieldError{Message: "不是一个合法的域名或 IP", Field: "url"}
 	}
 	if strings.HasSuffix(conf.URL, "/") {
 		conf.URL = conf.URL[:len(conf.URL)-1]
@@ -148,12 +148,12 @@ func (conf *config) sanitize() *FieldError {
 
 	// theme
 	if len(conf.Theme) == 0 {
-		return &FieldError{Message: "不能为空", Field: "theme"}
+		return &helper.FieldError{Message: "不能为空", Field: "theme"}
 	}
 
 	// archive
 	if conf.Archive == nil {
-		return &FieldError{Message: "不能为空", Field: "archive"}
+		return &helper.FieldError{Message: "不能为空", Field: "archive"}
 	}
 	if err := conf.Archive.sanitize(); err != nil {
 		return err
@@ -168,7 +168,7 @@ func (conf *config) sanitize() *FieldError {
 
 	// license
 	if conf.License == nil {
-		return &FieldError{Message: "不能为空", Field: "license"}
+		return &helper.FieldError{Message: "不能为空", Field: "license"}
 	}
 	if err := conf.License.sanitize(); err != nil {
 		err.Field = "license." + err.Field

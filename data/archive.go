@@ -7,6 +7,8 @@ package data
 import (
 	"sort"
 	"time"
+
+	"github.com/caixw/typing/helper"
 )
 
 // 归档的类型
@@ -78,12 +80,12 @@ func (d *Data) buildArchives(conf *config) error {
 	return nil
 }
 
-func (a *archiveConfig) sanitize() *FieldError {
+func (a *archiveConfig) sanitize() *helper.FieldError {
 	if len(a.Type) == 0 {
 		a.Type = archiveTypeYear
 	} else {
 		if a.Type != archiveTypeMonth && a.Type != archiveTypeYear {
-			return &FieldError{Message: "取值不正确", Field: "archive.type"}
+			return &helper.FieldError{Message: "取值不正确", Field: "archive.type"}
 		}
 	}
 
@@ -91,7 +93,7 @@ func (a *archiveConfig) sanitize() *FieldError {
 		a.Order = archiveOrderDesc
 	} else {
 		if a.Order != archiveOrderAsc && a.Order != archiveOrderDesc {
-			return &FieldError{Message: "取值不正确", Field: "archive.order"}
+			return &helper.FieldError{Message: "取值不正确", Field: "archive.order"}
 		}
 	}
 

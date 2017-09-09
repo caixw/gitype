@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 )
 
@@ -99,7 +100,7 @@ func (d *Data) sanitize(conf *config) error {
 		}
 	}
 	if d.Theme == nil {
-		return &FieldError{File: d.path.MetaConfigFile, Message: "该主题并不存在", Field: "theme"}
+		return &helper.FieldError{File: d.path.MetaConfigFile, Message: "该主题并不存在", Field: "theme"}
 	}
 
 	for _, tag := range d.Tags { // 将标签的默认修改时间设置为网站的上线时间
@@ -138,7 +139,7 @@ func (d *Data) sanitize(conf *config) error {
 }
 
 // 关联文章与标签的相关信息
-func (d *Data) attachPostTag(post *Post, conf *config) *FieldError {
+func (d *Data) attachPostTag(post *Post, conf *config) *helper.FieldError {
 	ts := strings.Split(post.TagsString, ",")
 	for _, tag := range d.Tags {
 		for _, slug := range ts {
@@ -157,7 +158,7 @@ func (d *Data) attachPostTag(post *Post, conf *config) *FieldError {
 	} // end for tags
 
 	if len(post.Tags) == 0 {
-		return &FieldError{File: d.path.PostMetaPath(post.Slug), Message: "未指定任何关联标签信息", Field: "tags"}
+		return &helper.FieldError{File: d.path.PostMetaPath(post.Slug), Message: "未指定任何关联标签信息", Field: "tags"}
 	}
 
 	return nil
