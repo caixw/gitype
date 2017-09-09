@@ -109,7 +109,7 @@ func (conf *config) sanitize() *FieldError {
 		return &FieldError{Message: "不能为空", Field: "shortDateFormat"}
 	}
 
-	t, err := vars.ParseDate(conf.UptimeFormat)
+	t, err := time.Parse(vars.DateFormat, conf.UptimeFormat)
 	if err != nil {
 		return &FieldError{Message: err.Error(), Field: "uptimeFormat"}
 	}

@@ -132,7 +132,7 @@ func loadPost(path *vars.Path, slug string) (*Post, error) {
 
 	// created
 	// permalink 还用作其它功能，需要首先解析其值
-	created, err := vars.ParseDate(post.Permalink)
+	created, err := time.Parse(vars.DateFormat, post.Permalink)
 	if err != nil {
 		return nil, &FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "created"}
 	}
@@ -143,7 +143,7 @@ func loadPost(path *vars.Path, slug string) (*Post, error) {
 
 	// modified
 	// outdated 还用作其它功能，需要首先解析其值
-	modified, err := vars.ParseDate(post.Outdated)
+	modified, err := time.Parse(vars.DateFormat, post.Outdated)
 	if err != nil {
 		return nil, &FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "modified"}
 	}

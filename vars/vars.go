@@ -8,9 +8,6 @@ package vars
 import "time"
 
 const (
-	// 主版本号，符合 semver 规范
-	mainVersion = "1.4.7"
-
 	// AppName 程序名称
 	AppName = "typing"
 
@@ -42,30 +39,3 @@ const (
 	ContentTypeRSS        = "application/rss+xml"
 	ContentTypeOpensearch = "application/opensearchdescription+xml"
 )
-
-var (
-	buildDate  string
-	commitHash string
-	version    = mainVersion
-)
-
-func init() {
-	if len(buildDate) > 0 {
-		version += "+" + buildDate
-	}
-}
-
-// Version 获取完整的版本号
-func Version() string {
-	return version
-}
-
-// CommitHash 获取最后一条代码提交记录的 hash 值。
-func CommitHash() string {
-	return commitHash
-}
-
-// ParseDate 分析时间字符串，将其转换成 unix 时间戳
-func ParseDate(format string) (time.Time, error) {
-	return time.Parse(DateFormat, format)
-}

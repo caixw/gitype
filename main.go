@@ -8,7 +8,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	"runtime"
 
 	"github.com/caixw/typing/app"
@@ -32,14 +31,13 @@ func main() {
 		printVersion()
 		return
 	case len(*init) > 0:
-		runInit(*init)
+		runInit(*init) // *init 指向的目录不存在时，会尝试创建
 		return
 	}
 
 	path := vars.NewPath(*appdir)
 
-	err := logs.InitFromXMLFile(path.LogsConfigFile)
-	if err != nil {
+	if err := logs.InitFromXMLFile(path.LogsConfigFile); err != nil {
 		panic(err)
 	}
 
@@ -56,7 +54,7 @@ func usage() {
 }
 
 func printVersion() {
-	fmt.Printf("%s:%s build with %s\n", vars.AppName, vars.Version(), runtime.Version())
+	fmt.Printf("%s %s build with %s\n", vars.AppName, vars.Version(), runtime.Version())
 	if len(vars.CommitHash()) > 0 {
 		fmt.Printf("Git commit hash:%s\n", vars.CommitHash())
 	}
@@ -64,7 +62,7 @@ func printVersion() {
 
 func runInit(root string) {
 	if err := app.Init(vars.NewPath(root)); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		panic(err)
 	}
 
 	fmt.Printf("操作成功，你现在可以在 %s 中修改具体的参数配置！\n", root)
