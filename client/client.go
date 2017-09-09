@@ -15,7 +15,8 @@ import (
 	"github.com/issue9/mux"
 )
 
-// Client 处理用户请求
+// Client 包含了整个可动态加载的数据以及路由的相关操作。
+// 当需要重新加载数据时，只要获取一个新的 Client 实例即可。
 type Client struct {
 	path     *vars.Path
 	data     *data.Data
