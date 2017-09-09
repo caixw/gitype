@@ -14,7 +14,6 @@ import (
 	"github.com/issue9/logs"
 	"github.com/issue9/middleware/compress"
 	"github.com/issue9/mux"
-	"github.com/issue9/mux/params"
 )
 
 func (client *Client) initRoutes() (err error) {
@@ -44,21 +43,23 @@ func (client *Client) initRoutes() (err error) {
 // 文章详细页
 // /posts/{slug}.html
 func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
-	id, found := client.paramString(w, r, "slug")
-	if !found {
+	slug, err := mux.Params(r).String("slug")
+	if err != nil {
+		logs.Error(err)
+		client.getAsset(w, r)
 		return
 	}
 
 	var index int
 	for i, p := range client.data.Posts {
-		if p.Slug == id {
+		if p.Slug == slug {
 			index = i
 			break
 		}
 	}
 
 	if index < 0 {
-		logs.Debugf("并未找到与之相对应的文章:%s", id)
+		logs.Debugf("并未找到与之相对应的文章：%s", slug)
 		client.getRaws(w, r) // 文章不存在，则查找 raws 目录下是否存在同名文件
 		return
 	}
@@ -127,8 +128,10 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 // 标签详细页
 // /tags/tag1.html?page=2
 func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
-	slug, ok := client.paramString(w, r, "slug")
-	if !ok {
+	slug, err := mux.Params(r).String("slug")
+	if err != nil {
+		logs.Error(err)
+		client.getRaws(w, r)
 		return
 	}
 
@@ -245,27 +248,6 @@ func (client *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Content-Language", client.data.Config.Language)
 		compress.New(f, logs.ERROR()).ServeHTTP(w, r)
 	}
-}
-
-// 获取路径匹配中的参数，并以字符串的格式返回。
-// 若不能找到该参数，返回 false
-func (client *Client) paramString(w http.ResponseWriter, r *http.Request, key string) (string, bool) {
-	ps := mux.Params(r)
-	val, err := ps.String(key)
-
-	if err == params.ErrParamNotExists {
-		client.renderError(w, http.StatusNotFound)
-		return "", false
-	} else if err != nil {
-		logs.Error(err)
-		client.renderError(w, http.StatusNotFound)
-		return "", false
-	} else if len(val) == 0 {
-		client.renderError(w, http.StatusNotFound)
-		return "", false
-	}
-
-	return val, true
 }
 
 // 获取查询参数 key 的值，并将其转换成 Int 类型，若该值不存在返回 def 作为其默认值，

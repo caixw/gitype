@@ -11,6 +11,7 @@ import (
 
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
+	"github.com/issue9/mux"
 	"github.com/issue9/utils"
 )
 
@@ -36,8 +37,10 @@ func isIgnoreThemeFile(file string) bool {
 // 资源内容
 // /posts/{path}
 func (client *Client) getAsset(w http.ResponseWriter, r *http.Request) {
-	path, found := client.paramString(w, r, "path")
-	if !found {
+	path, err := mux.Params(r).String("path")
+	if err != nil {
+		logs.Error(err)
+		client.getRaws(w, r)
 		return
 	}
 
@@ -78,8 +81,10 @@ func (client *Client) getThemes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path, found := client.paramString(w, r, "path")
-	if !found {
+	path, err := mux.Params(r).String("path")
+	if err != nil {
+		logs.Error(err)
+		client.getRaws(w, r)
 		return
 	}
 
