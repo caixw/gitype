@@ -25,7 +25,7 @@ func TestLoadLinks(t *testing.T) {
 	a.Equal(links[1].URL, "url1")
 }
 
-func TestOutdated_sanitize(t *testing.T) {
+func TestOutdatedConfig_sanitize(t *testing.T) {
 	a := assert.New(t)
 	o := &outdatedConfig{}
 

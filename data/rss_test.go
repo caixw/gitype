@@ -10,7 +10,7 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestRSS_sanitize(t *testing.T) {
+func TestRSSConfig_sanitize(t *testing.T) {
 	a := assert.New(t)
 
 	rss := &rssConfig{}

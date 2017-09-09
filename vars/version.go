@@ -5,7 +5,7 @@
 package vars
 
 // 主版本号，符合 semver 规范
-const mainVersion = "1.4.8"
+const mainVersion = "1.4.9"
 
 var (
 	buildDate  string

@@ -92,7 +92,7 @@ func Init(path *vars.Path) error {
 		return err
 	}
 
-	return nil
+	return initPosts(path)
 }
 
 // 初始化 data/meta 目录下的数据
