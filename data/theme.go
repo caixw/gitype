@@ -20,13 +20,13 @@ import (
 
 // Theme 表示主题信息
 type Theme struct {
-	ID          string  `yaml:"-"`           // 主题的唯一 ID，即当前目录名称
-	Name        string  `yaml:"name"`        // 主题名称
-	URL         string  `yaml:"url"`         // 网站
-	Version     string  `yaml:"version"`     // 主题的版本号
-	Description string  `yaml:"description"` // 主题的描述信息
-	Author      *Author `yaml:"author"`      // 作者
-	Path        string  `yaml:"-"`           // 主题所在的目录
+	ID          string  `yaml:"-"`    // 唯一 ID，即当前目录名称
+	Name        string  `yaml:"name"` // 名称，不必唯一，可以与 ID 值不同。
+	URL         string  `yaml:"url"`  // 网站
+	Version     string  `yaml:"version"`
+	Description string  `yaml:"description"`
+	Author      *Author `yaml:"author"`
+	Path        string  `yaml:"-"` // 所在的目录，绝对路径
 }
 
 func loadThemes(path *vars.Path) ([]*Theme, error) {

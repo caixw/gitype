@@ -53,7 +53,7 @@ type Post struct {
 	Content    string    `yaml:"-"`               // 内容
 	TagsString string    `yaml:"tags"`            // 关联标签的列表
 	Permalink  string    `yaml:"created"`         // 文章的唯一链接，同时当作 created 的原始值
-	Outdated   string    `yaml:"modified"`        // 已过时文章的提示信息，这是一个动态的值，不能提前计算，同时当作 modified 的原始值
+	Outdated   string    `yaml:"modified"`        // 已过时文章的提示信息，同时当作 modified 的原始值
 	Order      string    `yaml:"order,omitempty"` // 排序方式
 
 	// 以下内容不存在时，则会使用全局的默认选项

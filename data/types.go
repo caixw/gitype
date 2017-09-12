@@ -11,12 +11,12 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// Feed RSS、Atom、Sitempa 和 Opensearch 的配置内容
+// Feed RSS、Atom、Sitemap 和 Opensearch 的配置内容
 type Feed struct {
 	Title   string // 标题，一般出现在 html>head>link.title 属性中
 	URL     string // 地址，不能包含域名
-	Type    string // mimeType
-	Content []byte // 的实际内容
+	Type    string // mime type
+	Content []byte // 实际的内容
 }
 
 // Author 描述作者信息
@@ -30,7 +30,7 @@ type Author struct {
 // Link 描述链接的内容
 type Link struct {
 	// 链接对应的图标名称，fontawesome 图标名称，不用带 fa- 前缀。
-	// 也有可能是链接，模板根据情况自动选择。
+	// 也有可能是图片链接，模板根据情况自动选择。
 	Icon  string `yaml:"icon,omitempty"`
 	Title string `yaml:"title,omitempty"` // 链接的 title 属性
 	Rel   string `yaml:"rel,omitempty"`   // 链接的 rel 属性
@@ -38,7 +38,7 @@ type Link struct {
 	Text  string `yaml:"text"`            // 链接的文本
 }
 
-// Icon 表示程序图标
+// Icon 表示网站图标，比如 html>head>link.rel="short icon"
 type Icon struct {
 	URL   string `yaml:"url"`
 	Type  string `yaml:"type"` // mime type

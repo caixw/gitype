@@ -55,6 +55,7 @@ func usage() {
 
 func printVersion() {
 	fmt.Printf("%s %s build with %s\n", vars.Name, vars.Version(), runtime.Version())
+
 	if len(vars.CommitHash()) > 0 {
 		fmt.Printf("Git commit hash:%s\n", vars.CommitHash())
 	}
