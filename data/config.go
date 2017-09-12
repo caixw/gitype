@@ -14,7 +14,7 @@ import (
 	"github.com/issue9/is"
 )
 
-// Config 配置信息
+// Config 配置信息，相对于 config，去掉部分临时性的变量，供 Data 对外公开用。
 type Config struct {
 	Title           string    // 网站标题
 	Language        string    // 语言标记，比如 zh-cmn-Hans
@@ -34,6 +34,7 @@ type Config struct {
 	License         *Link     // 默认版权信息
 }
 
+// 配置信息，用于从文件中读取
 type config struct {
 	Title           string    `yaml:"title"`
 	Language        string    `yaml:"language"`

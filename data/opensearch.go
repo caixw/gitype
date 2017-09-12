@@ -22,7 +22,7 @@ type opensearchConfig struct {
 	Image       *Icon  `yaml:"image,omitempty"`
 }
 
-// 用于生成一个符合 atom 规范的 XML 文本。
+// 用于生成一个符合 opensearch 规范的 XML 文本。
 func (d *Data) buildOpensearch(conf *config) error {
 	if conf.Opensearch == nil {
 		return nil

@@ -11,6 +11,7 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
+// RSS 和 Atom 相关的配置项
 type rssConfig struct {
 	Title string `yaml:"title"`
 	URL   string `yaml:"url"`
@@ -18,7 +19,7 @@ type rssConfig struct {
 	Size  int    `yaml:"size"` // 显示数量
 }
 
-// 生成一个符合 rss 规范的 XML 文本。
+// 生成一个符合 RSS 规范的 XML 文本。
 func (d *Data) buildRSS(conf *config) error {
 	if conf.RSS == nil {
 		return nil
