@@ -72,12 +72,12 @@ func loadTheme(path *vars.Path, id string) (*Theme, error) {
 	theme.ID = id
 
 	if len(theme.Name) == 0 {
-		return nil, &helper.FieldError{File: theme.Path, Message: "不能为空", Field: "name"}
+		return nil, &helper.FieldError{File: path.ThemeMetaPath(theme.ID), Message: "不能为空", Field: "name"}
 	}
 
 	if theme.Author != nil {
 		if err := theme.Author.sanitize(); err != nil {
-			err.Field = theme.Path
+			err.Field = path.ThemeMetaPath(theme.ID)
 			return nil, err
 		}
 	}
