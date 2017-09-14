@@ -23,6 +23,13 @@ Disallow:/themes/`
 var defaultPostContent = `<section>about
 </section>`
 
+var defaultTheme = &Theme{
+	Name:        "default",
+	Version:     "0.1",
+	Description: "默认主题",
+	URL:         vars.URL,
+}
+
 var defaultPostMeta = &Post{
 	Title:      "about",
 	TagsString: "default",
@@ -92,7 +99,11 @@ func Init(path *vars.Path) error {
 		return err
 	}
 
-	return initPosts(path)
+	if err := initPosts(path); err != nil {
+		return err
+	}
+
+	return initThemes(path)
 }
 
 // 初始化 data/meta 目录下的数据
@@ -129,6 +140,7 @@ func initRaws(path *vars.Path) error {
 	return helper.DumpTextFile(path.RawsPath("robots.txt"), defaultRobots)
 }
 
+// 初始化 data/posts 目录下数据
 func initPosts(p *vars.Path) error {
 	slug := path.Join(strconv.Itoa(time.Now().Year()), "about")
 
@@ -145,4 +157,15 @@ func initPosts(p *vars.Path) error {
 
 	// content.html
 	return helper.DumpTextFile(p.PostContentPath(slug), defaultPostContent)
+}
+
+// 初始化 data/themes 目录
+func initThemes(path *vars.Path) error {
+	if !utils.FileExists(path.ThemesDir) {
+		if err := os.Mkdir(path.ThemesDir, os.ModePerm); err != nil {
+			return err
+		}
+	}
+
+	return helper.DumpYAMLFile(path.ThemeMetaPath("default"), defaultTheme)
 }
