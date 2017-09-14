@@ -215,3 +215,15 @@ func sortPosts(posts []*Post) {
 		}
 	})
 }
+
+func (o *outdatedConfig) sanitize() *helper.FieldError {
+	if o.Type != outdatedTypeCreated && o.Type != outdatedTypeModified {
+		return &helper.FieldError{Message: "无效的值", Field: "outdated.type"}
+	}
+
+	if len(o.Content) == 0 {
+		return &helper.FieldError{Message: "不能为空", Field: "outdated.content"}
+	}
+
+	return nil
+}

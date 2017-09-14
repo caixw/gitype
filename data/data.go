@@ -199,10 +199,15 @@ func (d *Data) Outdated(post *Post) {
 	now := time.Now()
 	var outdated time.Duration
 
-	if d.outdated.Type == outdatedTypeCreated {
+	switch d.outdated.Type {
+	case outdatedTypeCreated:
 		outdated = now.Sub(post.Created)
-	} else {
+	case outdatedTypeModified:
 		outdated = now.Sub(post.Modified)
+	default:
+		// 理论上此段代码永远不会运行，除非代码中直接修改了 Data.outdated.type 的值，
+		// 因为在 outdatedConfig.sanitize 中已经作了判断。
+		panic("无效的 config.yaml/outdated.type")
 	}
 
 	if outdated >= d.outdated.Duration {

@@ -49,6 +49,8 @@ func (d *Data) buildArchives(conf *config) error {
 			date = time.Date(t.Year(), t.Month(), 2, 0, 0, 0, 0, t.Location())
 		case archiveTypeYear:
 			date = time.Date(t.Year(), 2, 0, 0, 0, 0, 0, t.Location())
+		default:
+			return &helper.FieldError{File: d.path.AppConfigFile, Field: "archive.type", Message: "无效的取值"}
 		}
 
 		found := false
