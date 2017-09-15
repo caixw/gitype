@@ -26,6 +26,8 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 
 *./scripts 目录下包含了部分平台下的转换成守护进程的脚本*
 
+*./testdata 也是一个完整的工作目录，如果不想执行 `-init` 命令初始化的话，也可以直接复制 ./testdata 的内容。*
+
 
 
 ### 目录结构
