@@ -13,7 +13,7 @@ import (
 
 func TestLoad(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("./testdata")
+	p := vars.NewPath("../testdata")
 	d, err := Load(p)
 	a.NotError(err).NotNil(d)
 

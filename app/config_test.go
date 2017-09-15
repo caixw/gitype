@@ -14,7 +14,7 @@ import (
 
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("./testdata/")
+	p := vars.NewPath("../testdata/")
 
 	conf, err := loadConfig(p)
 	a.NotError(err).NotNil(conf)

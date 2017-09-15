@@ -15,7 +15,7 @@ import (
 	"github.com/issue9/utils"
 )
 
-// 从 app/testdata/conf.logs.xml 而来
+// 从 /testdata/conf.logs.xml 而来
 var defaultLogsXML = `<?xml version="1.0" encoding="utf-8" ?>
 <logs>
     <info prefix="[INFO]" flag="">

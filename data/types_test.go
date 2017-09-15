@@ -13,7 +13,7 @@ import (
 
 func TestLoadLinks(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("./testdata")
+	p := vars.NewPath("../testdata")
 
 	links, err := loadLinks(p)
 	a.NotError(err).NotNil(links)

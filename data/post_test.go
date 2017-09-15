@@ -27,7 +27,7 @@ func TestCheckPostsDup(t *testing.T) {
 
 func TestLoadPost(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("./testdata")
+	p := vars.NewPath("../testdata")
 
 	post, err := loadPost(p, "/post1")
 	a.NotError(err).NotNil(post)
@@ -44,7 +44,7 @@ func TestLoadPost(t *testing.T) {
 
 func TestLoadPosts(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("./testdata")
+	p := vars.NewPath("../testdata")
 
 	posts, err := loadPosts(p)
 	a.NotError(err).NotNil(posts)

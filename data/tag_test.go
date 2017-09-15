@@ -26,7 +26,7 @@ func TestSplitTags(t *testing.T) {
 
 func TestLoadTags(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("./testdata")
+	p := vars.NewPath("../testdata")
 
 	tags, err := loadTags(p)
 	a.NotError(err).NotNil(tags)

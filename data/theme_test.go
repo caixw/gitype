@@ -13,7 +13,7 @@ import (
 
 func TestLoadThemes(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("./testdata")
+	p := vars.NewPath("../testdata")
 
 	ts, err := loadThemes(p)
 	a.NotError(err).NotNil(ts).Equal(len(ts), 2)
@@ -25,7 +25,7 @@ func TestLoadThemes(t *testing.T) {
 
 func TestLoadTheme(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("./testdata")
+	p := vars.NewPath("../testdata")
 
 	theme, err := loadTheme(p, "t1")
 	a.NotError(err).NotNil(theme)

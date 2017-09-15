@@ -31,5 +31,5 @@ _testmain.go
 
 # app
 typing
-testdata/*
 .vscode
+testdata/logs/*
