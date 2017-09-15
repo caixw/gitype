@@ -50,7 +50,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var index int
+	index := -1
 	for i, p := range client.data.Posts {
 		if p.Slug == slug {
 			index = i
