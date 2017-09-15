@@ -23,8 +23,8 @@ const (
 	// TemplateExtension 模板的扩展名
 	TemplateExtension = ".html"
 
-	// DefaultPostTemplateName 默认的文章模板名称
-	DefaultPostTemplateName = "post"
+	// PostTemplateName 默认的文章模板名称
+	PostTemplateName = "post"
 )
 
 // 默认的 mime type 类型。
@@ -38,4 +38,10 @@ const (
 	ContentTypeAtom       = "application/atom+xml"
 	ContentTypeRSS        = "application/rss+xml"
 	ContentTypeOpensearch = "application/opensearchdescription+xml"
+)
+
+// 一些默认的字面文本内容。
+const (
+	NextPageText = "下一页"
+	PrevPageText = "上一页"
 )

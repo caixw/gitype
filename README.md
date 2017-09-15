@@ -23,7 +23,7 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 1. 执行 `typing -init=to_path` 输出初始的数据内容；
 1. 运行 `typing -appdir=to_path`。
 
-*./script 目录下包含了部分平台下的转换成守护进程的脚本*
+*./scripts 目录下包含了部分平台下的转换成守护进程的脚本*
 
 
 

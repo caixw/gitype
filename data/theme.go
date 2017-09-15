@@ -111,7 +111,7 @@ func (d *Data) compileTemplate() error {
 // 检测模板名称是否在模板中真实存在
 func (d *Data) checkTemplatesExists() error {
 	var templates = []string{
-		vars.DefaultPostTemplateName,
+		vars.PostTemplateName,
 		"posts",
 		"tags",
 		"tag",
@@ -123,7 +123,7 @@ func (d *Data) checkTemplatesExists() error {
 	// 获取文章详情页中的新模板名
 	for _, post := range d.Posts {
 		// 默认模板名，肯定已存在于 templates 变量中
-		if post.Template == vars.DefaultPostTemplateName {
+		if post.Template == vars.PostTemplateName {
 			continue
 		}
 

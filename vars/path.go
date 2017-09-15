@@ -32,7 +32,7 @@ const (
 	rawsDir   = "raws"
 )
 
-// Path 表示文件的路径信息
+// Path 表示 typing 的目录结构信息，这些目录结构大部分是固定的。
 type Path struct {
 	Root string // 项目的根目录，即 -appdir 参数指定的目录
 

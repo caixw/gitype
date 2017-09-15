@@ -154,7 +154,7 @@ func (client *Client) page(typ string) *page {
 
 func (p *page) nextPage(url, text string) {
 	if len(text) == 0 {
-		text = "下一页"
+		text = vars.NextPageText
 	}
 
 	p.NextPage = &data.Link{
@@ -166,7 +166,7 @@ func (p *page) nextPage(url, text string) {
 
 func (p *page) prevPage(url, text string) {
 	if len(text) == 0 {
-		text = "上一页"
+		text = vars.PrevPageText
 	}
 
 	p.PrevPage = &data.Link{
