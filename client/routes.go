@@ -90,7 +90,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 
 // 首页及文章列表页
 // /
-// /posts.html?page=2
+// /index.html?page=2
 func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	page, ok := client.queryInt(w, r, "page", 1)
 	if !ok {
