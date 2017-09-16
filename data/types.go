@@ -37,6 +37,7 @@ type Link struct {
 	Rel   string `yaml:"rel,omitempty"`   // 链接的 rel 属性
 	URL   string `yaml:"url"`             // 链接地址
 	Text  string `yaml:"text"`            // 链接的文本
+	Type  string `yaml:"type,omitempty"`  // 链接的类型，一般用于 a 和 link 标签的 type 属性
 }
 
 // Icon 表示网站图标，比如 html>head>link.rel="short icon"

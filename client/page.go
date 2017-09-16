@@ -123,15 +123,27 @@ func (client *Client) newInfo() *info {
 	}
 
 	if d.RSS != nil {
-		info.RSS = &data.Link{Title: d.RSS.Title, URL: d.RSS.URL}
+		info.RSS = &data.Link{
+			Title: d.RSS.Title,
+			URL:   d.RSS.URL,
+			Type:  d.RSS.Type,
+		}
 	}
 
 	if d.Atom != nil {
-		info.Atom = &data.Link{Title: d.Atom.Title, URL: d.Atom.URL}
+		info.Atom = &data.Link{
+			Title: d.Atom.Title,
+			URL:   d.Atom.URL,
+			Type:  d.Atom.Type,
+		}
 	}
 
 	if d.Opensearch != nil {
-		info.Opensearch = &data.Link{Title: d.Opensearch.Title, URL: d.Opensearch.URL}
+		info.Opensearch = &data.Link{
+			Title: d.Opensearch.Title,
+			URL:   d.Opensearch.URL,
+			Type:  d.Opensearch.Type,
+		}
 	}
 
 	return info
