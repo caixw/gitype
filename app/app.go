@@ -61,9 +61,7 @@ func Run(path *vars.Path) error {
 		return http.ListenAndServe(a.conf.Port, h)
 	}
 
-	go func() { // 对 80 端口的处理方式
-		serveHTTP(a)
-	}()
+	go serveHTTP(a) // 对 80 端口的处理方式
 	return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, h)
 }
 
@@ -94,8 +92,7 @@ func (a *app) buildPprof(h http.Handler) http.Handler {
 			return
 		}
 
-		path := r.URL.Path[len(debugPprof):]
-		switch path {
+		switch r.URL.Path[len(debugPprof):] {
 		case "cmdline":
 			pprof.Cmdline(w, r)
 		case "profile":
