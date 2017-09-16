@@ -7,15 +7,13 @@ package data
 import (
 	"testing"
 
-	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
 
 func TestLoadThemes(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("../testdata")
 
-	ts, err := loadThemes(p)
+	ts, err := loadThemes(testdataPath)
 	a.NotError(err).NotNil(ts).Equal(len(ts), 2)
 
 	// 排序是否正常
@@ -25,9 +23,8 @@ func TestLoadThemes(t *testing.T) {
 
 func TestLoadTheme(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("../testdata")
 
-	theme, err := loadTheme(p, "t1")
+	theme, err := loadTheme(testdataPath, "t1")
 	a.NotError(err).NotNil(theme)
 
 	a.Equal(theme.Name, "name")

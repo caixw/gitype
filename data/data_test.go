@@ -11,10 +11,11 @@ import (
 	"github.com/issue9/assert"
 )
 
+var testdataPath = vars.NewPath("../testdata")
+
 func TestLoad(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("../testdata")
-	d, err := Load(p)
+	d, err := Load(testdataPath)
 	a.NotError(err).NotNil(d)
 
 	a.Equal(len(d.Posts), 2)

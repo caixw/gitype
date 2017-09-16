@@ -7,15 +7,13 @@ package data
 import (
 	"testing"
 
-	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
 
 func TestLoadLinks(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("../testdata")
 
-	links, err := loadLinks(p)
+	links, err := loadLinks(testdataPath)
 	a.NotError(err).NotNil(links)
 
 	a.True(len(links) > 0)
