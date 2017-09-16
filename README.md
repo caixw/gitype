@@ -1,5 +1,6 @@
 typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](https://travis-ci.org/caixw/typing)
 [![Go version](https://img.shields.io/badge/Go-1.8-brightgreen.svg?style=flat)](https://golang.org)
+[![Go Report Card](https://goreportcard.com/badge/github.com/caixw/typing)](https://goreportcard.com/report/github.com/caixw/typing)
 ======
 
 基于 Git 的博客系统，具有以下特性：

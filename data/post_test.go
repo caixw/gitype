@@ -15,9 +15,9 @@ func TestCheckPostsDup(t *testing.T) {
 	a := assert.New(t)
 
 	posts := []*Post{
-		&Post{Slug: "1"},
-		&Post{Slug: "2"},
-		&Post{Slug: "3"},
+		{Slug: "1"},
+		{Slug: "2"},
+		{Slug: "3"},
 	}
 	a.NotError(checkPostsDup(posts))
 

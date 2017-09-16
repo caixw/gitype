@@ -65,18 +65,18 @@ var defaultConfig = &config{
 }
 
 var defaultLinks = []*Link{
-	&Link{
+	{
 		Text: vars.Name,
 		URL:  vars.URL,
 	},
-	&Link{
+	{
 		Text: "caixw",
 		URL:  "https://caixw.io",
 	},
 }
 
 var defaultTags = []*Tag{
-	&Tag{
+	{
 		Title: "默认",
 		Slug:  "default",
 	},

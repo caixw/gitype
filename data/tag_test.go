@@ -14,10 +14,10 @@ import (
 func TestSplitTags(t *testing.T) {
 	a := assert.New(t)
 	tags := []*Tag{
-		&Tag{Slug: "1", Series: true},
-		&Tag{Slug: "2", Series: false},
-		&Tag{Slug: "3", Series: false},
-		&Tag{Slug: "4", Series: true},
+		{Slug: "1", Series: true},
+		{Slug: "2", Series: false},
+		{Slug: "3", Series: false},
+		{Slug: "4", Series: true},
 	}
 
 	ts, series := splitTags(tags)
@@ -42,9 +42,9 @@ func TestCheckTagsDup(t *testing.T) {
 	a := assert.New(t)
 
 	tags := []*Tag{
-		&Tag{Slug: "1"},
-		&Tag{Slug: "2"},
-		&Tag{Slug: "3"},
+		{Slug: "1"},
+		{Slug: "2"},
+		{Slug: "3"},
 	}
 	a.NotError(checkTagsDup(tags))
 

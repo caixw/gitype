@@ -22,7 +22,7 @@ func TestIsIgnoreThemeFile(t *testing.T) {
 
 func TestGetAsset(t *testing.T) {
 	testers := []*httpTester{
-		&httpTester{
+		{
 			path:    "/posts/folder/post2/assets/assets.txt",
 			content: "assets.txt\n",
 			status:  http.StatusOK,
@@ -30,19 +30,19 @@ func TestGetAsset(t *testing.T) {
 
 		// content.html
 		// 此条会优先匹配 getPost，然后跳转到 getRaw
-		&httpTester{
+		{
 			path:   "/posts/folder/post2/content.html",
 			status: http.StatusNotFound,
 		},
 
 		// meta.yaml
-		&httpTester{
+		{
 			path:   "/posts/folder/post2/meta.yaml",
 			status: http.StatusNotFound,
 		},
 
 		// 跳转到 getRaws
-		&httpTester{
+		{
 			path:    "/posts/folder/post2/raws.txt",
 			content: "raws.txt\n",
 			status:  http.StatusOK,
@@ -54,26 +54,26 @@ func TestGetAsset(t *testing.T) {
 
 func TestGetTheme(t *testing.T) {
 	testers := []*httpTester{
-		&httpTester{
+		{
 			path:    "/themes/t1/style.css",
 			content: "*{}\n",
 			status:  http.StatusOK,
 		},
 
 		// 模板文件
-		&httpTester{
+		{
 			path:   "/themes/t1/template.html",
 			status: http.StatusNotFound,
 		},
 
 		// theme.yaml
-		&httpTester{
+		{
 			path:   "/themes/t1/theme.yaml",
 			status: http.StatusNotFound,
 		},
 
 		// 跳转到 getRaws
-		&httpTester{
+		{
 			path:    "/themes/t1/raws.txt",
 			content: "raws.txt\n",
 			status:  http.StatusOK,
@@ -85,13 +85,13 @@ func TestGetTheme(t *testing.T) {
 
 func TestGetRaws(t *testing.T) {
 	testers := []*httpTester{
-		&httpTester{
+		{
 			path:    "/raws.txt",
 			content: "raws.txt\n",
 			status:  http.StatusOK,
 		},
 
-		&httpTester{
+		{
 			path:   "/not-exists.txt",
 			status: http.StatusNotFound,
 		},
