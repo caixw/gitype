@@ -9,7 +9,6 @@
 package app
 
 import (
-	"html/template"
 	"net/http"
 	"net/http/pprof"
 	"strings"
@@ -24,11 +23,10 @@ import (
 const debugPprof = "/debug/pprof/"
 
 type app struct {
-	path     *vars.Path
-	mux      *mux.Mux
-	conf     *config
-	adminTpl *template.Template // 后台管理的模板页面。
-	client   *client.Client
+	path   *vars.Path
+	mux    *mux.Mux
+	conf   *config
+	client *client.Client
 }
 
 // Run 运行程序
