@@ -1,3 +1,5 @@
+# Systemd 启动脚本
+
 [Unit]
 Description=typing daemon
 After=network.target
