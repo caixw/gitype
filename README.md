@@ -197,7 +197,7 @@ image       | Icon        | image 值
 type        | string      | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
 
 
-Icon
+###### Icon
 
 名称      | 类型        | 描述
 :---------|:------------|:----------
@@ -205,19 +205,23 @@ type      | string      | 图标的 mimetype
 sizes     | string      | 图标的大小
 url       | string      | 图标地址
 
-
-
-##### meta/links.yaml
-
-links.yaml 用于指定友情链接，为一个数组。每个元素包含以下字段：
+###### Link
 
 名称      | 类型        | 描述
 :---------|:------------|:----------
 text      | string      | 字面文字，可以不唯一
 url       | string      | 对应的链接地址
 title     | string      | a 标签的 title 属性。可以为空
-icon      | string      | 一个 URL
+icon      | string      | 一个 URL 或是 fontawesome 图标名称
 rel       | string      | 与该网站的关系，可用 [XFN](https://gmpg.org/xfn/) 的相关定义
+type      | string      | 指向内容的类型
+
+
+
+##### meta/links.yaml
+
+links.yaml 用于指定友情链接，为一个数组。每个元素均为一个 `Link`。
+
 
 
 ##### meta/tags.yaml
