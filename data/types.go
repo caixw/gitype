@@ -9,6 +9,7 @@ import (
 
 	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
+	"github.com/issue9/is"
 )
 
 // Feed RSS、Atom、Sitemap 和 Opensearch 的配置内容
@@ -85,6 +86,18 @@ func (link *Link) sanitize() *helper.FieldError {
 func (author *Author) sanitize() *helper.FieldError {
 	if len(author.Name) == 0 {
 		return &helper.FieldError{Field: "name", Message: "不能为空"}
+	}
+
+	if len(author.URL) > 0 && !is.URL(author.URL) {
+		return &helper.FieldError{Field: "url", Message: "不是一个正确的 URL"}
+	}
+
+	if len(author.Avatar) > 0 && !is.URL(author.Avatar) {
+		return &helper.FieldError{Field: "avatar", Message: "不是一个正确的 URL"}
+	}
+
+	if len(author.Email) > 0 && !is.Email(author.Email) {
+		return &helper.FieldError{Field: "email", Message: "不是一个正确的 Email"}
 	}
 
 	return nil

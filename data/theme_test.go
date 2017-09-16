@@ -31,7 +31,7 @@ func TestLoadTheme(t *testing.T) {
 	a.NotError(err).NotNil(theme)
 
 	a.Equal(theme.Name, "name")
-	a.Equal(theme.Author.Name, "name")
+	a.Equal(theme.Author.Name, "caixw")
 }
 
 func TestStripTags(t *testing.T) {

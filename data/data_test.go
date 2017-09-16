@@ -22,7 +22,7 @@ func TestLoad(t *testing.T) {
 	// theme
 	a.Equal(len(d.Themes), 2)
 	a.Equal(d.Theme.ID, "t1")
-	a.Equal(d.Theme.Author.Name, "name")
+	a.Equal(d.Theme.Author.Name, "caixw")
 
 	// feed
 	a.Equal(d.Opensearch.URL, "/opensearch.xml")

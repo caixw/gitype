@@ -10,7 +10,7 @@ shortDateFormat: 2006
 theme: t1
 author:
   name: name
-  email: aaa
+  email: test@example.com
 menus:
   - url: url1
     title: title1

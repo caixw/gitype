@@ -4,5 +4,5 @@ version: 1.0
 screenshot: screenshot.jpg
 author:
     name: name
-    email: email
-    url: url
+    email: email@example.com
+    url: https://caixw.io

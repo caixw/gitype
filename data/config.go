@@ -132,8 +132,9 @@ func (conf *config) sanitize() *helper.FieldError {
 	if conf.Author == nil {
 		return &helper.FieldError{Message: "必须指定作者", Field: "author"}
 	}
-	if len(conf.Author.Name) == 0 {
-		return &helper.FieldError{Message: "不能为空", Field: "author.name"}
+	if err := conf.Author.sanitize(); err != nil {
+		err.Field = "author." + err.Field
+		return err
 	}
 
 	if len(conf.Title) == 0 {
