@@ -15,7 +15,13 @@ import (
 	"github.com/issue9/utils"
 )
 
-const httpPort = ":80"
+// 输出调试内容的地址，地址值固定，不能修改。
+const debugPprof = "/debug/pprof/"
+
+const (
+	httpPort  = ":80"
+	httpsPort = ":443"
+)
 
 const (
 	httpStateDefault  = "default"
@@ -24,18 +30,36 @@ const (
 )
 
 type config struct {
-	HTTPS     bool              `yaml:"https"`
-	HTTPState string            `yaml:"httpState"` // 对 80 端口的处理方式，可以 disable, redirect, default
-	CertFile  string            `yaml:"certFile"`
-	KeyFile   string            `yaml:"keyFile"`
-	Port      string            `yaml:"port"`
-	Pprof     bool              `yaml:"pprof"`
-	Headers   map[string]string `yaml:"headers"`
-	Webhook   *webhook          `yaml:"webhook"`
+	// 是否启用 HTTPS 模式。如果启用了，则需要正确设置以下几个值：
+	// HTTPState、CertFile、KeyFile
+	HTTPS bool `yaml:"https"`
 
-	// 绑定的域名，若指定了该值，则只有这些域名才能正常访问。
-	// 可以为空，表示不限定域名。
+	// 当启用 HTTPS 且端口不为 80 时，对 80 端口的处理方式。
+	// disable 表示禁用 80 端口；
+	// default 默认方式，即和当前的处理方式相同；
+	// redirect 跳转到当前端口；
+	HTTPState string `yaml:"httpState"`
+
+	CertFile string `yaml:"certFile"`
+
+	KeyFile string `yaml:"keyFile"`
+
+	// 监听的端口，需要带前缀冒号(:)，不指定时，
+	// 根据 HTTPS 的值，默认为 :80 或是 :443
+	Port string `yaml:"port,omitempty"`
+
+	// 是否启用 Web 调试接口，地址固定为 /debug/pprof/
+	Pprof bool `yaml:"pprof"`
+
+	// 绑定的域名，若指定了该值，则只能通过这些域名才能访问网站。
+	// 为空表示不作限制。
 	Domains []string `yaml:"domains,omitempty"`
+
+	// Headers 用于指定一些返回给客户端的固定报头内容。
+	// 其中键名表示报头名称，键值表示报头的值。
+	Headers map[string]string `yaml:"headers"`
+
+	Webhook *webhook `yaml:"webhook"`
 }
 
 type webhook struct {
@@ -77,6 +101,14 @@ func (w *webhook) sanitize() *helper.FieldError {
 }
 
 func (conf *config) sanitize() *helper.FieldError {
+	if len(conf.Port) == 0 {
+		if conf.HTTPS {
+			conf.Port = httpsPort
+		} else {
+			conf.Port = httpPort
+		}
+	}
+
 	switch {
 	case conf.HTTPS &&
 		conf.HTTPState != httpStateDefault &&
