@@ -6,10 +6,12 @@ package app
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
+	"github.com/issue9/is"
 	"github.com/issue9/utils"
 )
 
@@ -89,6 +91,14 @@ func (conf *config) sanitize() *helper.FieldError {
 		return &helper.FieldError{Field: "certFile", Message: "不能为空"}
 	case conf.HTTPS && !utils.FileExists(conf.KeyFile):
 		return &helper.FieldError{Field: "keyFile", Message: "不能为空"}
+	}
+
+	if len(conf.Domains) > 0 {
+		for index, domain := range conf.Domains {
+			if !is.URL(domain) {
+				return &helper.FieldError{Field: "domains[" + strconv.Itoa(index) + "]", Message: "无效的 URL"}
+			}
+		}
 	}
 
 	return conf.Webhook.sanitize()
