@@ -30,6 +30,10 @@ type config struct {
 	Pprof     bool              `yaml:"pprof"`
 	Headers   map[string]string `yaml:"headers"`
 	Webhook   *webhook          `yaml:"webhook"`
+
+	// 绑定的域名，若指定了该值，则只有这些域名才能正常访问。
+	// 可以为空，表示不限定域名。
+	Domains []string `yaml:"domains,omitempty"`
 }
 
 type webhook struct {

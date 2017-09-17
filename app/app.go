@@ -16,6 +16,7 @@ import (
 	"github.com/caixw/typing/client"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
+	"github.com/issue9/middleware/host"
 	"github.com/issue9/mux"
 )
 
@@ -55,7 +56,7 @@ func Run(path *vars.Path) error {
 		logs.Error(err)
 	}
 
-	h := a.buildHeader(a.buildPprof(a.mux))
+	h := a.buildHandler(a.mux)
 
 	if !a.conf.HTTPS {
 		return http.ListenAndServe(a.conf.Port, h)
@@ -63,6 +64,21 @@ func Run(path *vars.Path) error {
 
 	go serveHTTP(a) // 对 80 端口的处理方式
 	return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, h)
+}
+
+func (a *app) buildHandler(h http.Handler) http.Handler {
+	h = a.buildDomains(a.buildHeader(h))
+
+	// 将 pprof 包装在最外层
+	return a.buildPprof(h)
+}
+
+func (a *app) buildDomains(h http.Handler) http.Handler {
+	if len(a.conf.Domains) == 0 {
+		return h
+	}
+
+	return host.New(h, a.conf.Domains...)
 }
 
 func (a *app) buildHeader(h http.Handler) http.Handler {
