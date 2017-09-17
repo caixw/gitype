@@ -18,7 +18,7 @@ func StatusError(w http.ResponseWriter, status int) {
 	http.Error(w, http.StatusText(status), status)
 }
 
-// LoadYAMLFile 加载 yaml 格式的文件 path 中的内容到 obj，obj 必须量个指针。
+// LoadYAMLFile 加载 YAML 格式的文件 path 中的内容到 obj，obj 必须量个指针。
 func LoadYAMLFile(path string, obj interface{}) error {
 	bs, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -28,7 +28,7 @@ func LoadYAMLFile(path string, obj interface{}) error {
 	return yaml.Unmarshal(bs, obj)
 }
 
-// DumpYAMLFile 将 obj 转换成 yaml 格式的文本并输出到 path 指定的文件中
+// DumpYAMLFile 将 obj 转换成 YAML 格式的文本并输出到 path 指定的文件中
 func DumpYAMLFile(path string, obj interface{}) error {
 	file, err := os.Create(path)
 	if err != nil {

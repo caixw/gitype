@@ -33,9 +33,9 @@ var defaultLogsXML = `<?xml version="1.0" encoding="utf-8" ?>
         <rotate prefix="trace-" dir="./testdata/logs/" size="5M" />
     </trace>
  
-    <warn prefix="[WARNNING]">
+    <warn prefix="[WARN]">
         <console output="stderr" foreground="yellow" background="blue" />
-        <rotate prefix="info-" dir="./testdata/logs/" size="5M" />
+        <rotate prefix="warn-" dir="./testdata/logs/" size="5M" />
     </warn>
  
     <error prefix="[ERROR]" flag="log.llongfile">

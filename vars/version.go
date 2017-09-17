@@ -12,7 +12,7 @@ package vars
 // 修正 bug 则增加 patch；
 // 其它普通改动，版本号不变。
 //
-// Version() 函数返回的值，并不能总是与 mainVersion 相同，
+// Version() 函数返回的值，并不总是与 mainVersion 相同，
 // 有可能还有编译日期等额外内容。
 const mainVersion = "1.5.1"
 
