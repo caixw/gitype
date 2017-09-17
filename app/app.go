@@ -60,15 +60,15 @@ func Run(path *vars.Path) error {
 		return http.ListenAndServe(a.conf.Port, h)
 	}
 
-	go serveHTTP(a) // 对 80 端口的处理方式
+	go a.serveHTTP(h) // 对 80 端口的处理方式
 	return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, h)
 }
 
 // 对 80 端口的处理方式
-func serveHTTP(a *app) {
+func (a *app) serveHTTP(h http.Handler) {
 	switch a.conf.HTTPState {
 	case httpStateDefault:
-		logs.Error(http.ListenAndServe(httpPort, a.mux))
+		logs.Error(http.ListenAndServe(httpPort, h))
 	case httpStateRedirect:
 		logs.Error(http.ListenAndServe(httpPort, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// 构建跳转链接
