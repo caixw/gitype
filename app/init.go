@@ -57,7 +57,6 @@ var defaultConfig = &config{
 	CertFile:  "cert",
 	KeyFile:   "key",
 	Port:      ":443",
-	Pprof:     false,
 	Headers: map[string]string{
 		"Server": vars.Name + vars.Version(),
 	},

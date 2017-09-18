@@ -3,7 +3,6 @@
 https: false
 httpState: disable
 port: :8080
-pprof: false
 headers: 
   server: typing
 

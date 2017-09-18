@@ -26,7 +26,7 @@ type app struct {
 }
 
 // Run 运行程序
-func Run(path *vars.Path) error {
+func Run(path *vars.Path, pprof bool) error {
 	logs.Info("程序工作路径为:", path.Root)
 
 	conf, err := loadConfig(path)
@@ -51,7 +51,7 @@ func Run(path *vars.Path) error {
 		logs.Error(err)
 	}
 
-	h := a.buildHandler()
+	h := a.buildHandler(pprof)
 
 	if !a.conf.HTTPS {
 		return http.ListenAndServe(a.conf.Port, h)

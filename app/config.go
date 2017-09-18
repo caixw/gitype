@@ -48,9 +48,6 @@ type config struct {
 	// 根据 HTTPS 的值，默认为 :80 或是 :443
 	Port string `yaml:"port,omitempty"`
 
-	// 是否启用 Web 调试接口，地址固定为 /debug/pprof/
-	Pprof bool `yaml:"pprof"`
-
 	// 绑定的域名，若指定了该值，则只能通过这些域名才能访问网站。
 	// 为空表示不作限制。
 	Domains []string `yaml:"domains,omitempty"`

@@ -26,7 +26,6 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 1. 运行 `typing -appdir=to_path`。
 
 *./scripts 目录下包含了部分平台下的转换成守护进程的脚本*
-
 *./testdata 也是一个完整的工作目录，如果不想执行 `-init` 命令初始化的话，也可以直接复制 ./testdata 的内容。*
 
 
@@ -82,7 +81,6 @@ httpState         | string      | 当 https 为 true 时，对 80 端口的处�
 certFile          | string      | 当 https 为 true 时，此值为必填
 keyFile           | string      | 当 https 为 true 时，此值为必填
 port              | string      | 端口，不指定，默认为 80 或是 443
-pprof             | bool        | 是否需要在 /debug/pprof 输出调试信息
 headers           | map         | 附加的头信息，头信息可能在其它地方被修改
 webhook           | webhook     | 与 webhook 相关的设置
 

@@ -15,13 +15,17 @@ import (
 	"github.com/issue9/middleware/recovery"
 )
 
-func (a *app) buildHandler() http.Handler {
+func (a *app) buildHandler(pprof bool) http.Handler {
 	h := a.buildDomains(a.buildHeader(a.mux))
 
 	h = recovery.New(h, func(w http.ResponseWriter, msg interface{}) {
 		logs.Error(msg)
 		helper.StatusError(w, http.StatusInternalServerError)
 	})
+
+	if !pprof {
+		return h
+	}
 
 	// 将 pprof 包装在最外层
 	return a.buildPprof(h)
@@ -48,12 +52,7 @@ func (a *app) buildHeader(h http.Handler) http.Handler {
 	})
 }
 
-// 根据 Config.Pprof 决定是否包装调试地址，调用前请确认是否已经开启 Pprof 选项
 func (a *app) buildPprof(h http.Handler) http.Handler {
-	if !a.conf.Pprof {
-		return h
-	}
-
 	logs.Debug("开启了调试功能，地址为：", debugPprof)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
