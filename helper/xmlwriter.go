@@ -23,8 +23,6 @@ func NewWriter() *XMLWriter {
 		buf: bytes.NewBufferString(xml.Header),
 	}
 
-	w.writeByte('\n')
-
 	return w
 }
 
