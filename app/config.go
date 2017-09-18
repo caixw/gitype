@@ -15,9 +15,6 @@ import (
 	"github.com/issue9/utils"
 )
 
-// 输出调试内容的地址，地址值固定，不能修改。
-const debugPprof = "/debug/pprof/"
-
 const (
 	httpPort  = ":80"
 	httpsPort = ":443"

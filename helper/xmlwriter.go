@@ -6,11 +6,9 @@ package helper
 
 import (
 	"bytes"
+	"encoding/xml"
 	"strings"
 )
-
-// XML 要求 version 属于必须在其它属性之前
-const xmlPI = `<?xml version="1.0" encoding="utf-8"?>`
 
 // XMLWriter XML 操作类，简单地封装 bytes.Buffer。
 type XMLWriter struct {
@@ -22,7 +20,7 @@ type XMLWriter struct {
 // NewWriter 声明一个新的 XMLWriter
 func NewWriter() *XMLWriter {
 	w := &XMLWriter{
-		buf: bytes.NewBufferString(xmlPI),
+		buf: bytes.NewBufferString(xml.Header),
 	}
 
 	w.writeByte('\n')

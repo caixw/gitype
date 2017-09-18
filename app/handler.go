@@ -15,6 +15,9 @@ import (
 	"github.com/issue9/middleware/recovery"
 )
 
+// 输出调试内容的地址，地址值固定，不能修改。
+const debugPprof = "/debug/pprof/"
+
 func (a *app) buildHandler(pprof bool) http.Handler {
 	h := a.buildDomains(a.buildHeader(a.mux))
 
