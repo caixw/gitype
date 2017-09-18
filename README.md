@@ -74,26 +74,26 @@ conf 目录下的为程序级别的配置文件，需要重启才能使更改生
 
 ##### app.yaml
 
-名称              | 类型        | 描述
-:-----------------|:------------|:------
-https             | bool        | 是否启用 https
-httpState         | string      | 当 https 为 true 时，对 80 端口的处理方式，可以为 disable, redirect, default
-certFile          | string      | 当 https 为 true 时，此值为必填
-keyFile           | string      | 当 https 为 true 时，此值为必填
-port              | string      | 端口，不指定，默认为 80 或是 443
-headers           | map         | 附加的头信息，头信息可能在其它地方被修改
-webhook           | webhook     | 与 webhook 相关的设置
+名称        | 类型     | 描述
+:-----------|:---------|:------
+https       | bool     | 是否启用 https
+httpState   | string   | 当 https 为 true 时，对 80 端口的处理方式，可以为 disable、redirect 和 default
+certFile    | string   | 当 https 为 true 时，此值为必填
+keyFile     | string   | 当 https 为 true 时，此值为必填
+port        | string   | 端口，不指定，默认为 80 或是 443
+headers     | map      | 附加的头信息，头信息可能在其它地方被修改
+webhook     | webhook  | 与 webhook 相关的设置
 
 
 
 ###### webhook
 
-名称              | 类型          | 描述
-:-----------------|:--------------|:------
-url               | string        | webhooks 的接收地址
-frequency         | time.Duration | webhooks 的最小更新频率
-method            | string        | webhooks 接收地址的接收方法，不指定，则默认为 POST
-repoURL           | string        | 远程仓库的地址
+名称        | 类型          | 描述
+:-----------|:--------------|:------
+url         | string        | webhooks 的接收地址
+frequency   | time.Duration | webhooks 的最小更新频率
+method      | string        | webhooks 接收地址的接收方法，不指定，则默认为 POST
+repoURL     | string        | 远程仓库的地址
 
 
 #### data 目录下内容
@@ -143,11 +143,11 @@ avatar    | string      | 头像
 
 ###### Outdated
 
-名称      | 类型        | 描述
-:---------|:------------|:----------
-type      | string      | 比较方式，可以 created 或是 modified
-duration  | string      | 超过此时间值，显示提示信息，为一个可以被 time.ParseDuration 解析的字符串
-content   | string      | 提示内容，可以带上一个 %d 用于表示有多少天未被改过
+名称      | 类型     | 描述
+:---------|:---------|:----------
+type      | string   | 比较方式，可以 created 或是 modified
+duration  | string   | 超过此时间值，显示提示信息，为一个可以被 time.ParseDuration 解析的字符串
+content   | string   | 提示内容，可以带上一个 %d 用于表示有多少天未被改过
 
 
 ###### Archive
@@ -160,59 +160,59 @@ format    | string      | 标题的格式
 
 ###### RSS
 
-名称      | 类型        | 描述
-:---------|:------------|:----------
-title     | string      | 标题
-size      | int         | 显示数量
-url       | string      | 地址
-type      | string      | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
+名称      | 类型     | 描述
+:---------|:---------|:----------
+title     | string   | 标题
+size      | int      | 显示数量
+url       | string   | 地址
+type      | string   | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
 
 
 ###### Sitemap
 
-名称           | 类型        | 描述
-:--------------|:------------|:----------
-url            | string      | Sitemap 的地址
-xslURL         | string      | 为 sitemap.xml 配置的 xsl，可以为空
-enableTag      | bool        | 是否把标签放到 Sitemap 中
-priority       | float       | 标签页的权重
-changefreq     | string      | 标签页的修改频率
-postPriority   | float       | 文章页的权重
-postChangefreq | string      | 文章页的修改频率
-type           | string      | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
+名称           | 类型     | 描述
+:--------------|:---------|:----------
+url            | string   | Sitemap 的地址
+xslURL         | string   | 为 sitemap.xml 配置的 xsl，可以为空
+enableTag      | bool     | 是否把标签放到 Sitemap 中
+priority       | float    | 标签页的权重
+changefreq     | string   | 标签页的修改频率
+postPriority   | float    | 文章页的权重
+postChangefreq | string   | 文章页的修改频率
+type           | string   | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
 
 
 ###### Opensearch
 
-名称      | 类型        | 描述
-:-----------|:------------|:----------
-url         | string      | opensearch 的地址
-title       | string      | 出现于 html>head>link.title 属性中
-shortName   | string      | shortName 值
-description | string      | description 值
-longName    | string      | longName 值
-image       | Icon        | image 值
-type        | string      | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
+名称        | 类型     | 描述
+:-----------|:---------|:----------
+url         | string   | opensearch 的地址
+title       | string   | 出现于 html>head>link.title 属性中
+shortName   | string   | shortName 值
+description | string   | description 值
+longName    | string   | longName 值
+image       | Icon     | image 值
+type        | string   | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
 
 
 ###### Icon
 
-名称      | 类型        | 描述
-:---------|:------------|:----------
-type      | string      | 图标的 mimetype
-sizes     | string      | 图标的大小
-url       | string      | 图标地址
+名称      | 类型     | 描述
+:---------|:---------|:----------
+type      | string   | 图标的 mimetype
+sizes     | string   | 图标的大小
+url       | string   | 图标地址
 
 ###### Link
 
-名称      | 类型        | 描述
-:---------|:------------|:----------
-text      | string      | 字面文字，可以不唯一
-url       | string      | 对应的链接地址
-title     | string      | a 标签的 title 属性。可以为空
-icon      | string      | 一个 URL 或是 fontawesome 图标名称
-rel       | string      | 与该网站的关系，可用 [XFN](https://gmpg.org/xfn/) 的相关定义
-type      | string      | 指向内容的类型
+名称      | 类型     | 描述
+:---------|:---------|:----------
+text      | string   | 字面文字，可以不唯一
+url       | string   | 对应的链接地址
+title     | string   | a 标签的 title 属性。可以为空
+icon      | string   | 一个 URL 或是 fontawesome 图标名称
+rel       | string   | 与该网站的关系，可用 [XFN](https://gmpg.org/xfn/) 的相关定义
+type      | string   | 指向内容的类型
 
 
 
@@ -226,12 +226,12 @@ links.yaml 用于指定友情链接，为一个数组。每个元素均为一个
 
 tags.yaml 用于指定所有的标签内容。为一个数组，每个元素包含以下字段：
 
-名称      | 类型        | 描述
-:---------|:------------|:----------
-slug      | string      | 唯一名称，文章引用此值，地址中也使用此值
-title     | string      | 字面文字，可以不唯一
-color     | string      | 颜色值，在展示所有标签的页面，会以此颜色显示
-content   | string      | 用于描述该标签的详细内容，可以是 **HTML**
+名称      | 类型     | 描述
+:---------|:---------|:----------
+slug      | string   | 唯一名称，文章引用此值，地址中也使用此值
+title     | string   | 字面文字，可以不唯一
+color     | string   | 颜色值，在展示所有标签的页面，会以此颜色显示
+content   | string   | 用于描述该标签的详细内容，可以是 **HTML**
 
 
 
