@@ -29,17 +29,17 @@ const (
 type config struct {
 	// 是否启用 HTTPS 模式。如果启用了，则需要正确设置以下几个值：
 	// HTTPState、CertFile、KeyFile
-	HTTPS bool `yaml:"https"`
+	HTTPS bool `yaml:"https,omitempty"`
 
 	// 当启用 HTTPS 且端口不为 80 时，对 80 端口的处理方式。
 	// disable 表示禁用 80 端口；
 	// default 默认方式，即和当前的处理方式相同；
 	// redirect 跳转到当前端口；
-	HTTPState string `yaml:"httpState"`
+	HTTPState string `yaml:"httpState,omitempty"`
 
-	CertFile string `yaml:"certFile"`
+	CertFile string `yaml:"certFile,omitempty"`
 
-	KeyFile string `yaml:"keyFile"`
+	KeyFile string `yaml:"keyFile,omitempty"`
 
 	// 监听的端口，需要带前缀冒号(:)，不指定时，
 	// 根据 HTTPS 的值，默认为 :80 或是 :443
@@ -51,7 +51,7 @@ type config struct {
 
 	// Headers 用于指定一些返回给客户端的固定报头内容。
 	// 其中键名表示报头名称，键值表示报头的值。
-	Headers map[string]string `yaml:"headers"`
+	Headers map[string]string `yaml:"headers,omitempty"`
 
 	Webhook *webhook `yaml:"webhook"`
 }
@@ -103,20 +103,23 @@ func (conf *config) sanitize() *helper.FieldError {
 		}
 	}
 
-	switch {
-	case conf.HTTPS &&
-		conf.HTTPState != httpStateDefault &&
-		conf.HTTPState != httpStateDisable &&
-		conf.HTTPState != httpStateRedirect:
-		return &helper.FieldError{Field: "httpState", Message: "无效的取值"}
-	case conf.HTTPS &&
-		conf.HTTPState != httpStateDisable &&
-		conf.Port == httpPort:
-		return &helper.FieldError{Field: "port", Message: "80 端口已经被被监听"}
-	case conf.HTTPS && !utils.FileExists(conf.CertFile):
-		return &helper.FieldError{Field: "certFile", Message: "不能为空"}
-	case conf.HTTPS && !utils.FileExists(conf.KeyFile):
-		return &helper.FieldError{Field: "keyFile", Message: "不能为空"}
+	if conf.HTTPS {
+		if len(conf.HTTPState) == 0 {
+			conf.HTTPState = httpStateDefault
+		}
+
+		switch {
+		case conf.HTTPState != httpStateDefault &&
+			conf.HTTPState != httpStateDisable &&
+			conf.HTTPState != httpStateRedirect:
+			return &helper.FieldError{Field: "httpState", Message: "无效的取值"}
+		case conf.HTTPState != httpStateDisable && conf.Port == httpPort:
+			return &helper.FieldError{Field: "port", Message: "80 端口已经被被监听"}
+		case !utils.FileExists(conf.CertFile):
+			return &helper.FieldError{Field: "certFile", Message: "不能为空"}
+		case !utils.FileExists(conf.KeyFile):
+			return &helper.FieldError{Field: "keyFile", Message: "不能为空"}
+		}
 	}
 
 	if len(conf.Domains) > 0 {
