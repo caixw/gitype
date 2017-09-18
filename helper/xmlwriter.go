@@ -10,6 +10,9 @@ import (
 	"strings"
 )
 
+// xml 中每次的缩进量
+const indentWidth = 4
+
 // XMLWriter XML 操作类，简单地封装 bytes.Buffer。
 type XMLWriter struct {
 	buf    *bytes.Buffer
@@ -42,6 +45,10 @@ func (w *XMLWriter) writeByte(b byte) {
 	w.err = w.buf.WriteByte(b)
 }
 
+func (w *XMLWriter) writeIndent() {
+	w.writeString(strings.Repeat(" ", w.indent*indentWidth))
+}
+
 // WriteStartElement 写入一个开始元素
 func (w *XMLWriter) WriteStartElement(name string, attr map[string]string) {
 	w.startElement(name, attr, true)
@@ -49,7 +56,7 @@ func (w *XMLWriter) WriteStartElement(name string, attr map[string]string) {
 
 // newline 是否换行
 func (w *XMLWriter) startElement(name string, attr map[string]string, newline bool) {
-	w.writeString(strings.Repeat(" ", w.indent*4))
+	w.writeIndent()
 	w.indent++
 
 	w.writeByte('<')
@@ -71,7 +78,7 @@ func (w *XMLWriter) WriteEndElement(name string) {
 func (w *XMLWriter) endElement(name string, indent bool) {
 	w.indent--
 	if indent {
-		w.writeString(strings.Repeat(" ", w.indent*4))
+		w.writeIndent()
 	}
 
 	w.writeString("</")
@@ -85,7 +92,7 @@ func (w *XMLWriter) endElement(name string, indent bool) {
 // name 元素标签名；
 // attr 元素的属性。
 func (w *XMLWriter) WriteCloseElement(name string, attr map[string]string) {
-	w.writeString(strings.Repeat(" ", w.indent*4))
+	w.writeIndent()
 
 	w.writeByte('<')
 	w.writeString(name)
