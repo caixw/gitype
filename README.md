@@ -114,7 +114,7 @@ url             | string      | 网站的地址
 keywords        | string      | 默认情况下的 keyword 内容
 description     | string      | 默认情况下的 descrription 内容
 beian           | string      | 备案号
-uptime          | string      | 上线时间，字符串表示
+uptime          | string      | 上线时间，符合 rfc 3339 标准的时间字符串
 pageSize        | int         | 每页显示的数量
 longDateFormat  | string      | 长时间的显示格式，Go 的时间格式化方式
 shortDateFormat | string      | 短时间的显示格式，Go 的时间格式化方式
@@ -274,8 +274,8 @@ meta.yaml 包含了当前文章的一些细节信息。
 名称      | 类型      | 描述
 :---------|:----------|:----------
 title     | string    | 标题
-created   | time.Time | 创建时间
-modified  | time.Time | 修改时间
+created   | string    | 创建时间，符合 rfc 3339 标准的时间字符串
+modified  | string    | 修改时间，符合 rfc 3339 标准的时间字符串
 tags      | string    | 关联的标签，以逗号分隔多个字符串，标签名为 meta/tags.yaml 中的 slug
 summary   | string    | 摘要，同时也作为 html>head>meta.description 的内容
 content   | string    | 内容
