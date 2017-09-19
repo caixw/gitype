@@ -82,17 +82,17 @@ certFile    | string   | 当 https 为 true 时，此值为必填
 keyFile     | string   | 当 https 为 true 时，此值为必填
 port        | string   | 端口，不指定，默认为 80 或是 443
 headers     | map      | 附加的头信息，头信息可能在其它地方被修改
-webhook     | webhook  | 与 webhook 相关的设置
+webhook     | Webhook  | 与 webhook 相关的设置
 
 
 
-###### webhook
+###### Webhook
 
 名称        | 类型          | 描述
 :-----------|:--------------|:------
 url         | string        | webhooks 的接收地址
 frequency   | time.Duration | webhooks 的最小更新频率
-method      | string        | webhooks 接收地址的接收方法，不指定，则默认为 POST
+method      | string        | webhooks 接收地址的接收方法，默认为 POST
 repoURL     | string        | 远程仓库的地址
 
 
@@ -130,6 +130,7 @@ rss             | RSS         | rss 配置，若不需要，则不指定该值�
 atom            | RSS         | atom 配置，若不需要，则不指定该值即可
 sitemap         | Sitemap     | sitemap 相关配置，若不需要，则不指定该值即可
 opensearch      | Opensearch  | opensearch 相关配置，若不需要，则不指定该值即可
+
 
 ###### Author
 
@@ -235,6 +236,59 @@ content   | string   | 用于描述该标签的详细内容，可以是 **HTML**
 
 
 
+##### posts
+
+data/posts 为文章目录，目录层次可以按自己的习惯进行分类，系统根据是否包含 `meta.yaml`
+和 `content.html` 来区分当前目录是否为一篇文章内容。比如：
+```
+--- posts
+      +--- about
+      |      |
+      |      +--- meta.yaml
+      |      |
+      |      +--- content.html
+      |
+      +--- 2016
+      |
+      +--- 2017
+            |
+            +--- post1
+            |      |
+            |      +--- meta.yaml
+            |      |
+            |      +--- content.html
+            |
+            +--- post2
+                   |
+                   +--- meta.yaml
+                   |
+                   +--- content.html
+```
+其中 `/posts/about`、`/posts/2017/post2` 和 `/posts/2017/post2` 均被判断为文章。
+
+
+###### meta.yaml
+
+meta.yaml 包含了当前文章的一些细节信息。
+
+名称      | 类型      | 描述
+:---------|:----------|:----------
+title     | string    | 标题
+created   | time.Time | 创建时间
+modified  | time.Time | 修改时间
+tags      | string    | 关联的标签，以逗号分隔多个字符串，标签名为 meta/tags.yaml 中的 slug
+summary   | string    | 摘要，同时也作为 html>head>meta.description 的内容
+content   | string    | 内容
+outdated  | string    | 已过时文章的提示信息
+order     | string    | 排序方式，可以是 top, last, default，默认为 default
+draft     | bool      | 是否为草稿，为 true，则不会加载该条数据
+author    | Author    | 作者，默认为 meta/config.yaml 中的 author 内容
+license   | Link      | 版本信息，默认为 meta/config.yaml 中的 license 内容
+template  | string    | 使用的模板，默认为 post
+keywords  | string    | html>head>meta.keywords 标签的内容，如果为空，使用 tags
+
+
+
 ##### themes
 
 data/themes 下为主题文件，可定义多个主题，通过 config 中的 theme 指定当前使用的主题。
@@ -254,7 +308,7 @@ data/themes 下为主题文件，可定义多个主题，通过 config 中的 th
 ##### raws
 
 当访问的页面不存在时，会尝试从 raws 下访问相关内容。比如 `/abc.html`，会尝试在查找 `raws/abc.html`
-文件是否存在；甚至当 `/post/2016/about.htm` 这样标准的文章路由，如果文章不存在，会也访问 `raws`
+文件是否存在；甚至 `/post/2016/about.htm` 这样标准的文章路由，如果文章不存在，会也访问 `raws`
 目录，查看其下是否在正好相同的文件。 
 
 
