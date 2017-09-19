@@ -39,6 +39,10 @@ func TestLoadPost(t *testing.T) {
 	a.NotError(err).NotNil(post)
 	a.Equal(post.Slug, "/folder/post2")
 	a.Equal(post.Template, "t1post") // 模板
+
+	post, err = loadPost(testdataPath, "/draft")
+	a.NotError(err).NotNil(post)
+	a.True(post.Draft)
 }
 
 func TestLoadPosts(t *testing.T) {
@@ -46,5 +50,5 @@ func TestLoadPosts(t *testing.T) {
 
 	posts, err := loadPosts(testdataPath)
 	a.NotError(err).NotNil(posts)
-	a.Equal(len(posts), 2)
+	a.Equal(len(posts), 2) // 只有两条记录，Draft=true 的没有被加载
 }

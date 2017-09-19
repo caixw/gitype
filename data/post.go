@@ -55,6 +55,7 @@ type Post struct {
 	Permalink  string    `yaml:"created"`         // 文章的唯一链接，同时当作 created 的原始值
 	Outdated   string    `yaml:"modified"`        // 已过时文章的提示信息，同时当作 modified 的原始值
 	Order      string    `yaml:"order,omitempty"` // 排序方式
+	Draft      bool      `yaml:"draft,omitempty"` // 是否为草稿，为 true，则不会加载该条数据
 
 	// 以下内容不存在时，则会使用全局的默认选项
 	Author   *Author `yaml:"author,omitempty"`   // 作者
@@ -101,7 +102,9 @@ func loadPosts(path *vars.Path) ([]*Post, error) {
 			return nil, err
 		}
 
-		posts = append(posts, post)
+		if !post.Draft {
+			posts = append(posts, post)
+		}
 	}
 
 	if err := checkPostsDup(posts); err != nil {
@@ -118,6 +121,11 @@ func loadPost(path *vars.Path, slug string) (*Post, error) {
 	if err := helper.LoadYAMLFile(path.PostMetaPath(slug), post); err != nil {
 		return nil, err
 	}
+	if post.Draft {
+		return post, nil
+	}
+
+	// slug
 	post.Slug = slug
 
 	// 加载内容
