@@ -95,9 +95,8 @@ func loadPosts(path *vars.Path) ([]*Post, error) {
 
 	// 开始加载文章的具体内容。
 	posts := make([]*Post, 0, len(slugs))
-	for _, p := range slugs {
-		p = filepath.Clean(p)
-		post, err := loadPost(path, p)
+	for _, slug := range slugs {
+		post, err := loadPost(path, slug)
 		if err != nil {
 			return nil, err
 		}
