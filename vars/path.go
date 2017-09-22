@@ -90,7 +90,7 @@ func (p *Path) ConfPath(file string) string {
 	return filepath.Join(p.ConfDir, file)
 }
 
-// RawsPath 获取 rasw/ 下的文件
+// RawsPath 获取 raws/ 下的文件
 func (p *Path) RawsPath(file string) string {
 	return filepath.Join(p.RawsDir, file)
 }
@@ -106,7 +106,7 @@ func (p *Path) PostPath(slug, filename string) string {
 	return filepath.Join(p.PostsDir, slug, filename)
 }
 
-// PostMetaPath 返回某一篇文章下的 Meta.yaml 文件地址
+// PostMetaPath 返回某一篇文章下的 meta.yaml 文件地址
 func (p *Path) PostMetaPath(slug string) string {
 	return p.PostPath(slug, PostMetaFilename)
 }
