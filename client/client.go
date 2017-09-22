@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package client 客户端路由处理
+// Package client 对客户端请求的处理。
 package client
 
 import (
