@@ -15,13 +15,30 @@ import (
 	"github.com/issue9/logs"
 )
 
+const usage = `%s 是一个基于 Git 的博客系统。
+源代码以 MIT 开源许可发布于：%s
+
+
+常见用法：
+
+typing -pprof -appdir="./"
+typing -appdir="./"
+
+
+参数：
+
+`
+
 func main() {
 	help := flag.Bool("h", false, "显示当前信息")
 	version := flag.Bool("v", false, "显示程序的版本信息")
 	pprof := flag.Bool("pprof", false, "是否在 /debug/pprof/ 启用调试功能")
 	appdir := flag.String("appdir", "./", "指定运行的工作目录")
 	init := flag.String("init", "", "初始化一个工作目录")
-	flag.Usage = usage
+	flag.Usage = func() {
+		fmt.Printf(usage, vars.Name, vars.URL)
+		flag.PrintDefaults()
+	}
 	flag.Parse()
 
 	switch {
@@ -44,14 +61,6 @@ func main() {
 
 	logs.Critical(app.Run(path, *pprof))
 	logs.Flush()
-}
-
-func usage() {
-	fmt.Printf("%s 是一个基于 Git 的博客系统。\n", vars.Name)
-	fmt.Printf("源代码以 MIT 开源许可发布于：%s\n", vars.URL)
-
-	fmt.Println("\n参数：")
-	flag.PrintDefaults()
 }
 
 func printVersion() {
