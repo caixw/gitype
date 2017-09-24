@@ -150,20 +150,9 @@ func (client *Client) newInfo() *info {
 }
 
 func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *page {
-	// 向客户端设置主题
 	theme := client.getRequestTheme(r)
-	if theme.ID != client.data.Themes[0].ID {
-		cookie := &http.Cookie{
-			Name:     vars.ThemeName,
-			Value:    theme.ID,
-			HttpOnly: true,
-		}
-		w.Header().Set(cookieKey, cookie.String())
-	} else {
-		w.Header().Del(cookieKey)
-	}
-
 	conf := client.data.Config
+
 	return &page{
 		client:   client,
 		Info:     client.info,
@@ -208,15 +197,24 @@ func (p *page) prevPage(url, text string) {
 // 输出当前内容到指定模板
 func (p *page) render(name string, headers map[string]string) {
 	if len(headers) == 0 {
-		setContentType(p.w, p.client.data.Config.Type)
-	} else {
-		if _, exists := headers[contentTypeKey]; !exists {
-			headers[contentTypeKey] = buildContentTypeContent(p.client.data.Config.Type)
-		}
+		headers = map[string]string{}
+	}
 
-		for key, val := range headers {
-			p.w.Header().Set(key, val)
+	if _, exists := headers[contentTypeKey]; !exists {
+		headers[contentTypeKey] = buildContentTypeContent(p.client.data.Config.Type)
+	}
+
+	if p.Theme.ID != p.client.data.Themes[0].ID {
+		cookie := &http.Cookie{
+			Name:     vars.ThemeName,
+			Value:    p.Theme.ID,
+			HttpOnly: true,
 		}
+		headers[cookieKey] = cookie.String()
+	}
+
+	for key, val := range headers {
+		p.w.Header().Set(key, val)
 	}
 
 	err := p.template.ExecuteTemplate(p.w, name, p)
