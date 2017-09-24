@@ -54,7 +54,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 		p.nextPage(vars.SearchURL(q, page+1), "")
 	}
 
-	p.render(w, r, "search", nil)
+	p.render("search", nil)
 }
 
 // 查找出所有符合要求的文章列表

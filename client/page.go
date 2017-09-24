@@ -32,7 +32,10 @@ const (
 	typeSearch   = "search"
 )
 
-const contentTypeKey = "Content-Type"
+const (
+	contentTypeKey = "Content-Type"
+	cookieKey      = "Set-Cookie"
+)
 
 // 生成一个带编码的 content-type 报头内容
 func buildContentTypeContent(mime string) string {
@@ -48,6 +51,8 @@ type page struct {
 	client   *Client
 	Info     *info
 	template *template.Template
+	w        http.ResponseWriter
+	r        *http.Request
 
 	Title       string       // 文章标题，可以为空
 	Subtitle    string       // 副标题
@@ -145,6 +150,7 @@ func (client *Client) newInfo() *info {
 }
 
 func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *page {
+	// 向客户端设置主题
 	theme := client.getRequestTheme(r)
 	if theme.ID != client.data.Themes[0].ID {
 		cookie := &http.Cookie{
@@ -152,13 +158,19 @@ func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *
 			Value:    theme.ID,
 			HttpOnly: true,
 		}
-		w.Header().Set("Set-Cookie", cookie.String())
+		w.Header().Set(cookieKey, cookie.String())
+	} else {
+		w.Header().Del(cookieKey)
 	}
 
 	conf := client.data.Config
 	return &page{
-		client:      client,
-		Info:        client.info,
+		client:   client,
+		Info:     client.info,
+		template: theme.Template,
+		w:        w,
+		r:        r,
+
 		Subtitle:    conf.Subtitle,
 		Keywords:    conf.Keywords,
 		Description: conf.Description,
@@ -166,7 +178,6 @@ func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *
 		Author:      conf.Author,
 		License:     conf.License,
 		Theme:       theme,
-		template:    theme.Template,
 	}
 }
 
@@ -195,23 +206,23 @@ func (p *page) prevPage(url, text string) {
 }
 
 // 输出当前内容到指定模板
-func (p *page) render(w http.ResponseWriter, r *http.Request, name string, headers map[string]string) {
+func (p *page) render(name string, headers map[string]string) {
 	if len(headers) == 0 {
-		setContentType(w, p.client.data.Config.Type)
+		setContentType(p.w, p.client.data.Config.Type)
 	} else {
 		if _, exists := headers[contentTypeKey]; !exists {
 			headers[contentTypeKey] = buildContentTypeContent(p.client.data.Config.Type)
 		}
 
 		for key, val := range headers {
-			w.Header().Set(key, val)
+			p.w.Header().Set(key, val)
 		}
 	}
 
-	err := p.template.ExecuteTemplate(w, name, p)
+	err := p.template.ExecuteTemplate(p.w, name, p)
 	if err != nil {
 		logs.Error(err)
-		p.client.renderError(w, r, http.StatusInternalServerError)
+		p.client.renderError(p.w, p.r, http.StatusInternalServerError)
 		return
 	}
 }
