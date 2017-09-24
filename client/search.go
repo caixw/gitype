@@ -16,7 +16,7 @@ import (
 
 // /search.html?q=key&page=2
 func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
-	p := client.page(typeSearch, r)
+	p := client.page(typeSearch, w, r)
 
 	q := r.FormValue("q")
 	if len(q) == 0 {
@@ -30,7 +30,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	}
 	if page < 1 {
 		logs.Debugf("参数 page: %d 小于 1", page)
-		client.renderError(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
+		client.renderError(w, r, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
 
@@ -42,7 +42,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p.Keywords = q + ",搜索,search"
 	p.Description = "搜索关键字" + q + "的结果"
 	p.Canonical = client.data.URL(vars.SearchURL(p.Q, page))
-	start, end, ok := client.getPostsRange(len(posts), page, w)
+	start, end, ok := client.getPostsRange(len(posts), page, w, r)
 	if !ok {
 		return
 	}
@@ -54,7 +54,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 		p.nextPage(vars.SearchURL(q, page+1), "")
 	}
 
-	p.render(w, "search", nil)
+	p.render(w, r, "search", nil)
 }
 
 // 查找出所有符合要求的文章列表

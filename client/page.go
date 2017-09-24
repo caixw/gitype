@@ -5,6 +5,7 @@
 package client
 
 import (
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -44,8 +45,9 @@ func setContentType(w http.ResponseWriter, mime string) {
 
 // 用于描述一个页面的所有无素
 type page struct {
-	client *Client
-	Info   *info
+	client   *Client
+	Info     *info
+	template *template.Template
 
 	Title       string       // 文章标题，可以为空
 	Subtitle    string       // 副标题
@@ -142,17 +144,18 @@ func (client *Client) newInfo() *info {
 	return info
 }
 
-func (client *Client) page(typ string, r *http.Request) *page {
-	conf := client.data.Config
-
-	name := r.FormValue("theme")
-	theme := client.data.Themes[0] // 默认主题
-	for _, theme = range client.data.Themes {
-		if name == theme.ID {
-			break
+func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *page {
+	theme := client.getRequestTheme(r)
+	if theme.ID != client.data.Themes[0].ID {
+		cookie := &http.Cookie{
+			Name:     vars.ThemeName,
+			Value:    theme.ID,
+			HttpOnly: true,
 		}
+		w.Header().Set("Set-Cookie", cookie.String())
 	}
 
+	conf := client.data.Config
 	return &page{
 		client:      client,
 		Info:        client.info,
@@ -163,6 +166,7 @@ func (client *Client) page(typ string, r *http.Request) *page {
 		Author:      conf.Author,
 		License:     conf.License,
 		Theme:       theme,
+		template:    theme.Template,
 	}
 }
 
@@ -191,7 +195,7 @@ func (p *page) prevPage(url, text string) {
 }
 
 // 输出当前内容到指定模板
-func (p *page) render(w http.ResponseWriter, name string, headers map[string]string) {
+func (p *page) render(w http.ResponseWriter, r *http.Request, name string, headers map[string]string) {
 	if len(headers) == 0 {
 		setContentType(w, p.client.data.Config.Type)
 	} else {
@@ -204,27 +208,54 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 		}
 	}
 
-	err := p.client.data.Themes[0].Template.ExecuteTemplate(w, name, p)
+	err := p.template.ExecuteTemplate(w, name, p)
 	if err != nil {
 		logs.Error(err)
-		p.client.renderError(w, http.StatusInternalServerError)
+		p.client.renderError(w, r, http.StatusInternalServerError)
 		return
 	}
+}
+
+// 从客户端获取主题内容
+func (client *Client) getRequestTheme(r *http.Request) *data.Theme {
+	// 获取主题名称
+	name := r.FormValue(vars.ThemeName)
+	if len(name) == 0 {
+		cookie, err := r.Cookie(vars.ThemeName)
+		if err != nil { // 公记录错误，但不退出
+			logs.Error(err)
+		}
+
+		if cookie != nil {
+			name = cookie.Value
+		}
+	}
+
+	theme := client.data.Themes[0] // 默认主题
+	for _, t := range client.data.Themes {
+		if name == t.ID {
+			theme = t
+			break
+		}
+	}
+
+	return theme
 }
 
 // 输出一个特定状态码下的错误页面。
 // 若该页面模板不存在，则输出状态码对应的文本内容。
 // 只查找当前主题目录下的相关文件。
 // 只对状态码大于等于 400 的起作用。
-func (client *Client) renderError(w http.ResponseWriter, code int) {
+func (client *Client) renderError(w http.ResponseWriter, r *http.Request, code int) {
 	if code < 400 {
 		return
 	}
 	logs.Debug("输出非正常状态码：", code)
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
+	theme := client.getRequestTheme(r)
 	filename := strconv.Itoa(code) + ".html"
-	path := filepath.Join(client.path.ThemesDir, client.data.Themes[0].ID, filename)
+	path := filepath.Join(client.path.ThemesDir, theme.ID, filename)
 	if !utils.FileExists(path) {
 		logs.Debugf("模板文件 %s 不存在\n", path)
 		helper.StatusError(w, code)

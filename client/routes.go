@@ -65,7 +65,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post := client.data.Posts[index]
-	p := client.page(typePost, r)
+	p := client.page(typePost, w, r)
 
 	client.data.Outdated(post)
 	p.Post = post
@@ -85,7 +85,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 		p.nextPage(next.Permalink, next.Title)
 	}
 
-	p.render(w, post.Template, nil)
+	p.render(w, r, post.Template, nil)
 }
 
 // 首页及文章列表页
@@ -99,18 +99,18 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 
 	if page < 1 {
 		logs.Debugf("请求的页码[%d]小于1\n", page)
-		client.renderError(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
+		client.renderError(w, r, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
 
-	p := client.page(typeIndex, r)
+	p := client.page(typeIndex, w, r)
 	if page > 1 { // 非首页，标题显示页码数
 		p.Type = typePosts
 		p.Title = fmt.Sprintf("第 %d 页", page)
 	}
 	p.Canonical = client.data.URL(vars.PostsURL(page))
 
-	start, end, ok := client.getPostsRange(len(client.data.Posts), page, w)
+	start, end, ok := client.getPostsRange(len(client.data.Posts), page, w, r)
 	if !ok {
 		return
 	}
@@ -122,7 +122,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 		p.nextPage(vars.PostsURL(page+1), "")
 	}
 
-	p.render(w, "posts", nil)
+	p.render(w, r, "posts", nil)
 }
 
 // 标签详细页
@@ -155,18 +155,18 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	}
 	if page < 1 {
 		logs.Debugf("请求的页码[%d]小于1", page)
-		client.renderError(w, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
+		client.renderError(w, r, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
 
-	p := client.page(typeTag, r)
+	p := client.page(typeTag, w, r)
 	p.Tag = tag
 	p.Title = tag.Title
 	p.Keywords = tag.Keywords
 	p.Description = tag.Description
 	p.Canonical = client.data.URL(vars.TagURL(slug, page))
 
-	start, end, ok := client.getPostsRange(len(tag.Posts), page, w)
+	start, end, ok := client.getPostsRange(len(tag.Posts), page, w, r)
 	if !ok {
 		return
 	}
@@ -178,50 +178,50 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 		p.nextPage(vars.TagURL(slug, page+1), "")
 	}
 
-	p.render(w, "tag", nil)
+	p.render(w, r, "tag", nil)
 }
 
 // 友情链接页
 // /links.html
 func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
-	p := client.page(typeLinks, r)
+	p := client.page(typeLinks, w, r)
 	p.Title = "友情链接"
 	p.Canonical = client.data.URL(vars.LinksURL())
 
-	p.render(w, "links", nil)
+	p.render(w, r, "links", nil)
 }
 
 // 标签列表页
 // /tags.html
 func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
-	p := client.page(typeTags, r)
+	p := client.page(typeTags, w, r)
 	p.Title = "标签"
 	p.Canonical = client.data.URL(vars.TagsURL())
 	p.Description = "标签列表"
 
-	p.render(w, "tags", nil)
+	p.render(w, r, "tags", nil)
 }
 
 // 归档页
 // /archives.html
 func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
-	p := client.page(typeArchives, r)
+	p := client.page(typeArchives, w, r)
 	p.Title = "归档"
 	p.Keywords = "归档,存档,archive,archives"
 	p.Description = "网站的归档列表，按时间进行排序"
 	p.Canonical = client.data.URL(vars.ArchivesURL())
 	p.Archives = client.data.Archives
 
-	p.render(w, "archives", nil)
+	p.render(w, r, "archives", nil)
 }
 
 // 确认当前文章列表页选择范围。
-func (client *Client) getPostsRange(postsSize, page int, w http.ResponseWriter) (start, end int, ok bool) {
+func (client *Client) getPostsRange(postsSize, page int, w http.ResponseWriter, r *http.Request) (start, end int, ok bool) {
 	size := client.data.Config.PageSize
 	start = size * (page - 1) // 系统从零开始计数
 	if start > postsSize {
 		logs.Debugf("请求页码为[%d]，实际文章数量为[%d]\n", page, postsSize)
-		client.renderError(w, http.StatusNotFound) // 页码超出范围，不存在
+		client.renderError(w, r, http.StatusNotFound) // 页码超出范围，不存在
 		return 0, 0, false
 	}
 
@@ -261,7 +261,7 @@ func (client *Client) queryInt(w http.ResponseWriter, r *http.Request, key strin
 	ret, err := strconv.Atoi(val)
 	if err != nil {
 		logs.Error(err)
-		client.renderError(w, http.StatusBadRequest)
+		client.renderError(w, r, http.StatusBadRequest)
 		return 0, false
 	}
 	return ret, true

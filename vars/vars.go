@@ -25,6 +25,9 @@ const (
 
 	// PostTemplateName 默认的文章模板名称
 	PostTemplateName = "post"
+
+	// ThemeName 主题名称在在传递过程中的名称
+	ThemeName = "theme"
 )
 
 // 默认的 mime type 类型。
