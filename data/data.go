@@ -7,7 +7,6 @@ package data
 
 import (
 	"fmt"
-	"html/template"
 	"strings"
 	"time"
 
@@ -27,14 +26,7 @@ type Data struct {
 	Links    []*Link
 	Posts    []*Post
 	Archives []*Archive
-	Themes   []*Theme
-	Theme    *Theme // 当前主题
-
-	// 当前主题模板的编译结果。
-	//
-	// 每次加载时，只会对当前主题作预编译缓存。
-	// 其它主题可能是一个未完成的半成品，不作编译检测。
-	Template *template.Template
+	Themes   []*Theme // 所有可用主题，第一个元素为默认主题
 
 	Opensearch *Feed
 	Sitemap    *Feed
@@ -93,14 +85,8 @@ func Load(path *vars.Path) (*Data, error) {
 
 // 对各个数据再次进行检测，主要是一些关联数据的相互初始化
 func (d *Data) sanitize(conf *config) error {
-	for _, theme := range d.Themes { // 检测配置文件中的主题是否存在
-		if theme.ID == conf.Theme {
-			d.Theme = theme
-			break
-		}
-	}
-	if d.Theme == nil {
-		return &helper.FieldError{File: d.path.MetaConfigFile, Message: "该主题并不存在", Field: "theme"}
+	if err := d.sanitizeThemes(conf); err != nil {
+		return err
 	}
 
 	for _, tag := range d.Tags { // 将标签的默认修改时间设置为网站的上线时间
@@ -177,11 +163,7 @@ func (d *Data) buildData(conf *config) (err error) {
 	errFilter(d.buildSitemap)
 	errFilter(d.buildRSS)
 	errFilter(d.buildAtom)
-	if err != nil {
-		return err
-	}
-
-	return d.compileTemplate()
+	return err
 }
 
 // URL 生成一个带域名的地址

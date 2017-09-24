@@ -20,13 +20,14 @@ import (
 
 // Theme 表示主题信息
 type Theme struct {
-	ID          string  `yaml:"-"`    // 唯一 ID，即当前目录名称
-	Name        string  `yaml:"name"` // 名称，不必唯一，可以与 ID 值不同。
-	Path        string  `yaml:"-"`    // 主题目录，绝对路径
-	Version     string  `yaml:"version"`
-	Description string  `yaml:"description"`
-	URL         string  `yaml:"url,omitempty"`
-	Author      *Author `yaml:"author"`
+	ID          string             `yaml:"-"`    // 唯一 ID，即当前目录名称
+	Name        string             `yaml:"name"` // 名称，不必唯一，可以与 ID 值不同。
+	Path        string             `yaml:"-"`    // 主题目录，绝对路径
+	Version     string             `yaml:"version"`
+	Description string             `yaml:"description"`
+	URL         string             `yaml:"url,omitempty"`
+	Author      *Author            `yaml:"author"`
+	Template    *template.Template `yaml:"template"` // 当前主题的预编译结果
 }
 
 func loadThemes(path *vars.Path) ([]*Theme, error) {
@@ -51,10 +52,6 @@ func loadThemes(path *vars.Path) ([]*Theme, error) {
 		}
 		themes = append(themes, theme)
 	}
-
-	sort.SliceStable(themes, func(i, j int) bool {
-		return themes[i].Name < themes[j].Name
-	})
 
 	return themes, nil
 }
@@ -85,8 +82,42 @@ func loadTheme(path *vars.Path, id string) (*Theme, error) {
 	return theme, nil
 }
 
+func (d *Data) sanitizeThemes(conf *config) error {
+	var defaultTheme *Theme
+	for _, theme := range d.Themes { // 检测配置文件中的主题是否存在
+		if theme.ID == conf.Theme {
+			defaultTheme = theme
+			break
+		}
+	}
+
+	if defaultTheme == nil {
+		return &helper.FieldError{File: d.path.MetaConfigFile, Message: "该主题并不存在", Field: "theme"}
+	}
+
+	for _, theme := range d.Themes {
+		if err := d.compileTemplate(theme); err != nil {
+			return err
+		}
+	}
+
+	sort.SliceStable(d.Themes, func(i, j int) bool {
+		if defaultTheme == d.Themes[i] {
+			return true
+		}
+
+		if defaultTheme == d.Themes[j] {
+			return false
+		}
+
+		return d.Themes[i].Name < d.Themes[j].Name
+	})
+
+	return nil
+}
+
 // 编译主题的模板。
-func (d *Data) compileTemplate() error {
+func (d *Data) compileTemplate(theme *Theme) error {
 	funcMap := template.FuncMap{
 		"strip":    stripTags,
 		"html":     htmlEscaped,
@@ -99,17 +130,17 @@ func (d *Data) compileTemplate() error {
 
 	tpl, err := template.New("client").
 		Funcs(funcMap).
-		ParseGlob(filepath.Join(d.Theme.Path, "*"+vars.TemplateExtension))
+		ParseGlob(filepath.Join(theme.Path, "*"+vars.TemplateExtension))
 	if err != nil {
 		return err
 	}
-	d.Template = tpl
+	theme.Template = tpl
 
-	return d.checkTemplatesExists()
+	return d.checkTemplatesExists(theme)
 }
 
 // 检测模板名称是否在模板中真实存在
-func (d *Data) checkTemplatesExists() error {
+func (d *Data) checkTemplatesExists(theme *Theme) error {
 	var templates = []string{
 		vars.PostTemplateName,
 		"posts",
@@ -136,7 +167,7 @@ func (d *Data) checkTemplatesExists() error {
 
 	// 模板定义未必是按文件分的，所以不能简单地判断文件是否存在
 	for _, tpl := range templates {
-		if nil == d.Template.Lookup(tpl) {
+		if nil == theme.Template.Lookup(tpl) {
 			return fmt.Errorf("模板 %s 未定义", tpl)
 		}
 	}

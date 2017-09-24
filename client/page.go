@@ -104,9 +104,9 @@ func (client *Client) newInfo() *info {
 		AppVersion: vars.Version(),
 		GoVersion:  runtime.Version(),
 
-		ThemeName:   d.Theme.Name,
-		ThemeURL:    d.Theme.URL,
-		ThemeAuthor: d.Theme.Author,
+		ThemeName:   d.Themes[0].Name,
+		ThemeURL:    d.Themes[0].URL,
+		ThemeAuthor: d.Themes[0].Author,
 
 		SiteName:    conf.Title,
 		URL:         conf.URL,
@@ -202,7 +202,7 @@ func (p *page) render(w http.ResponseWriter, name string, headers map[string]str
 		}
 	}
 
-	err := p.client.data.Template.ExecuteTemplate(w, name, p)
+	err := p.client.data.Themes[0].Template.ExecuteTemplate(w, name, p)
 	if err != nil {
 		logs.Error(err)
 		p.client.renderError(w, http.StatusInternalServerError)
@@ -222,7 +222,7 @@ func (client *Client) renderError(w http.ResponseWriter, code int) {
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	filename := strconv.Itoa(code) + ".html"
-	path := filepath.Join(client.path.ThemesDir, client.data.Theme.ID, filename)
+	path := filepath.Join(client.path.ThemesDir, client.data.Themes[0].ID, filename)
 	if !utils.FileExists(path) {
 		logs.Debugf("模板文件 %s 不存在\n", path)
 		helper.StatusError(w, code)
