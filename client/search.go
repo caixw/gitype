@@ -16,7 +16,7 @@ import (
 
 // /search.html?q=key&page=2
 func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
-	p := client.page(typeSearch)
+	p := client.page(typeSearch, r)
 
 	q := r.FormValue("q")
 	if len(q) == 0 {

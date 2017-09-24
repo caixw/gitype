@@ -58,6 +58,7 @@ type page struct {
 	Type        string       // 当前页面类型
 	Author      *data.Author // 作者
 	License     *data.Link   // 当前页的版本信息，可以为空
+	Theme       *data.Theme
 
 	// 以下内容，仅在对应的页面才会有内容
 	Tag      *data.Tag       // 标签详细页面，非标签详细页，则为空
@@ -72,10 +73,6 @@ type info struct {
 	AppURL     string // 程序官网
 	AppVersion string // 当前程序的版本号
 	GoVersion  string // 编译的 Go 版本号
-
-	ThemeName   string       // 主题名称
-	ThemeURL    string       // 主题官网
-	ThemeAuthor *data.Author // 主题的作者
 
 	SiteName    string     // 网站名称
 	URL         string     // 网站地址，若是一个子目录，则需要包含该子目录
@@ -103,10 +100,6 @@ func (client *Client) newInfo() *info {
 		AppURL:     vars.URL,
 		AppVersion: vars.Version(),
 		GoVersion:  runtime.Version(),
-
-		ThemeName:   d.Themes[0].Name,
-		ThemeURL:    d.Themes[0].URL,
-		ThemeAuthor: d.Themes[0].Author,
 
 		SiteName:    conf.Title,
 		URL:         conf.URL,
@@ -149,8 +142,16 @@ func (client *Client) newInfo() *info {
 	return info
 }
 
-func (client *Client) page(typ string) *page {
+func (client *Client) page(typ string, r *http.Request) *page {
 	conf := client.data.Config
+
+	name := r.FormValue("theme")
+	theme := client.data.Themes[0] // 默认主题
+	for _, theme = range client.data.Themes {
+		if name == theme.ID {
+			break
+		}
+	}
 
 	return &page{
 		client:      client,
@@ -161,6 +162,7 @@ func (client *Client) page(typ string) *page {
 		Type:        typ,
 		Author:      conf.Author,
 		License:     conf.License,
+		Theme:       theme,
 	}
 }
 

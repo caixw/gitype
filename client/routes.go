@@ -65,7 +65,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post := client.data.Posts[index]
-	p := client.page(typePost)
+	p := client.page(typePost, r)
 
 	client.data.Outdated(post)
 	p.Post = post
@@ -103,7 +103,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := client.page(typeIndex)
+	p := client.page(typeIndex, r)
 	if page > 1 { // 非首页，标题显示页码数
 		p.Type = typePosts
 		p.Title = fmt.Sprintf("第 %d 页", page)
@@ -159,7 +159,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := client.page(typeTag)
+	p := client.page(typeTag, r)
 	p.Tag = tag
 	p.Title = tag.Title
 	p.Keywords = tag.Keywords
@@ -184,7 +184,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 // 友情链接页
 // /links.html
 func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
-	p := client.page(typeLinks)
+	p := client.page(typeLinks, r)
 	p.Title = "友情链接"
 	p.Canonical = client.data.URL(vars.LinksURL())
 
@@ -194,7 +194,7 @@ func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 // 标签列表页
 // /tags.html
 func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
-	p := client.page(typeTags)
+	p := client.page(typeTags, r)
 	p.Title = "标签"
 	p.Canonical = client.data.URL(vars.TagsURL())
 	p.Description = "标签列表"
@@ -205,7 +205,7 @@ func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 // 归档页
 // /archives.html
 func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
-	p := client.page(typeArchives)
+	p := client.page(typeArchives, r)
 	p.Title = "归档"
 	p.Keywords = "归档,存档,archive,archives"
 	p.Description = "网站的归档列表，按时间进行排序"
