@@ -46,10 +46,10 @@ func TestSearchURL(t *testing.T) {
 func TestThemesURL(t *testing.T) {
 	a := assert.New(t)
 
-	a.Equal(ThemesURL(""), "/themes/")
-	a.Equal(ThemesURL("/"), "/themes/")
-	a.Equal(ThemesURL("/path"), "/themes/path")
-	a.Equal(ThemesURL("/path/1"), "/themes/path/1")
+	a.Equal(ThemeURL(""), "/themes/")
+	a.Equal(ThemeURL("/"), "/themes/")
+	a.Equal(ThemeURL("/path"), "/themes/path")
+	a.Equal(ThemeURL("/path/1"), "/themes/path/1")
 }
 
 func TestAssetURL(t *testing.T) {

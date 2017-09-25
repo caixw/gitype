@@ -125,7 +125,7 @@ func (d *Data) compileTemplate(theme *Theme) error {
 		"ldate":    d.longDateFormat,
 		"sdate":    d.shortDateFormat,
 		"rfc3339":  rfc3339DateFormat,
-		"themeURL": func(p string) string { return vars.ThemesURL(p) },
+		"themeURL": func(p string) string { return vars.ThemeURL(p) },
 	}
 
 	tpl, err := template.New("client").

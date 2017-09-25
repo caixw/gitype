@@ -21,11 +21,11 @@ const (
 	links    = root + "links"    // 友情链接
 	archives = root + "archives" // 归档
 	search   = root + "search"   // 搜索
-	themes   = root + "themes/"  // 主题
-	asset    = root + "posts/"   // 文章资源
+	theme    = root + "themes/"  // 主题目录前缀
+	asset    = root + "posts/"   // 文章资源前缀
 )
 
-var (
+const (
 	linksURL    = links + suffix
 	indexURL    = index + suffix
 	tagsURL     = tags + suffix
@@ -103,9 +103,9 @@ func SearchURL(q string, page int) string {
 	return url
 }
 
-// ThemesURL 构建主题文件 URL
-func ThemesURL(path string) string {
-	return staticURL(themes, path)
+// ThemeURL 构建主题文件 URL
+func ThemeURL(path string) string {
+	return staticURL(theme, path)
 }
 
 // AssetURL 构建一条用于指向资源的 URL
