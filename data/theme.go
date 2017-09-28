@@ -95,17 +95,11 @@ func (d *Data) sanitizeThemes(conf *config) error {
 		return &helper.FieldError{File: d.path.MetaConfigFile, Message: "该主题并不存在", Field: "theme"}
 	}
 
-	for _, theme := range d.Themes {
-		if err := d.compileTemplate(theme); err != nil {
-			return err
-		}
-	}
-
 	sort.SliceStable(d.Themes, func(i, j int) bool {
+		// 确保默认主题在第一个位置
 		if defaultTheme == d.Themes[i] {
 			return true
 		}
-
 		if defaultTheme == d.Themes[j] {
 			return false
 		}
@@ -113,11 +107,11 @@ func (d *Data) sanitizeThemes(conf *config) error {
 		return d.Themes[i].Name < d.Themes[j].Name
 	})
 
-	return nil
+	return d.compileTemplates()
 }
 
 // 编译主题的模板。
-func (d *Data) compileTemplate(theme *Theme) error {
+func (d *Data) compileTemplates() error {
 	funcMap := template.FuncMap{
 		"strip":    stripTags,
 		"html":     htmlEscaped,
@@ -128,15 +122,32 @@ func (d *Data) compileTemplate(theme *Theme) error {
 		"themeURL": func(p string) string { return vars.ThemeURL(p) },
 	}
 
-	tpl, err := template.New("client").
+	// 公用的代码片段模板
+	snippets, err := template.New("snippets").
 		Funcs(funcMap).
-		ParseGlob(filepath.Join(theme.Path, "*"+vars.TemplateExtension))
+		ParseGlob(filepath.Join(d.path.ThemesDir, "*"+vars.TemplateExtension))
 	if err != nil {
 		return err
 	}
-	theme.Template = tpl
 
-	return d.checkTemplatesExists(theme)
+	// 编译各个主题
+	for _, theme := range d.Themes {
+		theme.Template, err = snippets.Clone()
+		if err != nil {
+			return err
+		}
+
+		_, err = theme.Template.ParseGlob(filepath.Join(theme.Path, "*"+vars.TemplateExtension))
+		if err != nil {
+			return err
+		}
+
+		if err = d.checkTemplatesExists(theme); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // 检测模板名称是否在模板中真实存在
