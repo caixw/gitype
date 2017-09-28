@@ -136,6 +136,9 @@ func (conf *Config) sanitize() *helper.FieldError {
 	}
 
 	if conf.CookieMaxAge < 0 {
+		return &helper.FieldError{Field: "cookieMaxAge", Message: "必须大于 0"}
+	}
+	if conf.CookieMaxAge == 0 {
 		conf.CookieMaxAge = cookieMaxAge
 	}
 

@@ -78,8 +78,7 @@ func (a *app) serveHTTP(h http.Handler) {
 
 // 重新加载数据
 func (a *app) reload() error {
-	// 释放旧数据
-	if a.client != nil {
+	if a.client != nil { // 释放旧数据
 		a.client.Free()
 	}
 
