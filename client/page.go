@@ -42,8 +42,13 @@ func buildContentTypeContent(mime string) string {
 	return mime + ";charset=utf-8"
 }
 
+// 设置页面的编码，若已经存在，则不会受影响。
+// 要强制指定，请直接使用 w.Header().Set()
 func setContentType(w http.ResponseWriter, mime string) {
-	w.Header().Set(contentTypeKey, buildContentTypeContent(mime))
+	h := w.Header()
+	if len(h.Get(contentTypeKey)) == 0 {
+		h.Set(contentTypeKey, buildContentTypeContent(mime))
+	}
 }
 
 // 用于描述一个页面的所有无素
@@ -196,24 +201,20 @@ func (p *page) prevPage(url, text string) {
 
 // 输出当前内容到指定模板
 func (p *page) render(name string) {
-		headers := map[string]string{}
+	setContentType(p.w, p.client.data.Config.Type)
 
-	if _, exists := headers[contentTypeKey]; !exists {
-		headers[contentTypeKey] = buildContentTypeContent(p.client.data.Config.Type)
+	cookie := &http.Cookie{
+		Name:     vars.ThemeName,
+		Value:    p.Theme.ID,
+		HttpOnly: true,
 	}
-
 	if p.Theme.ID != p.client.data.Themes[0].ID {
-		cookie := &http.Cookie{
-			Name:     vars.ThemeName,
-			Value:    p.Theme.ID,
-			HttpOnly: true,
-		}
-		headers[cookieKey] = cookie.String()
+		cookie.MaxAge = vars.CookieMaxAge
+	} else {
+		cookie.MaxAge = -1
 	}
-
-	for key, val := range headers {
-		p.w.Header().Set(key, val)
-	}
+	cookie.Expires = time.Now().Add(time.Second * vars.CookieMaxAge)
+	p.w.Header().Add(cookieKey, cookie.String())
 
 	err := p.template.ExecuteTemplate(p.w, name, p)
 	if err != nil {

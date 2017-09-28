@@ -28,6 +28,9 @@ const (
 
 	// ThemeName 主题名称在在传递过程中的名称
 	ThemeName = "theme"
+
+	// CookieMaxAge cookie 的生存期，单位：秒
+	CookieMaxAge = 3600
 )
 
 // 默认的 mime type 类型。
