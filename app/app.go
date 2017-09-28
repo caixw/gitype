@@ -17,9 +17,10 @@ import (
 )
 
 type app struct {
-	path   *vars.Path
-	mux    *mux.Mux
-	conf   *config.Config
+	path *vars.Path
+	mux  *mux.Mux
+	conf *config.Config
+
 	client *client.Client
 }
 

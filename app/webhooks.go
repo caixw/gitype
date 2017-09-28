@@ -15,13 +15,11 @@ import (
 	"github.com/issue9/utils"
 )
 
-// 将一个 log.Logger 封装成 io.Writer
-type logWriter struct {
-	l *log.Logger
-}
+// 将一个 log.Logger 封装成 io.Writer 接口
+type logWriter log.Logger
 
 func (w *logWriter) Write(bs []byte) (int, error) {
-	w.l.Print(string(bs))
+	(*log.Logger)(w).Print(string(bs))
 	return len(bs), nil
 }
 
@@ -42,8 +40,8 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 		cmd.Dir = a.path.Root
 	}
 
-	cmd.Stderr = &logWriter{l: logs.ERROR()}
-	cmd.Stdout = &logWriter{l: logs.INFO()}
+	cmd.Stderr = (*logWriter)(logs.ERROR())
+	cmd.Stdout = (*logWriter)(logs.INFO())
 	if err := cmd.Run(); err != nil {
 		logs.Error(err)
 		helper.StatusError(w, http.StatusInternalServerError)
