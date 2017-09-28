@@ -18,7 +18,7 @@ const (
 	PostMetaFilename    = "meta.yaml"
 	PostContentFilename = "content.html"
 
-	themeMetaFilename = "theme.yaml"
+	ThemeMetaFilename = "theme.yaml"
 )
 
 // 一些目录名称的定义
@@ -97,7 +97,7 @@ func (p *Path) RawsPath(file string) string {
 
 // ThemeMetaPath 返回指定主题下的描述文件
 func (p *Path) ThemeMetaPath(theme string) string {
-	return filepath.Join(p.ThemesDir, theme, themeMetaFilename)
+	return filepath.Join(p.ThemesDir, theme, ThemeMetaFilename)
 }
 
 // PostPath 返回某一篇文章下的文件名

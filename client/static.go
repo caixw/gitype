@@ -15,25 +15,6 @@ import (
 	"github.com/issue9/utils"
 )
 
-// 模板的扩展名，在主题目录下，以下扩展名的文件，不会被展示
-var ignoreThemeFileExts = []string{
-	vars.TemplateExtension,
-	".yaml",
-	".yml",
-}
-
-func isIgnoreThemeFile(file string) bool {
-	ext := filepath.Ext(file)
-
-	for _, v := range ignoreThemeFileExts {
-		if ext == v {
-			return true
-		}
-	}
-
-	return false
-}
-
 // 资源内容
 // /posts/{path}
 func (client *Client) getAsset(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +39,14 @@ func (client *Client) getAsset(w http.ResponseWriter, r *http.Request) {
 // 主题文件
 // /themes/...
 func (client *Client) getTheme(w http.ResponseWriter, r *http.Request) {
-	if isIgnoreThemeFile(r.URL.Path) { // 不展示模板文件，查看 raws 中是否有同名文件
+	// 不展示模板文件，查看 raws 中是否有同名文件
+	if filepath.Ext(r.URL.Path) == vars.TemplateExtension {
+		client.getRaw(w, r)
+		return
+	}
+
+	// 不显示 theme.yaml
+	if filepath.Base(r.URL.Path) == vars.ThemeMetaFilename {
 		client.getRaw(w, r)
 		return
 	}

@@ -7,18 +7,7 @@ package client
 import (
 	"net/http"
 	"testing"
-
-	"github.com/caixw/typing/vars"
-	"github.com/issue9/assert"
 )
-
-func TestIsIgnoreThemeFile(t *testing.T) {
-	a := assert.New(t)
-	a.True(isIgnoreThemeFile(vars.TemplateExtension))
-	a.True(isIgnoreThemeFile(".yaml"))
-	a.False(isIgnoreThemeFile(".txt"))
-	a.False(isIgnoreThemeFile(".css"))
-}
 
 func TestGetAsset(t *testing.T) {
 	testers := []*httpTester{
@@ -69,6 +58,12 @@ func TestGetTheme(t *testing.T) {
 		// theme.yaml
 		{
 			path:   "/themes/t1/theme.yaml",
+			status: http.StatusNotFound,
+		},
+
+		// themes/analytics.html
+		{
+			path:   "/themes/analytics",
 			status: http.StatusNotFound,
 		},
 
