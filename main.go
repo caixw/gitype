@@ -11,6 +11,7 @@ import (
 	"runtime"
 
 	"github.com/caixw/typing/app"
+	"github.com/caixw/typing/config"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 )
@@ -72,7 +73,7 @@ func printVersion() {
 }
 
 func runInit(root string) {
-	if err := app.Init(vars.NewPath(root)); err != nil {
+	if err := config.Init(vars.NewPath(root)); err != nil {
 		panic(err)
 	}
 

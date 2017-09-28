@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/caixw/typing/client"
+	"github.com/caixw/typing/config"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
@@ -18,7 +19,7 @@ import (
 type app struct {
 	path   *vars.Path
 	mux    *mux.Mux
-	conf   *config
+	conf   *config.Config
 	client *client.Client
 }
 
@@ -26,7 +27,7 @@ type app struct {
 func Run(path *vars.Path, pprof bool) error {
 	logs.Info("程序工作路径为:", path.Root)
 
-	conf, err := loadConfig(path)
+	conf, err := config.Load(path)
 	if err != nil {
 		return err
 	}
@@ -61,10 +62,10 @@ func Run(path *vars.Path, pprof bool) error {
 // 对 80 端口的处理方式
 func (a *app) serveHTTP(h http.Handler) {
 	switch a.conf.HTTPState {
-	case httpStateDefault:
-		logs.Error(http.ListenAndServe(httpPort, h))
-	case httpStateRedirect:
-		logs.Error(http.ListenAndServe(httpPort, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	case config.HTTPStateDefault:
+		logs.Error(http.ListenAndServe(config.HTTPPort, h))
+	case config.HTTPStateRedirect:
+		logs.Error(http.ListenAndServe(config.HTTPPort, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// 构建跳转链接
 			url := r.URL
 			url.Scheme = "HTTPS"

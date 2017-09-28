@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package app
+package config
 
 import (
 	"net/http"
@@ -51,16 +51,16 @@ var defaultLogsXML = `<?xml version="1.0" encoding="utf-8" ?>
 `
 
 // 输出的默认配置内容
-var defaultConfig = &config{
+var defaultConfig = &Config{
 	HTTPS:     true,
-	HTTPState: httpStateRedirect,
+	HTTPState: HTTPStateRedirect,
 	CertFile:  "cert",
 	KeyFile:   "key",
 	Port:      ":443",
 	Headers: map[string]string{
 		"Server": vars.Name + vars.Version(),
 	},
-	Webhook: &webhook{
+	Webhook: &Webhook{
 		URL:       "/webhooks",
 		Frequency: time.Minute,
 		Method:    http.MethodPost,

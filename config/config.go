@@ -2,7 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package app
+// Package config 全局的配置内容。
+package config
 
 import (
 	"net/http"
@@ -15,18 +16,21 @@ import (
 	"github.com/issue9/utils"
 )
 
+// 两个默认端口的定义
 const (
-	httpPort  = ":80"
-	httpsPort = ":443"
+	HTTPPort  = ":80"
+	HTTPSPort = ":443"
 )
 
+// 对 Config.HTTPState 可选值的定义
 const (
-	httpStateDefault  = "default"
-	httpStateDisable  = "disable"
-	httpStateRedirect = "redirect"
+	HTTPStateDefault  = "default"
+	HTTPStateDisable  = "disable"
+	HTTPStateRedirect = "redirect"
 )
 
-type config struct {
+// Config 程序的全局配置内容
+type Config struct {
 	// 是否启用 HTTPS 模式。如果启用了，则需要正确设置以下几个值：
 	// HTTPState、CertFile、KeyFile
 	HTTPS bool `yaml:"https,omitempty"`
@@ -53,18 +57,20 @@ type config struct {
 	// 其中键名表示报头名称，键值表示报头的值。
 	Headers map[string]string `yaml:"headers,omitempty"`
 
-	Webhook *webhook `yaml:"webhook"`
+	Webhook *Webhook `yaml:"webhook"`
 }
 
-type webhook struct {
+// Webhook 与 Webhooks 相关的配置内容
+type Webhook struct {
 	URL       string        `yaml:"url"`              // webhooks 接收地址
 	Frequency time.Duration `yaml:"frequency"`        // webhooks 的最小更新频率
 	Method    string        `yaml:"method,omitempty"` // webhooks 的请求方式，默认为 POST
 	RepoURL   string        `yaml:"repoURL"`          // 远程仓库的地址
 }
 
-func loadConfig(path *vars.Path) (*config, error) {
-	conf := &config{}
+// Load 加载配置内容
+func Load(path *vars.Path) (*Config, error) {
+	conf := &Config{}
 	if err := helper.LoadYAMLFile(path.AppConfigFile, conf); err != nil {
 		return nil, err
 	}
@@ -77,7 +83,7 @@ func loadConfig(path *vars.Path) (*config, error) {
 	return conf, nil
 }
 
-func (w *webhook) sanitize() *helper.FieldError {
+func (w *Webhook) sanitize() *helper.FieldError {
 	if len(w.Method) == 0 {
 		w.Method = http.MethodPost
 	}
@@ -94,26 +100,26 @@ func (w *webhook) sanitize() *helper.FieldError {
 	return nil
 }
 
-func (conf *config) sanitize() *helper.FieldError {
+func (conf *Config) sanitize() *helper.FieldError {
 	if len(conf.Port) == 0 {
 		if conf.HTTPS {
-			conf.Port = httpsPort
+			conf.Port = HTTPSPort
 		} else {
-			conf.Port = httpPort
+			conf.Port = HTTPPort
 		}
 	}
 
 	if conf.HTTPS {
 		if len(conf.HTTPState) == 0 {
-			conf.HTTPState = httpStateDefault
+			conf.HTTPState = HTTPStateDefault
 		}
 
 		switch {
-		case conf.HTTPState != httpStateDefault &&
-			conf.HTTPState != httpStateDisable &&
-			conf.HTTPState != httpStateRedirect:
+		case conf.HTTPState != HTTPStateDefault &&
+			conf.HTTPState != HTTPStateDisable &&
+			conf.HTTPState != HTTPStateRedirect:
 			return &helper.FieldError{Field: "httpState", Message: "无效的取值"}
-		case conf.HTTPState != httpStateDisable && conf.Port == httpPort:
+		case conf.HTTPState != HTTPStateDisable && conf.Port == HTTPPort:
 			return &helper.FieldError{Field: "port", Message: "80 端口已经被被监听"}
 		case !utils.FileExists(conf.CertFile):
 			return &helper.FieldError{Field: "certFile", Message: "不能为空"}
