@@ -195,10 +195,8 @@ func (p *page) prevPage(url, text string) {
 }
 
 // 输出当前内容到指定模板
-func (p *page) render(name string, headers map[string]string) {
-	if len(headers) == 0 {
-		headers = map[string]string{}
-	}
+func (p *page) render(name string) {
+		headers := map[string]string{}
 
 	if _, exists := headers[contentTypeKey]; !exists {
 		headers[contentTypeKey] = buildContentTypeContent(p.client.data.Config.Type)

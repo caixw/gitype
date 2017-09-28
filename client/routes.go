@@ -85,7 +85,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 		p.nextPage(next.Permalink, next.Title)
 	}
 
-	p.render(post.Template, nil)
+	p.render(post.Template)
 }
 
 // 首页及文章列表页
@@ -122,7 +122,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 		p.nextPage(vars.PostsURL(page+1), "")
 	}
 
-	p.render("posts", nil)
+	p.render("posts")
 }
 
 // 标签详细页
@@ -178,7 +178,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 		p.nextPage(vars.TagURL(slug, page+1), "")
 	}
 
-	p.render("tag", nil)
+	p.render("tag")
 }
 
 // 友情链接页
@@ -188,7 +188,7 @@ func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 	p.Title = "友情链接"
 	p.Canonical = client.data.URL(vars.LinksURL())
 
-	p.render("links", nil)
+	p.render("links")
 }
 
 // 标签列表页
@@ -199,7 +199,7 @@ func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	p.Canonical = client.data.URL(vars.TagsURL())
 	p.Description = "标签列表"
 
-	p.render("tags", nil)
+	p.render("tags")
 }
 
 // 归档页
@@ -212,7 +212,7 @@ func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	p.Canonical = client.data.URL(vars.ArchivesURL())
 	p.Archives = client.data.Archives
 
-	p.render("archives", nil)
+	p.render("archives")
 }
 
 // 确认当前文章列表页选择范围。
