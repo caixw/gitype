@@ -112,20 +112,9 @@ func (d *Data) sanitizeThemes(conf *config) error {
 
 // 编译主题的模板。
 func (d *Data) compileTemplates() error {
-	funcMap := template.FuncMap{
-		"strip":    stripTags,
-		"html":     htmlEscaped,
-		"unix":     unix,
-		"ldate":    d.longDateFormat,
-		"sdate":    d.shortDateFormat,
-		"rfc3339":  rfc3339DateFormat,
-		"themeURL": func(p string) string { return vars.ThemeURL(p) },
-	}
+	templates := d.templatesName()
 
-	// 公用的代码片段模板
-	snippets, err := template.New("snippets").
-		Funcs(funcMap).
-		ParseGlob(filepath.Join(d.path.ThemesDir, "*"+vars.TemplateExtension))
+	snippets, err := d.snippetsTemplate()
 	if err != nil {
 		return err
 	}
@@ -142,16 +131,38 @@ func (d *Data) compileTemplates() error {
 			return err
 		}
 
-		if err = d.checkTemplatesExists(theme); err != nil {
-			return err
+		// 检测模板名称是否在模板中真实存在
+		// 模板定义未必是按文件分的，所以不能简单地判断文件是否存在
+		for _, tpl := range templates {
+			if nil == theme.Template.Lookup(tpl) {
+				return fmt.Errorf("模板 %s 未定义", tpl)
+			}
 		}
 	}
 
 	return nil
 }
 
-// 检测模板名称是否在模板中真实存在
-func (d *Data) checkTemplatesExists(theme *Theme) error {
+// 获取公用的代码片段模板
+func (d *Data) snippetsTemplate() (*template.Template, error) {
+	funs := template.FuncMap{
+		"strip":    stripTags,
+		"html":     htmlEscaped,
+		"unix":     unix,
+		"ldate":    d.longDateFormat,
+		"sdate":    d.shortDateFormat,
+		"rfc3339":  rfc3339DateFormat,
+		"themeURL": func(p string) string { return vars.ThemeURL(p) },
+	}
+
+	return template.New("snippets").
+		Funcs(funs).
+		ParseGlob(filepath.Join(d.path.ThemesDir, "*"+vars.TemplateExtension))
+}
+
+// 获取所有的模板名称，除了固定的模板名称之外，
+// 文章可以自定义模板名称。
+func (d *Data) templatesName() []string {
 	var templates = []string{
 		vars.PostTemplateName,
 		"posts",
@@ -162,7 +173,7 @@ func (d *Data) checkTemplatesExists(theme *Theme) error {
 		"search",
 	}
 
-	// 获取文章详情页中的新模板名
+	// 只有文章页可以自定义模板名称
 	for _, post := range d.Posts {
 		// 默认模板名，肯定已存在于 templates 变量中
 		if post.Template == vars.PostTemplateName {
@@ -176,14 +187,7 @@ func (d *Data) checkTemplatesExists(theme *Theme) error {
 		}
 	}
 
-	// 模板定义未必是按文件分的，所以不能简单地判断文件是否存在
-	for _, tpl := range templates {
-		if nil == theme.Template.Lookup(tpl) {
-			return fmt.Errorf("模板 %s 未定义", tpl)
-		}
-	}
-
-	return nil
+	return templates
 }
 
 func rfc3339DateFormat(t time.Time) interface{} {
