@@ -74,15 +74,16 @@ conf 目录下的为程序级别的配置文件，需要重启才能使更改生
 
 ##### app.yaml
 
-名称        | 类型     | 描述
-:-----------|:---------|:------
-https       | bool     | 是否启用 https
-httpState   | string   | 当 https 为 true 时，对 80 端口的处理方式，可以为 disable、redirect 和 default
-certFile    | string   | 当 https 为 true 时，此值为必填
-keyFile     | string   | 当 https 为 true 时，此值为必填
-port        | string   | 端口，不指定，默认为 80 或是 443
-headers     | map      | 附加的头信息，头信息可能在其它地方被修改
-webhook     | Webhook  | 与 webhook 相关的设置
+名称         | 类型     | 描述
+:------------|:---------|:------
+https        | bool     | 是否启用 https
+httpState    | string   | 当 https 为 true 时，对 80 端口的处理方式，可以为 disable、redirect 和 default
+certFile     | string   | 当 https 为 true 时，此值为必填
+keyFile      | string   | 当 https 为 true 时，此值为必填
+port         | string   | 端口，不指定，默认为 80 或是 443
+cookieMaxAge | int      | cookie 的生存期，单位：秒
+headers      | map      | 附加的头信息，头信息可能在其它地方被修改
+webhook      | Webhook  | 与 webhook 相关的设置
 
 
 
