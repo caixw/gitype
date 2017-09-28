@@ -84,7 +84,7 @@ func (a *app) reload() error {
 	}
 
 	// 生成新的数据
-	c, err := client.New(a.path, a.mux)
+	c, err := client.New(a.path, a.mux, a.conf)
 	if err != nil {
 		return err
 	}

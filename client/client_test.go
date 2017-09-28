@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/caixw/typing/config"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 	"github.com/issue9/mux"
@@ -59,7 +60,7 @@ func TestMain(t *testing.T) {
 	a := assert.New(t)
 	path := vars.NewPath("../testdata")
 
-	client, err := New(path, router)
+	client, err := New(path, router, &config.Config{})
 	a.NotError(err).NotNil(client)
 
 	a.Equal(client.path, path)

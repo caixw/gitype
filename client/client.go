@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/caixw/typing/config"
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/mux"
@@ -18,16 +19,18 @@ import (
 // Client 包含了整个可动态加载的数据以及路由的相关操作。
 // 当需要重新加载数据时，只要获取一个新的 Client 实例即可。
 type Client struct {
-	path     *vars.Path
+	path *vars.Path
+	mux  *mux.Mux
+	conf *config.Config
+
 	data     *data.Data
-	mux      *mux.Mux
 	patterns []string // 记录所有的路由项，方便释放时删除
 	etag     string
 	info     *info
 }
 
 // New 声明一个新的 Client 实例
-func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
+func New(path *vars.Path, mux *mux.Mux, conf *config.Config) (*Client, error) {
 	d, err := data.Load(path)
 	if err != nil {
 		return nil, err
@@ -36,6 +39,7 @@ func New(path *vars.Path, mux *mux.Mux) (*Client, error) {
 	client := &Client{
 		path: path,
 		mux:  mux,
+		conf: conf,
 		etag: strconv.FormatInt(d.Created.Unix(), 10),
 		data: d,
 	}

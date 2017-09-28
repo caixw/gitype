@@ -209,11 +209,11 @@ func (p *page) render(name string) {
 		HttpOnly: true,
 	}
 	if p.Theme.ID != p.client.data.Themes[0].ID {
-		cookie.MaxAge = vars.CookieMaxAge
+		cookie.MaxAge = p.client.conf.CookieMaxAge
 	} else {
 		cookie.MaxAge = -1
 	}
-	cookie.Expires = time.Now().Add(time.Second * vars.CookieMaxAge)
+	cookie.Expires = time.Now().Add(time.Second * time.Duration(p.client.conf.CookieMaxAge))
 	p.w.Header().Add(cookieKey, cookie.String())
 
 	err := p.template.ExecuteTemplate(p.w, name, p)
