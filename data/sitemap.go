@@ -12,6 +12,8 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
+const contentTypeXML = "application/xml"
+
 type sitemapConfig struct {
 	URL  string `yaml:"url"`
 	Type string `yaml:"type,omitempty"`
@@ -122,7 +124,7 @@ func (s *sitemapConfig) sanitize() *helper.FieldError {
 	}
 
 	if len(s.Type) == 0 {
-		s.Type = vars.ContentTypeXML
+		s.Type = contentTypeXML
 	}
 
 	return nil

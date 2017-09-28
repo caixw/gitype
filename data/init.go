@@ -47,6 +47,7 @@ var defaultConfig = &config{
 	PageSize:        20,
 	LongDateFormat:  "2006-01-02 15:04:05",
 	ShortDateFormat: "2006-01-02",
+	Type:            contentTypeHTML,
 	Author: &Author{
 		Name: vars.Name,
 		URL:  vars.URL,
@@ -61,6 +62,13 @@ var defaultConfig = &config{
 	Archive: &archiveConfig{
 		Type:   archiveTypeYear,
 		Format: "2006 年",
+	},
+
+	RSS: &rssConfig{
+		Title: "RSS",
+		URL:   "/rss.xml",
+		Type:  contentTypeRSS,
+		Size:  20,
 	},
 }
 

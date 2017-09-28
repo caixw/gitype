@@ -8,7 +8,11 @@ import (
 	"time"
 
 	"github.com/caixw/typing/helper"
-	"github.com/caixw/typing/vars"
+)
+
+const (
+	contentTypeAtom = "application/atom+xml"
+	contentTypeRSS  = "application/rss+xml"
 )
 
 // RSS 和 Atom 相关的配置项
@@ -88,9 +92,9 @@ func (rss *rssConfig) sanitize(conf *config, typ string) *helper.FieldError {
 
 	switch typ {
 	case "rss":
-		rss.Type = vars.ContentTypeRSS
+		rss.Type = contentTypeRSS
 	case "atom":
-		rss.Type = vars.ContentTypeAtom
+		rss.Type = contentTypeAtom
 	default:
 		panic("无效的 typ 值")
 	}

@@ -52,11 +52,12 @@ var defaultLogsXML = `<?xml version="1.0" encoding="utf-8" ?>
 
 // 输出的默认配置内容
 var defaultConfig = &Config{
-	HTTPS:     true,
-	HTTPState: HTTPStateRedirect,
-	CertFile:  "cert",
-	KeyFile:   "key",
-	Port:      ":443",
+	HTTPS:        true,
+	HTTPState:    HTTPStateRedirect,
+	CertFile:     "cert",
+	KeyFile:      "key",
+	Port:         ":443",
+	CookieMaxAge: cookieMaxAge,
 	Headers: map[string]string{
 		"Server": vars.Name + vars.Version(),
 	},

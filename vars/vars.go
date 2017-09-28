@@ -28,22 +28,6 @@ const (
 
 	// ThemeName 主题名称在在传递过程中的名称
 	ThemeName = "theme"
-
-	// CookieMaxAge cookie 的生存期，单位：秒
-	CookieMaxAge = 3600
-)
-
-// 默认的 mime type 类型。
-//
-// 一般情况下，用户无须修改此处内容，所有的 mime type 值都可以在
-// data/meta/config.yaml 中手动指定，此处仅作为在其未指定的情况下
-// 的一种默认值。
-const (
-	ContentTypeHTML       = "text/html"
-	ContentTypeXML        = "application/xml"
-	ContentTypeAtom       = "application/atom+xml"
-	ContentTypeRSS        = "application/rss+xml"
-	ContentTypeOpensearch = "application/opensearchdescription+xml"
 )
 
 // 一些默认的字面文本内容。

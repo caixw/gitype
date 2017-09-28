@@ -11,6 +11,8 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
+const contentTypeOpensearch = "application/opensearchdescription+xml"
+
 type opensearchConfig struct {
 	URL   string `yaml:"url"`
 	Type  string `yaml:"type,omitempty"`
@@ -89,7 +91,7 @@ func (s *opensearchConfig) sanitize(conf *config) *helper.FieldError {
 	}
 
 	if len(s.Type) == 0 {
-		s.Type = vars.ContentTypeOpensearch
+		s.Type = contentTypeOpensearch
 	}
 
 	if s.Image == nil && conf.Icon != nil {

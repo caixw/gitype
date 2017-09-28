@@ -29,6 +29,10 @@ const (
 	HTTPStateRedirect = "redirect"
 )
 
+const (
+	cookieMaxAge = 3600
+)
+
 // Config 程序的全局配置内容
 type Config struct {
 	// 是否启用 HTTPS 模式。如果启用了，则需要正确设置以下几个值：
@@ -50,7 +54,6 @@ type Config struct {
 	Port string `yaml:"port,omitempty"`
 
 	// CookieMaxAge cookie 的生存期，单位：秒
-	// 默认值为 vars.CookieMaxAge
 	CookieMaxAge int `yaml:"cookieMaxAge,omitempty"`
 
 	// 绑定的域名，若指定了该值，则只能通过这些域名才能访问网站。
@@ -133,7 +136,7 @@ func (conf *Config) sanitize() *helper.FieldError {
 	}
 
 	if conf.CookieMaxAge < 0 {
-		conf.CookieMaxAge = vars.CookieMaxAge
+		conf.CookieMaxAge = cookieMaxAge
 	}
 
 	if len(conf.Domains) > 0 {

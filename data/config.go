@@ -14,6 +14,8 @@ import (
 	"github.com/issue9/is"
 )
 
+const contentTypeHTML = "text/html"
+
 // Config 配置信息，相对于 config，去掉部分临时性的变量，供 Data 对外公开用。
 type Config struct {
 	Title           string    // 网站标题
@@ -27,7 +29,7 @@ type Config struct {
 	PageSize        int       // 每页显示的数量
 	LongDateFormat  string    // 长时间的显示格式
 	ShortDateFormat string    // 短时间的显示格式
-	Type            string    // 所有页面的 mime type 类型，默认使用 vars.ContntTypeHTML
+	Type            string    // 所有页面的 mime type 类型，默认使用
 	Icon            *Icon     // 程序默认的图标
 	Menus           []*Link   // 导航菜单
 	Author          *Author   // 默认作者信息
@@ -117,7 +119,7 @@ func (conf *config) sanitize() *helper.FieldError {
 	conf.Uptime = t
 
 	if len(conf.Type) == 0 {
-		conf.Type = vars.ContentTypeHTML
+		conf.Type = contentTypeHTML
 	}
 
 	// icon

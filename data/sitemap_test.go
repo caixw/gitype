@@ -7,7 +7,6 @@ package data
 import (
 	"testing"
 
-	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
 
@@ -30,7 +29,7 @@ func TestSitemapConfig_sanitize(t *testing.T) {
 	s.Changefreq = "never"
 	s.PostChangefreq = "never"
 	a.NotError(s.sanitize())
-	a.Equal(s.Type, vars.ContentTypeXML) // 默认值
+	a.Equal(s.Type, contentTypeXML) // 默认值
 }
 
 func TestIsChangereq(t *testing.T) {
