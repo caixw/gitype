@@ -10,7 +10,8 @@ import (
 	"time"
 
 	"github.com/caixw/typing/helper"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/path"
+	"github.com/caixw/typing/url"
 )
 
 // Tag 描述标签信息
@@ -30,7 +31,7 @@ type Tag struct {
 	Permalink   string    `yaml:"-"`               // 唯一链接，指向第一页
 }
 
-func loadTags(path *vars.Path) ([]*Tag, error) {
+func loadTags(path *path.Path) ([]*Tag, error) {
 	tags := make([]*Tag, 0, 100)
 	if err := helper.LoadYAMLFile(path.MetaTagsFile, &tags); err != nil {
 		return nil, err
@@ -103,7 +104,7 @@ func (tag *Tag) sanitize() *helper.FieldError {
 
 	tag.Posts = make([]*Post, 0, 100)
 
-	tag.Permalink = vars.TagURL(tag.Slug, 1)
+	tag.Permalink = url.Tag(tag.Slug, 1)
 
 	tag.Keywords = tag.Title
 	if tag.Title != tag.Slug {

@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/caixw/typing/data"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/url"
 	"github.com/issue9/logs"
 )
 
@@ -20,7 +20,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 
 	q := r.FormValue("q")
 	if len(q) == 0 {
-		http.Redirect(w, r, vars.PostsURL(1), http.StatusPermanentRedirect)
+		http.Redirect(w, r, url.Posts(1), http.StatusPermanentRedirect)
 		return
 	}
 
@@ -41,17 +41,17 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p.Q = q
 	p.Keywords = q + ",搜索,search"
 	p.Description = "搜索关键字" + q + "的结果"
-	p.Canonical = client.data.URL(vars.SearchURL(p.Q, page))
+	p.Canonical = client.data.URL(url.Search(p.Q, page))
 	start, end, ok := client.getPostsRange(len(posts), page, w, r)
 	if !ok {
 		return
 	}
 	p.Posts = posts[start:end]
 	if page > 1 {
-		p.prevPage(vars.SearchURL(q, page-1), "")
+		p.prevPage(url.Search(q, page-1), "")
 	}
 	if end < len(posts) {
-		p.nextPage(vars.SearchURL(q, page+1), "")
+		p.nextPage(url.Search(q, page+1), "")
 	}
 
 	p.render("search")

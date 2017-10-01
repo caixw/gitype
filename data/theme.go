@@ -15,6 +15,8 @@ import (
 	"time"
 
 	"github.com/caixw/typing/helper"
+	"github.com/caixw/typing/path"
+	"github.com/caixw/typing/url"
 	"github.com/caixw/typing/vars"
 )
 
@@ -30,7 +32,7 @@ type Theme struct {
 	Template    *template.Template `yaml:"template"` // 当前主题的预编译结果
 }
 
-func loadThemes(path *vars.Path) ([]*Theme, error) {
+func loadThemes(path *path.Path) ([]*Theme, error) {
 	dir := path.ThemesDir
 	fs, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -57,7 +59,7 @@ func loadThemes(path *vars.Path) ([]*Theme, error) {
 }
 
 // id 主题当前目录名称
-func loadTheme(path *vars.Path, id string) (*Theme, error) {
+func loadTheme(path *path.Path, id string) (*Theme, error) {
 	p := path.ThemeMetaPath(id)
 
 	theme := &Theme{}
@@ -152,7 +154,7 @@ func (d *Data) snippetsTemplate() (*template.Template, error) {
 		"ldate":    d.longDateFormat,
 		"sdate":    d.shortDateFormat,
 		"rfc3339":  rfc3339DateFormat,
-		"themeURL": func(p string) string { return vars.ThemeURL(p) },
+		"themeURL": func(p string) string { return url.Theme(p) },
 	}
 
 	return template.New("snippets").

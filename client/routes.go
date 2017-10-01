@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	"github.com/caixw/typing/data"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/url"
 	"github.com/issue9/logs"
 	"github.com/issue9/middleware/compress"
 	"github.com/issue9/mux"
@@ -26,16 +26,16 @@ func (client *Client) initRoutes() (err error) {
 		err = client.mux.HandleFunc(pattern, client.prepare(h), http.MethodGet)
 	}
 
-	handle(vars.PostURL("{slug}"), client.getPost)   // posts/2016/about.html   posts/{slug}.html
-	handle(vars.AssetURL("{path}"), client.getAsset) // posts/2016/about/abc.png  posts/{path}
-	handle(vars.IndexURL(0), client.getPosts)        // index.html
-	handle(vars.LinksURL(), client.getLinks)         // links.html
-	handle(vars.TagURL("{slug}", 1), client.getTag)  // tags/tag1.html     tags/{slug}.html
-	handle(vars.TagsURL(), client.getTags)           // tags.html
-	handle(vars.ArchivesURL(), client.getArchives)   // archives.html
-	handle(vars.SearchURL("", 1), client.getSearch)  // search.html
-	handle(vars.ThemeURL("{path}"), client.getTheme) // themes/...          themes/{path}
-	handle("/{path}", client.getRaw)                 // /...                /{path}
+	handle(url.Post("{slug}"), client.getPost)   // posts/2016/about.html   posts/{slug}.html
+	handle(url.Asset("{path}"), client.getAsset) // posts/2016/about/abc.png  posts/{path}
+	handle(url.Index(0), client.getPosts)        // index.html
+	handle(url.Links(), client.getLinks)         // links.html
+	handle(url.Tag("{slug}", 1), client.getTag)  // tags/tag1.html     tags/{slug}.html
+	handle(url.Tags(), client.getTags)           // tags.html
+	handle(url.Archives(), client.getArchives)   // archives.html
+	handle(url.Search("", 1), client.getSearch)  // search.html
+	handle(url.Theme("{path}"), client.getTheme) // themes/...          themes/{path}
+	handle("/{path}", client.getRaw)             // /...                /{path}
 
 	return err
 }
@@ -108,7 +108,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 		p.Type = typePosts
 		p.Title = fmt.Sprintf("第 %d 页", page)
 	}
-	p.Canonical = client.data.URL(vars.PostsURL(page))
+	p.Canonical = client.data.URL(url.Posts(page))
 
 	start, end, ok := client.getPostsRange(len(client.data.Posts), page, w, r)
 	if !ok {
@@ -116,10 +116,10 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Posts = client.data.Posts[start:end]
 	if page > 1 {
-		p.prevPage(vars.PostsURL(page-1), "")
+		p.prevPage(url.Posts(page-1), "")
 	}
 	if end < len(client.data.Posts) {
-		p.nextPage(vars.PostsURL(page+1), "")
+		p.nextPage(url.Posts(page+1), "")
 	}
 
 	p.render("posts")
@@ -164,7 +164,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	p.Title = tag.Title
 	p.Keywords = tag.Keywords
 	p.Description = tag.Description
-	p.Canonical = client.data.URL(vars.TagURL(slug, page))
+	p.Canonical = client.data.URL(url.Tag(slug, page))
 
 	start, end, ok := client.getPostsRange(len(tag.Posts), page, w, r)
 	if !ok {
@@ -172,10 +172,10 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Posts = tag.Posts[start:end]
 	if page > 1 {
-		p.prevPage(vars.TagURL(slug, page-1), "")
+		p.prevPage(url.Tag(slug, page-1), "")
 	}
 	if end < len(tag.Posts) {
-		p.nextPage(vars.TagURL(slug, page+1), "")
+		p.nextPage(url.Tag(slug, page+1), "")
 	}
 
 	p.render("tag")
@@ -186,7 +186,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 	p := client.page(typeLinks, w, r)
 	p.Title = "友情链接"
-	p.Canonical = client.data.URL(vars.LinksURL())
+	p.Canonical = client.data.URL(url.Links())
 
 	p.render("links")
 }
@@ -196,7 +196,7 @@ func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	p := client.page(typeTags, w, r)
 	p.Title = "标签"
-	p.Canonical = client.data.URL(vars.TagsURL())
+	p.Canonical = client.data.URL(url.Tags())
 	p.Description = "标签列表"
 
 	p.render("tags")
@@ -209,7 +209,7 @@ func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	p.Title = "归档"
 	p.Keywords = "归档,存档,archive,archives"
 	p.Description = "网站的归档列表，按时间进行排序"
-	p.Canonical = client.data.URL(vars.ArchivesURL())
+	p.Canonical = client.data.URL(url.Archives())
 	p.Archives = client.data.Archives
 
 	p.render("archives")

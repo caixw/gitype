@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/caixw/typing/helper"
+	p "github.com/caixw/typing/path"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
 )
@@ -91,7 +92,7 @@ var defaultTags = []*Tag{
 }
 
 // Init 初始化 data 下的基本数据结构
-func Init(path *vars.Path) error {
+func Init(path *p.Path) error {
 	fmt.Println(path.DataDir)
 	if !utils.FileExists(path.DataDir) {
 		if err := os.Mkdir(path.DataDir, os.ModePerm); err != nil {
@@ -115,7 +116,7 @@ func Init(path *vars.Path) error {
 }
 
 // 初始化 data/meta 目录下的数据
-func initMeta(path *vars.Path) error {
+func initMeta(path *p.Path) error {
 	if !utils.FileExists(path.MetaDir) {
 		if err := os.Mkdir(path.MetaDir, os.ModePerm); err != nil {
 			return err
@@ -137,7 +138,7 @@ func initMeta(path *vars.Path) error {
 }
 
 // 初始化 data/raws 目录下的数据
-func initRaws(path *vars.Path) error {
+func initRaws(path *p.Path) error {
 	if !utils.FileExists(path.RawsDir) {
 		if err := os.Mkdir(path.RawsDir, os.ModePerm); err != nil {
 			return err
@@ -149,7 +150,7 @@ func initRaws(path *vars.Path) error {
 }
 
 // 初始化 data/posts 目录下数据
-func initPosts(p *vars.Path) error {
+func initPosts(p *p.Path) error {
 	slug := path.Join(strconv.Itoa(time.Now().Year()), "about")
 
 	dir := filepath.Join(p.PostsDir, slug)
@@ -168,7 +169,7 @@ func initPosts(p *vars.Path) error {
 }
 
 // 初始化 data/themes 目录
-func initThemes(path *vars.Path) error {
+func initThemes(path *p.Path) error {
 	if !utils.FileExists(path.ThemesDir) {
 		if err := os.Mkdir(path.ThemesDir, os.ModePerm); err != nil {
 			return err

@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/caixw/typing/config"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/path"
 	"github.com/issue9/assert"
 	"github.com/issue9/mux"
 )
@@ -58,7 +58,7 @@ func runHTTPTester(testers []*httpTester, t *testing.T) {
 
 func TestMain(t *testing.T) {
 	a := assert.New(t)
-	path := vars.NewPath("../testdata")
+	path := path.New("../testdata")
 
 	client, err := New(path, router, &config.Config{})
 	a.NotError(err).NotNil(client)

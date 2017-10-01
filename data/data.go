@@ -11,12 +11,12 @@ import (
 	"time"
 
 	"github.com/caixw/typing/helper"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/path"
 )
 
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
-	path    *vars.Path
+	path    *path.Path
 	Created time.Time
 
 	outdated *outdatedConfig
@@ -35,7 +35,7 @@ type Data struct {
 }
 
 // Load 函数用于加载一份新的数据。
-func Load(path *vars.Path) (*Data, error) {
+func Load(path *path.Path) (*Data, error) {
 	conf, err := loadConfig(path)
 	if err != nil {
 		return nil, err

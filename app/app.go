@@ -11,13 +11,13 @@ import (
 
 	"github.com/caixw/typing/client"
 	"github.com/caixw/typing/config"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/path"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 )
 
 type app struct {
-	path *vars.Path
+	path *path.Path
 	mux  *mux.Mux
 	conf *config.Config
 
@@ -25,7 +25,7 @@ type app struct {
 }
 
 // Run 运行程序
-func Run(path *vars.Path, pprof bool) error {
+func Run(path *path.Path, pprof bool) error {
 	logs.Info("程序工作路径为:", path.Root)
 
 	conf, err := config.Load(path)
