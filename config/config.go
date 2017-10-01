@@ -29,9 +29,8 @@ const (
 	HTTPStateRedirect = "redirect"
 )
 
-const (
-	cookieMaxAge = 3600
-)
+// cookieMaxAge 默认的 cookie maxage 值
+const cookieMaxAge = 24 * 60 * 60
 
 // Config 程序的全局配置内容
 type Config struct {

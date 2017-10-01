@@ -11,8 +11,6 @@ import (
 	"runtime"
 
 	"github.com/caixw/typing/app"
-	"github.com/caixw/typing/config"
-	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/path"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
@@ -52,7 +50,10 @@ func main() {
 		printVersion()
 		return
 	case len(*init) > 0:
-		runInit(*init) // *init 指向的目录不存在时，会尝试创建
+		if err := app.Init(path.New(*init)); err != nil {
+			panic(err)
+		}
+		fmt.Printf("操作成功，你现在可以在 %s 中修改具体的参数配置！\n", *init)
 		return
 	}
 
@@ -72,18 +73,4 @@ func printVersion() {
 	if len(vars.CommitHash()) > 0 {
 		fmt.Printf("Git commit hash:%s\n", vars.CommitHash())
 	}
-}
-
-func runInit(root string) {
-	path := path.New(root)
-
-	if err := config.Init(path); err != nil {
-		panic(err)
-	}
-
-	if err := data.Init(path); err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("操作成功，你现在可以在 %s 中修改具体的参数配置！\n", root)
 }
