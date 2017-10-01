@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/caixw/typing/config"
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/path"
 	"github.com/issue9/mux"
@@ -21,7 +20,6 @@ import (
 type Client struct {
 	path *path.Path
 	mux  *mux.Mux
-	conf *config.Config
 
 	data     *data.Data
 	patterns []string // 记录所有的路由项，方便释放时删除
@@ -30,7 +28,7 @@ type Client struct {
 }
 
 // New 声明一个新的 Client 实例
-func New(path *path.Path, mux *mux.Mux, conf *config.Config) (*Client, error) {
+func New(path *path.Path, mux *mux.Mux) (*Client, error) {
 	d, err := data.Load(path)
 	if err != nil {
 		return nil, err
@@ -39,7 +37,6 @@ func New(path *path.Path, mux *mux.Mux, conf *config.Config) (*Client, error) {
 	client := &Client{
 		path: path,
 		mux:  mux,
-		conf: conf,
 		etag: strconv.FormatInt(d.Created.Unix(), 10),
 		data: d,
 	}

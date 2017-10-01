@@ -5,12 +5,14 @@
 package app
 
 import (
+	"net/http"
 	"os"
+	"time"
 
-	"github.com/caixw/typing/config"
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/path"
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
 )
 
@@ -49,6 +51,24 @@ var defaultLogsXML = `<?xml version="1.0" encoding="utf-8" ?>
 </logs>
 `
 
+// 输出的默认配置内容
+var defaultConfig = &config{
+	HTTPS:     true,
+	HTTPState: httpStateRedirect,
+	CertFile:  "cert",
+	KeyFile:   "key",
+	Port:      httpsPort,
+	Headers: map[string]string{
+		"Server": vars.Name + vars.Version(),
+	},
+	Webhook: &webhook{
+		URL:       "/webhooks",
+		Frequency: time.Minute,
+		Method:    http.MethodPost,
+		RepoURL:   "https://github.com/caixw/blogs",
+	},
+}
+
 // Init 初始化整个工作目录
 func Init(path *path.Path) error {
 	if !utils.FileExists(path.Root) {
@@ -78,5 +98,5 @@ func initConfDir(path *path.Path) error {
 	}
 
 	// app.yaml
-	return config.Init(path)
+	return helper.DumpYAMLFile(path.AppConfigFile, defaultConfig)
 }

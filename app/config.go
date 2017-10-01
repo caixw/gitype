@@ -2,8 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package config 全局的配置内容。
-package config
+package app
 
 import (
 	"net/http"
@@ -18,22 +17,19 @@ import (
 
 // 两个默认端口的定义
 const (
-	HTTPPort  = ":80"
-	HTTPSPort = ":443"
+	httpPort  = ":80"
+	httpsPort = ":443"
 )
 
 // 对 Config.HTTPState 可选值的定义
 const (
-	HTTPStateDefault  = "default"
-	HTTPStateDisable  = "disable"
-	HTTPStateRedirect = "redirect"
+	httpStateDefault  = "default"
+	httpStateDisable  = "disable"
+	httpStateRedirect = "redirect"
 )
 
-// cookieMaxAge 默认的 cookie maxage 值
-const cookieMaxAge = 24 * 60 * 60
-
-// Config 程序的全局配置内容
-type Config struct {
+//  程序的全局配置内容
+type config struct {
 	// 是否启用 HTTPS 模式。如果启用了，则需要正确设置以下几个值：
 	// HTTPState、CertFile、KeyFile
 	HTTPS bool `yaml:"https,omitempty"`
@@ -52,9 +48,6 @@ type Config struct {
 	// 根据 HTTPS 的值，默认为 :80 或是 :443
 	Port string `yaml:"port,omitempty"`
 
-	// CookieMaxAge cookie 的生存期，单位：秒
-	CookieMaxAge int `yaml:"cookieMaxAge,omitempty"`
-
 	// 绑定的域名，若指定了该值，则只能通过这些域名才能访问网站。
 	// 为空表示不作限制。
 	Domains []string `yaml:"domains,omitempty"`
@@ -63,20 +56,18 @@ type Config struct {
 	// 其中键名表示报头名称，键值表示报头的值。
 	Headers map[string]string `yaml:"headers,omitempty"`
 
-	Webhook *Webhook `yaml:"webhook"`
+	Webhook *webhook `yaml:"webhook"`
 }
 
-// Webhook 与 Webhooks 相关的配置内容
-type Webhook struct {
+type webhook struct {
 	URL       string        `yaml:"url"`              // webhooks 接收地址
 	Frequency time.Duration `yaml:"frequency"`        // webhooks 的最小更新频率
 	Method    string        `yaml:"method,omitempty"` // webhooks 的请求方式，默认为 POST
 	RepoURL   string        `yaml:"repoURL"`          // 远程仓库的地址
 }
 
-// Load 加载配置内容
-func Load(path *path.Path) (*Config, error) {
-	conf := &Config{}
+func loadConfig(path *path.Path) (*config, error) {
+	conf := &config{}
 	if err := helper.LoadYAMLFile(path.AppConfigFile, conf); err != nil {
 		return nil, err
 	}
@@ -89,7 +80,7 @@ func Load(path *path.Path) (*Config, error) {
 	return conf, nil
 }
 
-func (w *Webhook) sanitize() *helper.FieldError {
+func (w *webhook) sanitize() *helper.FieldError {
 	if len(w.Method) == 0 {
 		w.Method = http.MethodPost
 	}
@@ -106,39 +97,32 @@ func (w *Webhook) sanitize() *helper.FieldError {
 	return nil
 }
 
-func (conf *Config) sanitize() *helper.FieldError {
+func (conf *config) sanitize() *helper.FieldError {
 	if len(conf.Port) == 0 {
 		if conf.HTTPS {
-			conf.Port = HTTPSPort
+			conf.Port = httpsPort
 		} else {
-			conf.Port = HTTPPort
+			conf.Port = httpPort
 		}
 	}
 
 	if conf.HTTPS {
 		if len(conf.HTTPState) == 0 {
-			conf.HTTPState = HTTPStateDefault
+			conf.HTTPState = httpStateDefault
 		}
 
 		switch {
-		case conf.HTTPState != HTTPStateDefault &&
-			conf.HTTPState != HTTPStateDisable &&
-			conf.HTTPState != HTTPStateRedirect:
+		case conf.HTTPState != httpStateDefault &&
+			conf.HTTPState != httpStateDisable &&
+			conf.HTTPState != httpStateRedirect:
 			return &helper.FieldError{Field: "httpState", Message: "无效的取值"}
-		case conf.HTTPState != HTTPStateDisable && conf.Port == HTTPPort:
+		case conf.HTTPState != httpStateDisable && conf.Port == httpPort:
 			return &helper.FieldError{Field: "port", Message: "80 端口已经被被监听"}
 		case !utils.FileExists(conf.CertFile):
 			return &helper.FieldError{Field: "certFile", Message: "不能为空"}
 		case !utils.FileExists(conf.KeyFile):
 			return &helper.FieldError{Field: "keyFile", Message: "不能为空"}
 		}
-	}
-
-	if conf.CookieMaxAge < 0 {
-		return &helper.FieldError{Field: "cookieMaxAge", Message: "必须大于 0"}
-	}
-	if conf.CookieMaxAge == 0 {
-		conf.CookieMaxAge = cookieMaxAge
 	}
 
 	if len(conf.Domains) > 0 {

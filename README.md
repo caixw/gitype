@@ -81,7 +81,6 @@ httpState    | string   | 当 https 为 true 时，对 80 端口的处理方式�
 certFile     | string   | 当 https 为 true 时，此值为必填
 keyFile      | string   | 当 https 为 true 时，此值为必填
 port         | string   | 端口，不指定，默认为 80 或是 443
-cookieMaxAge | int      | cookie 的生存期，单位：秒
 headers      | map      | 附加的头信息，头信息可能在其它地方被修改
 webhook      | Webhook  | 与 webhook 相关的设置
 

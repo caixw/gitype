@@ -28,6 +28,9 @@ const (
 
 	// ThemeName 主题名称在在传递过程中的名称
 	ThemeName = "theme"
+
+	// CookieMaxAge 默认的 cookie maxage 值
+	CookieMaxAge = 24 * 60 * 60
 )
 
 // 一些默认的字面文本内容。
@@ -36,7 +39,9 @@ const (
 	PrevPageText = "上一页"
 )
 
-// 与 URL 相关的一些定义，方便做一些自定义操作
+// 与 URL 相关的一些定义
+//
+// 上线之后请谨慎修改这些值，会影响 SEO 的相关内容。
 const (
 	URLRoot   = "/"     // 根地址
 	URLSuffix = ".html" // 地址后缀
@@ -56,6 +61,11 @@ const (
 )
 
 // 与查询相关的一些自定义参数
+//
+// 上线之后请谨慎修改这些值，可能会让已经分离出去的链接变为无效链接。
+//
+// 用户可以通过查询参数按指定的格式进行精确查找，比如：
+// title:abc 只查找标题中包含 abc 的文章，其中，title 关键字和分隔符 : 都可以自定义。
 const (
 	SearchKeySeparator = ':'
 	SearchKeyTitle     = "title"
