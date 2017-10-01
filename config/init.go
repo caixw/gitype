@@ -9,7 +9,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
@@ -77,11 +76,7 @@ func Init(path *vars.Path) error {
 		}
 	}
 
-	if err := initConfDir(path); err != nil {
-		return err
-	}
-
-	return data.Init(path)
+	return initConfDir(path)
 }
 
 // 初始化 conf 目录下的数据

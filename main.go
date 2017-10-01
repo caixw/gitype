@@ -12,6 +12,7 @@ import (
 
 	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/config"
+	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 )
@@ -73,7 +74,13 @@ func printVersion() {
 }
 
 func runInit(root string) {
-	if err := config.Init(vars.NewPath(root)); err != nil {
+	path := vars.NewPath(root)
+
+	if err := config.Init(path); err != nil {
+		panic(err)
+	}
+
+	if err := data.Init(path); err != nil {
 		panic(err)
 	}
 
