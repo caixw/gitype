@@ -60,21 +60,21 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 
 // 查找出所有符合要求的文章列表
 func search(q string, d *data.Data) []*data.Post {
-	index := strings.IndexByte(q, ':')
-	if index <= 0 {
+	index := strings.IndexByte(q, vars.SearchKeySeparator)
+	// 若 : 前后为空，则直接将整个字符串当作搜索关键字
+	if index <= 0 || len(q)-1 == index {
 		return searchDefault(q, d)
 	}
 
-	index++
 	typ := q[:index]
-	content := strings.ToLower(strings.TrimSpace(q[index:]))
+	content := strings.ToLower(strings.TrimSpace(q[index+1:]))
 
 	switch typ {
-	case "tag:":
+	case vars.SearchKeyTag:
 		return searchTag(content, d)
-	case "series:":
+	case vars.SearchKeySeries:
 		return searchSeries(content, d)
-	case "title:":
+	case vars.SearchKeyTitle:
 		return searchTitle(content, d)
 	}
 

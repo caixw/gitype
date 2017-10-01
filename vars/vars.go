@@ -41,15 +41,24 @@ const (
 	URLRoot   = "/"     // 根地址
 	URLSuffix = ".html" // 地址后缀
 
-	URLIndex     = "index"    // 列表页
-	URLPost      = "posts"    // 文章详细页
-	URLTags      = "tags"     // 标签列表页
-	URLTag       = "tags"     // 标签详细页
-	URLLinks     = "links"    // 友情链接
-	URLArchives  = "archives" // 归档
-	URLSearch    = "search"   // 搜索
-	URLTheme     = "themes"   // 主题目录前缀
-	URLAsset     = "posts"    // 文章资源前缀
-	URLQueryPage = "page"     // 查询参数 page
-	URLQueryQ    = "q"        // 查询参数 q
+	URLIndex    = "index"    // 列表页
+	URLPost     = "posts"    // 文章详细页
+	URLTags     = "tags"     // 标签列表页
+	URLTag      = "tags"     // 标签详细页
+	URLLinks    = "links"    // 友情链接
+	URLArchives = "archives" // 归档
+	URLSearch   = "search"   // 搜索
+	URLTheme    = "themes"   // 主题目录前缀
+	URLAsset    = "posts"    // 文章资源前缀
+
+	URLQueryPage = "page" // 查询参数 page
+	URLQueryQ    = "q"    // 查询参数 q
+)
+
+// 与查询相关的一些自定义参数
+const (
+	SearchKeySeparator = ':'
+	SearchKeyTitle     = "title"
+	SearchKeyTag       = "tag"
+	SearchKeySeries    = "series"
 )
