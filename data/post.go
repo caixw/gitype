@@ -15,6 +15,7 @@ import (
 
 	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/path"
+	"github.com/caixw/typing/url"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
 )
@@ -147,7 +148,7 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 	post.Created = created
 
 	// permalink
-	post.Permalink = vars.PostURL(post.Slug)
+	post.Permalink = url.Post(post.Slug)
 
 	// modified
 	// outdated 还用作其它功能，需要首先解析其值

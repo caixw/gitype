@@ -35,3 +35,19 @@ const (
 	NextPageText = "下一页"
 	PrevPageText = "上一页"
 )
+
+// 与 URL 相关的一些定义，方便做一些自定义操作
+const (
+	URLRoot   = "/"     // 根地址
+	URLSuffix = ".html" // 地址后缀
+
+	URLIndex    = "index"    // 列表页
+	URLPost     = "posts"    // 文章详细页
+	URLTags     = "tags"     // 标签列表页
+	URLTag      = "tags"     // 标签详细页
+	URLLinks    = "links"    // 友情链接
+	URLArchives = "archives" // 归档
+	URLSearch   = "search"   // 搜索
+	URLTheme    = "themes"   // 主题目录前缀
+	URLAsset    = "posts"    // 文章资源前缀
+)

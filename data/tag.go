@@ -11,7 +11,7 @@ import (
 
 	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/path"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/url"
 )
 
 // Tag 描述标签信息
@@ -104,7 +104,7 @@ func (tag *Tag) sanitize() *helper.FieldError {
 
 	tag.Posts = make([]*Post, 0, 100)
 
-	tag.Permalink = vars.TagURL(tag.Slug, 1)
+	tag.Permalink = url.Tag(tag.Slug, 1)
 
 	tag.Keywords = tag.Title
 	if tag.Title != tag.Slug {

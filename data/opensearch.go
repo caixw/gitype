@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/caixw/typing/helper"
+	"github.com/caixw/typing/url"
 	"github.com/caixw/typing/vars"
 )
 
@@ -57,7 +58,7 @@ func (d *Data) buildOpensearch(conf *config) error {
 		"method": http.MethodGet,
 		// 需要全链接，否则 Firefox 的搜索框不认。
 		// https://github.com/caixw/typing/issues/18
-		"template": d.URL(vars.SearchURL("{searchTerms}", 0)),
+		"template": d.URL(url.Search("{searchTerms}", 0)),
 	})
 
 	w.WriteElement("Developer", vars.Name, nil)

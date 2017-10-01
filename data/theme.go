@@ -16,6 +16,7 @@ import (
 
 	"github.com/caixw/typing/helper"
 	"github.com/caixw/typing/path"
+	"github.com/caixw/typing/url"
 	"github.com/caixw/typing/vars"
 )
 
@@ -153,7 +154,7 @@ func (d *Data) snippetsTemplate() (*template.Template, error) {
 		"ldate":    d.longDateFormat,
 		"sdate":    d.shortDateFormat,
 		"rfc3339":  rfc3339DateFormat,
-		"themeURL": func(p string) string { return vars.ThemeURL(p) },
+		"themeURL": func(p string) string { return url.Theme(p) },
 	}
 
 	return template.New("snippets").

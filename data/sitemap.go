@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/caixw/typing/helper"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/url"
 )
 
 const contentTypeXML = "application/xml"
@@ -50,11 +50,11 @@ func (d *Data) buildSitemap(conf *config) error {
 	addPostsToSitemap(w, d, conf)
 
 	// archives.html
-	loc := d.URL(vars.ArchivesURL())
+	loc := d.URL(url.Archives())
 	addItemToSitemap(w, loc, conf.Sitemap.Changefreq, d.Created, conf.Sitemap.Priority)
 
 	// links.html
-	loc = d.URL(vars.LinksURL())
+	loc = d.URL(url.Links())
 	addItemToSitemap(w, loc, conf.Sitemap.Changefreq, d.Created, conf.Sitemap.Priority)
 
 	if conf.Sitemap.EnableTag {
@@ -87,11 +87,11 @@ func addPostsToSitemap(w *helper.XMLWriter, d *Data, conf *config) {
 func addTagsToSitemap(w *helper.XMLWriter, d *Data, conf *config) error {
 	sitemap := conf.Sitemap
 
-	loc := d.URL(vars.TagsURL())
+	loc := d.URL(url.Tags())
 	addItemToSitemap(w, loc, sitemap.Changefreq, d.Created, sitemap.Priority)
 
 	for _, tag := range d.Tags {
-		loc = d.URL(vars.TagURL(tag.Slug, 1))
+		loc = d.URL(url.Tag(tag.Slug, 1))
 		addItemToSitemap(w, loc, sitemap.Changefreq, tag.Modified, sitemap.Priority)
 	}
 	return nil
