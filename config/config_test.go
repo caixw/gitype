@@ -8,13 +8,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/path"
 	"github.com/issue9/assert"
 )
 
 func TestLoadConfig(t *testing.T) {
 	a := assert.New(t)
-	p := vars.NewPath("../testdata/")
+	p := path.New("../testdata/")
 
 	conf, err := Load(p)
 	a.NotError(err).NotNil(conf)

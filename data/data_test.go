@@ -7,11 +7,11 @@ package data
 import (
 	"testing"
 
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/path"
 	"github.com/issue9/assert"
 )
 
-var testdataPath = vars.NewPath("../testdata")
+var testdataPath = path.New("../testdata")
 
 func TestLoad(t *testing.T) {
 	a := assert.New(t)

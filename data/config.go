@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/caixw/typing/helper"
+	"github.com/caixw/typing/path"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/is"
 )
@@ -85,7 +86,7 @@ func newConfig(conf *config) *Config {
 	}
 }
 
-func loadConfig(path *vars.Path) (*config, error) {
+func loadConfig(path *path.Path) (*config, error) {
 	conf := &config{}
 	if err := helper.LoadYAMLFile(path.MetaConfigFile, conf); err != nil {
 		return nil, err

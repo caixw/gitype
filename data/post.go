@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/caixw/typing/helper"
+	"github.com/caixw/typing/path"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
 )
@@ -64,7 +65,7 @@ type Post struct {
 	Keywords string  `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
 }
 
-func loadPosts(path *vars.Path) ([]*Post, error) {
+func loadPosts(path *path.Path) ([]*Post, error) {
 	dir := path.PostsDir
 	slugs := make([]string, 0, 100)
 
@@ -115,7 +116,7 @@ func loadPosts(path *vars.Path) ([]*Post, error) {
 	return posts, nil
 }
 
-func loadPost(path *vars.Path, slug string) (*Post, error) {
+func loadPost(path *path.Path, slug string) (*Post, error) {
 	post := &Post{}
 	if err := helper.LoadYAMLFile(path.PostMetaPath(slug), post); err != nil {
 		return nil, err

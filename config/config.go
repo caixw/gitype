@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/caixw/typing/helper"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/path"
 	"github.com/issue9/is"
 	"github.com/issue9/utils"
 )
@@ -76,7 +76,7 @@ type Webhook struct {
 }
 
 // Load 加载配置内容
-func Load(path *vars.Path) (*Config, error) {
+func Load(path *path.Path) (*Config, error) {
 	conf := &Config{}
 	if err := helper.LoadYAMLFile(path.AppConfigFile, conf); err != nil {
 		return nil, err

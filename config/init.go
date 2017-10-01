@@ -11,6 +11,7 @@ import (
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/helper"
+	"github.com/caixw/typing/path"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/utils"
 )
@@ -70,7 +71,7 @@ var defaultConfig = &Config{
 }
 
 // Init 执行初始化命令
-func Init(path *vars.Path) error {
+func Init(path *path.Path) error {
 	if !utils.FileExists(path.Root) {
 		if err := os.Mkdir(path.Root, os.ModePerm); err != nil {
 			return err
@@ -85,7 +86,7 @@ func Init(path *vars.Path) error {
 }
 
 // 初始化 conf 目录下的数据
-func initConfDir(path *vars.Path) error {
+func initConfDir(path *path.Path) error {
 	if !utils.FileExists(path.ConfDir) {
 		if err := os.Mkdir(path.ConfDir, os.ModePerm); err != nil {
 			return err

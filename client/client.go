@@ -12,14 +12,14 @@ import (
 
 	"github.com/caixw/typing/config"
 	"github.com/caixw/typing/data"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/path"
 	"github.com/issue9/mux"
 )
 
 // Client 包含了整个可动态加载的数据以及路由的相关操作。
 // 当需要重新加载数据时，只要获取一个新的 Client 实例即可。
 type Client struct {
-	path *vars.Path
+	path *path.Path
 	mux  *mux.Mux
 	conf *config.Config
 
@@ -30,7 +30,7 @@ type Client struct {
 }
 
 // New 声明一个新的 Client 实例
-func New(path *vars.Path, mux *mux.Mux, conf *config.Config) (*Client, error) {
+func New(path *path.Path, mux *mux.Mux, conf *config.Config) (*Client, error) {
 	d, err := data.Load(path)
 	if err != nil {
 		return nil, err

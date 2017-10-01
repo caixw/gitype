@@ -12,6 +12,7 @@ import (
 
 	"github.com/caixw/typing/app"
 	"github.com/caixw/typing/config"
+	"github.com/caixw/typing/path"
 	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 )
@@ -54,7 +55,7 @@ func main() {
 		return
 	}
 
-	path := vars.NewPath(*appdir)
+	path := path.New(*appdir)
 
 	if err := logs.InitFromXMLFile(path.LogsConfigFile); err != nil {
 		panic(err)
@@ -73,7 +74,7 @@ func printVersion() {
 }
 
 func runInit(root string) {
-	if err := config.Init(vars.NewPath(root)); err != nil {
+	if err := config.Init(path.New(root)); err != nil {
 		panic(err)
 	}
 

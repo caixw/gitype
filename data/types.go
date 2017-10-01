@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/caixw/typing/helper"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/typing/path"
 	"github.com/issue9/is"
 )
 
@@ -47,7 +47,7 @@ type Icon struct {
 	Sizes string `yaml:"sizes"`
 }
 
-func loadLinks(path *vars.Path) ([]*Link, error) {
+func loadLinks(path *path.Path) ([]*Link, error) {
 	links := make([]*Link, 0, 20)
 	if err := helper.LoadYAMLFile(path.MetaLinksFile, &links); err != nil {
 		return nil, err
