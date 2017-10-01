@@ -11,6 +11,7 @@ import (
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/url"
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/middleware/compress"
 	"github.com/issue9/mux"
@@ -92,7 +93,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 // /
 // /index.html?page=2
 func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
-	page, ok := client.queryInt(w, r, "page", 1)
+	page, ok := client.queryInt(w, r, vars.URLQueryPage, 1)
 	if !ok {
 		return
 	}
@@ -149,7 +150,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page, ok := client.queryInt(w, r, "page", 1)
+	page, ok := client.queryInt(w, r, vars.URLQueryPage, 1)
 	if !ok {
 		return
 	}

@@ -40,7 +40,7 @@ func Posts(page int) string {
 	if page <= 1 {
 		return vars.URLRoot
 	}
-	return indexURL + "?page=" + strconv.Itoa(page)
+	return indexURL + "?" + vars.URLQueryPage + "=" + strconv.Itoa(page)
 }
 
 // Index 构建索引首页的 URL
@@ -50,7 +50,7 @@ func Index(page int) string {
 	if page <= 1 {
 		return indexURL
 	}
-	return indexURL + "?page=" + strconv.Itoa(page)
+	return indexURL + "?" + vars.URLQueryPage + "=" + strconv.Itoa(page)
 }
 
 // Tag 构建标签的 URL
@@ -60,7 +60,7 @@ func Tag(slug string, page int) string {
 		return url
 	}
 
-	return url + "?page=" + strconv.Itoa(page)
+	return url + "?" + vars.URLQueryPage + "=" + strconv.Itoa(page)
 }
 
 // Tags 生成标签列表的 URL
@@ -78,7 +78,7 @@ func Search(q string, page int) string {
 	url := searchURL // 以下的 url+= 会改变 url 本身的值，所以不能直接使用 searchURL
 
 	if len(q) > 0 {
-		url += "?q=" + q
+		url += "?" + vars.URLQueryQ + "=" + q
 	}
 
 	if page > 1 {
@@ -87,7 +87,7 @@ func Search(q string, page int) string {
 		} else {
 			url += "?"
 		}
-		url += "page=" + strconv.Itoa(page)
+		url += vars.URLQueryPage + "=" + strconv.Itoa(page)
 	}
 
 	return url

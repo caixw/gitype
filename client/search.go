@@ -11,6 +11,7 @@ import (
 
 	"github.com/caixw/typing/data"
 	"github.com/caixw/typing/url"
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/logs"
 )
 
@@ -18,13 +19,13 @@ import (
 func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p := client.page(typeSearch, w, r)
 
-	q := r.FormValue("q")
+	q := r.FormValue(vars.URLQueryQ)
 	if len(q) == 0 {
 		http.Redirect(w, r, url.Posts(1), http.StatusPermanentRedirect)
 		return
 	}
 
-	page, ok := client.queryInt(w, r, "page", 1)
+	page, ok := client.queryInt(w, r, vars.URLQueryPage, 1)
 	if !ok {
 		return
 	}

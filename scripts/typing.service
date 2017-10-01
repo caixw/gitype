@@ -1,4 +1,5 @@
 # Systemd 启动脚本
+# 放在 /etc/systemd/system 之下
 
 [Unit]
 Description=typing daemon
