@@ -7,6 +7,7 @@ package url
 import (
 	"testing"
 
+	"github.com/caixw/typing/vars"
 	"github.com/issue9/assert"
 )
 
@@ -21,14 +22,14 @@ func TestPosts(t *testing.T) {
 
 	a.Equal(Posts(0), "/")
 	a.Equal(Posts(1), "/")
-	a.Equal(Posts(2), "/index.html?page=2")
+	a.Equal(Posts(2), "/index.html?"+vars.URLQueryPage+"=2")
 }
 
 func TestTag(t *testing.T) {
 	a := assert.New(t)
 	a.Equal(Tag("1", 0), "/tags/1.html")
 	a.Equal(Tag("1", 1), "/tags/1.html")
-	a.Equal(Tag("1", 2), "/tags/1.html?page=2")
+	a.Equal(Tag("1", 2), "/tags/1.html?"+vars.URLQueryPage+"=2")
 }
 
 func TestSearch(t *testing.T) {
@@ -36,11 +37,11 @@ func TestSearch(t *testing.T) {
 
 	a.Equal(Search("", 0), "/search.html")
 	a.Equal(Search("", 1), "/search.html")
-	a.Equal(Search("", 2), "/search.html?page=2")
+	a.Equal(Search("", 2), "/search.html?"+vars.URLQueryPage+"=2")
 
-	a.Equal(Search("q", 0), "/search.html?q=q")
-	a.Equal(Search("q", 1), "/search.html?q=q")
-	a.Equal(Search("q", 2), "/search.html?q=q&amp;page=2")
+	a.Equal(Search("q", 0), "/search.html?"+vars.URLQueryQ+"=q")
+	a.Equal(Search("q", 1), "/search.html?"+vars.URLQueryQ+"=q")
+	a.Equal(Search("q", 2), "/search.html?q=q&amp;"+vars.URLQueryPage+"=2")
 }
 
 func TestThemes(t *testing.T) {

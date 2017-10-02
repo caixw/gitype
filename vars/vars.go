@@ -25,12 +25,15 @@ const (
 
 	// PostTemplateName 默认的文章模板名称
 	PostTemplateName = "post"
+)
 
-	// ThemeName 主题名称在在传递过程中的名称
-	ThemeName = "theme"
+// Cookie 的相关定义
+const (
+	CookieHTTPOnly = true
+	CookieMaxAge   = 24 * 60 * 60
 
-	// CookieMaxAge 默认的 cookie maxage 值
-	CookieMaxAge = 24 * 60 * 60
+	// 主题名称在在传递过程中的名称
+	CookieKeyTheme = "theme"
 )
 
 // 一些默认的字面文本内容。
@@ -41,7 +44,7 @@ const (
 
 // 与 URL 相关的一些定义
 //
-// 上线之后请谨慎修改这些值，会影响 SEO 的相关内容。
+// 上线之后请谨慎修改这些值，会影响 URL 的路径结构。
 const (
 	URLRoot   = "/"     // 根地址
 	URLSuffix = ".html" // 地址后缀
@@ -71,4 +74,30 @@ const (
 	SearchKeyTitle     = "title"
 	SearchKeyTag       = "tag"
 	SearchKeySeries    = "series"
+)
+
+// 目录名称的定义
+const (
+	DataDir = "data"
+	ConfDir = "conf"
+
+	PostsDir  = "posts"
+	ThemesDir = "themes"
+	MetaDir   = "meta"
+	RawsDir   = "raws"
+)
+
+// 文件名的定义
+const (
+	AppConfigFilename  = "app.yaml"
+	LogsConfigFilename = "logs.xml"
+
+	ConfigFilename = "config.yaml"
+	TagsFilename   = "tags.yaml"
+	LinksFilename  = "links.yaml"
+
+	PostMetaFilename    = "meta.yaml"
+	PostContentFilename = "content.html"
+
+	ThemeMetaFilename = "theme.yaml"
 )

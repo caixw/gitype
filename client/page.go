@@ -204,9 +204,9 @@ func (p *page) render(name string) {
 	setContentType(p.w, p.client.data.Config.Type)
 
 	cookie := &http.Cookie{
-		Name:     vars.ThemeName,
+		Name:     vars.CookieKeyTheme,
 		Value:    p.Theme.ID,
-		HttpOnly: true,
+		HttpOnly: vars.CookieHTTPOnly,
 	}
 	if p.Theme.ID != p.client.data.Themes[0].ID {
 		cookie.MaxAge = vars.CookieMaxAge
@@ -227,9 +227,9 @@ func (p *page) render(name string) {
 // 从客户端获取主题内容
 func (client *Client) getRequestTheme(r *http.Request) *data.Theme {
 	// 获取主题名称
-	name := r.FormValue(vars.ThemeName)
+	name := r.FormValue(vars.CookieKeyTheme)
 	if len(name) == 0 {
-		cookie, err := r.Cookie(vars.ThemeName)
+		cookie, err := r.Cookie(vars.CookieKeyTheme)
 		if err != nil { // 公记录错误，但不退出
 			logs.Error(err)
 		}
