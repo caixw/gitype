@@ -28,7 +28,7 @@ const (
 	httpStateRedirect = "redirect"
 )
 
-//  程序的全局配置内容
+//  程序的运行环境配置内容
 type config struct {
 	// 是否启用 HTTPS 模式。如果启用了，则需要正确设置以下几个值：
 	// HTTPState、CertFile、KeyFile

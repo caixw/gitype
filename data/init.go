@@ -26,7 +26,7 @@ var defaultPostContent = `<section>about
 
 var defaultTheme = &Theme{
 	Name:        "default",
-	Version:     "0.1",
+	Version:     "0.1.0",
 	Description: "默认主题",
 	URL:         vars.URL,
 }

@@ -11,9 +11,12 @@ import (
 	"github.com/caixw/typing/vars"
 )
 
-// Path 表示 typing 的目录结构信息，这些目录结构大部分是固定的。
+// Path 表示 typing 的目录结构信息。
+//
+// typing 拥有一个固定的目录结构，程序根据这个目录结构加载相关的数据信息，
+// Path 可以在指定根目录的情况下，预先生成所有的目录结构路径，方便其它地方调用。
 type Path struct {
-	Root string // 项目的根目录，即 -appdir 参数指定的目录
+	Root string // 项目的根目录
 
 	ConfDir string // 项目下的配置文件所在目录
 	DataDir string // 项目下数据文件所在的目录，即 Git 数据所在的目录
