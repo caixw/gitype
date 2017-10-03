@@ -55,7 +55,7 @@ func setContentType(w http.ResponseWriter, mime string) {
 type page struct {
 	client   *Client
 	Info     *info
-	template *template.Template
+	template *template.Template // 用于当前页面渲染的模板
 	w        http.ResponseWriter
 	r        *http.Request
 
@@ -63,7 +63,6 @@ type page struct {
 	Subtitle    string       // 副标题
 	Canonical   string       // 当前页的唯一链接
 	Keywords    string       // meta.keywords 的值
-	Q           string       // 搜索关键字
 	Description string       // meta.description 的值
 	PrevPage    *data.Link   // 前一页
 	NextPage    *data.Link   // 下一页
@@ -73,6 +72,7 @@ type page struct {
 	Theme       *data.Theme
 
 	// 以下内容，仅在对应的页面才会有内容
+	Q        string          // 搜索关键字
 	Tag      *data.Tag       // 标签详细页面，非标签详细页，则为空
 	Posts    []*data.Post    // 文章列表，仅标签详情页和搜索页用到。
 	Post     *data.Post      // 文章详细内容，仅文章页面用到。
@@ -230,7 +230,7 @@ func (client *Client) getRequestTheme(r *http.Request) *data.Theme {
 	name := r.FormValue(vars.CookieKeyTheme)
 	if len(name) == 0 {
 		cookie, err := r.Cookie(vars.CookieKeyTheme)
-		if err != nil { // 公记录错误，但不退出
+		if err != nil { // 有记录错误，但不退出
 			logs.Error(err)
 		}
 
@@ -239,15 +239,14 @@ func (client *Client) getRequestTheme(r *http.Request) *data.Theme {
 		}
 	}
 
-	theme := client.data.Themes[0] // 默认主题
+	// 查询对应名称的主题
 	for _, t := range client.data.Themes {
 		if name == t.ID {
-			theme = t
-			break
+			return t
 		}
 	}
 
-	return theme
+	return client.data.Themes[0] // 不存在的情况下，返回默认主题
 }
 
 // 输出一个特定状态码下的错误页面。
@@ -262,7 +261,7 @@ func (client *Client) renderError(w http.ResponseWriter, r *http.Request, code i
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	theme := client.getRequestTheme(r)
-	filename := strconv.Itoa(code) + ".html"
+	filename := strconv.Itoa(code) + vars.TemplateExtension
 	path := filepath.Join(client.path.ThemesDir, theme.ID, filename)
 	if !utils.FileExists(path) {
 		logs.Debugf("模板文件 %s 不存在\n", path)
