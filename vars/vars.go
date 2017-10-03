@@ -25,6 +25,9 @@ const (
 
 	// PostTemplateName 默认的文章模板名称
 	PostTemplateName = "post"
+
+	// XMLIndentWidth XML 每一个 tab 的缩进量
+	XMLIndentWidth = 4
 )
 
 // Cookie 的相关定义

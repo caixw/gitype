@@ -8,12 +8,13 @@ import (
 	"bytes"
 	"encoding/xml"
 	"strings"
+
+	"github.com/caixw/gitype/vars"
 )
 
-// xml 中每次的缩进量
-const indentWidth = 4
-
-// XMLWriter XML 操作类，简单地封装 bytes.Buffer。
+// XMLWriter XML 写操作，会根据元素进行缩进。
+//
+// 相对于官方的 JSON 包，因为不涉及到反身操作，性能上会有所提升。
 type XMLWriter struct {
 	buf    *bytes.Buffer
 	err    error // 缓存 buf.Write* 系列函数的错误信息，并阻止其再次执行
@@ -46,7 +47,7 @@ func (w *XMLWriter) writeByte(b byte) {
 }
 
 func (w *XMLWriter) writeIndent() {
-	w.writeString(strings.Repeat(" ", w.indent*indentWidth))
+	w.writeString(strings.Repeat(" ", w.indent*vars.XMLIndentWidth))
 }
 
 // WriteStartElement 写入一个开始元素
