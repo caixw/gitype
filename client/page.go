@@ -56,8 +56,8 @@ type page struct {
 	client   *Client
 	Info     *info
 	template *template.Template // 用于当前页面渲染的模板
-	w        http.ResponseWriter
-	r        *http.Request
+	response http.ResponseWriter
+	request  *http.Request
 
 	Title       string       // 文章标题，可以为空
 	Subtitle    string       // 副标题
@@ -162,8 +162,8 @@ func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *
 		client:   client,
 		Info:     client.info,
 		template: theme.Template,
-		w:        w,
-		r:        r,
+		response: w,
+		request:  r,
 
 		Subtitle:    conf.Subtitle,
 		Keywords:    conf.Keywords,
@@ -201,7 +201,7 @@ func (p *page) prevPage(url, text string) {
 
 // 输出当前内容到指定模板
 func (p *page) render(name string) {
-	setContentType(p.w, p.client.data.Config.Type)
+	setContentType(p.response, p.client.data.Config.Type)
 
 	cookie := &http.Cookie{
 		Name:     vars.CookieKeyTheme,
@@ -214,12 +214,12 @@ func (p *page) render(name string) {
 		cookie.MaxAge = -1
 	}
 	cookie.Expires = time.Now().Add(time.Second * time.Duration(vars.CookieMaxAge))
-	p.w.Header().Add(cookieKey, cookie.String())
+	p.response.Header().Add(cookieKey, cookie.String())
 
-	err := p.template.ExecuteTemplate(p.w, name, p)
+	err := p.template.ExecuteTemplate(p.response, name, p)
 	if err != nil {
 		logs.Error(err)
-		p.client.renderError(p.w, p.r, http.StatusInternalServerError)
+		p.client.renderError(p.response, p.request, http.StatusInternalServerError)
 		return
 	}
 }
