@@ -22,8 +22,8 @@ const usage = `%s 是一个基于 Git 的博客系统。
 
 常见用法：
 
-gitype -pprof -appdir="./"
-gitype -appdir="./"
+%s -pprof -appdir="./"
+%s -appdir="./"
 
 
 参数：
@@ -37,7 +37,7 @@ func main() {
 	appdir := flag.String("appdir", "./", "指定运行的工作目录")
 	init := flag.String("init", "", "初始化一个工作目录")
 	flag.Usage = func() {
-		fmt.Printf(usage, vars.Name, vars.URL)
+		fmt.Printf(usage, vars.Name, vars.URL, vars.Name, vars.Name)
 		flag.PrintDefaults()
 	}
 	flag.Parse()
