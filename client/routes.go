@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/caixw/typing/data"
-	"github.com/caixw/typing/url"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/gitype/data"
+	"github.com/caixw/gitype/url"
+	"github.com/caixw/gitype/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/middleware/compress"
 	"github.com/issue9/mux"

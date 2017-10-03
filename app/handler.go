@@ -9,7 +9,7 @@ import (
 	"net/http/pprof"
 	"strings"
 
-	"github.com/caixw/typing/helper"
+	"github.com/caixw/gitype/helper"
 	"github.com/issue9/logs"
 	"github.com/issue9/middleware/host"
 	"github.com/issue9/middleware/recovery"

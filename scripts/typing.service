@@ -2,15 +2,15 @@
 # 放在 /etc/systemd/system 之下
 
 [Unit]
-Description=typing daemon
+Description=gitype daemon
 After=network.target
 
 [Service]
-PIDFile=/tmp/typing.pid-404
+PIDFile=/tmp/gitype.pid-404
 User=root
 Group=root
-WorkingDirectory=/data/www/typing
-ExecStart=/data/www/typing/typing
+WorkingDirectory=/data/www/gitype
+ExecStart=/data/www/gitype/gitype
 Restart=always
 
 [Install]

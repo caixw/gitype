@@ -14,10 +14,10 @@ import (
 	"sort"
 	"time"
 
-	"github.com/caixw/typing/helper"
-	"github.com/caixw/typing/path"
-	"github.com/caixw/typing/url"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/gitype/helper"
+	"github.com/caixw/gitype/path"
+	"github.com/caixw/gitype/url"
+	"github.com/caixw/gitype/vars"
 )
 
 // Theme 表示主题信息

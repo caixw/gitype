@@ -7,7 +7,7 @@ package data
 import (
 	"time"
 
-	"github.com/caixw/typing/helper"
+	"github.com/caixw/gitype/helper"
 )
 
 // 用于生成一个符合 atom 规范的 XML 文本。

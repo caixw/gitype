@@ -10,7 +10,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/caixw/typing/path"
+	"github.com/caixw/gitype/path"
 	"github.com/issue9/assert"
 	"github.com/issue9/mux"
 )

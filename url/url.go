@@ -9,7 +9,7 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/gitype/vars"
 )
 
 const (

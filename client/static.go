@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/gitype/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 	"github.com/issue9/utils"

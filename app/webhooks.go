@@ -10,7 +10,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/caixw/typing/helper"
+	"github.com/caixw/gitype/helper"
 	"github.com/issue9/logs"
 	"github.com/issue9/utils"
 )

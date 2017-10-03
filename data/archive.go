@@ -8,7 +8,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/caixw/typing/helper"
+	"github.com/caixw/gitype/helper"
 )
 
 // 归档的类型

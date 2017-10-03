@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/caixw/typing/path"
+	"github.com/caixw/gitype/path"
 	"github.com/issue9/assert"
 )
 

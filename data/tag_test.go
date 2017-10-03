@@ -7,7 +7,7 @@ package data
 import (
 	"testing"
 
-	"github.com/caixw/typing/url"
+	"github.com/caixw/gitype/url"
 	"github.com/issue9/assert"
 )
 

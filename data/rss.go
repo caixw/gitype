@@ -7,7 +7,7 @@ package data
 import (
 	"time"
 
-	"github.com/caixw/typing/helper"
+	"github.com/caixw/gitype/helper"
 )
 
 const (

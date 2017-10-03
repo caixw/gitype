@@ -12,9 +12,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/caixw/typing/helper"
-	p "github.com/caixw/typing/path"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/gitype/helper"
+	p "github.com/caixw/gitype/path"
+	"github.com/caixw/gitype/vars"
 	"github.com/issue9/utils"
 )
 

@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/caixw/typing/client"
-	"github.com/caixw/typing/path"
+	"github.com/caixw/gitype/client"
+	"github.com/caixw/gitype/path"
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 )

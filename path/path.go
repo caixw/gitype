@@ -8,12 +8,12 @@ package path
 import (
 	"path/filepath"
 
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/gitype/vars"
 )
 
-// Path 表示 typing 的目录结构信息。
+// Path 表示 gitype 的目录结构信息。
 //
-// typing 拥有一个固定的目录结构，程序根据这个目录结构加载相关的数据信息，
+// gitype 拥有一个固定的目录结构，程序根据这个目录结构加载相关的数据信息，
 // Path 可以在指定根目录的情况下，预先生成所有的目录结构路径，方便其它地方调用。
 type Path struct {
 	Root string // 项目的根目录

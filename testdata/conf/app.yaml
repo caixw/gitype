@@ -4,9 +4,9 @@ https: false
 httpState: disable
 port: :8080
 headers: 
-  server: typing
+  server: gitype
 
 webhook:
   url: /admin/webhooks
   frequency: 1m
-  repoURL: https://github.com/caixw/typing.git
+  repoURL: https://github.com/caixw/gitype.git

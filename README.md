@@ -1,6 +1,6 @@
-typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](https://travis-ci.org/caixw/typing)
+gitype [![Build Status](https://travis-ci.org/caixw/gitype.svg?branch=nosql)](https://travis-ci.org/caixw/gitype)
 [![Go version](https://img.shields.io/badge/Go-1.8-brightgreen.svg?style=flat)](https://golang.org)
-[![Go Report Card](https://goreportcard.com/badge/github.com/caixw/typing)](https://goreportcard.com/report/github.com/caixw/typing)
+[![Go Report Card](https://goreportcard.com/badge/github.com/caixw/gitype)](https://goreportcard.com/report/github.com/caixw/gitype)
 ======
 
 基于 Git 的博客系统，具有以下特性：
@@ -20,10 +20,10 @@ typing [![Build Status](https://travis-ci.org/caixw/typing.svg?branch=nosql)](ht
 
 ### 使用
 
-1. 下载代码：`go get github.com/caixw/typing`；
+1. 下载代码：`go get github.com/caixw/gitype`；
 1. 运行 `scripts/build.sh` 编译代码（也可以直接执行 `go build` 编译，除了版本号，并无其它差别。）；
-1. 执行 `typing -init=to_path` 输出初始的数据内容；
-1. 运行 `typing -appdir=to_path`。
+1. 执行 `gitype -init=to_path` 输出初始的数据内容；
+1. 运行 `gitype -appdir=to_path`。
 
 *./scripts 目录下包含了部分平台下的转换成守护进程的脚本*
 *./testdata 也是一个完整的工作目录，如果不想执行 `-init` 命令初始化的话，也可以直接复制 ./testdata 的内容。*
@@ -314,8 +314,8 @@ data/themes 下为主题文件，可定义多个主题，通过 config 中的 th
 
 ### 开发
 
-typing 以自用为主，原则上*不支持新功能的 PR*。
-BUG 可在[此处](https://github.com/caixw/typing/issues)提交或是直接 PR。
+gitype 以自用为主，原则上*不支持新功能的 PR*。
+BUG 可在[此处](https://github.com/caixw/gitype/issues)提交或是直接 PR。
 
 
 

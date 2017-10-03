@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/caixw/typing/helper"
-	"github.com/caixw/typing/path"
+	"github.com/caixw/gitype/helper"
+	"github.com/caixw/gitype/path"
 	"github.com/issue9/is"
 	"github.com/issue9/utils"
 )

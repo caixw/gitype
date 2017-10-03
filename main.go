@@ -10,9 +10,9 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/caixw/typing/app"
-	"github.com/caixw/typing/path"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/gitype/app"
+	"github.com/caixw/gitype/path"
+	"github.com/caixw/gitype/vars"
 	"github.com/issue9/logs"
 )
 
@@ -22,8 +22,8 @@ const usage = `%s 是一个基于 Git 的博客系统。
 
 常见用法：
 
-typing -pprof -appdir="./"
-typing -appdir="./"
+gitype -pprof -appdir="./"
+gitype -appdir="./"
 
 
 参数：

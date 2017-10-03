@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/caixw/typing/helper"
-	"github.com/caixw/typing/path"
-	"github.com/caixw/typing/url"
+	"github.com/caixw/gitype/helper"
+	"github.com/caixw/gitype/path"
+	"github.com/caixw/gitype/url"
 )
 
 // Tag 描述标签信息

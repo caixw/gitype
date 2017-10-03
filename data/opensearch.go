@@ -7,9 +7,9 @@ package data
 import (
 	"net/http"
 
-	"github.com/caixw/typing/helper"
-	"github.com/caixw/typing/url"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/gitype/helper"
+	"github.com/caixw/gitype/url"
+	"github.com/caixw/gitype/vars"
 )
 
 const contentTypeOpensearch = "application/opensearchdescription+xml"
@@ -57,7 +57,7 @@ func (d *Data) buildOpensearch(conf *config) error {
 		"type":   conf.Type,
 		"method": http.MethodGet,
 		// 需要全链接，否则 Firefox 的搜索框不认。
-		// https://github.com/caixw/typing/issues/18
+		// https://github.com/caixw/gitype/issues/18
 		"template": d.URL(url.Search("{searchTerms}", 0)),
 	})
 

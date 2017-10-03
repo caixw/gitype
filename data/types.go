@@ -7,8 +7,8 @@ package data
 import (
 	"strconv"
 
-	"github.com/caixw/typing/helper"
-	"github.com/caixw/typing/path"
+	"github.com/caixw/gitype/helper"
+	"github.com/caixw/gitype/path"
 	"github.com/issue9/is"
 )
 

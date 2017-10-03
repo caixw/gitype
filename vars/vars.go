@@ -9,10 +9,10 @@ import "time"
 
 const (
 	// Name 程序名称
-	Name = "typing"
+	Name = "gitype"
 
 	// URL 项目的地址
-	URL = "https://github.com/caixw/typing"
+	URL = "https://github.com/caixw/gitype"
 
 	// DateFormat 客户配置文件中所使用的的时间格式。
 	// 所有的时间字符串，都将使用此格式去解析。

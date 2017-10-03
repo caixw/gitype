@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/caixw/typing/helper"
-	"github.com/caixw/typing/path"
-	"github.com/caixw/typing/vars"
+	"github.com/caixw/gitype/helper"
+	"github.com/caixw/gitype/path"
+	"github.com/caixw/gitype/vars"
 	"github.com/issue9/is"
 )
 

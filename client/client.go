@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/caixw/typing/data"
-	"github.com/caixw/typing/path"
+	"github.com/caixw/gitype/data"
+	"github.com/caixw/gitype/path"
 	"github.com/issue9/mux"
 )
 
