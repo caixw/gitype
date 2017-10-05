@@ -104,3 +104,15 @@ const (
 
 	ThemeMetaFilename = "theme.yaml"
 )
+
+// 页面的类型，除了 PageIndex 和 PagePost 其它的同时也是模板名称。
+const (
+	PageIndex    = "index"
+	PagePosts    = "posts"
+	PagePost     = "post"
+	PageTags     = "tags"
+	PageTag      = "tag"
+	PageArchives = "archives"
+	PageLinks    = "links"
+	PageSearch   = "search"
+)

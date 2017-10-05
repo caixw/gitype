@@ -20,18 +20,6 @@ import (
 	"github.com/issue9/utils"
 )
 
-// 定义页面的类型
-const (
-	typeIndex    = "index"
-	typePosts    = "posts"
-	typePost     = "post"
-	typeTags     = "tags"
-	typeTag      = "tag"
-	typeArchives = "archives"
-	typeLinks    = "links"
-	typeSearch   = "search"
-)
-
 const (
 	contentTypeKey = "Content-Type"
 	cookieKey      = "Set-Cookie"

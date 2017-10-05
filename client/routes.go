@@ -66,7 +66,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post := client.data.Posts[index]
-	p := client.page(typePost, w, r)
+	p := client.page(vars.PagePost, w, r)
 
 	client.data.Outdated(post)
 	p.Post = post
@@ -104,9 +104,9 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := client.page(typeIndex, w, r)
+	p := client.page(vars.PageIndex, w, r)
 	if page > 1 { // 非首页，标题显示页码数
-		p.Type = typePosts
+		p.Type = vars.PagePosts
 		p.Title = fmt.Sprintf("第 %d 页", page)
 	}
 	p.Canonical = client.data.URL(url.Posts(page))
@@ -123,7 +123,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 		p.nextPage(url.Posts(page+1), "")
 	}
 
-	p.render("posts")
+	p.render(vars.PagePost)
 }
 
 // 标签详细页
@@ -160,7 +160,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := client.page(typeTag, w, r)
+	p := client.page(vars.PageTag, w, r)
 	p.Tag = tag
 	p.Title = tag.Title
 	p.Keywords = tag.Keywords
@@ -179,41 +179,41 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 		p.nextPage(url.Tag(slug, page+1), "")
 	}
 
-	p.render("tag")
+	p.render(vars.PageTag)
 }
 
 // 友情链接页
 // /links.html
 func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
-	p := client.page(typeLinks, w, r)
+	p := client.page(vars.PageLinks, w, r)
 	p.Title = "友情链接"
 	p.Canonical = client.data.URL(url.Links())
 
-	p.render("links")
+	p.render(vars.PageLinks)
 }
 
 // 标签列表页
 // /tags.html
 func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
-	p := client.page(typeTags, w, r)
+	p := client.page(vars.PageTags, w, r)
 	p.Title = "标签"
 	p.Canonical = client.data.URL(url.Tags())
 	p.Description = "标签列表"
 
-	p.render("tags")
+	p.render(vars.PageTags)
 }
 
 // 归档页
 // /archives.html
 func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
-	p := client.page(typeArchives, w, r)
+	p := client.page(vars.PageArchives, w, r)
 	p.Title = "归档"
 	p.Keywords = "归档,存档,archive,archives"
 	p.Description = "网站的归档列表，按时间进行排序"
 	p.Canonical = client.data.URL(url.Archives())
 	p.Archives = client.data.Archives
 
-	p.render("archives")
+	p.render(vars.PageArchives)
 }
 
 // 确认当前文章列表页选择范围。
