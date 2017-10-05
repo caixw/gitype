@@ -32,7 +32,7 @@ func TestLoadPost(t *testing.T) {
 	a.NotError(err).NotNil(post)
 	a.Equal(len(post.Tags), 0) // 未调用 Data.sanitize 初始化
 	a.False(post.Modified.IsZero())
-	a.Equal(post.Template, vars.PostTemplateName)
+	a.Equal(post.Template, vars.PagePost)
 	a.Equal(post.Content, "<article>a1</article>\n")
 
 	post, err = loadPost(testdataPath, "/folder/post2")

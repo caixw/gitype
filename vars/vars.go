@@ -23,9 +23,6 @@ const (
 	// TemplateExtension 模板的扩展名
 	TemplateExtension = ".html"
 
-	// PostTemplateName 默认的文章模板名称
-	PostTemplateName = "post"
-
 	// XMLIndentWidth XML 每一个 tab 的缩进量
 	XMLIndentWidth = 4
 )
@@ -109,7 +106,7 @@ const (
 const (
 	PageIndex    = "index"
 	PagePosts    = "posts"
-	PagePost     = "post"
+	PagePost     = "post" // 同时也表示默认的模板名
 	PageTags     = "tags"
 	PageTag      = "tag"
 	PageArchives = "archives"

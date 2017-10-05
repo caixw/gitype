@@ -178,7 +178,7 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 
 	// template
 	if len(post.Template) == 0 {
-		post.Template = vars.PostTemplateName
+		post.Template = vars.PagePost
 	}
 
 	// order

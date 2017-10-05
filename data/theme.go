@@ -166,19 +166,19 @@ func (d *Data) snippetsTemplate() (*template.Template, error) {
 // 文章可以自定义模板名称。
 func (d *Data) templatesName() []string {
 	var templates = []string{
-		vars.PostTemplateName,
-		"posts",
-		"tags",
-		"tag",
-		"links",
-		"archives",
-		"search",
+		vars.PagePost,
+		vars.PagePosts,
+		vars.PageTags,
+		vars.PageTag,
+		vars.PageLinks,
+		vars.PageArchives,
+		vars.PageSearch,
 	}
 
 	// 只有文章页可以自定义模板名称
 	for _, post := range d.Posts {
 		// 默认模板名，肯定已存在于 templates 变量中
-		if post.Template == vars.PostTemplateName {
+		if post.Template == vars.PagePost {
 			continue
 		}
 
