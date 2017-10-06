@@ -214,7 +214,7 @@ func (client *Client) getRequestTheme(r *http.Request) *data.Theme {
 	name := r.FormValue(vars.CookieKeyTheme)
 	if len(name) == 0 {
 		cookie, err := r.Cookie(vars.CookieKeyTheme)
-		if err != nil { // 有记录错误，但不退出
+		if err != nil && err != http.ErrNoCookie { // 有记录错误，但不退出
 			logs.Error(err)
 		}
 
