@@ -123,7 +123,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 		p.nextPage(url.Posts(page+1), "")
 	}
 
-	p.render(vars.PagePost)
+	p.render(vars.PagePosts)
 }
 
 // 标签详细页
