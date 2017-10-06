@@ -20,10 +20,7 @@ import (
 	"github.com/issue9/utils"
 )
 
-const (
-	contentTypeKey = "Content-Type"
-	cookieKey      = "Set-Cookie"
-)
+const contentTypeKey = "Content-Type"
 
 // 生成一个带编码的 content-type 报头内容
 func buildContentTypeContent(mime string) string {
@@ -201,7 +198,7 @@ func (p *page) render(name string) {
 		cookie.MaxAge = -1
 	}
 	cookie.Expires = time.Now().Add(time.Second * time.Duration(vars.CookieMaxAge))
-	p.response.Header().Add(cookieKey, cookie.String())
+	http.SetCookie(p.response, cookie)
 
 	err := p.template.ExecuteTemplate(p.response, name, p)
 	if err != nil {
