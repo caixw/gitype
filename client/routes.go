@@ -73,7 +73,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Keywords = post.Keywords
 	p.Description = post.Summary
 	p.Title = post.Title
-	p.Canonical = client.data.URL(post.Permalink)
+	p.Canonical = client.data.BuildURL(post.Permalink)
 	p.License = post.License // 文章可具体指定协议
 	p.Author = post.Author   // 文章可具体指定作者
 
@@ -109,7 +109,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 		p.Type = vars.PagePosts
 		p.Title = fmt.Sprintf("第 %d 页", page)
 	}
-	p.Canonical = client.data.URL(url.Posts(page))
+	p.Canonical = client.data.BuildURL(url.Posts(page))
 
 	start, end, ok := client.getPostsRange(len(client.data.Posts), page, w, r)
 	if !ok {
@@ -165,7 +165,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	p.Title = tag.Title
 	p.Keywords = tag.Keywords
 	p.Description = tag.Description
-	p.Canonical = client.data.URL(url.Tag(slug, page))
+	p.Canonical = client.data.BuildURL(url.Tag(slug, page))
 
 	start, end, ok := client.getPostsRange(len(tag.Posts), page, w, r)
 	if !ok {
@@ -187,7 +187,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 	p := client.page(vars.PageLinks, w, r)
 	p.Title = "友情链接"
-	p.Canonical = client.data.URL(url.Links())
+	p.Canonical = client.data.BuildURL(url.Links())
 
 	p.render(vars.PageLinks)
 }
@@ -197,7 +197,7 @@ func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	p := client.page(vars.PageTags, w, r)
 	p.Title = "标签"
-	p.Canonical = client.data.URL(url.Tags())
+	p.Canonical = client.data.BuildURL(url.Tags())
 	p.Description = "标签列表"
 
 	p.render(vars.PageTags)
@@ -210,7 +210,7 @@ func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	p.Title = "归档"
 	p.Keywords = "归档,存档,archive,archives"
 	p.Description = "网站的归档列表，按时间进行排序"
-	p.Canonical = client.data.URL(url.Archives())
+	p.Canonical = client.data.BuildURL(url.Archives())
 	p.Archives = client.data.Archives
 
 	p.render(vars.PageArchives)
@@ -218,7 +218,7 @@ func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 
 // 确认当前文章列表页选择范围。
 func (client *Client) getPostsRange(postsSize, page int, w http.ResponseWriter, r *http.Request) (start, end int, ok bool) {
-	size := client.data.Config.PageSize
+	size := client.data.PageSize
 	start = size * (page - 1) // 系统从零开始计数
 	if start > postsSize {
 		logs.Debugf("请求页码为[%d]，实际文章数量为[%d]\n", page, postsSize)
@@ -246,7 +246,7 @@ func (client *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Etag", client.etag)
-		w.Header().Set("Content-Language", client.data.Config.Language)
+		w.Header().Set("Content-Language", client.data.Language)
 		compress.New(f, logs.ERROR()).ServeHTTP(w, r)
 	}
 }

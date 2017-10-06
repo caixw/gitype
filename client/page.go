@@ -93,7 +93,6 @@ type info struct {
 
 func (client *Client) newInfo() *info {
 	d := client.data
-	conf := d.Config
 
 	info := &info{
 		AppName:    vars.Name,
@@ -101,18 +100,18 @@ func (client *Client) newInfo() *info {
 		AppVersion: vars.Version(),
 		GoVersion:  runtime.Version(),
 
-		SiteName:    conf.Title,
-		URL:         conf.URL,
-		Icon:        conf.Icon,
-		Language:    conf.Language,
+		SiteName:    d.Title,
+		URL:         d.URL,
+		Icon:        d.Icon,
+		Language:    d.Language,
 		PostSize:    len(d.Posts),
-		Beian:       conf.Beian,
-		Uptime:      conf.Uptime,
+		Beian:       d.Beian,
+		Uptime:      d.Uptime,
 		LastUpdated: d.Created,
 		Tags:        d.Tags,
 		Series:      d.Series,
 		Links:       d.Links,
-		Menus:       conf.Menus,
+		Menus:       d.Menus,
 	}
 
 	if d.RSS != nil {
@@ -144,7 +143,7 @@ func (client *Client) newInfo() *info {
 
 func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *page {
 	theme := client.getRequestTheme(r)
-	conf := client.data.Config
+	d := client.data
 
 	return &page{
 		client:   client,
@@ -153,12 +152,12 @@ func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *
 		response: w,
 		request:  r,
 
-		Subtitle:    conf.Subtitle,
-		Keywords:    conf.Keywords,
-		Description: conf.Description,
+		Subtitle:    d.Subtitle,
+		Keywords:    d.Keywords,
+		Description: d.Description,
 		Type:        typ,
-		Author:      conf.Author,
-		License:     conf.License,
+		Author:      d.Author,
+		License:     d.License,
 		Theme:       theme,
 	}
 }
@@ -189,7 +188,7 @@ func (p *page) prevPage(url, text string) {
 
 // 输出当前内容到指定模板
 func (p *page) render(name string) {
-	setContentType(p.response, p.client.data.Config.Type)
+	setContentType(p.response, p.client.data.Type)
 
 	cookie := &http.Cookie{
 		Name:     vars.CookieKeyTheme,
@@ -264,7 +263,7 @@ func (client *Client) renderError(w http.ResponseWriter, r *http.Request, code i
 		return
 	}
 
-	setContentType(w, client.data.Config.Type)
+	setContentType(w, client.data.Type)
 	w.WriteHeader(code)
 	w.Write(data)
 }

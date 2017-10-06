@@ -151,9 +151,9 @@ func (d *Data) snippetsTemplate() (*template.Template, error) {
 		"strip":    stripTags,
 		"html":     htmlEscaped,
 		"unix":     unix,
-		"ldate":    d.longDateFormat,
-		"sdate":    d.shortDateFormat,
-		"rfc3339":  rfc3339DateFormat,
+		"ldate":    d.longDate,
+		"sdate":    d.shortDate,
+		"rfc3339":  rfc3339Date,
 		"themeURL": func(p string) string { return url.Theme(p) },
 	}
 
@@ -192,7 +192,7 @@ func (d *Data) templatesName() []string {
 	return templates
 }
 
-func rfc3339DateFormat(t time.Time) interface{} {
+func rfc3339Date(t time.Time) interface{} {
 	return t.Format(time.RFC3339)
 }
 
@@ -201,12 +201,12 @@ func unix(t time.Time) interface{} {
 	return t.Unix()
 }
 
-func (d *Data) longDateFormat(t time.Time) interface{} {
-	return t.Format(d.Config.LongDateFormat)
+func (d *Data) longDate(t time.Time) interface{} {
+	return t.Format(d.longDateFormat)
 }
 
-func (d *Data) shortDateFormat(t time.Time) interface{} {
-	return t.Format(d.Config.ShortDateFormat)
+func (d *Data) shortDate(t time.Time) interface{} {
+	return t.Format(d.shortDateFormat)
 }
 
 // 将内容显示为 HTML 内容
