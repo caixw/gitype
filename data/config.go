@@ -19,42 +19,46 @@ const contentTypeHTML = "text/html"
 
 // Config 配置信息，相对于 config，去掉部分临时性的变量，供 Data 对外公开用。
 type Config struct {
-	Title           string    // 网站标题
-	Language        string    // 语言标记，比如 zh-cmn-Hans
-	Subtitle        string    // 网站副标题
-	URL             string    // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
-	Keywords        string    // 默认情况下的 keyword 内容
-	Description     string    // 默认情况下的 descrription 内容
-	Beian           string    // 备案号
-	Uptime          time.Time // 上线时间
-	PageSize        int       // 每页显示的数量
-	LongDateFormat  string    // 长时间的显示格式
-	ShortDateFormat string    // 短时间的显示格式
-	Type            string    // 所有页面的 mime type 类型，默认使用
-	Icon            *Icon     // 程序默认的图标
-	Menus           []*Link   // 导航菜单
-	Author          *Author   // 默认作者信息
-	License         *Link     // 默认版权信息
+	Title           string           // 网站标题
+	TitleSeparator  string           // 标题分隔符
+	Language        string           // 语言标记，比如 zh-cmn-Hans
+	Subtitle        string           // 网站副标题
+	URL             string           // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
+	Keywords        string           // 默认情况下的 keyword 内容
+	Description     string           // 默认情况下的 descrription 内容
+	Beian           string           // 备案号
+	Uptime          time.Time        // 上线时间
+	PageSize        int              // 每页显示的数量
+	LongDateFormat  string           // 长时间的显示格式
+	ShortDateFormat string           // 短时间的显示格式
+	Type            string           // 所有页面的 mime type 类型，默认使用
+	Icon            *Icon            // 程序默认的图标
+	Menus           []*Link          // 导航菜单
+	Author          *Author          // 默认作者信息
+	License         *Link            // 默认版权信息
+	Pages           map[string]*Page // 页面的详细定义
 }
 
 // 配置信息，用于从文件中读取
 type config struct {
-	Title           string    `yaml:"title"`
-	Language        string    `yaml:"language"`
-	Subtitle        string    `yaml:"subtitle,omitempty"`
-	URL             string    `yaml:"url"`
-	Keywords        string    `yaml:"keywords,omitempty"`
-	Description     string    `yaml:"description,omitempty"`
-	Beian           string    `yaml:"beian,omitempty"`
-	Uptime          time.Time `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
-	PageSize        int       `yaml:"pageSize"`
-	LongDateFormat  string    `yaml:"longDateFormat"`
-	ShortDateFormat string    `yaml:"shortDateFormat"`
-	Type            string    `yaml:"type,omitempty"`
-	Icon            *Icon     `yaml:"icon,omitempty"`
-	Menus           []*Link   `yaml:"menus,omitempty"`
-	Author          *Author   `yaml:"author"`
-	License         *Link     `yaml:"license"`
+	Title           string           `yaml:"title"`
+	TitleSeparator  string           `yaml:"titleSeparator"`
+	Language        string           `yaml:"language"`
+	Subtitle        string           `yaml:"subtitle,omitempty"`
+	URL             string           `yaml:"url"`
+	Keywords        string           `yaml:"keywords,omitempty"`
+	Description     string           `yaml:"description,omitempty"`
+	Beian           string           `yaml:"beian,omitempty"`
+	Uptime          time.Time        `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	PageSize        int              `yaml:"pageSize"`
+	LongDateFormat  string           `yaml:"longDateFormat"`
+	ShortDateFormat string           `yaml:"shortDateFormat"`
+	Type            string           `yaml:"type,omitempty"`
+	Icon            *Icon            `yaml:"icon,omitempty"`
+	Menus           []*Link          `yaml:"menus,omitempty"`
+	Author          *Author          `yaml:"author"`
+	License         *Link            `yaml:"license"`
+	Pages           map[string]*Page `yaml:"pages"`
 
 	// 以下内容不存在于 Config 中
 	Outdated     *outdatedConfig   `yaml:"outdated,omitempty"`
