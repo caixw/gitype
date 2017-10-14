@@ -104,9 +104,9 @@ const (
 
 // 页面的类型，除了 PageIndex 其它的同时也是模板名称。
 const (
-	PageIndex    = "index"
-	PagePosts    = "posts"
-	PagePost     = "post" // 同时也表示默认的模板名
+	PageIndex    = "index" // 首页
+	PagePosts    = "posts" // 除首页外的文章列表页
+	PagePost     = "post"  // 同时也表示默认的模板名
 	PageTags     = "tags"
 	PageTag      = "tag"
 	PageArchives = "archives"

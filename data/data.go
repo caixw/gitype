@@ -19,8 +19,25 @@ type Data struct {
 	path    *path.Path
 	Created time.Time
 
-	outdated *outdatedConfig
-	Config   *Config
+	Title       string    // 网站标题
+	Language    string    // 语言标记，比如 zh-cmn-Hans
+	Subtitle    string    // 网站副标题
+	URL         string    // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
+	Keywords    string    // 默认情况下的 keyword 内容
+	Description string    // 默认情况下的 descrription 内容
+	Beian       string    // 备案号
+	Uptime      time.Time // 上线时间
+	PageSize    int       // 每页显示的数量
+	Type        string    // 所有页面的 mime type 类型，默认使用
+	Icon        *Icon     // 程序默认的图标
+	Menus       []*Link   // 导航菜单
+	Author      *Author   // 默认作者信息
+	License     *Link     // 默认版权信息
+
+	longDateFormat  string // 长时间的显示格式
+	shortDateFormat string // 短时间的显示格式
+	outdated        *outdatedConfig
+
 	Tags     []*Tag
 	Series   []*Tag
 	Links    []*Link
@@ -62,14 +79,30 @@ func Load(path *path.Path) (*Data, error) {
 	}
 
 	d := &Data{
-		path:     path,
-		Created:  time.Now(),
-		outdated: conf.Outdated,
-		Config:   newConfig(conf),
-		Tags:     tags,
-		Links:    links,
-		Posts:    posts,
-		Themes:   themes,
+		path:    path,
+		Created: time.Now(),
+
+		Title:       conf.Title,
+		Language:    conf.Language,
+		Subtitle:    conf.Subtitle,
+		URL:         conf.URL,
+		Keywords:    conf.Keywords,
+		Description: conf.Description,
+		Beian:       conf.Beian,
+		Uptime:      conf.Uptime,
+		PageSize:    conf.PageSize,
+		Type:        conf.Type,
+		Icon:        conf.Icon,
+		Menus:       conf.Menus,
+
+		longDateFormat:  conf.LongDateFormat,
+		shortDateFormat: conf.ShortDateFormat,
+		outdated:        conf.Outdated,
+
+		Tags:   tags,
+		Links:  links,
+		Posts:  posts,
+		Themes: themes,
 	}
 
 	if err := d.sanitize(conf); err != nil {
@@ -166,9 +199,9 @@ func (d *Data) buildData(conf *config) (err error) {
 	return err
 }
 
-// URL 生成一个带域名的地址
-func (d *Data) URL(path string) string {
-	return d.Config.URL + path
+// BuildURL 生成一个带域名的地址
+func (d *Data) BuildURL(path string) string {
+	return d.URL + path
 }
 
 // Outdated 计算指定文章的 Outdated 信息。

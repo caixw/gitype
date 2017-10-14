@@ -32,7 +32,7 @@ func (d *Data) buildAtom(conf *config) error {
 		w.WriteCloseElement("link", map[string]string{
 			"rel":   "search",
 			"type":  o.Type,
-			"href":  d.URL(o.URL),
+			"href":  d.BuildURL(o.URL),
 			"title": o.Title,
 		})
 	}
@@ -66,7 +66,7 @@ func addPostsToAtom(w *helper.XMLWriter, d *Data) {
 		w.WriteElement("id", p.Permalink, nil)
 
 		w.WriteCloseElement("link", map[string]string{
-			"href": d.URL(p.Permalink),
+			"href": d.BuildURL(p.Permalink),
 		})
 
 		w.WriteElement("title", p.Title, nil)

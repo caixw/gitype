@@ -42,7 +42,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p.Q = q
 	p.Keywords = q + ",搜索,search"
 	p.Description = "搜索关键字" + q + "的结果"
-	p.Canonical = client.data.URL(url.Search(p.Q, page))
+	p.Canonical = client.data.BuildURL(url.Search(p.Q, page))
 	start, end, ok := client.getPostsRange(len(posts), page, w, r)
 	if !ok {
 		return
