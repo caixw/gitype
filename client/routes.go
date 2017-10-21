@@ -107,7 +107,10 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	if page > 1 { // 非首页，标题显示页码数
 		p.Type = vars.PagePosts
 	}
-	p.Title = client.data.Pages[vars.PagePosts].Title
+	pp := client.data.Pages[vars.PagePosts]
+	p.Title = pp.Title
+	p.Keywords = pp.Keywords
+	p.Description = pp.Description
 	p.Canonical = client.data.BuildURL(url.Posts(page))
 
 	start, end, ok := client.getPostsRange(len(client.data.Posts), page, w, r)

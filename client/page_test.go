@@ -7,7 +7,6 @@ package client
 import (
 	"testing"
 
-	"github.com/caixw/gitype/vars"
 	"github.com/issue9/assert"
 )
 
@@ -18,7 +17,6 @@ func TestPage_nextPage(t *testing.T) {
 	p.nextPage("url", "")
 	a.Equal(p.NextPage.URL, "url")
 	a.Equal(p.NextPage.Rel, "next")
-	a.Equal(p.NextPage.Text, vars.NextPageText)
 
 	p.nextPage("url", "text")
 	a.Equal(p.NextPage.URL, "url")
@@ -33,7 +31,6 @@ func TestPage_prevPage(t *testing.T) {
 	p.prevPage("url", "")
 	a.Equal(p.PrevPage.URL, "url")
 	a.Equal(p.PrevPage.Rel, "prev")
-	a.Equal(p.PrevPage.Text, vars.PrevPageText)
 
 	p.prevPage("url", "text")
 	a.Equal(p.PrevPage.URL, "url")
