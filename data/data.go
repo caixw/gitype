@@ -19,20 +19,21 @@ type Data struct {
 	path    *path.Path
 	Created time.Time
 
-	Title       string    // 网站标题
-	Language    string    // 语言标记，比如 zh-cmn-Hans
-	Subtitle    string    // 网站副标题
-	URL         string    // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
-	Keywords    string    // 默认情况下的 keyword 内容
-	Description string    // 默认情况下的 descrription 内容
-	Beian       string    // 备案号
-	Uptime      time.Time // 上线时间
-	PageSize    int       // 每页显示的数量
-	Type        string    // 所有页面的 mime type 类型，默认使用
-	Icon        *Icon     // 程序默认的图标
-	Menus       []*Link   // 导航菜单
-	Author      *Author   // 默认作者信息
-	License     *Link     // 默认版权信息
+	Title       string           // 网站标题
+	Language    string           // 语言标记，比如 zh-cmn-Hans
+	Subtitle    string           // 网站副标题
+	URL         string           // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
+	Keywords    string           // 默认情况下的 keyword 内容
+	Description string           // 默认情况下的 descrription 内容
+	Beian       string           // 备案号
+	Uptime      time.Time        // 上线时间
+	PageSize    int              // 每页显示的数量
+	Type        string           // 所有页面的 mime type 类型，默认使用
+	Icon        *Icon            // 程序默认的图标
+	Menus       []*Link          // 导航菜单
+	Author      *Author          // 默认作者信息
+	License     *Link            // 默认版权信息
+	Pages       map[string]*Page // 各个页面的自定义内容
 
 	longDateFormat  string // 长时间的显示格式
 	shortDateFormat string // 短时间的显示格式
@@ -94,6 +95,7 @@ func Load(path *path.Path) (*Data, error) {
 		Type:        conf.Type,
 		Icon:        conf.Icon,
 		Menus:       conf.Menus,
+		Pages:       conf.Pages,
 
 		longDateFormat:  conf.LongDateFormat,
 		shortDateFormat: conf.ShortDateFormat,

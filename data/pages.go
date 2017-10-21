@@ -5,19 +5,20 @@
 package data
 
 import (
+	"strings"
+
 	"github.com/caixw/gitype/vars"
 )
 
 // 一些默认值的定义
-// 可以使用 %s 和 %t 两个变量
 const (
-	tagTitle      = "标签：%s | %t"
-	tagsTitle     = "标签 | %t"
-	archivesTitle = "归档 | %t"
-	searchTitle   = "搜索：%s | %t"
-	linksTitle    = "友情链接 | %t"
-	postTitle     = "%s | %t"
-	homeTitle     = "%t"
+	tagTitle      = "标签：" + vars.ContentPlaceholder + " | " + vars.TitlePlaceholder
+	tagsTitle     = "标签 | " + vars.TitlePlaceholder
+	archivesTitle = "归档 | " + vars.TitlePlaceholder
+	searchTitle   = "搜索：" + vars.ContentPlaceholder + " | " + vars.TitlePlaceholder
+	linksTitle    = "友情链接 | " + vars.TitlePlaceholder
+	postTitle     = vars.ContentPlaceholder + " | " + vars.TitlePlaceholder
+	homeTitle     = vars.TitlePlaceholder
 )
 
 // Page 页面的自定义内容
@@ -79,7 +80,24 @@ func (conf *config) initPages() {
 			Title: homeTitle,
 		}
 	}
+
+	for _, page := range conf.Pages {
+		if strings.Index(page.Title, vars.TitlePlaceholder) > 0 {
+			page.Title = replaceTitle(page.Title, conf.Title)
+		}
+		if strings.Index(page.Keywords, vars.TitlePlaceholder) > 0 {
+			page.Keywords = replaceTitle(page.Keywords, conf.Keywords)
+		}
+		if strings.Index(page.Description, vars.TitlePlaceholder) > 0 {
+			page.Description = replaceTitle(page.Description, conf.Description)
+		}
+	}
+
 	if conf.Pages[vars.PageIndex] == nil {
 		conf.Pages[vars.PageIndex] = conf.Pages[vars.PagePosts]
 	}
+}
+
+func replaceTitle(title, replacement string) string {
+	return strings.Replace(title, vars.TitlePlaceholder, replacement, -1)
 }

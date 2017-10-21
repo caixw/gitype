@@ -25,6 +25,12 @@ const (
 
 	// XMLIndentWidth XML 每一个 tab 的缩进量
 	XMLIndentWidth = 4
+
+	// TitlePlaceholder 配置文件中的表示标题内容的占位符
+	TitlePlaceholder = "%title%"
+
+	// ContentPlaceholder 配置文件中的表示当前内容的占位符
+	ContentPlaceholder = "%content%"
 )
 
 // Cookie 的相关定义
