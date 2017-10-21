@@ -24,6 +24,7 @@ type Tag struct {
 	Color       string    `yaml:"color,omitempty"` // 标签颜色。若未指定，则继承父容器
 	Content     string    `yaml:"content"`         // 对该标签的详细描述
 	Series      bool      `yaml:"series"`          // 是否为一个专题标签
+	HTMLTitle   string    `yaml:"-"`               // 用于网页的标题
 	Posts       []*Post   `yaml:"-"`               // 关联的文章
 	Keywords    string    `yaml:"-"`               // meta.keywords 标签的内容，如果为空，使用 Title 属性的值
 	Description string    `yaml:"-"`               // meta.description 标签的内容，若为空，则为 Config.Description
@@ -111,8 +112,6 @@ func (tag *Tag) sanitize() *helper.FieldError {
 		tag.Keywords += ","
 		tag.Keywords += tag.Slug
 	}
-
-	tag.Description = "标签" + tag.Title + "的介绍"
 
 	return nil
 }

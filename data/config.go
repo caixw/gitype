@@ -19,22 +19,24 @@ const contentTypeHTML = "text/html"
 
 // 配置信息，用于从文件中读取
 type config struct {
-	Title           string    `yaml:"title"`
-	Language        string    `yaml:"language"`
-	Subtitle        string    `yaml:"subtitle,omitempty"`
-	URL             string    `yaml:"url"`
-	Keywords        string    `yaml:"keywords,omitempty"`
-	Description     string    `yaml:"description,omitempty"`
-	Beian           string    `yaml:"beian,omitempty"`
-	Uptime          time.Time `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
-	PageSize        int       `yaml:"pageSize"`
-	LongDateFormat  string    `yaml:"longDateFormat"`
-	ShortDateFormat string    `yaml:"shortDateFormat"`
-	Type            string    `yaml:"type,omitempty"`
-	Icon            *Icon     `yaml:"icon,omitempty"`
-	Menus           []*Link   `yaml:"menus,omitempty"`
-	Author          *Author   `yaml:"author"`
-	License         *Link     `yaml:"license"`
+	Title           string           `yaml:"title"`
+	TitleSeparator  string           `yaml:"titleSeparator"`
+	Language        string           `yaml:"language"`
+	Subtitle        string           `yaml:"subtitle,omitempty"`
+	URL             string           `yaml:"url"`
+	Keywords        string           `yaml:"keywords,omitempty"`
+	Description     string           `yaml:"description,omitempty"`
+	Beian           string           `yaml:"beian,omitempty"`
+	Uptime          time.Time        `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	PageSize        int              `yaml:"pageSize"`
+	LongDateFormat  string           `yaml:"longDateFormat"`
+	ShortDateFormat string           `yaml:"shortDateFormat"`
+	Type            string           `yaml:"type,omitempty"`
+	Icon            *Icon            `yaml:"icon,omitempty"`
+	Menus           []*Link          `yaml:"menus,omitempty"`
+	Author          *Author          `yaml:"author"`
+	License         *Link            `yaml:"license"`
+	Pages           map[string]*Page `yaml:"pages"`
 
 	// 以下内容不存在于 Config 中
 	Outdated     *outdatedConfig   `yaml:"outdated,omitempty"`
@@ -176,6 +178,8 @@ func (conf *config) sanitize() *helper.FieldError {
 			return err
 		}
 	}
+
+	conf.initPages()
 
 	return nil
 }

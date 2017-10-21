@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/caixw/gitype/data"
+	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/url"
 	"github.com/caixw/gitype/vars"
 	"github.com/issue9/logs"
@@ -35,14 +36,14 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 获取所有的搜索结果
-	posts := search(q, client.data)
-
-	p.Title = "搜索:" + q
+	pp := client.data.Pages[vars.PageSearch]
+	p.Title = helper.ReplaceContent(pp.Title, q)
+	p.Keywords = helper.ReplaceContent(pp.Keywords, q)
+	p.Description = helper.ReplaceContent(pp.Description, q)
 	p.Q = q
-	p.Keywords = q + ",搜索,search"
-	p.Description = "搜索关键字" + q + "的结果"
 	p.Canonical = client.data.BuildURL(url.Search(p.Q, page))
+
+	posts := search(q, client.data) // 获取所有的搜索结果
 	start, end, ok := client.getPostsRange(len(posts), page, w, r)
 	if !ok {
 		return

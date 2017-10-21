@@ -42,7 +42,7 @@ type page struct {
 	response http.ResponseWriter
 	request  *http.Request
 
-	Title       string       // 文章标题，可以为空
+	Title       string       // 文章标题
 	Subtitle    string       // 副标题
 	Canonical   string       // 当前页的唯一链接
 	Keywords    string       // meta.keywords 的值
