@@ -200,7 +200,7 @@ func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	p := client.page(vars.PageTags, w, r)
 	pp := client.data.Pages[vars.PageTags]
 	p.Title = pp.Title
-	p.Title = pp.Title
+	p.Keywords = pp.Keywords
 	p.Description = pp.Description
 	p.Canonical = client.data.BuildURL(url.Tags())
 

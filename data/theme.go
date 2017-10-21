@@ -29,7 +29,7 @@ type Theme struct {
 	Description string             `yaml:"description"`
 	URL         string             `yaml:"url,omitempty"`
 	Author      *Author            `yaml:"author"`
-	Template    *template.Template `yaml:"template"` // 当前主题的预编译结果
+	Template    *template.Template `yaml:"-"` // 当前主题的预编译结果
 }
 
 func loadThemes(path *path.Path) ([]*Theme, error) {
