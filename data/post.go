@@ -48,6 +48,7 @@ type outdatedConfig struct {
 type Post struct {
 	Slug       string    `yaml:"-"`               // 唯一名称
 	Title      string    `yaml:"title"`           // 标题
+	HTMLTitle  string    `yaml:"-"`               // 网页标题
 	Created    time.Time `yaml:"-"`               // 创建时间
 	Modified   time.Time `yaml:"-"`               // 修改时间
 	Tags       []*Tag    `yaml:"-"`               // 关联的标签

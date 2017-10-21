@@ -5,7 +5,6 @@
 package client
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -72,7 +71,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Post = post
 	p.Keywords = post.Keywords
 	p.Description = post.Summary
-	p.Title = post.Title
+	p.Title = post.HTMLTitle
 	p.Canonical = client.data.BuildURL(post.Permalink)
 	p.License = post.License // 文章可具体指定协议
 	p.Author = post.Author   // 文章可具体指定作者
@@ -107,8 +106,8 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	p := client.page(vars.PageIndex, w, r)
 	if page > 1 { // 非首页，标题显示页码数
 		p.Type = vars.PagePosts
-		p.Title = fmt.Sprintf("第 %d 页", page)
 	}
+	p.Title = client.data.Pages[vars.PagePosts].Title
 	p.Canonical = client.data.BuildURL(url.Posts(page))
 
 	start, end, ok := client.getPostsRange(len(client.data.Posts), page, w, r)
@@ -162,7 +161,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 
 	p := client.page(vars.PageTag, w, r)
 	p.Tag = tag
-	p.Title = tag.Title
+	p.Title = tag.HTMLTitle
 	p.Keywords = tag.Keywords
 	p.Description = tag.Description
 	p.Canonical = client.data.BuildURL(url.Tag(slug, page))
@@ -186,7 +185,10 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 // /links.html
 func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 	p := client.page(vars.PageLinks, w, r)
-	p.Title = "友情链接"
+	pp := client.data.Pages[vars.PageLinks]
+	p.Title = pp.Title
+	p.Keywords = pp.Keywords
+	p.Description = pp.Description
 	p.Canonical = client.data.BuildURL(url.Links())
 
 	p.render(vars.PageLinks)
@@ -196,9 +198,11 @@ func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 // /tags.html
 func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	p := client.page(vars.PageTags, w, r)
-	p.Title = "标签"
+	pp := client.data.Pages[vars.PageTags]
+	p.Title = pp.Title
+	p.Title = pp.Title
+	p.Description = pp.Description
 	p.Canonical = client.data.BuildURL(url.Tags())
-	p.Description = "标签列表"
 
 	p.render(vars.PageTags)
 }
@@ -207,9 +211,10 @@ func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 // /archives.html
 func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	p := client.page(vars.PageArchives, w, r)
-	p.Title = "归档"
-	p.Keywords = "归档,存档,archive,archives"
-	p.Description = "网站的归档列表，按时间进行排序"
+	pp := client.data.Pages[vars.PageTags]
+	p.Title = pp.Title
+	p.Keywords = pp.Keywords
+	p.Description = pp.Description
 	p.Canonical = client.data.BuildURL(url.Archives())
 	p.Archives = client.data.Archives
 

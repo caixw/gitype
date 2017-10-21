@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/caixw/gitype/vars"
+
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
 )
@@ -124,8 +126,20 @@ func (d *Data) sanitize(conf *config) error {
 		return err
 	}
 
-	for _, tag := range d.Tags { // 将标签的默认修改时间设置为网站的上线时间
+	p := conf.Pages[vars.PageTag]
+	for _, tag := range d.Tags {
+		// 将标签的默认修改时间设置为网站的上线时间
 		tag.Modified = conf.Uptime
+
+		if len(tag.Description) == 0 {
+			if len(p.Description) > 0 {
+				tag.Description = helper.ReplaceContent(p.Description, tag.Title)
+			} else {
+				tag.Description = conf.Description
+			}
+		}
+
+		tag.HTMLTitle = helper.ReplaceContent(p.Title, tag.Title)
 	}
 
 	for _, post := range d.Posts {
@@ -177,6 +191,8 @@ func (d *Data) attachPostTag(post *Post, conf *config) *helper.FieldError {
 			break
 		}
 	} // end for tags
+
+	post.HTMLTitle = helper.ReplaceContent(conf.Pages[vars.PagePost].Title, post.Title)
 
 	if len(post.Tags) == 0 {
 		return &helper.FieldError{File: d.path.PostMetaPath(post.Slug), Message: "未指定任何关联标签信息", Field: "tags"}

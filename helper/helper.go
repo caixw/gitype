@@ -9,7 +9,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
+	"github.com/caixw/gitype/vars"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -55,4 +57,9 @@ func DumpTextFile(path, text string) error {
 
 	_, err = file.WriteString(text)
 	return err
+}
+
+// ReplaceContent 替换 content 中的 %content% 内容为 replacement
+func ReplaceContent(content, replacement string) string {
+	return strings.Replace(content, vars.ContentPlaceholder, replacement, -1)
 }

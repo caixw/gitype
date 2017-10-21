@@ -8,12 +8,10 @@ package client
 import (
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/caixw/gitype/data"
 	"github.com/caixw/gitype/path"
-	"github.com/caixw/gitype/vars"
 	"github.com/issue9/mux"
 )
 
@@ -78,8 +76,4 @@ func (client *Client) addFeed(feed *data.Feed) {
 		setContentType(w, feed.Type)
 		w.Write(feed.Content)
 	}))
-}
-
-func replaceContent(content, replacement string) string {
-	return strings.Replace(content, vars.ContentPlaceholder, replacement, -1)
 }
