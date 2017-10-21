@@ -83,13 +83,13 @@ func (conf *config) initPages() {
 
 	for _, page := range conf.Pages {
 		if strings.Index(page.Title, vars.TitlePlaceholder) > 0 {
-			page.Title = replaceTitle(page.Title, conf.Title)
+			page.Title = conf.replaceTitle(page.Title)
 		}
 		if strings.Index(page.Keywords, vars.TitlePlaceholder) > 0 {
-			page.Keywords = replaceTitle(page.Keywords, conf.Title)
+			page.Keywords = conf.replaceTitle(page.Keywords)
 		}
 		if strings.Index(page.Description, vars.TitlePlaceholder) > 0 {
-			page.Description = replaceTitle(page.Description, conf.Title)
+			page.Description = conf.replaceTitle(page.Description)
 		}
 	}
 
@@ -98,6 +98,7 @@ func (conf *config) initPages() {
 	}
 }
 
-func replaceTitle(title, replacement string) string {
-	return strings.Replace(title, vars.TitlePlaceholder, replacement, -1)
+// 替换标题中的 %title% 内容为 conf.Title
+func (conf *config) replaceTitle(title string) string {
+	return strings.Replace(title, vars.TitlePlaceholder, conf.Title, -1)
 }

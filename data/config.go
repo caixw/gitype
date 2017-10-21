@@ -17,24 +17,35 @@ import (
 
 const contentTypeHTML = "text/html"
 
+// 默认的语言，在配置文件中未指定时，使用此值，
+// 作为默认值，此值最好不要修改，若需要修改，
+// 则最好将诸如 tagTitle 等与语言相关的常量一起修改。
+const language = "zh-cnm-Hans"
+
 // 配置信息，用于从文件中读取
 type config struct {
-	Title           string           `yaml:"title"`
-	TitleSeparator  string           `yaml:"titleSeparator"`
-	Language        string           `yaml:"language"`
-	Subtitle        string           `yaml:"subtitle,omitempty"`
-	URL             string           `yaml:"url"`
-	Beian           string           `yaml:"beian,omitempty"`
-	Uptime          time.Time        `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
-	PageSize        int              `yaml:"pageSize"`
-	LongDateFormat  string           `yaml:"longDateFormat"`
-	ShortDateFormat string           `yaml:"shortDateFormat"`
-	Type            string           `yaml:"type,omitempty"`
-	Icon            *Icon            `yaml:"icon,omitempty"`
-	Menus           []*Link          `yaml:"menus,omitempty"`
-	Author          *Author          `yaml:"author"`
-	License         *Link            `yaml:"license"`
-	Pages           map[string]*Page `yaml:"pages"`
+	Title           string    `yaml:"title"`
+	TitleSeparator  string    `yaml:"titleSeparator"`
+	Language        string    `yaml:"language"`
+	Subtitle        string    `yaml:"subtitle,omitempty"`
+	URL             string    `yaml:"url"`
+	Beian           string    `yaml:"beian,omitempty"`
+	Uptime          time.Time `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	PageSize        int       `yaml:"pageSize"`
+	LongDateFormat  string    `yaml:"longDateFormat"`
+	ShortDateFormat string    `yaml:"shortDateFormat"`
+	Type            string    `yaml:"type,omitempty"`
+	Icon            *Icon     `yaml:"icon,omitempty"`
+	Menus           []*Link   `yaml:"menus,omitempty"`
+	Author          *Author   `yaml:"author"`
+	License         *Link     `yaml:"license"`
+
+	// 各个页面的一些自定义项，目前支持以下几个元素的修改：
+	// 1) html>head>title
+	// 2) html>head>meta.keywords
+	// 3) html>head>meta.description
+	// 各个页面支持的内容也不尽相同
+	Pages map[string]*Page `yaml:"pages"`
 
 	// 以下内容不存在于 Config 中
 	Outdated     *outdatedConfig   `yaml:"outdated,omitempty"`
