@@ -179,5 +179,7 @@ func (conf *config) sanitize() *helper.FieldError {
 		}
 	}
 
+	conf.initPages()
+
 	return nil
 }
