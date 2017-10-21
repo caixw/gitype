@@ -14,6 +14,8 @@ func TestReplaceContent(t *testing.T) {
 	a := assert.New(t)
 
 	a.Equal("abc", ReplaceContent("abc%content%", ""))
+	a.Equal("", ReplaceContent("", "TITLE"))
+	a.Equal("TITLE", ReplaceContent("%content%", "TITLE"))
 	a.Equal("abcTITLE", ReplaceContent("abc%content%", "TITLE"))
 	a.Equal("abc%Content%", ReplaceContent("abc%Content%", "TITLE"))
 }

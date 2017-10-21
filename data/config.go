@@ -20,7 +20,7 @@ const contentTypeHTML = "text/html"
 // 默认的语言，在配置文件中未指定时，使用此值，
 // 作为默认值，此值最好不要修改，若需要修改，
 // 则最好将诸如 tagTitle 等与语言相关的常量一起修改。
-const language = "zh-cnm-Hans"
+const language = "zh-cmn-Hans"
 
 // 配置信息，用于从文件中读取
 type config struct {
@@ -43,7 +43,6 @@ type config struct {
 	// 1) html>head>title
 	// 2) html>head>meta.keywords
 	// 3) html>head>meta.description
-	// 各个页面支持的内容也不尽相同
 	Pages map[string]*Page `yaml:"pages"`
 
 	// 以下内容不存在于 Config 中
