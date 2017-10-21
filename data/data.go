@@ -10,10 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/caixw/gitype/vars"
-
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
+	"github.com/caixw/gitype/vars"
 )
 
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
