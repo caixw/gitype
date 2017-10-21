@@ -5,7 +5,6 @@
 package client
 
 import (
-	"html/template"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -40,7 +39,6 @@ func setContentType(w http.ResponseWriter, mime string) {
 type page struct {
 	client   *Client
 	Info     *info
-	template *template.Template // 用于当前页面渲染的模板
 	response http.ResponseWriter
 	request  *http.Request
 
@@ -54,7 +52,7 @@ type page struct {
 	Type        string       // 当前页面类型
 	Author      *data.Author // 作者
 	License     *data.Link   // 当前页的版本信息，可以为空
-	Theme       *data.Theme
+	Theme       *data.Theme  // 当前页面所使用的主题
 
 	// 以下内容，仅在对应的页面才会有内容
 	Q        string          // 搜索关键字
@@ -145,7 +143,6 @@ func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *
 	return &page{
 		client:   client,
 		Info:     client.info,
-		template: theme.Template,
 		response: w,
 		request:  r,
 
@@ -200,7 +197,7 @@ func (p *page) render(name string) {
 	cookie.Expires = time.Now().Add(time.Second * time.Duration(vars.CookieMaxAge))
 	http.SetCookie(p.response, cookie)
 
-	err := p.template.ExecuteTemplate(p.response, name, p)
+	err := p.Theme.Template.ExecuteTemplate(p.response, name, p)
 	if err != nil {
 		logs.Error(err)
 		p.client.renderError(p.response, p.request, http.StatusInternalServerError)
