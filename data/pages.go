@@ -86,10 +86,10 @@ func (conf *config) initPages() {
 			page.Title = replaceTitle(page.Title, conf.Title)
 		}
 		if strings.Index(page.Keywords, vars.TitlePlaceholder) > 0 {
-			page.Keywords = replaceTitle(page.Keywords, conf.Keywords)
+			page.Keywords = replaceTitle(page.Keywords, conf.Title)
 		}
 		if strings.Index(page.Description, vars.TitlePlaceholder) > 0 {
-			page.Description = replaceTitle(page.Description, conf.Description)
+			page.Description = replaceTitle(page.Description, conf.Title)
 		}
 	}
 

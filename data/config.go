@@ -24,8 +24,6 @@ type config struct {
 	Language        string           `yaml:"language"`
 	Subtitle        string           `yaml:"subtitle,omitempty"`
 	URL             string           `yaml:"url"`
-	Keywords        string           `yaml:"keywords,omitempty"`
-	Description     string           `yaml:"description,omitempty"`
 	Beian           string           `yaml:"beian,omitempty"`
 	Uptime          time.Time        `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
 	PageSize        int              `yaml:"pageSize"`

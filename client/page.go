@@ -146,13 +146,11 @@ func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *
 		response: w,
 		request:  r,
 
-		Subtitle:    d.Subtitle,
-		Keywords:    d.Keywords,
-		Description: d.Description,
-		Type:        typ,
-		Author:      d.Author,
-		License:     d.License,
-		Theme:       theme,
+		Subtitle: d.Subtitle,
+		Type:     typ,
+		Author:   d.Author,
+		License:  d.License,
+		Theme:    theme,
 	}
 }
 
