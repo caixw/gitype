@@ -41,7 +41,7 @@ var defaultPostMeta = &Post{
 
 var defaultConfig = &config{
 	Title:           "Title",
-	Language:        "zh-cnm-Hans",
+	Language:        language,
 	Subtitle:        "subtitle",
 	URL:             "https://caixw.io",
 	PageSize:        20,

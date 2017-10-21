@@ -25,7 +25,6 @@ const language = "zh-cnm-Hans"
 // 配置信息，用于从文件中读取
 type config struct {
 	Title           string    `yaml:"title"`
-	TitleSeparator  string    `yaml:"titleSeparator"`
 	Language        string    `yaml:"language"`
 	Subtitle        string    `yaml:"subtitle,omitempty"`
 	URL             string    `yaml:"url"`
@@ -73,6 +72,10 @@ func loadConfig(path *path.Path) (*config, error) {
 }
 
 func (conf *config) sanitize() *helper.FieldError {
+	if len(conf.Language) == 0 {
+		conf.Language = language
+	}
+
 	if conf.PageSize <= 0 {
 		return &helper.FieldError{Message: "必须为大于零的整数", Field: "pageSize"}
 	}
