@@ -42,12 +42,6 @@ const (
 	CookieKeyTheme = "theme"
 )
 
-// 一些默认的字面文本内容。
-const (
-	NextPageText = "下一页"
-	PrevPageText = "上一页"
-)
-
 // 与 URL 相关的一些定义
 //
 // 上线之后请谨慎修改这些值，会影响 URL 的路径结构。

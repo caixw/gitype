@@ -155,10 +155,6 @@ func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *
 }
 
 func (p *page) nextPage(url, text string) {
-	if len(text) == 0 {
-		text = vars.NextPageText
-	}
-
 	p.NextPage = &data.Link{
 		Text: text,
 		URL:  url,
@@ -167,10 +163,6 @@ func (p *page) nextPage(url, text string) {
 }
 
 func (p *page) prevPage(url, text string) {
-	if len(text) == 0 {
-		text = vars.PrevPageText
-	}
-
 	p.PrevPage = &data.Link{
 		Text: text,
 		URL:  url,
