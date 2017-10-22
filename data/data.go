@@ -33,7 +33,7 @@ type Data struct {
 	Author   *Author          // 默认作者信息
 	License  *Link            // 默认版权信息
 	Pages    map[string]*Page // 各个页面的自定义内容
-	Outdated *Outdated
+	Outdated time.Duration
 
 	Tags     []*Tag
 	Series   []*Tag
@@ -137,6 +137,12 @@ func (d *Data) sanitize(conf *config) error {
 
 		if err := d.attachPostTag(post, conf); err != nil {
 			return err
+		}
+	}
+
+	if d.Outdated == 0 {
+		for _, post := range d.Posts {
+			post.Outdated = nil
 		}
 	}
 

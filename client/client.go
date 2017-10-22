@@ -6,7 +6,6 @@
 package client
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -60,7 +59,7 @@ func New(path *path.Path, mux *mux.Mux) (*Client, error) {
 
 	// 一切数据加载都没问题之后，开始运行更新服务。
 	// 只有注册路由成功了，定时器开始工作才有意义。
-	if d.Outdated != nil {
+	if d.Outdated != 0 {
 		client.postsTicker = time.NewTicker(vars.OutdatedFrequency)
 		client.postsTickerDone = make(chan bool, 1)
 		client.runUpdateOutdatedServer()
@@ -118,31 +117,24 @@ func (client *Client) runUpdateOutdatedServer() {
 func (client *Client) updateOutdated() {
 	d := client.data
 
-	if d.Outdated == nil {
+	if d.Outdated == 0 {
 		return
 	}
 
 	now := time.Now()
 
-	switch d.Outdated.Type {
-	case data.OutdatedTypeCreated:
-		for _, post := range d.Posts {
-			outdated := now.Sub(post.Created)
-			if outdated >= d.Outdated.Duration {
-				post.Outdated = fmt.Sprintf(d.Outdated.Content, int64(outdated.Hours())/24)
+	for _, post := range d.Posts {
+		if post.Outdated == nil {
+			continue
+		}
+
+		if post.Outdated.Type == data.OutdatedTypeCreated ||
+			post.Outdated.Type == data.OutdatedTypeModified {
+			outdated := now.Sub(post.Outdated.Date)
+			if outdated >= d.Outdated {
+				post.Outdated.Days = int(outdated.Hours()) / 24
 			}
 		}
-	case data.OutdatedTypeModified:
-		for _, post := range d.Posts {
-			outdated := now.Sub(post.Modified)
-			if outdated >= d.Outdated.Duration {
-				post.Outdated = fmt.Sprintf(d.Outdated.Content, int64(outdated.Hours())/24)
-			}
-		}
-	default:
-		// 理论上此段代码永远不会运行，除非代码中直接修改了 Data.outdated.type 的值，
-		// 因为在 outdatedConfig.sanitize 中已经作了判断。
-		panic("无效的 config.yaml/outdated.type")
 	}
 
 	client.updated = now
