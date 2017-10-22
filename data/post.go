@@ -6,7 +6,6 @@ package data
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -24,8 +23,8 @@ const day = 24 * time.Hour
 
 // 文章是否过时的比较方式
 const (
-	outdatedTypeCreated  = "created"  // 以创建时间作为对比
-	outdatedTypeModified = "modified" // 以修改时间作为对比
+	OutdatedTypeCreated  = "created"  // 以创建时间作为对比
+	OutdatedTypeModified = "modified" // 以修改时间作为对比
 )
 
 // 表示 Post.Order 的各类值
@@ -35,12 +34,12 @@ const (
 	orderDefault = "default" // 默认情况
 )
 
-// 描述过时文章的提示信息。
+// Outdated 描述过时文章的提示信息。
 //
-// 理论上把有关 outdatedConfig 的信息，直接在模板中对文章的创建时间戳进行比较，
+// 理论上把有关 Outdated 的信息，直接在模板中对文章的创建时间戳进行比较，
 // 是比通过配置来比较会更加方便，也不会更任何的后期工作量。之所以把这个功能放在后端，
 // 而不是模板层面，是因为觉得模板应该只负责展示页面，而不是用于处理逻辑内容。
-type outdatedConfig struct {
+type Outdated struct {
 	Type      string        `yaml:"type"`      // 比较的类型，创建时间或是修改时间
 	Duration  time.Duration `yaml:"duration"`  // 超时的时间，可以使用 time.Duration 的字符串值
 	Content   string        `yaml:"content"`   // 提示的内容，普通文字，不能为 html
@@ -225,8 +224,8 @@ func sortPosts(posts []*Post) {
 	})
 }
 
-func (o *outdatedConfig) sanitize() *helper.FieldError {
-	if o.Type != outdatedTypeCreated && o.Type != outdatedTypeModified {
+func (o *Outdated) sanitize() *helper.FieldError {
+	if o.Type != OutdatedTypeCreated && o.Type != OutdatedTypeModified {
 		return &helper.FieldError{Message: "无效的值", Field: "outdated.type"}
 	}
 
@@ -243,59 +242,4 @@ func (o *outdatedConfig) sanitize() *helper.FieldError {
 	}
 
 	return nil
-}
-
-func (d *Data) runUpdateOutdatedServer() {
-	// 定时器需要下一个周期才执行，所以先执行一次操作
-	d.updateOutdated()
-
-	go func() {
-		for {
-			select {
-			case <-d.postsTicker.C:
-				d.updateOutdated()
-			case <-d.postsTickerDone:
-				return
-			}
-		}
-	}()
-}
-
-func (d *Data) updateOutdated() {
-	if d.outdated == nil {
-		return
-	}
-
-	now := time.Now()
-
-	switch d.outdated.Type {
-	case outdatedTypeCreated:
-		for _, post := range d.Posts {
-			outdated := now.Sub(post.Created)
-			if outdated >= d.outdated.Duration {
-				post.Outdated = fmt.Sprintf(d.outdated.Content, int64(outdated.Hours())/24)
-			}
-		}
-	case outdatedTypeModified:
-		for _, post := range d.Posts {
-			outdated := now.Sub(post.Modified)
-			if outdated >= d.outdated.Duration {
-				post.Outdated = fmt.Sprintf(d.outdated.Content, int64(outdated.Hours())/24)
-			}
-		}
-	default:
-		// 理论上此段代码永远不会运行，除非代码中直接修改了 Data.outdated.type 的值，
-		// 因为在 outdatedConfig.sanitize 中已经作了判断。
-		panic("无效的 config.yaml/outdated.type")
-	}
-
-	d.Updated = now
-	d.Etag = vars.Etag(now)
-}
-
-func (d *Data) stopPostsTicker() {
-	if d.postsTicker != nil {
-		d.postsTicker.Stop()
-		d.postsTickerDone <- true
-	}
 }

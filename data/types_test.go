@@ -25,13 +25,13 @@ func TestLoadLinks(t *testing.T) {
 
 func TestOutdatedConfig_sanitize(t *testing.T) {
 	a := assert.New(t)
-	o := &outdatedConfig{}
+	o := &Outdated{}
 
 	a.Error(o.sanitize())
 
 	o.Type = "not exits"
 	a.Error(o.sanitize())
-	o.Type = outdatedTypeCreated
+	o.Type = OutdatedTypeCreated
 
 	a.Error(o.sanitize())
 	o.Content = "test"

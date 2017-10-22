@@ -16,18 +16,8 @@ import (
 
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
-	path *path.Path
-
-	// Created 当前实例的加载时间，当数据加载完成之后，
-	// 此值不再变化。
+	path    *path.Path
 	Created time.Time
-
-	// Updated 数据实例中的数据最后修改时间，
-	// Data 内部可能会修改数据，比如每天会更新文章的过期提醒内容。
-	Updated time.Time
-
-	// Etag 用于网页请求时返回的 Etag 报头，根据 Updated 字段获取。
-	Etag string
 
 	// 直接从 config 中继承过来的变量
 	SiteName string
@@ -43,10 +33,7 @@ type Data struct {
 	Author   *Author          // 默认作者信息
 	License  *Link            // 默认版权信息
 	Pages    map[string]*Page // 各个页面的自定义内容
-
-	outdated        *outdatedConfig
-	postsTicker     *time.Ticker // 用于更新文章 Outdated 属性的定时器
-	postsTickerDone chan bool
+	Outdated *Outdated
 
 	Tags     []*Tag
 	Series   []*Tag
@@ -88,12 +75,9 @@ func Load(path *path.Path) (*Data, error) {
 		return nil, err
 	}
 
-	now := time.Now()
 	d := &Data{
 		path:    path,
-		Created: now,
-		Updated: now,
-		Etag:    vars.Etag(now),
+		Created: time.Now(),
 
 		SiteName: conf.Title,
 		Language: conf.Language,
@@ -106,10 +90,10 @@ func Load(path *path.Path) (*Data, error) {
 		Icon:     conf.Icon,
 		Menus:    conf.Menus,
 		Pages:    conf.Pages,
+		Outdated: conf.Outdated,
 
-		outdated:        conf.Outdated,
-		postsTicker:     time.NewTicker(conf.Outdated.Frequency),
-		postsTickerDone: make(chan bool, 1),
+		//postsTicker:     time.NewTicker(conf.Outdated.Frequency),
+		//postsTickerDone: make(chan bool, 1),
 
 		Tags:  tags,
 		Links: links,
@@ -125,15 +109,7 @@ func Load(path *path.Path) (*Data, error) {
 		return nil, err
 	}
 
-	// 所有数据没问题，则运行 ticker
-	d.runUpdateOutdatedServer()
-
 	return d, nil
-}
-
-// Free 释放当前数据内容
-func (d *Data) Free() {
-	d.stopPostsTicker()
 }
 
 // 对各个数据再次进行检测，主要是一些关联数据的相互初始化
