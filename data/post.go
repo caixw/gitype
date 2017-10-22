@@ -41,9 +41,10 @@ const (
 // 是比通过配置来比较会更加方便，也不会更任何的后期工作量。之所以把这个功能放在后端，
 // 而不是模板层面，是因为觉得模板应该只负责展示页面，而不是用于处理逻辑内容。
 type outdatedConfig struct {
-	Type     string        `yaml:"type"`     // 比较的类型，创建时间或是修改时间
-	Duration time.Duration `yaml:"duration"` // 超时的时间，可以使用 time.Duration 的字符串值
-	Content  string        `yaml:"content"`  // 提示的内容，普通文字，不能为 html
+	Type      string        `yaml:"type"`      // 比较的类型，创建时间或是修改时间
+	Duration  time.Duration `yaml:"duration"`  // 超时的时间，可以使用 time.Duration 的字符串值
+	Content   string        `yaml:"content"`   // 提示的内容，普通文字，不能为 html
+	Frequency time.Duration `yaml:"frequency"` // 多久对文章进行一次检测，默认为一天
 }
 
 // Post 表示文章的信息
@@ -231,6 +232,14 @@ func (o *outdatedConfig) sanitize() *helper.FieldError {
 
 	if len(o.Content) == 0 {
 		return &helper.FieldError{Message: "不能为空", Field: "outdated.content"}
+	}
+
+	if o.Duration == 0 {
+		return &helper.FieldError{Message: "不能为空", Field: "outdated.duration"}
+	}
+
+	if o.Frequency == 0 {
+		o.Frequency = day
 	}
 
 	return nil

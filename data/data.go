@@ -108,7 +108,7 @@ func Load(path *path.Path) (*Data, error) {
 		Pages:    conf.Pages,
 
 		outdated:        conf.Outdated,
-		postsTicker:     time.NewTicker(day),
+		postsTicker:     time.NewTicker(conf.Outdated.Frequency),
 		postsTickerDone: make(chan bool, 1),
 
 		Tags:  tags,
