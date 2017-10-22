@@ -75,6 +75,11 @@ func (p *Path) RawsPath(file string) string {
 	return filepath.Join(p.RawsDir, file)
 }
 
+// ThemePath 返回指定主题下的指定文件
+func (p *Path) ThemePath(theme, path string) string {
+	return filepath.Join(p.ThemesDir, theme, path)
+}
+
 // ThemeMetaPath 返回指定主题下的描述文件
 func (p *Path) ThemeMetaPath(theme string) string {
 	return filepath.Join(p.ThemesDir, theme, vars.ThemeMetaFilename)

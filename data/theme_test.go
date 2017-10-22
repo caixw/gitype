@@ -10,15 +10,17 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestLoadThemes(t *testing.T) {
+func TestFindTheme(t *testing.T) {
 	a := assert.New(t)
 
-	ts, err := loadThemes(testdataPath)
-	a.NotError(err).NotNil(ts).Equal(len(ts), 2)
+	theme, err := findTheme(testdataPath, "not exists")
+	a.Error(err).Nil(theme)
 
-	// 排序是否正常
-	a.Equal(ts[0].ID, "t1")
-	a.Equal(ts[1].ID, "t2")
+	theme, err = findTheme(testdataPath, "t1")
+	a.NotError(err).NotNil(theme)
+	a.Equal(theme.ID, "t1")
+	a.Equal(theme.Name, "name")
+	a.Equal(theme.Author.Name, "caixw")
 }
 
 func TestLoadTheme(t *testing.T) {

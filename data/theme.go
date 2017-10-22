@@ -23,7 +23,6 @@ import (
 type Theme struct {
 	ID          string             `yaml:"-"`    // 唯一 ID，即当前目录名称
 	Name        string             `yaml:"name"` // 名称，不必唯一，可以与 ID 值不同。
-	Path        string             `yaml:"-"`    // 主题目录，绝对路径
 	Version     string             `yaml:"version"`
 	Description string             `yaml:"description"`
 	URL         string             `yaml:"url,omitempty"`
@@ -61,7 +60,6 @@ func loadTheme(path *path.Path, id string) (*Theme, error) {
 		return nil, err
 	}
 
-	theme.Path = filepath.Dir(p)
 	theme.ID = id
 
 	if len(theme.Name) == 0 {
@@ -91,7 +89,8 @@ func (d *Data) compileTemplate() error {
 		return err
 	}
 
-	_, err = d.Theme.Template.ParseGlob(filepath.Join(d.Theme.Path, "*"+vars.TemplateExtension))
+	path := d.path.ThemePath(d.Theme.ID, "*"+vars.TemplateExtension)
+	_, err = d.Theme.Template.ParseGlob(path)
 	if err != nil {
 		return err
 	}
