@@ -52,7 +52,7 @@ type Post struct {
 	HTMLTitle  string    `yaml:"-"`               // 网页标题
 	Created    time.Time `yaml:"-"`               // 创建时间
 	Modified   time.Time `yaml:"-"`               // 修改时间
-	Tags       []*Tag    `yaml:"-"`               // 关联的标签
+	Tags       []*Tag    `yaml:"-"`               // 关联的标签和专题
 	Summary    string    `yaml:"summary"`         // 摘要，同时也作为 meta.description 的内容
 	Content    string    `yaml:"-"`               // 内容
 	TagsString string    `yaml:"tags"`            // 关联标签的列表
