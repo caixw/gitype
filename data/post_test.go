@@ -6,7 +6,6 @@ package data
 
 import (
 	"testing"
-	"time"
 
 	"github.com/caixw/gitype/vars"
 	"github.com/issue9/assert"
@@ -52,20 +51,4 @@ func TestLoadPosts(t *testing.T) {
 	posts, err := loadPosts(testdataPath)
 	a.NotError(err).NotNil(posts)
 	a.Equal(len(posts), 2) // 只有两条记录，Draft=true 的没有被加载
-}
-
-func TestOutdated_sanitize(t *testing.T) {
-	a := assert.New(t)
-	o := &Outdated{Duration: 1 * time.Second}
-
-	a.Error(o.sanitize())
-
-	o.Type = "not exits"
-	a.Error(o.sanitize())
-	o.Type = OutdatedTypeCreated
-
-	a.Error(o.sanitize())
-	o.Content = "test"
-
-	a.NotError(o.sanitize())
 }

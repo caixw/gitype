@@ -37,7 +37,7 @@ const (
 
 	// OutdatedFrequency outdated 的更新频率。
 	// NOTE: 此值过小，有可能会影响服务器性能
-	OutdatedFrequency = time.Hour * 4
+	OutdatedFrequency = time.Hour * 24
 )
 
 // 目录名称的定义

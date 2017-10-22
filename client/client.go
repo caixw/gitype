@@ -99,9 +99,6 @@ func (client *Client) addFeed(feed *data.Feed) {
 }
 
 func (client *Client) runUpdateOutdatedServer() {
-	// 定时器需要下一个周期才执行，所以先执行一次操作
-	client.updateOutdated()
-
 	go func() {
 		for {
 			select {
@@ -121,22 +118,7 @@ func (client *Client) updateOutdated() {
 		return
 	}
 
-	now := time.Now()
-
-	for _, post := range d.Posts {
-		if post.Outdated == nil {
-			continue
-		}
-
-		if post.Outdated.Type == data.OutdatedTypeCreated ||
-			post.Outdated.Type == data.OutdatedTypeModified {
-			outdated := now.Sub(post.Outdated.Date)
-			if outdated >= d.Outdated {
-				post.Outdated.Days = int(outdated.Hours()) / 24
-			}
-		}
-	}
-
+	now := d.CalcPostsOutdated()
 	client.updated = now
 	client.etag = vars.Etag(now)
 }

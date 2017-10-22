@@ -92,9 +92,6 @@ func Load(path *path.Path) (*Data, error) {
 		Pages:    conf.Pages,
 		Outdated: conf.Outdated,
 
-		//postsTicker:     time.NewTicker(conf.Outdated.Frequency),
-		//postsTickerDone: make(chan bool, 1),
-
 		Tags:  tags,
 		Links: links,
 		Posts: posts,
@@ -144,6 +141,8 @@ func (d *Data) sanitize(conf *config) error {
 		for _, post := range d.Posts {
 			post.Outdated = nil
 		}
+	} else {
+		d.CalcPostsOutdated()
 	}
 
 	// 过滤空标签

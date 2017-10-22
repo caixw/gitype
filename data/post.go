@@ -20,12 +20,11 @@ import (
 )
 
 // 文章是否过时的比较方式
-// 即 Outdated.Type 的值
 const (
-	OutdatedTypeCreated  = "created"  // 以创建时间作为对比
-	OutdatedTypeModified = "modified" // 以修改时间作为对比
-	OutdatedTypeNone     = "none"
-	OutdatedTypeCustom   = "custom"
+	outdatedTypeCreated  = "created"  // 以创建时间作为对比
+	outdatedTypeModified = "modified" // 以修改时间作为对比
+	outdatedTypeNone     = "none"
+	outdatedTypeCustom   = "custom"
 )
 
 // 表示 Post.Order 的各类值
@@ -157,21 +156,21 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 	// outdated，依赖 modified 和 created
 	// Content 还用作其它功能，需要首先解析其值
 	switch post.Content {
-	case OutdatedTypeCreated, "":
+	case outdatedTypeCreated, "":
 		post.Outdated = &Outdated{
-			Type: OutdatedTypeCreated,
+			Type: outdatedTypeCreated,
 			Date: created,
 		}
-	case OutdatedTypeModified:
+	case outdatedTypeModified:
 		post.Outdated = &Outdated{
-			Type: OutdatedTypeModified,
+			Type: outdatedTypeModified,
 			Date: modified,
 		}
-	case OutdatedTypeNone:
+	case outdatedTypeNone:
 		post.Outdated = nil
 	default:
 		post.Outdated = &Outdated{
-			Type:    OutdatedTypeCustom,
+			Type:    outdatedTypeCustom,
 			Content: post.Content,
 		}
 	}
@@ -252,4 +251,25 @@ func sortPosts(posts []*Post) {
 			return posts[i].Created.After(posts[j].Created)
 		}
 	})
+}
+
+// CalcPostsOutdated 计算所有文章的 outdated 属性
+func (d *Data) CalcPostsOutdated() time.Time {
+	now := time.Now()
+
+	for _, post := range d.Posts {
+		if post.Outdated == nil {
+			continue
+		}
+
+		if post.Outdated.Type == outdatedTypeCreated ||
+			post.Outdated.Type == outdatedTypeModified {
+			outdated := now.Sub(post.Outdated.Date)
+			if outdated >= d.Outdated {
+				post.Outdated.Days = int(outdated.Hours()) / 24
+			}
+		}
+	}
+
+	return now
 }
