@@ -26,22 +26,22 @@ const (
 
 // 配置信息，用于从文件中读取
 type config struct {
-	Title           string          `yaml:"title"`
-	TitleSeparator  string          `yaml:"titleSeparator"`
-	Language        string          `yaml:"language"`
-	Subtitle        string          `yaml:"subtitle,omitempty"`
-	URL             string          `yaml:"url"` // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
-	Beian           string          `yaml:"beian,omitempty"`
-	Uptime          time.Time       `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
-	PageSize        int             `yaml:"pageSize"`
-	Type            string          `yaml:"type,omitempty"`
-	Icon            *Icon           `yaml:"icon,omitempty"`
-	Menus           []*Link         `yaml:"menus,omitempty"`
-	Author          *Author         `yaml:"author"`
-	License         *Link           `yaml:"license"`
-	LongDateFormat  string          `yaml:"longDateFormat"`
-	ShortDateFormat string          `yaml:"shortDateFormat"`
-	Outdated        *outdatedConfig `yaml:"outdated,omitempty"`
+	Title           string    `yaml:"title"`
+	TitleSeparator  string    `yaml:"titleSeparator"`
+	Language        string    `yaml:"language"`
+	Subtitle        string    `yaml:"subtitle,omitempty"`
+	URL             string    `yaml:"url"` // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
+	Beian           string    `yaml:"beian,omitempty"`
+	Uptime          time.Time `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	PageSize        int       `yaml:"pageSize"`
+	Type            string    `yaml:"type,omitempty"`
+	Icon            *Icon     `yaml:"icon,omitempty"`
+	Menus           []*Link   `yaml:"menus,omitempty"`
+	Author          *Author   `yaml:"author"`
+	License         *Link     `yaml:"license"`
+	LongDateFormat  string    `yaml:"longDateFormat"`
+	ShortDateFormat string    `yaml:"shortDateFormat"`
+	Outdated        *Outdated `yaml:"outdated,omitempty"` // 为空表示不需要该功能
 
 	// 各个页面的一些自定义项，目前支持以下几个元素的修改：
 	// 1) html>head>title
@@ -185,7 +185,7 @@ func (conf *config) sanitize() *helper.FieldError {
 		}
 	}
 
-	// Menus
+	// menus
 	for index, link := range conf.Menus {
 		if err := link.sanitize(); err != nil {
 			err.Field = "Menus[" + strconv.Itoa(index) + "]." + err.Field

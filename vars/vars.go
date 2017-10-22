@@ -8,7 +8,10 @@
 // 使用者可以根据自己需求随意修改此包以子包的内容。
 package vars
 
-import "time"
+import (
+	"strconv"
+	"time"
+)
 
 const (
 	// Name 程序名称
@@ -31,6 +34,10 @@ const (
 
 	// ContentPlaceholder 配置文件中的表示当前内容的占位符
 	ContentPlaceholder = "%content%"
+
+	// OutdatedMinFrequency 与 data.Outdated.Frequency 的最小值
+	// NOTE: 此值过小，有可能会影响服务器性能
+	OutdatedMinFrequency = time.Minute * 30
 )
 
 // 目录名称的定义
@@ -70,3 +77,8 @@ const (
 	PageLinks    = "links"
 	PageSearch   = "search"
 )
+
+// Etag 根据一个时间，生成一段 Etag 字符串
+func Etag(t time.Time) string {
+	return strconv.FormatInt(t.Unix(), 10)
+}
