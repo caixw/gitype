@@ -7,7 +7,6 @@ package client
 
 import (
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/caixw/gitype/data"
@@ -23,7 +22,6 @@ type Client struct {
 
 	data     *data.Data
 	patterns []string // 记录所有的路由项，方便释放时删除
-	etag     string
 	info     *info
 }
 
@@ -37,7 +35,6 @@ func New(path *path.Path, mux *mux.Mux) (*Client, error) {
 	client := &Client{
 		path: path,
 		mux:  mux,
-		etag: strconv.FormatInt(d.Created.Unix(), 10),
 		data: d,
 	}
 	client.info = client.newInfo()

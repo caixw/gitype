@@ -26,6 +26,10 @@ type Data struct {
 	// Data 内部可能会修改数据，比如每天会更新文章的过期提醒内容。
 	Updated time.Time
 
+	// Etag Updated 的字符串表示形式，可以兼任 etag 使用
+	// 文章等会实时更新内容的，需要调用此值，否则使用 CreatedEtag
+	Etag string
+
 	SiteName string
 	Subtitle string           // 网站副标题
 	Language string           // 语言标记，比如 zh-cmn-Hans
@@ -87,10 +91,12 @@ func Load(path *path.Path) (*Data, error) {
 	}
 
 	now := time.Now()
+	etag := helper.ETag(now)
 	d := &Data{
 		path:    path,
 		Created: now,
 		Updated: now,
+		Etag:    etag,
 
 		SiteName: conf.Title,
 		Language: conf.Language,

@@ -9,7 +9,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/caixw/gitype/vars"
 	yaml "gopkg.in/yaml.v2"
@@ -62,4 +64,9 @@ func DumpTextFile(path, text string) error {
 // ReplaceContent 替换 content 中的 %content% 内容为 replacement
 func ReplaceContent(content, replacement string) string {
 	return strings.Replace(content, vars.ContentPlaceholder, replacement, -1)
+}
+
+// ETag 将一个时间转换成 ETag 字符串
+func ETag(t time.Time) string {
+	return strconv.FormatInt(t.Unix(), 10)
 }

@@ -259,6 +259,7 @@ func (d *Data) updateOutdated() {
 	}
 
 	now := time.Now()
+
 	switch d.outdated.Type {
 	case outdatedTypeCreated:
 		for _, post := range d.Posts {
@@ -281,6 +282,7 @@ func (d *Data) updateOutdated() {
 	}
 
 	d.Updated = now
+	d.Etag = helper.ETag(now)
 }
 
 func (d *Data) stopPostsTicker() {
