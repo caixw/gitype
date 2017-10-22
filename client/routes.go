@@ -67,7 +67,6 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	post := client.data.Posts[index]
 	p := client.page(vars.PagePost, w, r)
 
-	client.data.Outdated(post)
 	p.Post = post
 	p.Keywords = post.Keywords
 	p.Description = post.Summary

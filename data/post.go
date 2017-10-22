@@ -6,6 +6,7 @@ package data
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -19,6 +20,8 @@ import (
 	"github.com/caixw/gitype/vars"
 	"github.com/issue9/utils"
 )
+
+const day = 24 * time.Hour
 
 // 文章是否过时的比较方式
 const (
@@ -232,4 +235,57 @@ func (o *outdatedConfig) sanitize() *helper.FieldError {
 	}
 
 	return nil
+}
+
+func (d *Data) runUpdateOutdatedServer() {
+	// 定时器需要下一个周期才执行，所以先执行一次操作
+	d.updateOutdated()
+
+	go func() {
+		for {
+			select {
+			case <-d.postsTicker.C:
+				d.updateOutdated()
+			case <-d.postsTickerDone:
+				return
+			}
+		}
+	}()
+}
+
+func (d *Data) updateOutdated() {
+	if d.outdated == nil {
+		return
+	}
+
+	now := time.Now()
+	switch d.outdated.Type {
+	case outdatedTypeCreated:
+		for _, post := range d.Posts {
+			outdated := now.Sub(post.Created)
+			if outdated >= d.outdated.Duration {
+				post.Outdated = fmt.Sprintf(d.outdated.Content, int64(outdated.Hours())/24)
+			}
+		}
+	case outdatedTypeModified:
+		for _, post := range d.Posts {
+			outdated := now.Sub(post.Modified)
+			if outdated >= d.outdated.Duration {
+				post.Outdated = fmt.Sprintf(d.outdated.Content, int64(outdated.Hours())/24)
+			}
+		}
+	default:
+		// 理论上此段代码永远不会运行，除非代码中直接修改了 Data.outdated.type 的值，
+		// 因为在 outdatedConfig.sanitize 中已经作了判断。
+		panic("无效的 config.yaml/outdated.type")
+	}
+
+	d.Updated = now
+}
+
+func (d *Data) stopPostsTicker() {
+	if d.postsTicker != nil {
+		d.postsTicker.Stop()
+		d.postsTickerDone <- true
+	}
 }

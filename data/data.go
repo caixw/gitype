@@ -6,7 +6,6 @@
 package data
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -17,8 +16,15 @@ import (
 
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
 type Data struct {
-	path    *path.Path
+	path *path.Path
+
+	// Created 当前实例的加载时间，当数据加载完成之后，
+	// 此值不再变化。
 	Created time.Time
+
+	// Updated 数据实例中的数据最后修改时间，
+	// Data 内部可能会修改数据，比如每天会更新文章的过期提醒内容。
+	Updated time.Time
 
 	SiteName string
 	Subtitle string           // 网站副标题
@@ -37,6 +43,8 @@ type Data struct {
 	longDateFormat  string // 长时间的显示格式
 	shortDateFormat string // 短时间的显示格式
 	outdated        *outdatedConfig
+	postsTicker     *time.Ticker // 用于更新文章 outdated 属性的定时器
+	postsTickerDone chan bool
 
 	Tags     []*Tag
 	Series   []*Tag
@@ -78,9 +86,11 @@ func Load(path *path.Path) (*Data, error) {
 		return nil, err
 	}
 
+	now := time.Now()
 	d := &Data{
 		path:    path,
-		Created: time.Now(),
+		Created: now,
+		Updated: now,
 
 		SiteName: conf.Title,
 		Language: conf.Language,
@@ -97,6 +107,8 @@ func Load(path *path.Path) (*Data, error) {
 		longDateFormat:  conf.LongDateFormat,
 		shortDateFormat: conf.ShortDateFormat,
 		outdated:        conf.Outdated,
+		postsTicker:     time.NewTicker(day),
+		postsTickerDone: make(chan bool, 1),
 
 		Tags:   tags,
 		Links:  links,
@@ -112,7 +124,15 @@ func Load(path *path.Path) (*Data, error) {
 		return nil, err
 	}
 
+	// 所有数据没问题，则运行 ticker
+	d.runUpdateOutdatedServer()
+
 	return d, nil
+}
+
+// Free 释放当前数据内容
+func (d *Data) Free() {
+	d.stopPostsTicker()
 }
 
 // 对各个数据再次进行检测，主要是一些关联数据的相互初始化
@@ -207,30 +227,4 @@ func (d *Data) buildData(conf *config) (err error) {
 // BuildURL 生成一个带域名的地址
 func (d *Data) BuildURL(path string) string {
 	return d.URL + path
-}
-
-// Outdated 计算指定文章的 Outdated 信息。
-// Outdated 是一个动态的值（其中的天数会变化），必须是在请求时生成。
-func (d *Data) Outdated(post *Post) {
-	if d.outdated == nil {
-		return
-	}
-
-	now := time.Now()
-	var outdated time.Duration
-
-	switch d.outdated.Type {
-	case outdatedTypeCreated:
-		outdated = now.Sub(post.Created)
-	case outdatedTypeModified:
-		outdated = now.Sub(post.Modified)
-	default:
-		// 理论上此段代码永远不会运行，除非代码中直接修改了 Data.outdated.type 的值，
-		// 因为在 outdatedConfig.sanitize 中已经作了判断。
-		panic("无效的 config.yaml/outdated.type")
-	}
-
-	if outdated >= d.outdated.Duration {
-		post.Outdated = fmt.Sprintf(d.outdated.Content, int64(outdated.Hours())/24)
-	}
 }
