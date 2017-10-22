@@ -66,6 +66,7 @@ func (client *Client) Free() {
 	}
 
 	client.patterns = client.patterns[:0]
+	client.Free()
 }
 
 func (client *Client) addFeed(feed *data.Feed) {
