@@ -26,8 +26,7 @@ type Data struct {
 	// Data 内部可能会修改数据，比如每天会更新文章的过期提醒内容。
 	Updated time.Time
 
-	// Etag Updated 的字符串表示形式，可以兼任 etag 使用
-	// 文章等会实时更新内容的，需要调用此值，否则使用 CreatedEtag
+	// Etag 用于网页请求时返回的 Etag 报头，根据 Updated 字段获取。
 	Etag string
 
 	SiteName string
