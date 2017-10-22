@@ -64,6 +64,8 @@ func (client *Client) Free() {
 	for _, pattern := range client.patterns {
 		client.mux.Remove(pattern, http.MethodGet)
 	}
+
+	client.patterns = client.patterns[:0]
 }
 
 func (client *Client) addFeed(feed *data.Feed) {
