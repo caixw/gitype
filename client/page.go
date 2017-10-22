@@ -172,7 +172,7 @@ func (p *page) prevPage(url, text string) {
 func (p *page) render(name string) {
 	setContentType(p.response, p.client.data.Type)
 
-	err := p.client.data.Theme.Template.ExecuteTemplate(p.response, name, p)
+	err := p.client.data.ExecuteTemplate(p.response, name, p)
 	if err != nil {
 		logs.Error(err)
 		p.client.renderError(p.response, p.request, http.StatusInternalServerError)
