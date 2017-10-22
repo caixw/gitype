@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -282,7 +283,7 @@ func (d *Data) updateOutdated() {
 	}
 
 	d.Updated = now
-	d.Etag = helper.ETag(now)
+	d.Etag = strconv.FormatInt(now.Unix(), 10)
 }
 
 func (d *Data) stopPostsTicker() {
