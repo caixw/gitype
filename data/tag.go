@@ -11,7 +11,7 @@ import (
 
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
-	"github.com/caixw/gitype/url"
+	"github.com/caixw/gitype/vars/url"
 )
 
 // Tag 描述标签信息

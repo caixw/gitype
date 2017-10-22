@@ -11,8 +11,8 @@ import (
 
 	"github.com/caixw/gitype/data"
 	"github.com/caixw/gitype/helper"
-	"github.com/caixw/gitype/url"
 	"github.com/caixw/gitype/vars"
+	"github.com/caixw/gitype/vars/url"
 	"github.com/issue9/logs"
 )
 

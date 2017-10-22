@@ -16,8 +16,8 @@ import (
 
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
-	"github.com/caixw/gitype/url"
 	"github.com/caixw/gitype/vars"
+	"github.com/caixw/gitype/vars/url"
 )
 
 // Theme 表示主题信息

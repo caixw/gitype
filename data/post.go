@@ -11,14 +11,13 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
-	"github.com/caixw/gitype/url"
 	"github.com/caixw/gitype/vars"
+	"github.com/caixw/gitype/vars/url"
 	"github.com/issue9/utils"
 )
 
@@ -283,7 +282,7 @@ func (d *Data) updateOutdated() {
 	}
 
 	d.Updated = now
-	d.Etag = strconv.FormatInt(now.Unix(), 10)
+	d.Etag = vars.Etag(now)
 }
 
 func (d *Data) stopPostsTicker() {

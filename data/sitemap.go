@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/caixw/gitype/helper"
-	"github.com/caixw/gitype/url"
+	"github.com/caixw/gitype/vars/url"
 )
 
 const contentTypeXML = "application/xml"

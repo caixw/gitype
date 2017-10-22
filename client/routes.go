@@ -9,8 +9,8 @@ import (
 	"strconv"
 
 	"github.com/caixw/gitype/data"
-	"github.com/caixw/gitype/url"
 	"github.com/caixw/gitype/vars"
+	"github.com/caixw/gitype/vars/url"
 	"github.com/issue9/logs"
 	"github.com/issue9/middleware/compress"
 	"github.com/issue9/mux"

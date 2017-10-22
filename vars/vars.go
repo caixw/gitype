@@ -2,7 +2,10 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package vars 定义一些全局变量、常量。相当于一个代码级别的配置内容。
+// Package vars 代码级别的配置内容。
+//
+// 所有可能需要修改的配置项以及算法都被集中到 vars 包中，
+// 使用者可以根据自己需求随意修改此包以子包的内容。
 package vars
 
 import "time"
