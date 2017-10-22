@@ -169,12 +169,8 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 	}
 
 	// keywords
-	if len(post.Keywords) == 0 && len(post.Tags) > 0 {
-		keywords := make([]string, 0, len(post.Tags))
-		for _, v := range post.Tags {
-			keywords = append(keywords, v.Title)
-		}
-		post.Keywords = strings.Join(keywords, ",")
+	if len(post.Keywords) == 0 {
+		post.Keywords = post.TagsString
 	}
 
 	// template
