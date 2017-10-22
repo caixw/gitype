@@ -28,7 +28,7 @@ type Theme struct {
 	URL         string  `yaml:"url,omitempty"`
 	Author      *Author `yaml:"author"`
 
-	template        *template.Template `yaml:"-"` // 当前主题的预编译结果
+	template        *template.Template // 当前主题的预编译结果
 	longDateFormat  string             // 长时间的显示格式
 	shortDateFormat string             // 短时间的显示格式
 }
