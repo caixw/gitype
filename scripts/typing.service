@@ -1,5 +1,10 @@
+# Copyright 2017 by caixw, All rights reserved.
+# Use of this source code is governed by a MIT
+# license that can be found in the LICENSE file.
+
 # Systemd 启动脚本
 # 放在 /etc/systemd/system 之下
+# 中提供了一些必要元素，具体内容可能要根据运行环境稍作修改。
 
 [Unit]
 Description=gitype daemon
