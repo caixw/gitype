@@ -6,6 +6,7 @@
 package data
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
@@ -90,12 +91,11 @@ func Load(path *path.Path) (*Data, error) {
 	}
 
 	now := time.Now()
-	etag := helper.ETag(now)
 	d := &Data{
 		path:    path,
 		Created: now,
 		Updated: now,
-		Etag:    etag,
+		Etag:    strconv.FormatInt(now.Unix(), 10),
 
 		SiteName: conf.Title,
 		Language: conf.Language,
