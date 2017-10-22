@@ -62,7 +62,7 @@ type Outdated struct {
 type Post struct {
 	Slug       string    `yaml:"-"`               // 唯一名称
 	Title      string    `yaml:"title"`           // 标题
-	HTMLTitle  string    `yaml:"-"`               // 网页标题
+	HTMLTitle  string    `yaml:"modified"`        // 网页标题，同时当作 modified 的原始值
 	Created    time.Time `yaml:"-"`               // 创建时间
 	Modified   time.Time `yaml:"-"`               // 修改时间
 	Tags       []*Tag    `yaml:"-"`               // 关联的标签和专题
@@ -70,7 +70,7 @@ type Post struct {
 	Content    string    `yaml:"-"`               // 内容
 	TagsString string    `yaml:"tags"`            // 关联标签的列表
 	Permalink  string    `yaml:"created"`         // 文章的唯一链接，同时当作 created 的原始值
-	Outdated   string    `yaml:"modified"`        // 已过时文章的提示信息，同时当作 modified 的原始值
+	Outdated   string    `yaml:"-"`               // 已过时文章的提示信息
 	Order      string    `yaml:"order,omitempty"` // 排序方式
 	Draft      bool      `yaml:"draft,omitempty"` // 是否为草稿，为 true，则不会加载该条数据
 
@@ -170,13 +170,13 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 	post.Permalink = vars.PostURL(post.Slug)
 
 	// modified
-	// outdated 还用作其它功能，需要首先解析其值
-	modified, err := time.Parse(vars.DateFormat, post.Outdated)
+	// HTMLTitle 还用作其它功能，需要首先解析其值
+	modified, err := time.Parse(vars.DateFormat, post.HTMLTitle)
 	if err != nil {
 		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "modified"}
 	}
 	post.Modified = modified
-	post.Outdated = ""
+	post.HTMLTitle = ""
 
 	if len(post.Title) == 0 {
 		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "title"}
