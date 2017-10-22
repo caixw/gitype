@@ -10,7 +10,6 @@ import (
 
 	"github.com/caixw/gitype/data"
 	"github.com/caixw/gitype/vars"
-	"github.com/caixw/gitype/vars/url"
 	"github.com/issue9/logs"
 	"github.com/issue9/middleware/compress"
 	"github.com/issue9/mux"
@@ -26,16 +25,16 @@ func (client *Client) initRoutes() (err error) {
 		err = client.mux.HandleFunc(pattern, client.prepare(h), http.MethodGet)
 	}
 
-	handle(url.Post("{slug}"), client.getPost)   // posts/2016/about.html   posts/{slug}.html
-	handle(url.Asset("{path}"), client.getAsset) // posts/2016/about/abc.png  posts/{path}
-	handle(url.Index(0), client.getPosts)        // index.html
-	handle(url.Links(), client.getLinks)         // links.html
-	handle(url.Tag("{slug}", 1), client.getTag)  // tags/tag1.html     tags/{slug}.html
-	handle(url.Tags(), client.getTags)           // tags.html
-	handle(url.Archives(), client.getArchives)   // archives.html
-	handle(url.Search("", 1), client.getSearch)  // search.html
-	handle(url.Theme("{path}"), client.getTheme) // themes/...          themes/{path}
-	handle("/{path}", client.getRaw)             // /...                /{path}
+	handle(vars.PostURL("{slug}"), client.getPost)   // posts/2016/about.html   posts/{slug}.html
+	handle(vars.AssetURL("{path}"), client.getAsset) // posts/2016/about/abc.png  posts/{path}
+	handle(vars.IndexURL(0), client.getPosts)        // index.html
+	handle(vars.LinksURL(), client.getLinks)         // links.html
+	handle(vars.TagURL("{slug}", 1), client.getTag)  // tags/tag1.html     tags/{slug}.html
+	handle(vars.TagsURL(), client.getTags)           // tags.html
+	handle(vars.ArchivesURL(), client.getArchives)   // archives.html
+	handle(vars.SearchURL("", 1), client.getSearch)  // search.html
+	handle(vars.ThemeURL("{path}"), client.getTheme) // themes/...          themes/{path}
+	handle("/{path}", client.getRaw)                 // /...                /{path}
 
 	return err
 }
@@ -110,7 +109,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
 	p.Description = pp.Description
-	p.Canonical = client.data.BuildURL(url.Posts(page))
+	p.Canonical = client.data.BuildURL(vars.PostsURL(page))
 
 	start, end, ok := client.getPostsRange(len(client.data.Posts), page, w, r)
 	if !ok {
@@ -118,10 +117,10 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Posts = client.data.Posts[start:end]
 	if page > 1 {
-		p.prevPage(url.Posts(page-1), "")
+		p.prevPage(vars.PostsURL(page-1), "")
 	}
 	if end < len(client.data.Posts) {
-		p.nextPage(url.Posts(page+1), "")
+		p.nextPage(vars.PostsURL(page+1), "")
 	}
 
 	p.render(vars.PagePosts)
@@ -166,7 +165,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	p.Title = tag.HTMLTitle
 	p.Keywords = tag.Keywords
 	p.Description = tag.Content
-	p.Canonical = client.data.BuildURL(url.Tag(slug, page))
+	p.Canonical = client.data.BuildURL(vars.TagURL(slug, page))
 
 	start, end, ok := client.getPostsRange(len(tag.Posts), page, w, r)
 	if !ok {
@@ -174,10 +173,10 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Posts = tag.Posts[start:end]
 	if page > 1 {
-		p.prevPage(url.Tag(slug, page-1), "")
+		p.prevPage(vars.TagURL(slug, page-1), "")
 	}
 	if end < len(tag.Posts) {
-		p.nextPage(url.Tag(slug, page+1), "")
+		p.nextPage(vars.TagURL(slug, page+1), "")
 	}
 
 	p.render(vars.PageTag)
@@ -191,7 +190,7 @@ func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
 	p.Description = pp.Description
-	p.Canonical = client.data.BuildURL(url.Links())
+	p.Canonical = client.data.BuildURL(vars.LinksURL())
 
 	p.render(vars.PageLinks)
 }
@@ -204,7 +203,7 @@ func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
 	p.Description = pp.Description
-	p.Canonical = client.data.BuildURL(url.Tags())
+	p.Canonical = client.data.BuildURL(vars.TagsURL())
 
 	p.render(vars.PageTags)
 }
@@ -217,7 +216,7 @@ func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
 	p.Description = pp.Description
-	p.Canonical = client.data.BuildURL(url.Archives())
+	p.Canonical = client.data.BuildURL(vars.ArchivesURL())
 	p.Archives = client.data.Archives
 
 	p.render(vars.PageArchives)

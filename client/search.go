@@ -12,7 +12,6 @@ import (
 	"github.com/caixw/gitype/data"
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/vars"
-	"github.com/caixw/gitype/vars/url"
 	"github.com/issue9/logs"
 )
 
@@ -20,9 +19,9 @@ import (
 func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p := client.page(vars.PageSearch, w, r)
 
-	q := r.FormValue(vars.URLQueryQ)
+	q := r.FormValue(vars.URLQuerySearch)
 	if len(q) == 0 {
-		http.Redirect(w, r, url.Posts(1), http.StatusPermanentRedirect)
+		http.Redirect(w, r, vars.PostsURL(1), http.StatusPermanentRedirect)
 		return
 	}
 
@@ -41,7 +40,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p.Keywords = helper.ReplaceContent(pp.Keywords, q)
 	p.Description = helper.ReplaceContent(pp.Description, q)
 	p.Q = q
-	p.Canonical = client.data.BuildURL(url.Search(p.Q, page))
+	p.Canonical = client.data.BuildURL(vars.SearchURL(p.Q, page))
 
 	posts := search(q, client.data) // 获取所有的搜索结果
 	start, end, ok := client.getPostsRange(len(posts), page, w, r)
@@ -50,10 +49,10 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Posts = posts[start:end]
 	if page > 1 {
-		p.prevPage(url.Search(q, page-1), "")
+		p.prevPage(vars.SearchURL(q, page-1), "")
 	}
 	if end < len(posts) {
-		p.nextPage(url.Search(q, page+1), "")
+		p.nextPage(vars.SearchURL(q, page+1), "")
 	}
 
 	p.render(vars.PageSearch)

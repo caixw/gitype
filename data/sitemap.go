@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/caixw/gitype/helper"
-	"github.com/caixw/gitype/vars/url"
+	"github.com/caixw/gitype/vars"
 )
 
 const contentTypeXML = "application/xml"
@@ -50,11 +50,11 @@ func (d *Data) buildSitemap(conf *config) error {
 	addPostsToSitemap(w, d, conf)
 
 	// archives.html
-	loc := d.BuildURL(url.Archives())
+	loc := d.BuildURL(vars.ArchivesURL())
 	addItemToSitemap(w, loc, conf.Sitemap.Changefreq, d.Created, conf.Sitemap.Priority)
 
 	// links.html
-	loc = d.BuildURL(url.Links())
+	loc = d.BuildURL(vars.LinksURL())
 	addItemToSitemap(w, loc, conf.Sitemap.Changefreq, d.Created, conf.Sitemap.Priority)
 
 	if conf.Sitemap.EnableTag {
@@ -87,11 +87,11 @@ func addPostsToSitemap(w *helper.XMLWriter, d *Data, conf *config) {
 func addTagsToSitemap(w *helper.XMLWriter, d *Data, conf *config) error {
 	sitemap := conf.Sitemap
 
-	loc := d.BuildURL(url.Tags())
+	loc := d.BuildURL(vars.TagsURL())
 	addItemToSitemap(w, loc, sitemap.Changefreq, d.Created, sitemap.Priority)
 
 	for _, tag := range d.Tags {
-		loc = d.BuildURL(url.Tag(tag.Slug, 1))
+		loc = d.BuildURL(vars.TagURL(tag.Slug, 1))
 		addItemToSitemap(w, loc, sitemap.Changefreq, tag.Modified, sitemap.Priority)
 	}
 	return nil

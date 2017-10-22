@@ -16,7 +16,6 @@ import (
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
 	"github.com/caixw/gitype/vars"
-	"github.com/caixw/gitype/vars/url"
 )
 
 // Theme 表示主题信息
@@ -126,7 +125,7 @@ func (d *Data) snippetsTemplate() (*template.Template, error) {
 		"ldate":    d.Theme.longDate,
 		"sdate":    d.Theme.shortDate,
 		"rfc3339":  rfc3339Date,
-		"themeURL": func(p string) string { return url.Theme(p) },
+		"themeURL": func(p string) string { return vars.ThemeURL(p) },
 	}
 
 	return template.New("snippets").

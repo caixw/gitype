@@ -7,7 +7,7 @@ package data
 import (
 	"testing"
 
-	"github.com/caixw/gitype/vars/url"
+	"github.com/caixw/gitype/vars"
 	"github.com/issue9/assert"
 )
 
@@ -34,7 +34,7 @@ func TestLoadTags(t *testing.T) {
 	a.Equal(tags[0].Color, "efefef")
 	a.Equal(tags[0].Title, "默认1")
 	a.Equal(tags[1].Slug, "default2")
-	a.Equal(tags[0].Permalink, url.Tag("default1", 0))
+	a.Equal(tags[0].Permalink, vars.TagURL("default1", 0))
 }
 
 func TestCheckTagsDup(t *testing.T) {

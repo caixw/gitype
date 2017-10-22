@@ -17,7 +17,6 @@ import (
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
 	"github.com/caixw/gitype/vars"
-	"github.com/caixw/gitype/vars/url"
 	"github.com/issue9/utils"
 )
 
@@ -152,7 +151,7 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 	post.Created = created
 
 	// permalink
-	post.Permalink = url.Post(post.Slug)
+	post.Permalink = vars.PostURL(post.Slug)
 
 	// modified
 	// outdated 还用作其它功能，需要首先解析其值
