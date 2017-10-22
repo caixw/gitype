@@ -21,16 +21,19 @@ import (
 
 // Theme 表示主题信息
 type Theme struct {
-	ID          string             `yaml:"-"`    // 唯一 ID，即当前目录名称
-	Name        string             `yaml:"name"` // 名称，不必唯一，可以与 ID 值不同。
-	Version     string             `yaml:"version"`
-	Description string             `yaml:"description"`
-	URL         string             `yaml:"url,omitempty"`
-	Author      *Author            `yaml:"author"`
-	Template    *template.Template `yaml:"-"` // 当前主题的预编译结果
+	ID          string  `yaml:"-"`    // 唯一 ID，即当前目录名称
+	Name        string  `yaml:"name"` // 名称，不必唯一，可以与 ID 值不同。
+	Version     string  `yaml:"version"`
+	Description string  `yaml:"description"`
+	URL         string  `yaml:"url,omitempty"`
+	Author      *Author `yaml:"author"`
+
+	Template        *template.Template `yaml:"-"` // 当前主题的预编译结果
+	longDateFormat  string             // 长时间的显示格式
+	shortDateFormat string             // 短时间的显示格式
 }
 
-func findTheme(path *path.Path, theme string) (*Theme, error) {
+func findTheme(path *path.Path, conf *config) (*Theme, error) {
 	dir := path.ThemesDir
 	fs, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -41,26 +44,28 @@ func findTheme(path *path.Path, theme string) (*Theme, error) {
 	}
 
 	for _, file := range fs {
-		if file.IsDir() && (file.Name() == theme) {
-			return loadTheme(path, file.Name())
+		if file.IsDir() && (file.Name() == conf.Theme) {
+			return loadTheme(path, conf)
 		}
 	}
 
-	return nil, fmt.Errorf("未找到与 %s 匹配的主题", theme)
+	return nil, fmt.Errorf("未找到与 %s 匹配的主题", conf.Theme)
 }
 
 // 加载主题
 //
 // id 主题当前目录名称
-func loadTheme(path *path.Path, id string) (*Theme, error) {
-	p := path.ThemeMetaPath(id)
+func loadTheme(path *path.Path, conf *config) (*Theme, error) {
+	p := path.ThemeMetaPath(conf.Theme)
 
 	theme := &Theme{}
 	if err := helper.LoadYAMLFile(p, theme); err != nil {
 		return nil, err
 	}
 
-	theme.ID = id
+	theme.ID = conf.Theme
+	theme.longDateFormat = conf.LongDateFormat
+	theme.shortDateFormat = conf.ShortDateFormat
 
 	if len(theme.Name) == 0 {
 		return nil, &helper.FieldError{File: path.ThemeMetaPath(theme.ID), Message: "不能为空", Field: "name"}
@@ -83,7 +88,7 @@ func (d *Data) compileTemplate() error {
 		return err
 	}
 
-	// 编译各个主题
+	// 编译模板
 	d.Theme.Template, err = snippets.Clone()
 	if err != nil {
 		return err
@@ -113,8 +118,8 @@ func (d *Data) snippetsTemplate() (*template.Template, error) {
 		"strip":    stripTags,
 		"html":     htmlEscaped,
 		"unix":     unix,
-		"ldate":    d.longDate,
-		"sdate":    d.shortDate,
+		"ldate":    d.Theme.longDate,
+		"sdate":    d.Theme.shortDate,
 		"rfc3339":  rfc3339Date,
 		"themeURL": func(p string) string { return url.Theme(p) },
 	}
@@ -163,12 +168,12 @@ func unix(t time.Time) interface{} {
 	return t.Unix()
 }
 
-func (d *Data) longDate(t time.Time) interface{} {
-	return t.Format(d.longDateFormat)
+func (theme *Theme) longDate(t time.Time) interface{} {
+	return t.Format(theme.longDateFormat)
 }
 
-func (d *Data) shortDate(t time.Time) interface{} {
-	return t.Format(d.shortDateFormat)
+func (theme *Theme) shortDate(t time.Time) interface{} {
+	return t.Format(theme.shortDateFormat)
 }
 
 // 将内容显示为 HTML 内容

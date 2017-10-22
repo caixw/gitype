@@ -44,8 +44,6 @@ type Data struct {
 	License  *Link            // 默认版权信息
 	Pages    map[string]*Page // 各个页面的自定义内容
 
-	longDateFormat  string // 长时间的显示格式
-	shortDateFormat string // 短时间的显示格式
 	outdated        *outdatedConfig
 	postsTicker     *time.Ticker // 用于更新文章 Outdated 属性的定时器
 	postsTickerDone chan bool
@@ -85,7 +83,7 @@ func Load(path *path.Path) (*Data, error) {
 		return nil, err
 	}
 
-	theme, err := findTheme(path, conf.Theme)
+	theme, err := findTheme(path, conf)
 	if err != nil {
 		return nil, err
 	}
@@ -109,8 +107,6 @@ func Load(path *path.Path) (*Data, error) {
 		Menus:    conf.Menus,
 		Pages:    conf.Pages,
 
-		longDateFormat:  conf.LongDateFormat,
-		shortDateFormat: conf.ShortDateFormat,
 		outdated:        conf.Outdated,
 		postsTicker:     time.NewTicker(day),
 		postsTickerDone: make(chan bool, 1),

@@ -82,7 +82,7 @@ func (p *Path) ThemePath(theme, path string) string {
 
 // ThemeMetaPath 返回指定主题下的描述文件
 func (p *Path) ThemeMetaPath(theme string) string {
-	return filepath.Join(p.ThemesDir, theme, vars.ThemeMetaFilename)
+	return p.ThemePath(theme, vars.ThemeMetaFilename)
 }
 
 // PostPath 返回某一篇文章下的文件名
