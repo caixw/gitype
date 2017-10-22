@@ -223,7 +223,9 @@ title        | string   | 页面的 html>head>title
 keywords     | string   | 页面的 html>head>meta.keywords
 description  | string   | 页面的 html>head>meta.description
 
-**部分页面可使用 %title% 和 %content% 占位符，分别是表示网站名称和可自由取代的内容，比如 tag 页面，%content 会用标签名代替**
+**部分页面可使用 %content% 占位符，分别是表示网站名称和可自由取代的内容，比如 tag 页面，%content 会用标签名代替**
+
+**tag 和 post 页面的 keywords 和 description 是不可更改的**
 
 
 

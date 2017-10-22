@@ -25,6 +25,7 @@ const language = "zh-cmn-Hans"
 // 配置信息，用于从文件中读取
 type config struct {
 	Title           string    `yaml:"title"`
+	TitleSeparator  string    `yaml:"titleSeparator"`
 	Language        string    `yaml:"language"`
 	Subtitle        string    `yaml:"subtitle,omitempty"`
 	URL             string    `yaml:"url"`

@@ -126,12 +126,6 @@ func (d *Data) sanitize(conf *config) error {
 		// 将标签的默认修改时间设置为网站的上线时间
 		tag.Modified = conf.Uptime
 
-		if len(tag.Description) == 0 {
-			if len(p.Description) > 0 {
-				tag.Description = helper.ReplaceContent(p.Description, tag.Title)
-			}
-		}
-
 		tag.HTMLTitle = helper.ReplaceContent(p.Title, tag.Title)
 	}
 

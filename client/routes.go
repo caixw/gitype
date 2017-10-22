@@ -166,7 +166,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	p.Tag = tag
 	p.Title = tag.HTMLTitle
 	p.Keywords = tag.Keywords
-	p.Description = tag.Description
+	p.Description = tag.Content
 	p.Canonical = client.data.BuildURL(url.Tag(slug, page))
 
 	start, end, ok := client.getPostsRange(len(tag.Posts), page, w, r)

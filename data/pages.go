@@ -5,20 +5,17 @@
 package data
 
 import (
-	"strings"
-
 	"github.com/caixw/gitype/vars"
 )
 
 // 默认标题的定义
 const (
-	tagTitle      = "标签：" + vars.ContentPlaceholder + " | " + vars.TitlePlaceholder
-	tagsTitle     = "标签 | " + vars.TitlePlaceholder
-	archivesTitle = "归档 | " + vars.TitlePlaceholder
-	searchTitle   = "搜索：" + vars.ContentPlaceholder + " | " + vars.TitlePlaceholder
-	linksTitle    = "友情链接 | " + vars.TitlePlaceholder
-	postTitle     = vars.ContentPlaceholder + " | " + vars.TitlePlaceholder
-	homeTitle     = vars.TitlePlaceholder
+	tagTitle      = "标签：" + vars.ContentPlaceholder
+	tagsTitle     = "标签"
+	archivesTitle = "归档"
+	searchTitle   = "搜索：" + vars.ContentPlaceholder
+	linksTitle    = "友情链接"
+	postTitle     = vars.ContentPlaceholder
 )
 
 // Page 页面的自定义内容
@@ -32,71 +29,65 @@ func (conf *config) initPages() {
 	if conf.Pages == nil {
 		conf.Pages = make(map[string]*Page, 10)
 	}
+	ps := conf.Pages
 
-	if conf.Pages[vars.PageTag] == nil {
-		conf.Pages[vars.PageTag] = &Page{
-			Title: tagTitle,
-		}
+	if ps[vars.PageTag] == nil {
+		ps[vars.PageTag] = &Page{}
+	}
+	if ps[vars.PageTags] == nil {
+		ps[vars.PageTags] = &Page{}
+	}
+	if ps[vars.PageArchives] == nil {
+		ps[vars.PageArchives] = &Page{}
+	}
+	if ps[vars.PageSearch] == nil {
+		ps[vars.PageSearch] = &Page{}
+	}
+	if ps[vars.PageLinks] == nil {
+		ps[vars.PageLinks] = &Page{}
+	}
+	if ps[vars.PagePost] == nil {
+		ps[vars.PagePost] = &Page{}
+	}
+	if ps[vars.PagePost] == nil {
+		ps[vars.PagePost] = &Page{}
+	}
+	if ps[vars.PagePosts] == nil {
+		ps[vars.PagePosts] = &Page{}
 	}
 
-	if conf.Pages[vars.PageTags] == nil {
-		conf.Pages[vars.PageTags] = &Page{
-			Title: tagsTitle,
-		}
+	if len(ps[vars.PageTag].Title) == 0 {
+		ps[vars.PageTag].Title = tagTitle
 	}
 
-	if conf.Pages[vars.PageArchives] == nil {
-		conf.Pages[vars.PageArchives] = &Page{
-			Title: archivesTitle,
-		}
+	if len(ps[vars.PageTags].Title) == 0 {
+		ps[vars.PageTags].Title = tagsTitle
 	}
 
-	if conf.Pages[vars.PageSearch] == nil {
-		conf.Pages[vars.PageSearch] = &Page{
-			Title: searchTitle,
-		}
+	if len(ps[vars.PageArchives].Title) == 0 {
+		ps[vars.PageArchives].Title = archivesTitle
 	}
 
-	if conf.Pages[vars.PageLinks] == nil {
-		conf.Pages[vars.PageLinks] = &Page{
-			Title: linksTitle,
-		}
+	if len(ps[vars.PageSearch].Title) == 0 {
+		ps[vars.PageSearch].Title = searchTitle
 	}
 
-	if conf.Pages[vars.PagePost] == nil {
-		conf.Pages[vars.PagePost] = &Page{
-			Title: postTitle,
-		}
+	if len(ps[vars.PageLinks].Title) == 0 {
+		ps[vars.PageLinks].Title = linksTitle
 	}
 
-	if conf.Pages[vars.PagePost] == nil {
-		conf.Pages[vars.PagePost] = &Page{
-			Title: postTitle,
-		}
+	if len(ps[vars.PagePost].Title) == 0 {
+		ps[vars.PagePost].Title = postTitle
 	}
 
-	if conf.Pages[vars.PagePosts] == nil {
-		conf.Pages[vars.PagePosts] = &Page{
-			Title: homeTitle,
-		}
-	}
-
+	suffix := conf.TitleSeparator + conf.Title
 	for _, page := range conf.Pages {
-		page.Title = conf.replaceTitle(page.Title)
-		page.Keywords = conf.replaceTitle(page.Keywords)
-		page.Description = conf.replaceTitle(page.Description)
+		if len(page.Title) == 0 { // 没有内容，则直接使用网站标
+			page.Title = conf.Title
+		} else {
+			page.Title += suffix
+		}
 	}
 
-	if conf.Pages[vars.PageIndex] == nil {
-		conf.Pages[vars.PageIndex] = conf.Pages[vars.PagePosts]
-	}
-}
-
-// 替换标题中的 %title% 内容为 conf.Title
-func (conf *config) replaceTitle(title string) string {
-	if strings.Index(title, vars.TitlePlaceholder) < 0 {
-		return title
-	}
-
-	return strings.Replace(title, vars.TitlePlaceholder, conf.Title, -1)
+	ps[vars.PageIndex] = conf.Pages[vars.PagePosts]
 }

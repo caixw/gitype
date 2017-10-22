@@ -19,17 +19,16 @@ import (
 // 标签系统同时包含了标签和专题两个方面，默认情况下为标签，
 // 当将 Series 指定为 true 时，表示这是一个专题。
 type Tag struct {
-	Slug        string    `yaml:"slug"`            // 唯一名称
-	Title       string    `yaml:"title"`           // 名称
-	Color       string    `yaml:"color,omitempty"` // 标签颜色。若未指定，则继承父容器
-	Content     string    `yaml:"content"`         // 对该标签的详细描述
-	Series      bool      `yaml:"series"`          // 是否为一个专题标签
-	HTMLTitle   string    `yaml:"-"`               // 用于网页的标题
-	Posts       []*Post   `yaml:"-"`               // 关联的文章
-	Keywords    string    `yaml:"-"`               // meta.keywords 标签的内容，如果为空，使用 Title 属性的值
-	Description string    `yaml:"-"`               // meta.description 标签的内容，若为空，则为 Config.Description
-	Modified    time.Time `yaml:"-"`               // 所有文章中最迟修改的
-	Permalink   string    `yaml:"-"`               // 唯一链接，指向第一页
+	Slug      string    `yaml:"slug"`            // 唯一名称
+	Title     string    `yaml:"title"`           // 名称
+	Color     string    `yaml:"color,omitempty"` // 标签颜色。若未指定，则继承父容器
+	Content   string    `yaml:"content"`         // 对该标签的详细描述
+	Series    bool      `yaml:"series"`          // 是否为一个专题标签
+	HTMLTitle string    `yaml:"-"`               // 用于网页的标题
+	Posts     []*Post   `yaml:"-"`               // 关联的文章
+	Keywords  string    `yaml:"-"`               // meta.keywords 标签的内容，如果为空，使用 Tag.Title 属性的值
+	Modified  time.Time `yaml:"-"`               // 所有文章中最迟修改的
+	Permalink string    `yaml:"-"`               // 唯一链接，指向第一页
 }
 
 func loadTags(path *path.Path) ([]*Tag, error) {
