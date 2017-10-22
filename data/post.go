@@ -21,6 +21,7 @@ import (
 )
 
 // 文章是否过时的比较方式
+// 即 Outdated.Type 的值
 const (
 	OutdatedTypeCreated  = "created"  // 以创建时间作为对比
 	OutdatedTypeModified = "modified" // 以修改时间作为对比
@@ -36,13 +37,25 @@ const (
 // Outdated 描述过时文章的提示信息。
 //
 // 理论上把有关 Outdated 的信息，直接在模板中对文章的创建时间戳进行比较，
-// 是比通过配置来比较会更加方便，也不会更任何的后期工作量。之所以把这个功能放在后端，
-// 而不是模板层面，是因为觉得模板应该只负责展示页面，而不是用于处理逻辑内容。
+// 是比通过配置来比较会更加方便，也不会更任何的后期工作量。
+// 之所以把这个功能放在后端，而不是模板层面，
+// 是因为觉得模板应该只负责展示页面，而不是用于处理逻辑内容。
 type Outdated struct {
-	Type      string        `yaml:"type"`      // 比较的类型，创建时间或是修改时间
-	Duration  time.Duration `yaml:"duration"`  // 超时的时间，可以使用 time.Duration 的字符串值
-	Content   string        `yaml:"content"`   // 提示的内容，普通文字，不能为 html
-	Frequency time.Duration `yaml:"frequency"` // 多久对文章进行一次检测，默认为一天
+	// 按什么方式进行比较，可以文章的创建时间，也可以是文章的修改时间，
+	Type string `yaml:"type"`
+
+	// 文章过时的时长，只有创建或是修改时间距离当前超过这个时长，
+	// 才会被判断是过时文章。
+	// yaml 的表示格式可以使用 Go 语言的 time.Duration 字符串表示形式。
+	Duration time.Duration `yaml:"duration"`
+
+	// 系统多久对所有的文章做一个过时判断。
+	// 和 Duration 一样是一个 time.Duration 值表示形式。
+	Frequency time.Duration `yaml:"frequency"`
+
+	// 过时文章在页面上显示的内容，只能是普通文本，不能为 HTML。
+	// 可以带一个 %d 占位符，用以表示过时的天数。
+	Content string `yaml:"content"`
 }
 
 // Post 表示文章的信息
