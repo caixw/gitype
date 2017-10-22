@@ -61,7 +61,7 @@ func New(path *path.Path, mux *mux.Mux) (*Client, error) {
 	// 一切数据加载都没问题之后，开始运行更新服务。
 	// 只有注册路由成功了，定时器开始工作才有意义。
 	if d.Outdated != nil {
-		client.postsTicker = time.NewTicker(d.Outdated.Frequency)
+		client.postsTicker = time.NewTicker(vars.OutdatedFrequency)
 		client.postsTickerDone = make(chan bool, 1)
 		client.runUpdateOutdatedServer()
 	}

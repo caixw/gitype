@@ -6,7 +6,6 @@ package data
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -48,10 +47,6 @@ type Outdated struct {
 	// 才会被判断是过时文章。
 	// yaml 的表示格式可以使用 Go 语言的 time.Duration 字符串表示形式。
 	Duration time.Duration `yaml:"duration"`
-
-	// 系统多久对所有的文章做一个过时判断。
-	// 和 Duration 一样是一个 time.Duration 值表示形式。
-	Frequency time.Duration `yaml:"frequency"`
 
 	// 过时文章在页面上显示的内容，只能是普通文本，不能为 HTML。
 	// 可以带一个 %d 占位符，用以表示过时的天数。
@@ -259,16 +254,6 @@ func (o *Outdated) sanitize() *helper.FieldError {
 	}
 	if o.Duration < 0 {
 		return &helper.FieldError{Message: "不能小于 0", Field: "outdated.duration"}
-	}
-
-	// 没有设置值，设置为 0，表示其为默主值，采用 vars.OutdatedMinFrequency
-	if o.Frequency == 0 {
-		o.Frequency = vars.OutdatedMinFrequency
-	}
-	// 如果不是默认值，则判断其是否小于最小值。必须后于上面的判断条件。
-	if o.Frequency < vars.OutdatedMinFrequency {
-		msg := fmt.Sprintf("不能小于 %d", vars.OutdatedMinFrequency)
-		return &helper.FieldError{Message: msg, Field: "outdated.frequency"}
 	}
 
 	return nil

@@ -35,9 +35,9 @@ const (
 	// ContentPlaceholder 配置文件中的表示当前内容的占位符
 	ContentPlaceholder = "%content%"
 
-	// OutdatedMinFrequency 与 data.Outdated.Frequency 的最小值
+	// OutdatedFrequency outdated 的更新频率。
 	// NOTE: 此值过小，有可能会影响服务器性能
-	OutdatedMinFrequency = time.Minute * 30
+	OutdatedFrequency = time.Hour * 4
 )
 
 // 目录名称的定义
