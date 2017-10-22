@@ -1,6 +1,7 @@
 # /data/meta/config.yaml
 
 title: title
+titleSeparator: " | "
 subtitle: subtitle
 url: https://caixw.io
 uptime: 2016-01-02T12:11:01+08:00
@@ -37,3 +38,11 @@ archive:
 license:
   url: https://caixw.io
   text: license
+
+pages:
+  archives:
+    title: 归档
+    keywords: 归档,archives
+  
+  tag:
+    title: "%content%"

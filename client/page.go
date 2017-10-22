@@ -95,7 +95,7 @@ func (client *Client) newInfo() *info {
 		AppVersion: vars.Version(),
 		GoVersion:  runtime.Version(),
 
-		SiteName:    d.Title,
+		SiteName:    d.SiteName,
 		URL:         d.URL,
 		Icon:        d.Icon,
 		Language:    d.Language,

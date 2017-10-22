@@ -20,14 +20,14 @@ type Data struct {
 	path    *path.Path
 	Created time.Time
 
-	Title    string           // 网站标题
-	Language string           // 语言标记，比如 zh-cmn-Hans
+	SiteName string
 	Subtitle string           // 网站副标题
-	URL      string           // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
+	Language string           // 语言标记，比如 zh-cmn-Hans
+	URL      string           // 网站的域名
 	Beian    string           // 备案号
 	Uptime   time.Time        // 上线时间
 	PageSize int              // 每页显示的数量
-	Type     string           // 所有页面的 mime type 类型，默认使用
+	Type     string           // 页面的 mime type 类型
 	Icon     *Icon            // 程序默认的图标
 	Menus    []*Link          // 导航菜单
 	Author   *Author          // 默认作者信息
@@ -82,7 +82,7 @@ func Load(path *path.Path) (*Data, error) {
 		path:    path,
 		Created: time.Now(),
 
-		Title:    conf.Title,
+		SiteName: conf.Title,
 		Language: conf.Language,
 		Subtitle: conf.Subtitle,
 		URL:      conf.URL,
