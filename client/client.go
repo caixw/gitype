@@ -45,10 +45,8 @@ func New(path *path.Path, mux *mux.Mux) (*Client, error) {
 		data:    d,
 		updated: d.Created,
 		etag:    vars.Etag(d.Created),
-
-		postsTicker:     time.NewTicker(d.Outdated.Frequency),
-		postsTickerDone: make(chan bool, 1),
 	}
+
 	client.info = client.newInfo()
 
 	client.addFeed(client.data.RSS)
@@ -62,7 +60,11 @@ func New(path *path.Path, mux *mux.Mux) (*Client, error) {
 
 	// 一切数据加载都没问题之后，开始运行更新服务。
 	// 只有注册路由成功了，定时器开始工作才有意义。
-	client.runUpdateOutdatedServer()
+	if d.Outdated != nil {
+		client.postsTicker = time.NewTicker(d.Outdated.Frequency)
+		client.postsTickerDone = make(chan bool, 1)
+		client.runUpdateOutdatedServer()
+	}
 
 	return client, nil
 }
@@ -79,8 +81,10 @@ func (client *Client) Free() {
 	}
 	client.patterns = client.patterns[:0]
 
-	// 停止计时器
-	client.stopPostsTicker()
+	if client.postsTicker != nil {
+		client.postsTicker.Stop()
+		client.postsTickerDone <- true
+	}
 }
 
 func (client *Client) addFeed(feed *data.Feed) {
@@ -143,11 +147,4 @@ func (client *Client) updateOutdated() {
 
 	client.updated = now
 	client.etag = vars.Etag(now)
-}
-
-func (client *Client) stopPostsTicker() {
-	if client.postsTicker != nil {
-		client.postsTicker.Stop()
-		client.postsTickerDone <- true
-	}
 }

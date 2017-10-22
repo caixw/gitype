@@ -41,7 +41,7 @@ type config struct {
 	License         *Link     `yaml:"license"`
 	LongDateFormat  string    `yaml:"longDateFormat"`
 	ShortDateFormat string    `yaml:"shortDateFormat"`
-	Outdated        *Outdated `yaml:"outdated,omitempty"`
+	Outdated        *Outdated `yaml:"outdated,omitempty"` // 为空表示不需要该功能
 
 	// 各个页面的一些自定义项，目前支持以下几个元素的修改：
 	// 1) html>head>title
