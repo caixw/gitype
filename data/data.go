@@ -29,6 +29,7 @@ type Data struct {
 	// Etag 用于网页请求时返回的 Etag 报头，根据 Updated 字段获取。
 	Etag string
 
+	// 直接从 config 中继承过来的变量
 	SiteName string
 	Subtitle string           // 网站副标题
 	Language string           // 语言标记，比如 zh-cmn-Hans
@@ -46,7 +47,7 @@ type Data struct {
 	longDateFormat  string // 长时间的显示格式
 	shortDateFormat string // 短时间的显示格式
 	outdated        *outdatedConfig
-	postsTicker     *time.Ticker // 用于更新文章 outdated 属性的定时器
+	postsTicker     *time.Ticker // 用于更新文章 Outdated 属性的定时器
 	postsTickerDone chan bool
 
 	Tags     []*Tag
@@ -54,7 +55,7 @@ type Data struct {
 	Links    []*Link
 	Posts    []*Post
 	Archives []*Archive
-	Themes   []*Theme // 所有可用主题，第一个元素为默认主题
+	Theme    *Theme // 当前主题
 
 	Opensearch *Feed
 	Sitemap    *Feed
@@ -84,7 +85,7 @@ func Load(path *path.Path) (*Data, error) {
 		return nil, err
 	}
 
-	themes, err := loadThemes(path)
+	theme, err := findTheme(path, conf.Theme)
 	if err != nil {
 		return nil, err
 	}
@@ -114,10 +115,10 @@ func Load(path *path.Path) (*Data, error) {
 		postsTicker:     time.NewTicker(day),
 		postsTickerDone: make(chan bool, 1),
 
-		Tags:   tags,
-		Links:  links,
-		Posts:  posts,
-		Themes: themes,
+		Tags:  tags,
+		Links: links,
+		Posts: posts,
+		Theme: theme,
 	}
 
 	if err := d.sanitize(conf); err != nil {
@@ -141,7 +142,7 @@ func (d *Data) Free() {
 
 // 对各个数据再次进行检测，主要是一些关联数据的相互初始化
 func (d *Data) sanitize(conf *config) error {
-	if err := d.sanitizeThemes(conf); err != nil {
+	if err := d.compileTemplate(); err != nil {
 		return err
 	}
 

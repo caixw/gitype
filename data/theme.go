@@ -11,7 +11,6 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"time"
 
 	"github.com/caixw/gitype/helper"
@@ -32,7 +31,7 @@ type Theme struct {
 	Template    *template.Template `yaml:"-"` // 当前主题的预编译结果
 }
 
-func loadThemes(path *path.Path) ([]*Theme, error) {
+func findTheme(path *path.Path, theme string) (*Theme, error) {
 	dir := path.ThemesDir
 	fs, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -42,22 +41,17 @@ func loadThemes(path *path.Path) ([]*Theme, error) {
 		return nil, errors.New("未找到任何主题文件")
 	}
 
-	themes := make([]*Theme, 0, len(fs))
-
 	for _, file := range fs {
-		if !file.IsDir() {
-			continue
+		if file.IsDir() && (file.Name() == theme) {
+			return loadTheme(path, file.Name())
 		}
-		theme, err := loadTheme(path, file.Name())
-		if err != nil {
-			return nil, err
-		}
-		themes = append(themes, theme)
 	}
 
-	return themes, nil
+	return nil, fmt.Errorf("未找到与 %s 匹配的主题", theme)
 }
 
+// 加载主题
+//
 // id 主题当前目录名称
 func loadTheme(path *path.Path, id string) (*Theme, error) {
 	p := path.ThemeMetaPath(id)
@@ -84,61 +78,30 @@ func loadTheme(path *path.Path, id string) (*Theme, error) {
 	return theme, nil
 }
 
-func (d *Data) sanitizeThemes(conf *config) error {
-	var defaultTheme *Theme
-	for _, theme := range d.Themes { // 检测配置文件中的主题是否存在
-		if theme.ID == conf.Theme {
-			defaultTheme = theme
-			break
-		}
-	}
-
-	if defaultTheme == nil {
-		return &helper.FieldError{File: d.path.MetaConfigFile, Message: "该主题并不存在", Field: "theme"}
-	}
-
-	sort.SliceStable(d.Themes, func(i, j int) bool {
-		// 确保默认主题在第一个位置
-		if defaultTheme == d.Themes[i] {
-			return true
-		}
-		if defaultTheme == d.Themes[j] {
-			return false
-		}
-
-		return d.Themes[i].Name < d.Themes[j].Name
-	})
-
-	return d.compileTemplates()
-}
-
 // 编译主题的模板。
-func (d *Data) compileTemplates() error {
-	templates := d.templatesName()
-
+func (d *Data) compileTemplate() error {
 	snippets, err := d.snippetsTemplate()
 	if err != nil {
 		return err
 	}
 
 	// 编译各个主题
-	for _, theme := range d.Themes {
-		theme.Template, err = snippets.Clone()
-		if err != nil {
-			return err
-		}
+	d.Theme.Template, err = snippets.Clone()
+	if err != nil {
+		return err
+	}
 
-		_, err = theme.Template.ParseGlob(filepath.Join(theme.Path, "*"+vars.TemplateExtension))
-		if err != nil {
-			return err
-		}
+	_, err = d.Theme.Template.ParseGlob(filepath.Join(d.Theme.Path, "*"+vars.TemplateExtension))
+	if err != nil {
+		return err
+	}
 
-		// 检测模板名称是否在模板中真实存在
-		// 模板定义未必是按文件分的，所以不能简单地判断文件是否存在
-		for _, tpl := range templates {
-			if nil == theme.Template.Lookup(tpl) {
-				return fmt.Errorf("模板 %s 未定义", tpl)
-			}
+	// 检测模板名称是否在模板中真实存在
+	// 模板定义未必是按文件分的，所以不能简单地判断文件是否存在
+	templates := d.templatesName()
+	for _, tpl := range templates {
+		if nil == d.Theme.Template.Lookup(tpl) {
+			return fmt.Errorf("模板 %s 未定义", tpl)
 		}
 	}
 

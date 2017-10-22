@@ -15,12 +15,14 @@ import (
 	"github.com/issue9/is"
 )
 
-const contentTypeHTML = "text/html"
+const (
+	contentTypeHTML = "text/html"
 
-// 默认的语言，在配置文件中未指定时，使用此值，
-// 作为默认值，此值最好不要修改，若需要修改，
-// 则最好将诸如 tagTitle 等与语言相关的常量一起修改。
-const language = "zh-cmn-Hans"
+	// 默认的语言，在配置文件中未指定时，使用此值，
+	// 作为默认值，此值最好不要修改，若需要修改，
+	// 则最好将诸如 tagTitle 等与语言相关的常量一起修改。
+	language = "zh-cmn-Hans"
+)
 
 // 配置信息，用于从文件中读取
 type config struct {
@@ -48,7 +50,7 @@ type config struct {
 	Pages map[string]*Page `yaml:"pages,omitempty"`
 
 	// 以下内容不直接存在于 Data 中
-	Theme        string            `yaml:"theme"`
+	Theme        string            `yaml:"theme"` // 所用的主题，为目录名，而不是 theme.yaml 中的名称
 	UptimeFormat string            `yaml:"uptime"`
 	Archive      *archiveConfig    `yaml:"archive"`
 	RSS          *rssConfig        `yaml:"rss,omitempty"`
