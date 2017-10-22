@@ -5,7 +5,6 @@
 package client
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -67,7 +66,7 @@ func search(q string, d *data.Data) []*data.Post {
 	}
 
 	typ := q[:index]
-	content := strings.ToLower(strings.TrimSpace(q[index+1:]))
+	content := strings.TrimSpace(q[index+1:])
 
 	switch typ {
 	case vars.SearchKeyTag:
@@ -85,9 +84,10 @@ func search(q string, d *data.Data) []*data.Post {
 // 按标签进行搜索
 func searchSeries(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
+	q = strings.ToLower(q)
 
 	for _, tag := range d.Series {
-		if strings.Contains(strings.ToLower(tag.Title), q) {
+		if strings.Contains(tag.SearchTitle, q) {
 			posts = append(posts, tag.Posts...)
 		}
 	}
@@ -98,9 +98,10 @@ func searchSeries(q string, d *data.Data) []*data.Post {
 // 按标签进行搜索
 func searchTag(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
+	q = strings.ToLower(q)
 
 	for _, tag := range d.Tags {
-		if strings.Contains(strings.ToLower(tag.Title), q) {
+		if strings.Contains(tag.SearchTitle, q) {
 			posts = append(posts, tag.Posts...)
 		}
 	}
@@ -111,23 +112,24 @@ func searchTag(q string, d *data.Data) []*data.Post {
 // 仅搜索标题
 func searchTitle(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
+	q = strings.ToLower(q)
 
 	for _, post := range d.Posts {
-		if strings.Contains(strings.ToLower(post.Title), q) {
+		if strings.Contains(post.SearchTitle, q) {
 			posts = append(posts, post)
 		}
 	}
 
-	fmt.Println(len(posts))
 	return posts
 }
 
 // 默认情况下，搜索标题和内容
 func searchDefault(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
+	q = strings.ToLower(q)
 
 	for _, post := range d.Posts {
-		if strings.Contains(post.Title, q) || strings.Contains(post.Content, q) {
+		if strings.Contains(post.SearchTitle, q) || strings.Contains(post.SearchContent, q) {
 			posts = append(posts, post)
 		}
 	}

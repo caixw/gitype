@@ -66,6 +66,10 @@ type Post struct {
 	License  *Link   `yaml:"license,omitempty"`  // 版本信息
 	Template string  `yaml:"template,omitempty"` // 使用的模板
 	Keywords string  `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
+
+	// 用于搜索的副本内容，会全部转换成小写
+	SearchTitle   string
+	SearchContent string
 }
 
 func loadPosts(path *path.Path) ([]*Post, error) {
@@ -182,9 +186,14 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 	// order
 	if len(post.Order) == 0 {
 		post.Order = orderDefault
-	} else if post.Order != orderDefault && post.Order != orderLast && post.Order != orderTop {
+	} else if post.Order != orderDefault &&
+		post.Order != orderLast &&
+		post.Order != orderTop {
 		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "无效的值", Field: "order"}
 	}
+
+	post.SearchContent = strings.ToLower(post.Content)
+	post.SearchTitle = strings.ToLower(post.Title)
 
 	return post, nil
 }
