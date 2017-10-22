@@ -157,7 +157,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if page < 1 {
-		logs.Debugf("请求的页码[%d]小于1", page)
+		logs.Debugf("请求的页码[%d]小于 1", page)
 		client.renderError(w, r, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
@@ -214,7 +214,7 @@ func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 // /archives.html
 func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	p := client.page(vars.PageArchives, w, r)
-	pp := client.data.Pages[vars.PageTags]
+	pp := client.data.Pages[vars.PageArchives]
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
 	p.Description = pp.Description

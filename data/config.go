@@ -44,7 +44,7 @@ type config struct {
 	// 1) html>head>title
 	// 2) html>head>meta.keywords
 	// 3) html>head>meta.description
-	Pages map[string]*Page `yaml:"pages"`
+	Pages map[string]*Page `yaml:"pages,omitempty"`
 
 	// 以下内容不存在于 Config 中
 	Outdated     *outdatedConfig   `yaml:"outdated,omitempty"`
