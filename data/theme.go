@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
-	"path/filepath"
 	"regexp"
 	"time"
 
@@ -94,7 +93,7 @@ func (d *Data) compileTemplate() error {
 		return err
 	}
 
-	path := d.path.ThemePath(d.Theme.ID, "*"+vars.TemplateExtension)
+	path := d.path.ThemesPath(d.Theme.ID, "*"+vars.TemplateExtension)
 	_, err = d.Theme.Template.ParseGlob(path)
 	if err != nil {
 		return err
@@ -126,7 +125,7 @@ func (d *Data) snippetsTemplate() (*template.Template, error) {
 
 	return template.New("snippets").
 		Funcs(funs).
-		ParseGlob(filepath.Join(d.path.ThemesDir, "*"+vars.TemplateExtension))
+		ParseGlob(d.path.ThemesPath("*" + vars.TemplateExtension))
 }
 
 // 获取所有的模板名称，除了固定的模板名称之外，

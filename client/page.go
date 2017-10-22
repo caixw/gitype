@@ -192,7 +192,7 @@ func (client *Client) renderError(w http.ResponseWriter, r *http.Request, code i
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	filename := strconv.Itoa(code) + vars.TemplateExtension
-	path := client.path.ThemePath(client.data.Theme.ID, filename)
+	path := client.path.ThemesPath(client.data.Theme.ID, filename)
 	if !utils.FileExists(path) {
 		logs.Debugf("模板文件 %s 不存在\n", path)
 		helper.StatusError(w, code)

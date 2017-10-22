@@ -13,10 +13,12 @@ import (
 func TestFindTheme(t *testing.T) {
 	a := assert.New(t)
 
-	theme, err := findTheme(testdataPath, "not exists")
+	conf := &config{Theme: "no exists"}
+	theme, err := findTheme(testdataPath, conf)
 	a.Error(err).Nil(theme)
 
-	theme, err = findTheme(testdataPath, "t1")
+	conf.Theme = "t1"
+	theme, err = findTheme(testdataPath, conf)
 	a.NotError(err).NotNil(theme)
 	a.Equal(theme.ID, "t1")
 	a.Equal(theme.Name, "name")
@@ -26,7 +28,8 @@ func TestFindTheme(t *testing.T) {
 func TestLoadTheme(t *testing.T) {
 	a := assert.New(t)
 
-	theme, err := loadTheme(testdataPath, "t1")
+	conf := &config{Theme: "t1"}
+	theme, err := loadTheme(testdataPath, conf)
 	a.NotError(err).NotNil(theme)
 
 	a.Equal(theme.Name, "name")

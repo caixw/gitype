@@ -16,6 +16,9 @@ func TestPath(t *testing.T) {
 
 	p := New("/")
 	a.Equal(p.ConfDir, "/"+vars.ConfDir)
-	a.Equal(p.ThemePath("def", "//style//style.png"), "/data/themes/def/style/style.png")
-	a.Equal(p.ThemePath("def", "//style//*.html"), "/data/themes/def/style/*.html")
+
+	// ThemesPath
+	a.Equal(p.ThemesPath("def", "//style", "style.png"), "/data/themes/def/style/style.png")
+	a.Equal(p.ThemesPath("def", "//style//style.png"), "/data/themes/def/style/style.png")
+	a.Equal(p.ThemesPath("def", "//style//*.html"), "/data/themes/def/style/*.html")
 }

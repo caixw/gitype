@@ -75,14 +75,17 @@ func (p *Path) RawsPath(file string) string {
 	return filepath.Join(p.RawsDir, file)
 }
 
-// ThemePath 返回指定主题下的指定文件
-func (p *Path) ThemePath(theme, path string) string {
-	return filepath.Join(p.ThemesDir, theme, path)
+// ThemesPath 返回指定主题下的指定文件
+func (p *Path) ThemesPath(path ...string) string {
+	paths := make([]string, 0, len(path)+1)
+	paths = append(paths, p.ThemesDir)
+	paths = append(paths, path...)
+	return filepath.Join(paths...)
 }
 
 // ThemeMetaPath 返回指定主题下的描述文件
 func (p *Path) ThemeMetaPath(theme string) string {
-	return p.ThemePath(theme, vars.ThemeMetaFilename)
+	return p.ThemesPath(theme, vars.ThemeMetaFilename)
 }
 
 // PostPath 返回某一篇文章下的文件名
