@@ -10,7 +10,7 @@ import (
 	"github.com/caixw/gitype/vars"
 )
 
-// 一些默认值的定义
+// 默认标题的定义
 const (
 	tagTitle      = "标签：" + vars.ContentPlaceholder + " | " + vars.TitlePlaceholder
 	tagsTitle     = "标签 | " + vars.TitlePlaceholder

@@ -106,30 +106,29 @@ repoURL     | string        | 远程仓库的地址
 
 config.yaml 指定了网站的一些基本配置情况：
 
-名称            | 类型        | 描述
-:---------------|:------------|:------
-title           | string      | 网站标题
-subtitle        | string      | 网站副标题
-url             | string      | 网站的地址
-keywords        | string      | 默认情况下的 keyword 内容
-description     | string      | 默认情况下的 descrription 内容
-beian           | string      | 备案号
-uptime          | string      | 上线时间，符合 rfc 3339 标准的时间字符串
-pageSize        | int         | 每页显示的数量
-longDateFormat  | string      | 长时间的显示格式，Go 的时间格式化方式
-shortDateFormat | string      | 短时间的显示格式，Go 的时间格式化方式
-theme           | string      | 默认主题
-type            | string      | 所有 HTML 页面的 mimetype，默认使用 text/html
-icon            | Icon        | 网站的图标
-menus           | []Link      | 菜单内容，格式与 links.yaml 的相同
-author          | Author      | 文章的默认作者信息
-license         | Link        | 文章的默认版权信息
-archive         | Archive     | 存档页的相关配置
-outdated        | Outdated    | 文章过时提示信息设置
-rss             | RSS         | rss 配置，若不需要，则不指定该值即可
-atom            | RSS         | atom 配置，若不需要，则不指定该值即可
-sitemap         | Sitemap     | sitemap 相关配置，若不需要，则不指定该值即可
-opensearch      | Opensearch  | opensearch 相关配置，若不需要，则不指定该值即可
+名称            | 类型            | 描述
+:---------------|:----------------|:------
+title           | string          | 网站标题
+subtitle        | string          | 网站副标题
+url             | string          | 网站的地址
+beian           | string          | 备案号
+uptime          | string          | 上线时间，符合 rfc 3339 标准的时间字符串
+pageSize        | int             | 每页显示的数量
+longDateFormat  | string          | 长时间的显示格式，Go 的时间格式化方式
+shortDateFormat | string          | 短时间的显示格式，Go 的时间格式化方式
+theme           | string          | 默认主题
+type            | string          | 所有 HTML 页面的 mimetype，默认使用 text/html
+icon            | Icon            | 网站的图标
+menus           | []Link          | 菜单内容，格式与 links.yaml 的相同
+author          | Author          | 文章的默认作者信息
+license         | Link            | 文章的默认版权信息
+archive         | Archive         | 存档页的相关配置
+outdated        | Outdated        | 文章过时提示信息设置
+rss             | RSS             | rss 配置，若不需要，则不指定该值即可
+atom            | RSS             | atom 配置，若不需要，则不指定该值即可
+sitemap         | Sitemap         | sitemap 相关配置，若不需要，则不指定该值即可
+opensearch      | Opensearch      | opensearch 相关配置，若不需要，则不指定该值即可
+pages           | map[string]Page | 各个类型页面的一些自定义项
 
 
 ###### Author
@@ -204,6 +203,7 @@ type      | string   | 图标的 mimetype
 sizes     | string   | 图标的大小
 url       | string   | 图标地址
 
+
 ###### Link
 
 名称      | 类型     | 描述
@@ -212,14 +212,25 @@ text      | string   | 字面文字，可以不唯一
 url       | string   | 对应的链接地址
 title     | string   | a 标签的 title 属性。可以为空
 icon      | string   | 一个 URL 或是 fontawesome 图标名称
-rel       | string   | 与该网站的关系，可用 [XFN](https://gmpg.org/xfn/) 的相关定义
+rel       | string   | a 标签的 rel 属性
 type      | string   | 指向内容的类型
+
+
+###### Page
+名称         | 类型     | 描述
+:------------|:---------|:----------
+title        | string   | 页面的 html>head>title
+keywords     | string   | 页面的 html>head>meta.keywords
+description  | string   | 页面的 html>head>meta.description
+
+**部分页面可使用 %title% 和 %content% 占位符，分别是表示网站名称和可自由取代的内容，比如 tag 页面，%content 会用标签名代替**
 
 
 
 ##### meta/links.yaml
 
 links.yaml 用于指定友情链接，为一个数组。每个元素均为一个 `Link`。
+每个元素可以使用 [XFN](https://gmpg.org/xfn/)。
 
 
 

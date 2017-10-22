@@ -70,6 +70,13 @@ var defaultConfig = &config{
 		Type:  contentTypeRSS,
 		Size:  20,
 	},
+
+	Pages: map[string]*Page{
+		vars.PageArchives: &Page{
+			Title:    archivesTitle,
+			Keywords: "存档,归档,archive,archives",
+		},
+	},
 }
 
 var defaultLinks = []*Link{

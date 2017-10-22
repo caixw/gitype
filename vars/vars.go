@@ -38,7 +38,8 @@ const (
 	CookieHTTPOnly = true
 	CookieMaxAge   = 24 * 60 * 60
 
-	// 主题名称在在传递过程中的名称
+	// 主题名称在在传递过程中的名称，
+	// 比如 cookie 和请求地址中的参数名称。
 	CookieKeyTheme = "theme"
 )
 
