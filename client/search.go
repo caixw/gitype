@@ -5,7 +5,6 @@
 package client
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -121,7 +120,6 @@ func searchTitle(q string, d *data.Data) []*data.Post {
 		}
 	}
 
-	fmt.Println(len(posts))
 	return posts
 }
 
