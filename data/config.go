@@ -185,7 +185,7 @@ func (conf *config) sanitize() *helper.FieldError {
 		}
 	}
 
-	// Menus
+	// menus
 	for index, link := range conf.Menus {
 		if err := link.sanitize(); err != nil {
 			err.Field = "Menus[" + strconv.Itoa(index) + "]." + err.Field

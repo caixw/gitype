@@ -6,6 +6,7 @@ package data
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -18,8 +19,6 @@ import (
 	"github.com/caixw/gitype/vars"
 	"github.com/issue9/utils"
 )
-
-const day = 24 * time.Hour
 
 // 文章是否过时的比较方式
 const (
@@ -236,9 +235,18 @@ func (o *Outdated) sanitize() *helper.FieldError {
 	if o.Duration == 0 {
 		return &helper.FieldError{Message: "不能为空", Field: "outdated.duration"}
 	}
+	if o.Duration < 0 {
+		return &helper.FieldError{Message: "不能小于 0", Field: "outdated.duration"}
+	}
 
+	// 没有设置值，设置为 0，表示其为默主值，采用 vars.OutdatedMinFrequency
 	if o.Frequency == 0 {
-		o.Frequency = day
+		o.Frequency = vars.OutdatedMinFrequency
+	}
+	// 如果不是默认值，则判断其是否小于最小值。必须后于上面的判断条件。
+	if o.Frequency < vars.OutdatedMinFrequency {
+		msg := fmt.Sprintf("不能小于 %d", vars.OutdatedMinFrequency)
+		return &helper.FieldError{Message: msg, Field: "outdated.frequency"}
 	}
 
 	return nil

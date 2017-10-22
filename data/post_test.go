@@ -6,6 +6,7 @@ package data
 
 import (
 	"testing"
+	"time"
 
 	"github.com/caixw/gitype/vars"
 	"github.com/issue9/assert"
@@ -55,7 +56,7 @@ func TestLoadPosts(t *testing.T) {
 
 func TestOutdated_sanitize(t *testing.T) {
 	a := assert.New(t)
-	o := &Outdated{}
+	o := &Outdated{Duration: 1 * time.Second}
 
 	a.Error(o.sanitize())
 
