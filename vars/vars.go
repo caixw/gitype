@@ -2,10 +2,16 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Package vars 定义一些全局变量、常量。相当于一个代码级别的配置内容。
+// Package vars 代码级别的配置内容。
+//
+// 所有可能需要修改的配置项以及算法都被集中到 vars 包中，
+// 使用者可以根据自己需求随意修改此包以子包的内容。
 package vars
 
-import "time"
+import (
+	"strconv"
+	"time"
+)
 
 const (
 	// Name 程序名称
@@ -28,50 +34,10 @@ const (
 
 	// ContentPlaceholder 配置文件中的表示当前内容的占位符
 	ContentPlaceholder = "%content%"
-)
 
-// Cookie 的相关定义
-const (
-	CookieHTTPOnly = true
-	CookieMaxAge   = 24 * 60 * 60
-
-	// 主题名称在在传递过程中的名称，
-	// 比如 cookie 和请求地址中的参数名称。
-	CookieKeyTheme = "theme"
-)
-
-// 与 URL 相关的一些定义
-//
-// 上线之后请谨慎修改这些值，会影响 URL 的路径结构。
-const (
-	URLRoot   = "/"     // 根地址
-	URLSuffix = ".html" // 地址后缀
-
-	URLIndex    = "index"    // 列表页
-	URLPost     = "posts"    // 文章详细页
-	URLTags     = "tags"     // 标签列表页
-	URLTag      = "tags"     // 标签详细页
-	URLLinks    = "links"    // 友情链接
-	URLArchives = "archives" // 归档
-	URLSearch   = "search"   // 搜索
-	URLTheme    = "themes"   // 主题目录前缀
-	URLAsset    = "posts"    // 文章资源前缀
-
-	URLQueryPage = "page" // 查询参数 page
-	URLQueryQ    = "q"    // 查询参数 q
-)
-
-// 与查询相关的一些自定义参数
-//
-// 上线之后请谨慎修改这些值，可能会让已经分离出去的链接变为无效链接。
-//
-// 用户可以通过查询参数按指定的格式进行精确查找，比如：
-// title:abc 只查找标题中包含 abc 的文章，其中，title 关键字和分隔符 : 都可以自定义。
-const (
-	SearchKeySeparator = ':'
-	SearchKeyTitle     = "title"
-	SearchKeyTag       = "tag"
-	SearchKeySeries    = "series"
+	// OutdatedFrequency outdated 的更新频率。
+	// NOTE: 此值过小，有可能会影响服务器性能
+	OutdatedFrequency = time.Hour * 24
 )
 
 // 目录名称的定义
@@ -111,3 +77,8 @@ const (
 	PageLinks    = "links"
 	PageSearch   = "search"
 )
+
+// Etag 根据一个时间，生成一段 Etag 字符串
+func Etag(t time.Time) string {
+	return strconv.FormatInt(t.Unix(), 10)
+}

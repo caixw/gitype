@@ -7,11 +7,12 @@ package data
 import (
 	"errors"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
-	"github.com/caixw/gitype/url"
+	"github.com/caixw/gitype/vars"
 )
 
 // Tag 描述标签信息
@@ -29,6 +30,9 @@ type Tag struct {
 	Keywords  string    `yaml:"-"`               // meta.keywords 标签的内容，如果为空，使用 Tag.Title 属性的值
 	Modified  time.Time `yaml:"-"`               // 所有文章中最迟修改的
 	Permalink string    `yaml:"-"`               // 唯一链接，指向第一页
+
+	// 用于搜索的副本内容，会全部转换成小写
+	SearchTitle string
 }
 
 func loadTags(path *path.Path) ([]*Tag, error) {
@@ -104,13 +108,15 @@ func (tag *Tag) sanitize() *helper.FieldError {
 
 	tag.Posts = make([]*Post, 0, 100)
 
-	tag.Permalink = url.Tag(tag.Slug, 1)
+	tag.Permalink = vars.TagURL(tag.Slug, 1)
 
 	tag.Keywords = tag.Title
 	if tag.Title != tag.Slug {
 		tag.Keywords += ","
 		tag.Keywords += tag.Slug
 	}
+
+	tag.SearchTitle = strings.ToLower(tag.Title)
 
 	return nil
 }

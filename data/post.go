@@ -15,7 +15,6 @@ import (
 
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
-	"github.com/caixw/gitype/url"
 	"github.com/caixw/gitype/vars"
 	"github.com/issue9/utils"
 )
@@ -24,6 +23,8 @@ import (
 const (
 	outdatedTypeCreated  = "created"  // 以创建时间作为对比
 	outdatedTypeModified = "modified" // 以修改时间作为对比
+	outdatedTypeNone     = "none"
+	outdatedTypeCustom   = "custom"
 )
 
 // 表示 Post.Order 的各类值
@@ -33,38 +34,40 @@ const (
 	orderDefault = "default" // 默认情况
 )
 
-// 描述过时文章的提示信息。
-//
-// 理论上把有关 outdatedConfig 的信息，直接在模板中对文章的创建时间戳进行比较，
-// 是比通过配置来比较会更加方便，也不会更任何的后期工作量。之所以把这个功能放在后端，
-// 而不是模板层面，是因为觉得模板应该只负责展示页面，而不是用于处理逻辑内容。
-type outdatedConfig struct {
-	Type     string        `yaml:"type"`     // 比较的类型，创建时间或是修改时间
-	Duration time.Duration `yaml:"duration"` // 超时的时间，可以使用 time.Duration 的字符串值
-	Content  string        `yaml:"content"`  // 提示的内容，普通文字，不能为 html
-}
-
 // Post 表示文章的信息
 type Post struct {
-	Slug       string    `yaml:"-"`               // 唯一名称
-	Title      string    `yaml:"title"`           // 标题
-	HTMLTitle  string    `yaml:"-"`               // 网页标题
-	Created    time.Time `yaml:"-"`               // 创建时间
-	Modified   time.Time `yaml:"-"`               // 修改时间
-	Tags       []*Tag    `yaml:"-"`               // 关联的标签
-	Summary    string    `yaml:"summary"`         // 摘要，同时也作为 meta.description 的内容
-	Content    string    `yaml:"-"`               // 内容
-	TagsString string    `yaml:"tags"`            // 关联标签的列表
-	Permalink  string    `yaml:"created"`         // 文章的唯一链接，同时当作 created 的原始值
-	Outdated   string    `yaml:"modified"`        // 已过时文章的提示信息，同时当作 modified 的原始值
-	Order      string    `yaml:"order,omitempty"` // 排序方式
-	Draft      bool      `yaml:"draft,omitempty"` // 是否为草稿，为 true，则不会加载该条数据
+	Slug       string    `yaml:"-"`                  // 唯一名称
+	Title      string    `yaml:"title"`              // 标题
+	HTMLTitle  string    `yaml:"modified"`           // 网页标题，同时当作 modified 的原始值
+	Created    time.Time `yaml:"-"`                  // 创建时间
+	Modified   time.Time `yaml:"-"`                  // 修改时间
+	Tags       []*Tag    `yaml:"-"`                  // 关联的标签和专题
+	Summary    string    `yaml:"summary"`            // 摘要，同时也作为 meta.description 的内容
+	Content    string    `yaml:"outdated,omitempty"` // 内容，同时也作为 outdated 的内容
+	TagsString string    `yaml:"tags"`               // 关联标签的列表
+	Permalink  string    `yaml:"created"`            // 文章的唯一链接，同时当作 created 的原始值
+	Outdated   *Outdated `yaml:"-"`                  // 已过时文章的提示信息
+	Order      string    `yaml:"order,omitempty"`    // 排序方式
+	Draft      bool      `yaml:"draft,omitempty"`    // 是否为草稿，为 true，则不会加载该条数据
 
 	// 以下内容不存在时，则会使用全局的默认选项
 	Author   *Author `yaml:"author,omitempty"`   // 作者
 	License  *Link   `yaml:"license,omitempty"`  // 版本信息
 	Template string  `yaml:"template,omitempty"` // 使用的模板
 	Keywords string  `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
+
+	// 用于搜索的副本内容，会全部转换成小写
+	SearchTitle   string
+	SearchContent string
+}
+
+// Outdated 表示每一篇文章的过时情况
+type Outdated struct {
+	Type string
+	Date time.Time
+	Days int
+
+	Content string // 自定义的提示内容
 }
 
 func loadPosts(path *path.Path) ([]*Post, error) {
@@ -130,16 +133,6 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 	// slug
 	post.Slug = slug
 
-	// 加载内容
-	data, err := ioutil.ReadFile(path.PostContentPath(slug))
-	if err != nil {
-		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "path"}
-	}
-	if len(data) == 0 {
-		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "content"}
-	}
-	post.Content = string(data)
-
 	// created
 	// permalink 还用作其它功能，需要首先解析其值
 	created, err := time.Parse(vars.DateFormat, post.Permalink)
@@ -149,16 +142,49 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 	post.Created = created
 
 	// permalink
-	post.Permalink = url.Post(post.Slug)
+	post.Permalink = vars.PostURL(post.Slug)
 
 	// modified
-	// outdated 还用作其它功能，需要首先解析其值
-	modified, err := time.Parse(vars.DateFormat, post.Outdated)
+	// HTMLTitle 还用作其它功能，需要首先解析其值
+	modified, err := time.Parse(vars.DateFormat, post.HTMLTitle)
 	if err != nil {
 		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "modified"}
 	}
 	post.Modified = modified
-	post.Outdated = ""
+	post.HTMLTitle = ""
+
+	// outdated，依赖 modified 和 created
+	// Content 还用作其它功能，需要首先解析其值
+	switch post.Content {
+	case outdatedTypeCreated, "":
+		post.Outdated = &Outdated{
+			Type: outdatedTypeCreated,
+			Date: created,
+		}
+	case outdatedTypeModified:
+		post.Outdated = &Outdated{
+			Type: outdatedTypeModified,
+			Date: modified,
+		}
+	case outdatedTypeNone:
+		post.Outdated = nil
+	default:
+		post.Outdated = &Outdated{
+			Type:    outdatedTypeCustom,
+			Content: post.Content,
+		}
+	}
+	post.Content = ""
+
+	// 加载内容
+	data, err := ioutil.ReadFile(path.PostContentPath(slug))
+	if err != nil {
+		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: err.Error(), Field: "path"}
+	}
+	if len(data) == 0 {
+		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "content"}
+	}
+	post.Content = string(data)
 
 	if len(post.Title) == 0 {
 		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "不能为空", Field: "title"}
@@ -181,9 +207,14 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 	// order
 	if len(post.Order) == 0 {
 		post.Order = orderDefault
-	} else if post.Order != orderDefault && post.Order != orderLast && post.Order != orderTop {
+	} else if post.Order != orderDefault &&
+		post.Order != orderLast &&
+		post.Order != orderTop {
 		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "无效的值", Field: "order"}
 	}
+
+	post.SearchContent = strings.ToLower(post.Content)
+	post.SearchTitle = strings.ToLower(post.Title)
 
 	return post, nil
 }
@@ -222,14 +253,23 @@ func sortPosts(posts []*Post) {
 	})
 }
 
-func (o *outdatedConfig) sanitize() *helper.FieldError {
-	if o.Type != outdatedTypeCreated && o.Type != outdatedTypeModified {
-		return &helper.FieldError{Message: "无效的值", Field: "outdated.type"}
+// CalcPostsOutdated 计算所有文章的 outdated 属性
+func (d *Data) CalcPostsOutdated() time.Time {
+	now := time.Now()
+
+	for _, post := range d.Posts {
+		if post.Outdated == nil {
+			continue
+		}
+
+		if post.Outdated.Type == outdatedTypeCreated ||
+			post.Outdated.Type == outdatedTypeModified {
+			outdated := now.Sub(post.Outdated.Date)
+			if outdated >= d.Outdated {
+				post.Outdated.Days = int(outdated.Hours()) / 24
+			}
+		}
 	}
 
-	if len(o.Content) == 0 {
-		return &helper.FieldError{Message: "不能为空", Field: "outdated.content"}
-	}
-
-	return nil
+	return now
 }

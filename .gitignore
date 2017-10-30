@@ -23,7 +23,7 @@ _testmain.go
 *.test
 *.prof
 
-# osx
+# macOS
 .DS_Store
 
 # vim

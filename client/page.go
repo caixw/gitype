@@ -7,7 +7,6 @@ package client
 import (
 	"io/ioutil"
 	"net/http"
-	"path/filepath"
 	"runtime"
 	"strconv"
 	"time"
@@ -52,7 +51,6 @@ type page struct {
 	Type        string       // 当前页面类型
 	Author      *data.Author // 作者
 	License     *data.Link   // 当前页的版本信息，可以为空
-	Theme       *data.Theme  // 当前页面所使用的主题
 
 	// 以下内容，仅在对应的页面才会有内容
 	Q        string          // 搜索关键字
@@ -68,6 +66,7 @@ type info struct {
 	AppURL     string // 程序官网
 	AppVersion string // 当前程序的版本号
 	GoVersion  string // 编译的 Go 版本号
+	Theme      *data.Theme
 
 	SiteName    string     // 网站名称
 	URL         string     // 网站地址，若是一个子目录，则需要包含该子目录
@@ -94,8 +93,9 @@ func (client *Client) newInfo() *info {
 		AppURL:     vars.URL,
 		AppVersion: vars.Version(),
 		GoVersion:  runtime.Version(),
+		Theme:      d.Theme,
 
-		SiteName:    d.Title,
+		SiteName:    d.SiteName,
 		URL:         d.URL,
 		Icon:        d.Icon,
 		Language:    d.Language,
@@ -137,7 +137,6 @@ func (client *Client) newInfo() *info {
 }
 
 func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *page {
-	theme := client.getRequestTheme(r)
 	d := client.data
 
 	return &page{
@@ -150,7 +149,6 @@ func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *
 		Type:     typ,
 		Author:   d.Author,
 		License:  d.License,
-		Theme:    theme,
 	}
 }
 
@@ -174,50 +172,12 @@ func (p *page) prevPage(url, text string) {
 func (p *page) render(name string) {
 	setContentType(p.response, p.client.data.Type)
 
-	cookie := &http.Cookie{
-		Name:     vars.CookieKeyTheme,
-		Value:    p.Theme.ID,
-		HttpOnly: vars.CookieHTTPOnly,
-	}
-	if p.Theme.ID != p.client.data.Themes[0].ID {
-		cookie.MaxAge = vars.CookieMaxAge
-	} else {
-		cookie.MaxAge = -1
-	}
-	cookie.Expires = time.Now().Add(time.Second * time.Duration(vars.CookieMaxAge))
-	http.SetCookie(p.response, cookie)
-
-	err := p.Theme.Template.ExecuteTemplate(p.response, name, p)
+	err := p.client.data.ExecuteTemplate(p.response, name, p)
 	if err != nil {
 		logs.Error(err)
 		p.client.renderError(p.response, p.request, http.StatusInternalServerError)
 		return
 	}
-}
-
-// 从客户端获取主题内容
-func (client *Client) getRequestTheme(r *http.Request) *data.Theme {
-	// 获取主题名称
-	name := r.FormValue(vars.CookieKeyTheme)
-	if len(name) == 0 {
-		cookie, err := r.Cookie(vars.CookieKeyTheme)
-		if err != nil && err != http.ErrNoCookie { // 有记录错误，但不退出
-			logs.Error(err)
-		}
-
-		if cookie != nil {
-			name = cookie.Value
-		}
-	}
-
-	// 查询对应名称的主题
-	for _, t := range client.data.Themes {
-		if name == t.ID {
-			return t
-		}
-	}
-
-	return client.data.Themes[0] // 不存在的情况下，返回默认主题
 }
 
 // 输出一个特定状态码下的错误页面。
@@ -231,9 +191,8 @@ func (client *Client) renderError(w http.ResponseWriter, r *http.Request, code i
 	logs.Debug("输出非正常状态码：", code)
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
-	theme := client.getRequestTheme(r)
 	filename := strconv.Itoa(code) + vars.TemplateExtension
-	path := filepath.Join(client.path.ThemesDir, theme.ID, filename)
+	path := client.path.ThemesPath(client.data.Theme.ID, filename)
 	if !utils.FileExists(path) {
 		logs.Debugf("模板文件 %s 不存在\n", path)
 		helper.StatusError(w, code)

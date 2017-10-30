@@ -35,7 +35,7 @@ var defaultPostMeta = &Post{
 	Title:      "about",
 	TagsString: "default",
 	Permalink:  time.Now().Format(vars.DateFormat),
-	Outdated:   time.Now().Format(vars.DateFormat),
+	HTMLTitle:  time.Now().Format(vars.DateFormat),
 	Order:      orderLast,
 }
 

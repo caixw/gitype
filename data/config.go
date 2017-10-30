@@ -15,30 +15,33 @@ import (
 	"github.com/issue9/is"
 )
 
-const contentTypeHTML = "text/html"
+const (
+	contentTypeHTML = "text/html"
 
-// 默认的语言，在配置文件中未指定时，使用此值，
-// 作为默认值，此值最好不要修改，若需要修改，
-// 则最好将诸如 tagTitle 等与语言相关的常量一起修改。
-const language = "zh-cmn-Hans"
+	// 默认的语言，在配置文件中未指定时，使用此值，
+	// 作为默认值，此值最好不要修改，若需要修改，
+	// 则最好将诸如 tagTitle 等与语言相关的常量一起修改。
+	language = "zh-cmn-Hans"
+)
 
 // 配置信息，用于从文件中读取
 type config struct {
-	Title           string    `yaml:"title"`
-	TitleSeparator  string    `yaml:"titleSeparator"`
-	Language        string    `yaml:"language"`
-	Subtitle        string    `yaml:"subtitle,omitempty"`
-	URL             string    `yaml:"url"`
-	Beian           string    `yaml:"beian,omitempty"`
-	Uptime          time.Time `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
-	PageSize        int       `yaml:"pageSize"`
-	LongDateFormat  string    `yaml:"longDateFormat"`
-	ShortDateFormat string    `yaml:"shortDateFormat"`
-	Type            string    `yaml:"type,omitempty"`
-	Icon            *Icon     `yaml:"icon,omitempty"`
-	Menus           []*Link   `yaml:"menus,omitempty"`
-	Author          *Author   `yaml:"author"`
-	License         *Link     `yaml:"license"`
+	Title           string        `yaml:"title"`
+	TitleSeparator  string        `yaml:"titleSeparator"`
+	Language        string        `yaml:"language"`
+	Subtitle        string        `yaml:"subtitle,omitempty"`
+	URL             string        `yaml:"url"` // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
+	Beian           string        `yaml:"beian,omitempty"`
+	Uptime          time.Time     `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	PageSize        int           `yaml:"pageSize"`
+	Type            string        `yaml:"type,omitempty"`
+	Icon            *Icon         `yaml:"icon,omitempty"`
+	Menus           []*Link       `yaml:"menus,omitempty"`
+	Author          *Author       `yaml:"author"`
+	License         *Link         `yaml:"license"`
+	LongDateFormat  string        `yaml:"longDateFormat"`
+	ShortDateFormat string        `yaml:"shortDateFormat"`
+	Outdated        time.Duration `yaml:"outdated"`
 
 	// 各个页面的一些自定义项，目前支持以下几个元素的修改：
 	// 1) html>head>title
@@ -46,9 +49,8 @@ type config struct {
 	// 3) html>head>meta.description
 	Pages map[string]*Page `yaml:"pages,omitempty"`
 
-	// 以下内容不存在于 Config 中
-	Outdated     *outdatedConfig   `yaml:"outdated,omitempty"`
-	Theme        string            `yaml:"theme"`
+	// 以下内容不直接存在于 Data 中
+	Theme        string            `yaml:"theme"` // 所用的主题，为目录名，而不是 theme.yaml 中的名称
 	UptimeFormat string            `yaml:"uptime"`
 	Archive      *archiveConfig    `yaml:"archive"`
 	RSS          *rssConfig        `yaml:"rss,omitempty"`
@@ -93,6 +95,10 @@ func (conf *config) sanitize() *helper.FieldError {
 		return &helper.FieldError{Message: err.Error(), Field: "uptimeFormat"}
 	}
 	conf.Uptime = t
+
+	if conf.Outdated < 0 {
+		return &helper.FieldError{Message: "必须大于 0", Field: "outdated"}
+	}
 
 	if len(conf.Type) == 0 {
 		conf.Type = contentTypeHTML
@@ -139,13 +145,6 @@ func (conf *config) sanitize() *helper.FieldError {
 		return err
 	}
 
-	// outdated
-	if conf.Outdated != nil {
-		if err := conf.Outdated.sanitize(); err != nil {
-			return err
-		}
-	}
-
 	// license
 	if conf.License == nil {
 		return &helper.FieldError{Message: "不能为空", Field: "license"}
@@ -183,7 +182,7 @@ func (conf *config) sanitize() *helper.FieldError {
 		}
 	}
 
-	// Menus
+	// menus
 	for index, link := range conf.Menus {
 		if err := link.sanitize(); err != nil {
 			err.Field = "Menus[" + strconv.Itoa(index) + "]." + err.Field

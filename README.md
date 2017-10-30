@@ -147,6 +147,7 @@ avatar    | string      | 头像
 :---------|:---------|:----------
 type      | string   | 比较方式，可以 created 或是 modified
 duration  | string   | 超过此时间值，显示提示信息，为一个可以被 time.ParseDuration 解析的字符串
+frequency | string   | 检查频率
 content   | string   | 提示内容，可以带上一个 %d 用于表示有多少天未被改过
 
 

@@ -5,13 +5,11 @@
 package client
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/caixw/gitype/data"
 	"github.com/caixw/gitype/helper"
-	"github.com/caixw/gitype/url"
 	"github.com/caixw/gitype/vars"
 	"github.com/issue9/logs"
 )
@@ -20,9 +18,9 @@ import (
 func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p := client.page(vars.PageSearch, w, r)
 
-	q := r.FormValue(vars.URLQueryQ)
+	q := r.FormValue(vars.URLQuerySearch)
 	if len(q) == 0 {
-		http.Redirect(w, r, url.Posts(1), http.StatusPermanentRedirect)
+		http.Redirect(w, r, vars.PostsURL(1), http.StatusPermanentRedirect)
 		return
 	}
 
@@ -41,7 +39,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p.Keywords = helper.ReplaceContent(pp.Keywords, q)
 	p.Description = helper.ReplaceContent(pp.Description, q)
 	p.Q = q
-	p.Canonical = client.data.BuildURL(url.Search(p.Q, page))
+	p.Canonical = client.data.BuildURL(vars.SearchURL(p.Q, page))
 
 	posts := search(q, client.data) // 获取所有的搜索结果
 	start, end, ok := client.getPostsRange(len(posts), page, w, r)
@@ -50,10 +48,10 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Posts = posts[start:end]
 	if page > 1 {
-		p.prevPage(url.Search(q, page-1), "")
+		p.prevPage(vars.SearchURL(q, page-1), "")
 	}
 	if end < len(posts) {
-		p.nextPage(url.Search(q, page+1), "")
+		p.nextPage(vars.SearchURL(q, page+1), "")
 	}
 
 	p.render(vars.PageSearch)
@@ -68,7 +66,7 @@ func search(q string, d *data.Data) []*data.Post {
 	}
 
 	typ := q[:index]
-	content := strings.ToLower(strings.TrimSpace(q[index+1:]))
+	content := strings.TrimSpace(q[index+1:])
 
 	switch typ {
 	case vars.SearchKeyTag:
@@ -86,9 +84,10 @@ func search(q string, d *data.Data) []*data.Post {
 // 按标签进行搜索
 func searchSeries(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
+	q = strings.ToLower(q)
 
 	for _, tag := range d.Series {
-		if strings.Contains(strings.ToLower(tag.Title), q) {
+		if strings.Contains(tag.SearchTitle, q) {
 			posts = append(posts, tag.Posts...)
 		}
 	}
@@ -99,9 +98,10 @@ func searchSeries(q string, d *data.Data) []*data.Post {
 // 按标签进行搜索
 func searchTag(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
+	q = strings.ToLower(q)
 
 	for _, tag := range d.Tags {
-		if strings.Contains(strings.ToLower(tag.Title), q) {
+		if strings.Contains(tag.SearchTitle, q) {
 			posts = append(posts, tag.Posts...)
 		}
 	}
@@ -112,23 +112,24 @@ func searchTag(q string, d *data.Data) []*data.Post {
 // 仅搜索标题
 func searchTitle(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
+	q = strings.ToLower(q)
 
 	for _, post := range d.Posts {
-		if strings.Contains(strings.ToLower(post.Title), q) {
+		if strings.Contains(post.SearchTitle, q) {
 			posts = append(posts, post)
 		}
 	}
 
-	fmt.Println(len(posts))
 	return posts
 }
 
 // 默认情况下，搜索标题和内容
 func searchDefault(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
+	q = strings.ToLower(q)
 
 	for _, post := range d.Posts {
-		if strings.Contains(post.Title, q) || strings.Contains(post.Content, q) {
+		if strings.Contains(post.SearchTitle, q) || strings.Contains(post.SearchContent, q) {
 			posts = append(posts, post)
 		}
 	}

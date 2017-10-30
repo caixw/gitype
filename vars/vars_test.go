@@ -21,8 +21,8 @@ func TestTemplateExtension(t *testing.T) {
 func TestURLSuffix(t *testing.T) {
 	a := assert.New(t)
 
-	a.Equal(URLSuffix[0], '.')
-	a.True(len(URLSuffix) > 2)
+	a.Equal(urlSuffix[0], '.')
+	a.True(len(urlSuffix) > 2)
 }
 
 func TestURL(t *testing.T) {

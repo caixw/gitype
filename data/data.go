@@ -6,7 +6,6 @@
 package data
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -20,30 +19,28 @@ type Data struct {
 	path    *path.Path
 	Created time.Time
 
-	Title    string           // 网站标题
-	Language string           // 语言标记，比如 zh-cmn-Hans
+	// 直接从 config 中继承过来的变量
+	SiteName string
 	Subtitle string           // 网站副标题
-	URL      string           // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
+	Language string           // 语言标记，比如 zh-cmn-Hans
+	URL      string           // 网站的域名
 	Beian    string           // 备案号
 	Uptime   time.Time        // 上线时间
 	PageSize int              // 每页显示的数量
-	Type     string           // 所有页面的 mime type 类型，默认使用
+	Type     string           // 页面的 mime type 类型
 	Icon     *Icon            // 程序默认的图标
 	Menus    []*Link          // 导航菜单
 	Author   *Author          // 默认作者信息
 	License  *Link            // 默认版权信息
 	Pages    map[string]*Page // 各个页面的自定义内容
-
-	longDateFormat  string // 长时间的显示格式
-	shortDateFormat string // 短时间的显示格式
-	outdated        *outdatedConfig
+	Outdated time.Duration
 
 	Tags     []*Tag
 	Series   []*Tag
 	Links    []*Link
 	Posts    []*Post
 	Archives []*Archive
-	Themes   []*Theme // 所有可用主题，第一个元素为默认主题
+	Theme    *Theme // 当前主题
 
 	Opensearch *Feed
 	Sitemap    *Feed
@@ -73,7 +70,7 @@ func Load(path *path.Path) (*Data, error) {
 		return nil, err
 	}
 
-	themes, err := loadThemes(path)
+	theme, err := findTheme(path, conf)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +79,7 @@ func Load(path *path.Path) (*Data, error) {
 		path:    path,
 		Created: time.Now(),
 
-		Title:    conf.Title,
+		SiteName: conf.Title,
 		Language: conf.Language,
 		Subtitle: conf.Subtitle,
 		URL:      conf.URL,
@@ -93,15 +90,12 @@ func Load(path *path.Path) (*Data, error) {
 		Icon:     conf.Icon,
 		Menus:    conf.Menus,
 		Pages:    conf.Pages,
+		Outdated: conf.Outdated,
 
-		longDateFormat:  conf.LongDateFormat,
-		shortDateFormat: conf.ShortDateFormat,
-		outdated:        conf.Outdated,
-
-		Tags:   tags,
-		Links:  links,
-		Posts:  posts,
-		Themes: themes,
+		Tags:  tags,
+		Links: links,
+		Posts: posts,
+		Theme: theme,
 	}
 
 	if err := d.sanitize(conf); err != nil {
@@ -117,7 +111,7 @@ func Load(path *path.Path) (*Data, error) {
 
 // 对各个数据再次进行检测，主要是一些关联数据的相互初始化
 func (d *Data) sanitize(conf *config) error {
-	if err := d.sanitizeThemes(conf); err != nil {
+	if err := d.compileTemplate(); err != nil {
 		return err
 	}
 
@@ -141,6 +135,14 @@ func (d *Data) sanitize(conf *config) error {
 		if err := d.attachPostTag(post, conf); err != nil {
 			return err
 		}
+	}
+
+	if d.Outdated == 0 {
+		for _, post := range d.Posts {
+			post.Outdated = nil
+		}
+	} else {
+		d.CalcPostsOutdated()
 	}
 
 	// 过滤空标签
@@ -207,30 +209,4 @@ func (d *Data) buildData(conf *config) (err error) {
 // BuildURL 生成一个带域名的地址
 func (d *Data) BuildURL(path string) string {
 	return d.URL + path
-}
-
-// Outdated 计算指定文章的 Outdated 信息。
-// Outdated 是一个动态的值（其中的天数会变化），必须是在请求时生成。
-func (d *Data) Outdated(post *Post) {
-	if d.outdated == nil {
-		return
-	}
-
-	now := time.Now()
-	var outdated time.Duration
-
-	switch d.outdated.Type {
-	case outdatedTypeCreated:
-		outdated = now.Sub(post.Created)
-	case outdatedTypeModified:
-		outdated = now.Sub(post.Modified)
-	default:
-		// 理论上此段代码永远不会运行，除非代码中直接修改了 Data.outdated.type 的值，
-		// 因为在 outdatedConfig.sanitize 中已经作了判断。
-		panic("无效的 config.yaml/outdated.type")
-	}
-
-	if outdated >= d.outdated.Duration {
-		post.Outdated = fmt.Sprintf(d.outdated.Content, int64(outdated.Hours())/24)
-	}
 }

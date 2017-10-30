@@ -4,9 +4,7 @@
 
 package data
 
-import (
-	"github.com/caixw/gitype/vars"
-)
+import "github.com/caixw/gitype/vars"
 
 // 默认标题的定义
 const (
