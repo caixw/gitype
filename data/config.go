@@ -26,22 +26,22 @@ const (
 
 // 配置信息，用于从文件中读取
 type config struct {
-	Title           string    `yaml:"title"`
-	TitleSeparator  string    `yaml:"titleSeparator"`
-	Language        string    `yaml:"language"`
-	Subtitle        string    `yaml:"subtitle,omitempty"`
-	URL             string    `yaml:"url"` // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
-	Beian           string    `yaml:"beian,omitempty"`
-	Uptime          time.Time `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
-	PageSize        int       `yaml:"pageSize"`
-	Type            string    `yaml:"type,omitempty"`
-	Icon            *Icon     `yaml:"icon,omitempty"`
-	Menus           []*Link   `yaml:"menus,omitempty"`
-	Author          *Author   `yaml:"author"`
-	License         *Link     `yaml:"license"`
-	LongDateFormat  string    `yaml:"longDateFormat"`
-	ShortDateFormat string    `yaml:"shortDateFormat"`
-	Outdated        *Outdated `yaml:"outdated,omitempty"` // 为空表示不需要该功能
+	Title           string        `yaml:"title"`
+	TitleSeparator  string        `yaml:"titleSeparator"`
+	Language        string        `yaml:"language"`
+	Subtitle        string        `yaml:"subtitle,omitempty"`
+	URL             string        `yaml:"url"` // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
+	Beian           string        `yaml:"beian,omitempty"`
+	Uptime          time.Time     `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	PageSize        int           `yaml:"pageSize"`
+	Type            string        `yaml:"type,omitempty"`
+	Icon            *Icon         `yaml:"icon,omitempty"`
+	Menus           []*Link       `yaml:"menus,omitempty"`
+	Author          *Author       `yaml:"author"`
+	License         *Link         `yaml:"license"`
+	LongDateFormat  string        `yaml:"longDateFormat"`
+	ShortDateFormat string        `yaml:"shortDateFormat"`
+	Outdated        time.Duration `yaml:"outdated"`
 
 	// 各个页面的一些自定义项，目前支持以下几个元素的修改：
 	// 1) html>head>title
@@ -96,6 +96,10 @@ func (conf *config) sanitize() *helper.FieldError {
 	}
 	conf.Uptime = t
 
+	if conf.Outdated < 0 {
+		return &helper.FieldError{Message: "必须大于 0", Field: "outdated"}
+	}
+
 	if len(conf.Type) == 0 {
 		conf.Type = contentTypeHTML
 	}
@@ -139,13 +143,6 @@ func (conf *config) sanitize() *helper.FieldError {
 	}
 	if err := conf.Archive.sanitize(); err != nil {
 		return err
-	}
-
-	// outdated
-	if conf.Outdated != nil {
-		if err := conf.Outdated.sanitize(); err != nil {
-			return err
-		}
 	}
 
 	// license
