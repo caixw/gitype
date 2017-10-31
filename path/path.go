@@ -35,8 +35,8 @@ type Path struct {
 
 // New 声明一个新的 Path
 func New(root string) *Path {
-	dataDir := filepath.Join(root, vars.DataDir)
-	confDir := filepath.Join(root, vars.ConfDir)
+	dataDir := filepath.Join(root, vars.DataFolderName)
+	confDir := filepath.Join(root, vars.ConfFolderName)
 
 	p := &Path{
 		Root: root,
@@ -44,10 +44,10 @@ func New(root string) *Path {
 		DataDir: dataDir,
 		ConfDir: confDir,
 
-		PostsDir:  filepath.Join(dataDir, vars.PostsDir),
-		ThemesDir: filepath.Join(dataDir, vars.ThemesDir),
-		MetaDir:   filepath.Join(dataDir, vars.MetaDir),
-		RawsDir:   filepath.Join(dataDir, vars.RawsDir),
+		PostsDir:  filepath.Join(dataDir, vars.PostsFolderName),
+		ThemesDir: filepath.Join(dataDir, vars.ThemesFolderName),
+		MetaDir:   filepath.Join(dataDir, vars.MetaFolderName),
+		RawsDir:   filepath.Join(dataDir, vars.RawsFolderName),
 	}
 
 	p.AppConfigFile = p.ConfPath(vars.AppConfigFilename)

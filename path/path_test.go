@@ -15,7 +15,7 @@ func TestPath(t *testing.T) {
 	a := assert.New(t)
 
 	p := New("/")
-	a.Equal(p.ConfDir, "/"+vars.ConfDir)
+	a.Equal(p.ConfDir, "/"+vars.ConfFolderName)
 
 	// ThemesPath
 	a.Equal(p.ThemesPath("def", "//style", "style.png"), "/data/themes/def/style/style.png")

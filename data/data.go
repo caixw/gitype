@@ -18,8 +18,13 @@ import (
 type Data struct {
 	path    *path.Path
 	Created time.Time
+
+	// Updated 数据的更新时间，诸如 outdatedServer 等服务，
+	// 会定时更新数据，Updated 即记录这些更新的时间。
 	Updated time.Time
-	Etag    string
+
+	// Etag 表示 根据 Updated 生成的 etag 字符串
+	Etag string
 
 	// 直接从 config 中继承过来的变量
 	SiteName string

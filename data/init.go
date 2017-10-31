@@ -36,7 +36,7 @@ var defaultPostMeta = &Post{
 	TagsString: "default",
 	Permalink:  time.Now().Format(vars.DateFormat),
 	HTMLTitle:  time.Now().Format(vars.DateFormat),
-	Order:      orderLast,
+	State:      stateLast,
 }
 
 var defaultConfig = &config{

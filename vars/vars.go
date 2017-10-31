@@ -42,13 +42,13 @@ const (
 
 // 目录名称的定义
 const (
-	DataDir = "data"
-	ConfDir = "conf"
+	DataFolderName = "data"
+	ConfFolderName = "conf"
 
-	PostsDir  = "posts"
-	ThemesDir = "themes"
-	MetaDir   = "meta"
-	RawsDir   = "raws"
+	PostsFolderName  = "posts"
+	ThemesFolderName = "themes"
+	MetaFolderName   = "meta"
+	RawsFolderName   = "raws"
 )
 
 // 文件名的定义

@@ -21,40 +21,57 @@ import (
 
 // 文章是否过时的比较方式
 const (
-	outdatedTypeCreated  = "created"  // 以创建时间作为对比
-	outdatedTypeModified = "modified" // 以修改时间作为对比
+	outdatedTypeCreated  = "created"
+	outdatedTypeModified = "modified"
 	outdatedTypeNone     = "none"
 	outdatedTypeCustom   = "custom"
 )
 
-// 表示 Post.Order 的各类值
+// 表示 Post.State 的各类值
 const (
-	orderTop     = "top"     // 置顶
-	orderLast    = "last"    // 放在尾部
-	orderDefault = "default" // 默认情况
+	stateTop     = "top"     // 置顶
+	stateLast    = "last"    // 放在尾部
+	stateDefault = "default" // 默认值
+	stateDraft   = "draft"   // 表示为草稿，不会加载此条数据
 )
 
 // Post 表示文章的信息
 type Post struct {
-	Slug       string    `yaml:"-"`                  // 唯一名称
-	Title      string    `yaml:"title"`              // 标题
-	HTMLTitle  string    `yaml:"modified"`           // 网页标题，同时当作 modified 的原始值
-	Created    time.Time `yaml:"-"`                  // 创建时间
-	Modified   time.Time `yaml:"-"`                  // 修改时间
-	Tags       []*Tag    `yaml:"-"`                  // 关联的标签和专题
-	Summary    string    `yaml:"summary"`            // 摘要，同时也作为 meta.description 的内容
-	Content    string    `yaml:"outdated,omitempty"` // 内容，同时也作为 outdated 的内容
-	TagsString string    `yaml:"tags"`               // 关联标签的列表
-	Permalink  string    `yaml:"created"`            // 文章的唯一链接，同时当作 created 的原始值
-	Outdated   *Outdated `yaml:"-"`                  // 判断文章是否已经过时的依据
-	Order      string    `yaml:"order,omitempty"`    // 排序方式
-	Draft      bool      `yaml:"draft,omitempty"`    // 是否为草稿，为 true，则不会加载该条数据
+	Slug      string    `yaml:"-"`                  // 唯一名称
+	Permalink string    `yaml:"created"`            // 文章的唯一链接，同时当作 created 的原始值
+	Title     string    `yaml:"title"`              // 标题
+	HTMLTitle string    `yaml:"modified"`           // 网页标题，同时当作 modified 的原始值
+	Created   time.Time `yaml:"-"`                  // 创建时间
+	Modified  time.Time `yaml:"-"`                  // 修改时间
+	Summary   string    `yaml:"summary"`            // 摘要，同时也作为 meta.description 的内容
+	Content   string    `yaml:"outdated,omitempty"` // 内容，同时也作为 outdated 的内容
+
+	// 关联的标签列表，以半角逗号分隔的字符串，
+	// 标签名为各个标签的 slug 值，可以保证其唯一。
+	// 最终会被解析到 Tags 中，TagString 会被废弃。
+	TagsString string `yaml:"tags"`
+	Tags       []*Tag `yaml:"-"`
+
+	// Outdated 用户记录文章的一个过时情况，可以由以下几种值构成：
+	// - created 表示该篇文章以创建时间来计算其是否已经过时，该值也是默认值；
+	// - modified 表示该文章以其修改时间来计算其是否已经过时；
+	// - none 表示该文章永远不会过时；
+	// - 其它任意非空值，表示直接以该字符串当作过时信息展示给用语.
+	// yaml 内容由 Content 字段读入。
+	Outdated *Outdated `yaml:"-"`
+
+	// State 表示文章的状态，有以下四种值：
+	// - top 表示文章被置顶；
+	// - last 表示文章会被放置在最后；
+	// - draft 表示这是一篇草稿，并不会被加地到内存中；
+	// - default 表示默认情况，也可以为空，按默认的方式进行处理。
+	State string `yaml:"state,omitempty"`
 
 	// 以下内容不存在时，则会使用全局的默认选项
-	Author   *Author `yaml:"author,omitempty"`   // 作者
-	License  *Link   `yaml:"license,omitempty"`  // 版本信息
-	Template string  `yaml:"template,omitempty"` // 使用的模板
-	Keywords string  `yaml:"keywords,omitempty"` // meta.keywords 标签的内容，如果为空，使用 tags
+	Author   *Author `yaml:"author,omitempty"`
+	License  *Link   `yaml:"license,omitempty"`
+	Template string  `yaml:"template,omitempty"`
+	Keywords string  `yaml:"keywords,omitempty"`
 
 	// 用于搜索的副本内容，会全部转换成小写
 	SearchTitle   string
@@ -107,7 +124,7 @@ func loadPosts(path *path.Path) ([]*Post, error) {
 			return nil, err
 		}
 
-		if !post.Draft {
+		if post.State != stateDraft {
 			posts = append(posts, post)
 		}
 	}
@@ -126,7 +143,7 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 	if err := helper.LoadYAMLFile(path.PostMetaPath(slug), post); err != nil {
 		return nil, err
 	}
-	if post.Draft {
+	if post.State == stateDraft {
 		return post, nil
 	}
 
@@ -204,12 +221,12 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 		post.Template = vars.PagePost
 	}
 
-	// order
-	if len(post.Order) == 0 {
-		post.Order = orderDefault
-	} else if post.Order != orderDefault &&
-		post.Order != orderLast &&
-		post.Order != orderTop {
+	// state
+	if len(post.State) == 0 {
+		post.State = stateDefault
+	} else if post.State != stateDefault &&
+		post.State != stateLast &&
+		post.State != stateTop {
 		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "无效的值", Field: "order"}
 	}
 
@@ -243,9 +260,9 @@ func checkPostsDup(posts []*Post) error {
 func sortPosts(posts []*Post) {
 	sort.SliceStable(posts, func(i, j int) bool {
 		switch {
-		case (posts[i].Order == orderTop) || (posts[j].Order == orderLast):
+		case (posts[i].State == stateTop) || (posts[j].State == stateLast):
 			return true
-		case (posts[i].Order == orderLast) || (posts[j].Order == orderTop):
+		case (posts[i].State == stateLast) || (posts[j].State == stateTop):
 			return false
 		default:
 			return posts[i].Created.After(posts[j].Created)

@@ -10,6 +10,11 @@ import (
 	"github.com/caixw/gitype/vars"
 )
 
+// 定时更新所有文章的过时信息的一个服务。
+//
+// 文章一旦过时，则提示信息中的过时天数会每天变化，
+// outdatedServer 即为按一定时间启动的定时器，
+// 启动频率可以通过 vars.OutdatedFrequency 进行调整。
 type outdatedServer struct {
 	postsTicker     *time.Ticker
 	postsTickerDone chan bool
@@ -40,21 +45,19 @@ func (d *Data) initOutdatedServer(conf *config) {
 	d.outdatedServer = srv
 
 	d.updateOutdated()
-	d.runTickerServer()
+	go d.runTickerServer()
 }
 
 func (d *Data) runTickerServer() {
-	go func() {
-		srv := d.outdatedServer
-		for {
-			select {
-			case <-srv.postsTicker.C:
-				d.updateOutdated()
-			case <-srv.postsTickerDone:
-				return
-			}
+	srv := d.outdatedServer
+	for {
+		select {
+		case <-srv.postsTicker.C:
+			d.updateOutdated()
+		case <-srv.postsTickerDone:
+			return
 		}
-	}()
+	}
 }
 
 func (srv *outdatedServer) stop() {

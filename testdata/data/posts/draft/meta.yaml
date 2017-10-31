@@ -1,7 +1,7 @@
 # post1
 
 title: draft
-draft: true
+state: draft
 author:
     name: name
     email: email
