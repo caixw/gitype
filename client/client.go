@@ -11,7 +11,6 @@ import (
 
 	"github.com/caixw/gitype/data"
 	"github.com/caixw/gitype/path"
-	"github.com/caixw/gitype/vars"
 	"github.com/issue9/mux"
 )
 
@@ -24,11 +23,6 @@ type Client struct {
 	data     *data.Data
 	patterns []string // 记录所有的路由项，方便释放时删除
 	info     *info
-	updated  time.Time // 最后更新时间
-	etag     string
-
-	postsTicker     *time.Ticker
-	postsTickerDone chan bool
 }
 
 // New 声明一个新的 Client 实例
@@ -39,11 +33,9 @@ func New(path *path.Path, mux *mux.Mux) (*Client, error) {
 	}
 
 	client := &Client{
-		path:    path,
-		mux:     mux,
-		data:    d,
-		updated: d.Created,
-		etag:    vars.Etag(d.Created),
+		path: path,
+		mux:  mux,
+		data: d,
 	}
 
 	client.info = client.newInfo()
@@ -55,14 +47,6 @@ func New(path *path.Path, mux *mux.Mux) (*Client, error) {
 
 	if err := client.initRoutes(); err != nil {
 		return nil, err
-	}
-
-	// 一切数据加载都没问题之后，开始运行更新服务。
-	// 只有注册路由成功了，定时器开始工作才有意义。
-	if d.Outdated != 0 {
-		client.postsTicker = time.NewTicker(vars.OutdatedFrequency)
-		client.postsTickerDone = make(chan bool, 1)
-		client.runUpdateOutdatedServer()
 	}
 
 	return client, nil
@@ -80,10 +64,8 @@ func (client *Client) Free() {
 	}
 	client.patterns = client.patterns[:0]
 
-	if client.postsTicker != nil {
-		client.postsTicker.Stop()
-		client.postsTickerDone <- true
-	}
+	// 释放 data 数据
+	client.data.Free()
 }
 
 func (client *Client) addFeed(feed *data.Feed) {
@@ -96,29 +78,4 @@ func (client *Client) addFeed(feed *data.Feed) {
 		setContentType(w, feed.Type)
 		w.Write(feed.Content)
 	}))
-}
-
-func (client *Client) runUpdateOutdatedServer() {
-	go func() {
-		for {
-			select {
-			case <-client.postsTicker.C:
-				client.updateOutdated()
-			case <-client.postsTickerDone:
-				return
-			}
-		}
-	}()
-}
-
-func (client *Client) updateOutdated() {
-	d := client.data
-
-	if d.Outdated == 0 {
-		return
-	}
-
-	now := d.CalcPostsOutdated()
-	client.updated = now
-	client.etag = vars.Etag(now)
 }

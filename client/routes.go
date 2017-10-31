@@ -246,12 +246,12 @@ func (client *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
 		logs.Infof("%s: %s", r.UserAgent(), r.URL) // 输出访问日志
 
 		// 直接根据整个博客的最后更新时间来确认 etag
-		if r.Header.Get("If-None-Match") == client.etag {
+		if r.Header.Get("If-None-Match") == client.data.Etag() {
 			logs.Infof("304: %s", r.URL)
 			w.WriteHeader(http.StatusNotModified)
 			return
 		}
-		w.Header().Set("Etag", client.etag)
+		w.Header().Set("Etag", client.data.Etag())
 		w.Header().Set("Content-Language", client.data.Language)
 		compress.New(f, logs.ERROR()).ServeHTTP(w, r)
 	}

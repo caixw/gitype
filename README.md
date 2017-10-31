@@ -22,8 +22,8 @@ gitype [![Build Status](https://travis-ci.org/caixw/gitype.svg?branch=nosql)](ht
 
 1. 下载代码：`go get github.com/caixw/gitype`；
 1. 运行 `scripts/build.sh` 编译代码（也可以直接执行 `go build` 编译，除了版本号，并无其它差别。）；
-1. 执行 `gitype -init=to_path` 输出初始的数据内容；
-1. 运行 `gitype -appdir=to_path`。
+1. 执行 `gitype -init=/to/path` 输出初始的数据内容；
+1. 运行 `gitype -appdir=/to/path`。
 
 *./scripts 目录下包含了部分平台下的转换成守护进程的脚本*
 *./testdata 也是一个完整的工作目录，如果不想执行 `-init` 命令初始化的话，也可以直接复制 ./testdata 的内容。*

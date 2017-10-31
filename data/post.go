@@ -46,7 +46,7 @@ type Post struct {
 	Content    string    `yaml:"outdated,omitempty"` // 内容，同时也作为 outdated 的内容
 	TagsString string    `yaml:"tags"`               // 关联标签的列表
 	Permalink  string    `yaml:"created"`            // 文章的唯一链接，同时当作 created 的原始值
-	Outdated   *Outdated `yaml:"-"`                  // 已过时文章的提示信息
+	Outdated   *Outdated `yaml:"-"`                  // 判断文章是否已经过时的依据
 	Order      string    `yaml:"order,omitempty"`    // 排序方式
 	Draft      bool      `yaml:"draft,omitempty"`    // 是否为草稿，为 true，则不会加载该条数据
 
@@ -251,25 +251,4 @@ func sortPosts(posts []*Post) {
 			return posts[i].Created.After(posts[j].Created)
 		}
 	})
-}
-
-// CalcPostsOutdated 计算所有文章的 outdated 属性
-func (d *Data) CalcPostsOutdated() time.Time {
-	now := time.Now()
-
-	for _, post := range d.Posts {
-		if post.Outdated == nil {
-			continue
-		}
-
-		if post.Outdated.Type == outdatedTypeCreated ||
-			post.Outdated.Type == outdatedTypeModified {
-			outdated := now.Sub(post.Outdated.Date)
-			if outdated >= d.Outdated {
-				post.Outdated.Days = int(outdated.Hours()) / 24
-			}
-		}
-	}
-
-	return now
 }

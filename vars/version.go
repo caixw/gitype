@@ -14,7 +14,7 @@ package vars
 //
 // Version() 函数返回的值，并不总是与 mainVersion 相同，
 // 有可能还有编译日期等额外内容。
-const mainVersion = "2.11.0-alpha"
+const mainVersion = "2.11.0-beta"
 
 var (
 	buildDate  string

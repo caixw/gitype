@@ -33,7 +33,8 @@ type Data struct {
 	Author   *Author          // 默认作者信息
 	License  *Link            // 默认版权信息
 	Pages    map[string]*Page // 各个页面的自定义内容
-	Outdated time.Duration
+
+	outdatedServer *outdatedServer
 
 	Tags     []*Tag
 	Series   []*Tag
@@ -90,7 +91,6 @@ func Load(path *path.Path) (*Data, error) {
 		Icon:     conf.Icon,
 		Menus:    conf.Menus,
 		Pages:    conf.Pages,
-		Outdated: conf.Outdated,
 
 		Tags:  tags,
 		Links: links,
@@ -106,7 +106,15 @@ func Load(path *path.Path) (*Data, error) {
 		return nil, err
 	}
 
+	d.newOutdatedServer(conf)
+	d.outdatedServer.updateOutdated() // 更新 outdated
+
 	return d, nil
+}
+
+// Free 释放数据内容
+func (d *Data) Free() {
+	d.outdatedServer.stop()
 }
 
 // 对各个数据再次进行检测，主要是一些关联数据的相互初始化
@@ -135,14 +143,6 @@ func (d *Data) sanitize(conf *config) error {
 		if err := d.attachPostTag(post, conf); err != nil {
 			return err
 		}
-	}
-
-	if d.Outdated == 0 {
-		for _, post := range d.Posts {
-			post.Outdated = nil
-		}
-	} else {
-		d.CalcPostsOutdated()
 	}
 
 	// 过滤空标签
