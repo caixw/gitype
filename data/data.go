@@ -18,6 +18,8 @@ import (
 type Data struct {
 	path    *path.Path
 	Created time.Time
+	Updated time.Time
+	Etag    string
 
 	// 直接从 config 中继承过来的变量
 	SiteName string
@@ -76,9 +78,10 @@ func Load(path *path.Path) (*Data, error) {
 		return nil, err
 	}
 
+	now := time.Now()
 	d := &Data{
 		path:    path,
-		Created: time.Now(),
+		Created: now,
 
 		SiteName: conf.Title,
 		Language: conf.Language,
@@ -108,12 +111,19 @@ func Load(path *path.Path) (*Data, error) {
 
 	d.initOutdatedServer(conf)
 
+	d.setUpdated(now)
 	return d, nil
 }
 
 // Free 释放数据内容
 func (d *Data) Free() {
 	d.outdatedServer.stop()
+}
+
+// 调整更新时间
+func (d *Data) setUpdated(t time.Time) {
+	d.Updated = t
+	d.Etag = vars.Etag(t)
 }
 
 // 对各个数据再次进行检测，主要是一些关联数据的相互初始化

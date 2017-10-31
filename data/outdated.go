@@ -11,8 +11,6 @@ import (
 )
 
 type outdatedServer struct {
-	updated         time.Time // 最后更新时间
-	etag            string
 	postsTicker     *time.Ticker
 	postsTickerDone chan bool
 	duration        time.Duration
@@ -25,7 +23,6 @@ func (d *Data) initOutdatedServer(conf *config) {
 	}
 
 	srv := &outdatedServer{
-		updated:         time.Now(),
 		postsTicker:     time.NewTicker(vars.OutdatedFrequency),
 		postsTickerDone: make(chan bool, 1),
 		duration:        conf.Outdated,
@@ -40,18 +37,19 @@ func (d *Data) initOutdatedServer(conf *config) {
 		srv.posts = append(srv.posts, post)
 	}
 
-	srv.updateOutdated()
-	srv.run()
-
 	d.outdatedServer = srv
+
+	d.updateOutdated()
+	d.runTickerServer()
 }
 
-func (srv *outdatedServer) run() {
+func (d *Data) runTickerServer() {
 	go func() {
+		srv := d.outdatedServer
 		for {
 			select {
 			case <-srv.postsTicker.C:
-				srv.updateOutdated()
+				d.updateOutdated()
 			case <-srv.postsTickerDone:
 				return
 			}
@@ -66,10 +64,8 @@ func (srv *outdatedServer) stop() {
 	}
 }
 
-func (srv *outdatedServer) updateOutdated() {
-	if srv.duration == 0 {
-		return
-	}
+func (d *Data) updateOutdated() {
+	srv := d.outdatedServer
 
 	now := time.Now()
 	for _, post := range srv.posts {
@@ -84,16 +80,5 @@ func (srv *outdatedServer) updateOutdated() {
 		}
 	}
 
-	srv.updated = now
-	srv.etag = vars.Etag(now)
-}
-
-// Updated 最后的更新时间
-func (d *Data) Updated() time.Time {
-	return d.outdatedServer.updated
-}
-
-// Etag 根据更新时间生成的 etag 值
-func (d *Data) Etag() string {
-	return d.outdatedServer.etag
+	d.setUpdated(now)
 }
