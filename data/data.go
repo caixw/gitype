@@ -106,8 +106,7 @@ func Load(path *path.Path) (*Data, error) {
 		return nil, err
 	}
 
-	d.newOutdatedServer(conf)
-	d.outdatedServer.updateOutdated() // 更新 outdated
+	d.initOutdatedServer(conf)
 
 	return d, nil
 }

@@ -19,7 +19,7 @@ type outdatedServer struct {
 	posts           []*Post
 }
 
-func (d *Data) newOutdatedServer(conf *config) {
+func (d *Data) initOutdatedServer(conf *config) {
 	if conf.Outdated == 0 {
 		return
 	}
@@ -40,12 +40,10 @@ func (d *Data) newOutdatedServer(conf *config) {
 		srv.posts = append(srv.posts, post)
 	}
 
-	d.outdatedServer = srv
-}
+	srv.updateOutdated()
+	srv.run()
 
-// StartOutdatedService 开始 Outdated 更新服务
-func (d *Data) StartOutdatedService() {
-	d.outdatedServer.run()
+	d.outdatedServer = srv
 }
 
 func (srv *outdatedServer) run() {
