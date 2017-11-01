@@ -85,9 +85,7 @@ type info struct {
 	Menus       []*data.Link // 导航菜单
 }
 
-func (client *Client) newInfo() *info {
-	d := client.data
-
+func newInfo(d *data.Data) *info {
 	info := &info{
 		AppName:    vars.Name,
 		AppURL:     vars.URL,

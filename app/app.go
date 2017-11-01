@@ -77,18 +77,15 @@ func (a *app) serveHTTP(h http.Handler) {
 
 // 重新加载数据
 func (a *app) reload() error {
-	if a.client != nil { // 释放旧数据
-		a.client.Free()
-	}
-
-	// 生成新的数据
 	c, err := client.New(a.path, a.mux)
 	if err != nil {
 		return err
 	}
 
-	// 只有生成成功了，才替换老数据
+	// 只有新数据生成成功了，才会翻译旧数据，并加载新数据到路由中。
+	if a.client != nil {
+		a.client.Free()
+	}
 	a.client = c
-
-	return nil
+	return a.client.Mount()
 }

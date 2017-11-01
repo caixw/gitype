@@ -36,20 +36,19 @@ func New(path *path.Path, mux *mux.Mux) (*Client, error) {
 		path: path,
 		mux:  mux,
 		data: d,
-	}
-
-	client.info = client.newInfo()
-
-	client.addFeed(client.data.RSS)
-	client.addFeed(client.data.Atom)
-	client.addFeed(client.data.Sitemap)
-	client.addFeed(client.data.Opensearch)
-
-	if err := client.initRoutes(); err != nil {
-		return nil, err
+		info: newInfo(d),
 	}
 
 	return client, nil
+}
+
+// Mount 挂载路由
+func (client *Client) Mount() error {
+	if err := client.initFeedRoutes(); err != nil {
+		return err
+	}
+
+	return client.initRoutes()
 }
 
 // Created 返回当前数据的创建时间
@@ -68,14 +67,23 @@ func (client *Client) Free() {
 	client.data.Free()
 }
 
-func (client *Client) addFeed(feed *data.Feed) {
-	if feed == nil {
-		return
+func (client *Client) initFeedRoutes() (err error) {
+	handle := func(feed *data.Feed) {
+		if err != nil || feed == nil {
+			return
+		}
+
+		client.patterns = append(client.patterns, feed.URL)
+		err = client.mux.HandleFunc(feed.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+			setContentType(w, feed.Type)
+			w.Write(feed.Content)
+		}), http.MethodGet)
 	}
 
-	client.patterns = append(client.patterns, feed.URL)
-	client.mux.GetFunc(feed.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-		setContentType(w, feed.Type)
-		w.Write(feed.Content)
-	}))
+	handle(client.data.RSS)
+	handle(client.data.Atom)
+	handle(client.data.Sitemap)
+	handle(client.data.Opensearch)
+
+	return err
 }
