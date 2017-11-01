@@ -1,6 +1,7 @@
 gitype [![Build Status](https://travis-ci.org/caixw/gitype.svg?branch=nosql)](https://travis-ci.org/caixw/gitype)
 [![Go version](https://img.shields.io/badge/Go-1.8-brightgreen.svg?style=flat)](https://golang.org)
 [![Go Report Card](https://goreportcard.com/badge/github.com/caixw/gitype)](https://goreportcard.com/report/github.com/caixw/gitype)
+[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://opensource.org/licenses/MIT)
 ======
 
 基于 Git 的博客系统，具有以下特性：
@@ -238,6 +239,7 @@ slug      | string   | 唯一名称，文章引用此值，地址中也使用此
 title     | string   | 字面文字，可以不唯一
 color     | string   | 颜色值，在展示所有标签的页面，会以此颜色显示
 content   | string   | 用于描述该标签的详细内容，可以是 **HTML**
+series    | bool     | 是否为一个专题
 
 
 
@@ -285,8 +287,7 @@ tags      | string    | 关联的标签，以逗号分隔多个字符串，标�
 summary   | string    | 摘要，同时也作为 html>head>meta.description 的内容
 content   | string    | 内容
 outdated  | string    | 已过时文章的提示信息
-order     | string    | 排序方式，可以是 top, last, default，默认为 default
-draft     | bool      | 是否为草稿，为 true，则不会加载该条数据
+state     | string    | 状态，可以是 top、last、draft 和 default，默认为 default
 author    | Author    | 作者，默认为 meta/config.yaml 中的 author 内容
 license   | Link      | 版本信息，默认为 meta/config.yaml 中的 license 内容
 template  | string    | 使用的模板，默认为 post
@@ -316,11 +317,6 @@ data/themes 下为主题文件，可定义多个主题，通过 config 中的 th
 文件是否存在；甚至 `/post/2016/about.htm` 这样标准的文章路由，如果文章不存在，会也访问 `raws`
 目录，查看其下是否在正好相同的文件。 
 
-
-### 开发
-
-gitype 以自用为主，原则上*不支持新功能的 PR*。
-BUG 可在[此处](https://github.com/caixw/gitype/issues)提交或是直接 PR。
 
 
 
