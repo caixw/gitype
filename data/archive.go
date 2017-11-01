@@ -11,14 +11,12 @@ import (
 	"github.com/caixw/gitype/helper"
 )
 
-// 归档的类型
 const (
+	// 归档的类型
 	archiveTypeYear  = "year"
 	archiveTypeMonth = "month"
-)
 
-// 归档的排序方式
-const (
+	// 归档的排序方式
 	archiveOrderDesc = "desc"
 	archiveOrderAsc  = "asc"
 )

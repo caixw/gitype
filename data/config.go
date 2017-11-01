@@ -30,7 +30,6 @@ type config struct {
 	TitleSeparator  string        `yaml:"titleSeparator"`
 	Language        string        `yaml:"language"`
 	Subtitle        string        `yaml:"subtitle,omitempty"`
-	URL             string        `yaml:"url"` // 网站的域名，非默认端口也得包含，不包含最后的斜杠，仅在生成地址时使用
 	Beian           string        `yaml:"beian,omitempty"`
 	Uptime          time.Time     `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
 	PageSize        int           `yaml:"pageSize"`
@@ -41,7 +40,16 @@ type config struct {
 	License         *Link         `yaml:"license"`
 	LongDateFormat  string        `yaml:"longDateFormat"`
 	ShortDateFormat string        `yaml:"shortDateFormat"`
-	Outdated        time.Duration `yaml:"outdated"`
+	Outdated        time.Duration `yaml:"outdated,omitempty"`
+
+	// URL 网站的域名，
+	//
+	// 若是非默认端口，则还得包含端口值，但不能包含最后的斜杠，
+	// 也不能包含后面的路径名称，即使项目在非根路径下。
+	//
+	// NOTE: 若项目在非根路径下，需要修改 vars.urlRoot 的值，
+	// 这需要重新编译源代码。
+	URL string `yaml:"url"`
 
 	// 各个页面的一些自定义项，目前支持以下几个元素的修改：
 	// 1) html>head>title
@@ -50,7 +58,7 @@ type config struct {
 	Pages map[string]*Page `yaml:"pages,omitempty"`
 
 	// 以下内容不直接存在于 Data 中
-	Theme        string            `yaml:"theme"` // 所用的主题，为目录名，而不是 theme.yaml 中的名称
+	Theme        string            `yaml:"theme"`
 	UptimeFormat string            `yaml:"uptime"`
 	Archive      *archiveConfig    `yaml:"archive"`
 	RSS          *rssConfig        `yaml:"rss,omitempty"`

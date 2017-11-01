@@ -6,6 +6,10 @@
 //
 // 所有可能需要修改的配置项以及算法都被集中到 vars 包中，
 // 使用者可以根据自己需求随意修改此包以子包的内容。
+//
+// NOTE: vars 包的修改，可能会涉及到整个项目结构的改变，
+// 比较适合用于一个新的博客内容，若是应用于已有的博客系统，
+// 请确保这些修改不会对现有数据造成影响。
 package vars
 
 import (
@@ -70,7 +74,7 @@ const (
 const (
 	PageIndex    = "index" // 首页
 	PagePosts    = "posts" // 除首页外的文章列表页
-	PagePost     = "post"  // 同时也表示默认的模板名
+	PagePost     = "post"
 	PageTags     = "tags"
 	PageTag      = "tag"
 	PageArchives = "archives"

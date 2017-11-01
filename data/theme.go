@@ -32,6 +32,7 @@ type Theme struct {
 	shortDateFormat string             // 短时间的显示格式
 }
 
+// 查找与 conf.Theme 相同的主题。若找不到，则返回 errors
 func findTheme(path *path.Path, conf *config) (*Theme, error) {
 	dir := path.ThemesDir
 	fs, err := ioutil.ReadDir(dir)
@@ -48,7 +49,11 @@ func findTheme(path *path.Path, conf *config) (*Theme, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("未找到与 %s 匹配的主题", conf.Theme)
+	return nil, &helper.FieldError{
+		Message: "不存在",
+		Field:   "theme",
+		File:    path.MetaConfigFile,
+	}
 }
 
 // 加载主题
