@@ -61,6 +61,7 @@ func TestMain(t *testing.T) {
 
 	client, err := New(path, router)
 	a.NotError(err).NotNil(client)
+	a.NotError(client.Mount())
 
 	a.Equal(client.path, path)
 	a.NotNil(client.data)
