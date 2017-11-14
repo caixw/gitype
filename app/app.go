@@ -6,6 +6,7 @@
 package app
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
@@ -16,10 +17,14 @@ import (
 )
 
 type app struct {
-	path   *path.Path
-	mux    *mux.Mux
-	conf   *config
-	client *client.Client
+	path *path.Path
+	mux  *mux.Mux
+	conf *config
+
+	// 当前是否正处在加载数据的状态，
+	// 防止在 reload 一次调用未完成的情况下，再次调用 reload
+	loading bool
+	client  *client.Client
 }
 
 // Run 运行程序
@@ -86,6 +91,13 @@ func (a *app) serveHTTP(h http.Handler) {
 
 // 重新加载数据
 func (a *app) reload() error {
+	if a.loading {
+		return errors.New("调用 reload 过于频繁")
+	}
+
+	a.loading = true
+	defer func() { a.loading = false }()
+
 	c, err := client.New(a.path, a.mux)
 	if err != nil {
 		return err
