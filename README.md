@@ -31,6 +31,16 @@ gitype [![Build Status](https://travis-ci.org/caixw/gitype.svg?branch=nosql)](ht
 
 
 
+#### 主要参数
+
+
+参数名   | 值类型     | 描述
+|:-------|:-----------|:-----
+pprof    | bool       | 指定此参数，会预留一个 /debug/pprof/ 的 URL 地址，用户可以从此地址获取一此调试用的信息。
+preview  | bool       | 预览模式，指定此参数，可以监视用户的数据目录，一旦有更改，就会自动重新加载数据，当用户在本地创作文章时，可以指这此值。
+
+
+
 ### 目录结构
 
 appdir 的目录结构是固定的。
