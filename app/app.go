@@ -23,7 +23,7 @@ type app struct {
 }
 
 // Run 运行程序
-func Run(path *path.Path, pprof bool) error {
+func Run(path *path.Path, pprof, preview bool) error {
 	logs.Info("程序工作路径为:", path.Root)
 
 	conf, err := loadConfig(path)
@@ -37,10 +37,19 @@ func Run(path *path.Path, pprof bool) error {
 		conf: conf,
 	}
 
-	// 初始化 webhooks
-	err = a.mux.HandleFunc(a.conf.Webhook.URL, a.postWebhooks, a.conf.Webhook.Method)
-	if err != nil {
-		return err
+	if preview {
+		watcher, err := a.initWatcher()
+		if err != nil {
+			return err
+		}
+		defer watcher.Close()
+
+		a.watch(watcher)
+	} else {
+		err = a.mux.HandleFunc(a.conf.Webhook.URL, a.postWebhooks, a.conf.Webhook.Method)
+		if err != nil {
+			return err
+		}
 	}
 
 	// 加载数据，此时出错，只记录错误信息，但不中断执行
@@ -82,7 +91,7 @@ func (a *app) reload() error {
 		return err
 	}
 
-	// 只有新数据生成成功了，才会翻译旧数据，并加载新数据到路由中。
+	// 只有新数据生成成功了，才会释放旧数据，并加载新数据到路由中。
 	if a.client != nil {
 		a.client.Free()
 	}
