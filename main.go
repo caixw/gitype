@@ -60,6 +60,10 @@ func main() {
 
 	path := path.New(*appdir)
 
+	if *preview {
+		fmt.Println("预览模式，监视以下数据文件：", path.DataDir)
+	}
+
 	if err := logs.InitFromXMLFile(path.LogsConfigFile); err != nil {
 		panic(err)
 	}
@@ -69,9 +73,9 @@ func main() {
 }
 
 func printVersion() {
-	fmt.Printf("%s %s build with %s\n", vars.Name, vars.Version(), runtime.Version())
+	fmt.Println(vars.Name, vars.Version(), "build with", runtime.Version())
 
 	if len(vars.CommitHash()) > 0 {
-		fmt.Printf("Git commit hash:%s\n", vars.CommitHash())
+		fmt.Println("Git commit hash:", vars.CommitHash())
 	}
 }

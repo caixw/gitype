@@ -23,8 +23,6 @@ func (a *app) initWatcher() (*fsnotify.Watcher, error) {
 		return nil, err
 	}
 
-	logs.Infof("预览模式，监视以下数据文件：%s", a.path.DataDir)
-
 	paths, err := recursivePaths(a.path)
 	if err != nil {
 		watcher.Close()
