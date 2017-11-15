@@ -5,7 +5,6 @@
 package app
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -64,10 +63,8 @@ func recursivePaths(path *path.Path) ([]string, error) {
 func (a *app) watch(watcher *fsnotify.Watcher) {
 	go func() {
 		for {
-			fmt.Println("t")
 			select {
 			case event := <-watcher.Events:
-				fmt.Println("1")
 				if event.Op&fsnotify.Chmod == fsnotify.Chmod {
 					logs.Debug("watcher.Events:忽略 CHMOD 事件:", event)
 					continue
@@ -86,7 +83,6 @@ func (a *app) watch(watcher *fsnotify.Watcher) {
 					}
 				}()
 			case err := <-watcher.Errors:
-				fmt.Println("2")
 				logs.Error(err)
 				return // 出错就结束
 			} // end select
