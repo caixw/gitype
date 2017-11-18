@@ -5,6 +5,7 @@ go:
     - 1.8
 install:
     - go get gopkg.in/yaml.v2
+    - go get gopkg.in/fsnotify.v1
     - go get github.com/issue9/assert
     - go get github.com/issue9/is
     - go get github.com/issue9/middleware
