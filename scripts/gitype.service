@@ -15,7 +15,7 @@ PIDFile=/tmp/gitype.pid-404
 User=root
 Group=root
 WorkingDirectory=/data/www/gitype
-ExecStart=/data/www/gitype/gitype
+ExecStart=/data/www/gitype/gitype -appdir=/data/www/gitype/appdir
 Restart=always
 
 [Install]
