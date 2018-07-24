@@ -18,6 +18,30 @@ import (
 // 将一个 log.Logger 封装成 io.Writer 接口
 type logWriter log.Logger
 
+type webhook struct {
+	URL       string        `yaml:"url"`              // 接收地址，不能带域名
+	Frequency time.Duration `yaml:"frequency"`        // 最小更新频率
+	Method    string        `yaml:"method,omitempty"` // 请求方式，默认为 POST
+	RepoURL   string        `yaml:"repoURL"`          // 远程仓库的地址
+}
+
+func (w *webhook) Sanitize() error {
+	if len(w.Method) == 0 {
+		w.Method = http.MethodPost
+	}
+
+	switch {
+	case len(w.URL) == 0 || w.URL[0] != '/':
+		return &helper.FieldError{Field: "webhook.url", Message: "不能为空且只能以 / 开头"}
+	case w.Frequency < 0:
+		return &helper.FieldError{Field: "webhook.frequency", Message: "不能小于 0"}
+	case len(w.RepoURL) == 0:
+		return &helper.FieldError{Field: "webhook.repoURL", Message: "不能为空"}
+	}
+
+	return nil
+}
+
 func (w *logWriter) Write(bs []byte) (int, error) {
 	(*log.Logger)(w).Print(string(bs))
 	return len(bs), nil
