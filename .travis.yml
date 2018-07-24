@@ -7,8 +7,6 @@ os:
 go:
   - tip
   - "1.10"
-  - 1.9
-  - 1.8
 
 install:
   - go get gopkg.in/yaml.v2
@@ -20,3 +18,13 @@ install:
   - go get github.com/issue9/version
   - go get github.com/issue9/utils
   - go get github.com/issue9/mux
+
+  script:
+  - go test -v -coverprofile=coverage.txt -covermode=atomic $(go list ./...| grep -v /vendor/)
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+matrix:
+  allow_failures:
+    - go: tip

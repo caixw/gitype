@@ -8,11 +8,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/caixw/gitype/data"
-	"github.com/caixw/gitype/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/middleware/compress"
 	"github.com/issue9/mux"
+
+	"github.com/caixw/gitype/data"
+	"github.com/caixw/gitype/vars"
 )
 
 func (client *Client) initRoutes() (err error) {
@@ -253,7 +254,10 @@ func (client *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
 		}
 		w.Header().Set("Etag", client.data.Etag)
 		w.Header().Set("Content-Language", client.data.Language)
-		compress.New(f, logs.ERROR()).ServeHTTP(w, r)
+		compress.New(f, logs.ERROR(), map[string]compress.BuildCompressWriter{
+			"gzip":    compress.NewGzip,
+			"deflate": compress.NewDeflate,
+		}).ServeHTTP(w, r)
 	}
 }
 
