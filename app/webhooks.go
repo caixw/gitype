@@ -10,9 +10,11 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/caixw/gitype/helper"
 	"github.com/issue9/logs"
 	"github.com/issue9/utils"
+	"github.com/issue9/web"
+
+	"github.com/caixw/gitype/helper"
 )
 
 // 将一个 log.Logger 封装成 io.Writer 接口
@@ -49,10 +51,10 @@ func (w *logWriter) Write(bs []byte) (int, error) {
 
 // webhooks 的回调接口
 func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
+	ctx := web.NewContext(w, r)
 	if time.Now().Sub(a.client.Created()) < a.webhook.Frequency {
 		logs.Error("更新过于频繁，被中止！")
-		helper.StatusError(w, http.StatusTooManyRequests)
-		return
+		ctx.Exit(http.StatusTooManyRequests)
 	}
 
 	var cmd *exec.Cmd
@@ -67,14 +69,12 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 	cmd.Stderr = (*logWriter)(logs.ERROR())
 	cmd.Stdout = (*logWriter)(logs.INFO())
 	if err := cmd.Run(); err != nil {
-		logs.Error(err)
-		helper.StatusError(w, http.StatusInternalServerError)
+		ctx.Error(http.StatusInternalServerError, err)
 		return
 	}
 
 	if err := a.reload(); err != nil {
-		logs.Error(err)
-		helper.StatusError(w, http.StatusInternalServerError)
+		ctx.Error(http.StatusInternalServerError, err)
 		return
 	}
 

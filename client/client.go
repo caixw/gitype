@@ -13,6 +13,8 @@ import (
 	"github.com/caixw/gitype/path"
 	"github.com/issue9/mux"
 	"github.com/issue9/web/encoding/html"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 // Client 包含了整个可动态加载的数据以及路由的相关操作。
@@ -41,6 +43,8 @@ func New(path *path.Path, mux *mux.Mux, html *html.HTML) (*Client, error) {
 	}
 
 	html.SetTemplate(d.Theme.Template)
+
+	message.SetString(language.Make(d.Language), "xx", "xx")
 
 	return client, nil
 }
@@ -78,7 +82,7 @@ func (client *Client) initFeedRoutes() (err error) {
 
 		client.patterns = append(client.patterns, feed.URL)
 		err = client.mux.HandleFunc(feed.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, feed.Type)
+			w.Header().Set("Content-Type", feed.Type)
 			w.Write(feed.Content)
 		}), http.MethodGet)
 	}

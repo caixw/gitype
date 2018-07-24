@@ -5,41 +5,28 @@
 package client
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"runtime"
 	"strconv"
 	"time"
 
-	"github.com/caixw/gitype/data"
-	"github.com/caixw/gitype/helper"
-	"github.com/caixw/gitype/vars"
 	"github.com/issue9/logs"
 	"github.com/issue9/utils"
+	"github.com/issue9/web/context"
+	"github.com/issue9/web/encoding"
+	"github.com/issue9/web/encoding/html"
+
+	"github.com/caixw/gitype/data"
+	"github.com/caixw/gitype/vars"
 )
-
-const contentTypeKey = "Content-Type"
-
-// 生成一个带编码的 content-type 报头内容
-func buildContentTypeContent(mime string) string {
-	return mime + ";charset=utf-8"
-}
-
-// 设置页面的编码，若已经存在，则不会受影响。
-// 要强制指定，请直接使用 w.Header().Set()
-func setContentType(w http.ResponseWriter, mime string) {
-	h := w.Header()
-	if len(h.Get(contentTypeKey)) == 0 {
-		h.Set(contentTypeKey, buildContentTypeContent(mime))
-	}
-}
 
 // 用于描述一个页面的所有无素
 type page struct {
-	client   *Client
-	Info     *info
-	response http.ResponseWriter
-	request  *http.Request
+	client *Client
+	Info   *info
+	ctx    *context.Context
 
 	Title       string       // 文章标题
 	Subtitle    string       // 副标题
@@ -134,14 +121,13 @@ func newInfo(d *data.Data) *info {
 	return info
 }
 
-func (client *Client) page(typ string, w http.ResponseWriter, r *http.Request) *page {
+func (client *Client) page(typ string, ctx *context.Context) *page {
 	d := client.data
 
 	return &page{
-		client:   client,
-		Info:     client.info,
-		response: w,
-		request:  r,
+		client: client,
+		Info:   client.info,
+		ctx:    ctx,
 
 		Subtitle: d.Subtitle,
 		Type:     typ,
@@ -168,21 +154,16 @@ func (p *page) prevPage(url, text string) {
 
 // 输出当前内容到指定模板
 func (p *page) render(name string) {
-	setContentType(p.response, p.client.data.Type)
-
-	err := p.client.data.ExecuteTemplate(p.response, name, p)
-	if err != nil {
-		logs.Error(err)
-		p.client.renderError(p.response, p.request, http.StatusInternalServerError)
-		return
-	}
+	p.ctx.Render(http.StatusOK, html.Tpl(name, p), map[string]string{
+		"Content-Type": encoding.BuildContentType(p.client.data.Type, "utf-8"),
+	})
 }
 
 // 输出一个特定状态码下的错误页面。
 // 若该页面模板不存在，则输出状态码对应的文本内容。
 // 只查找当前主题目录下的相关文件。
 // 只对状态码大于等于 400 的起作用。
-func (client *Client) renderError(w http.ResponseWriter, r *http.Request, code int) {
+func (client *Client) renderError(ctx *context.Context, code int) {
 	if code < 400 {
 		return
 	}
@@ -192,19 +173,17 @@ func (client *Client) renderError(w http.ResponseWriter, r *http.Request, code i
 	filename := strconv.Itoa(code) + vars.TemplateExtension
 	path := client.path.ThemesPath(client.data.Theme.ID, filename)
 	if !utils.FileExists(path) {
-		logs.Debugf("模板文件 %s 不存在\n", path)
-		helper.StatusError(w, code)
+		ctx.Error(code, fmt.Sprintf("模板文件 %s 不存在\n", path))
 		return
 	}
 
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		logs.Errorf("读取模板文件 %s 时出现以下错误: %v\n", path, err)
-		helper.StatusError(w, code)
+		ctx.Error(code, err)
 		return
 	}
 
-	setContentType(w, client.data.Type)
-	w.WriteHeader(code)
-	w.Write(data)
+	ctx.Response.Header().Set("Content-Type", client.data.Type)
+	ctx.Response.WriteHeader(code)
+	ctx.Response.Write(data)
 }

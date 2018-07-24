@@ -7,18 +7,12 @@ package helper
 
 import (
 	"io/ioutil"
-	"net/http"
 	"os"
 	"strings"
 
 	"github.com/caixw/gitype/vars"
 	yaml "gopkg.in/yaml.v2"
 )
-
-// StatusError 标准的错误状态码输出函数，略作封装。
-func StatusError(w http.ResponseWriter, status int) {
-	http.Error(w, http.StatusText(status), status)
-}
 
 // LoadYAMLFile 加载 YAML 格式的文件 path 中的内容到 obj，obj 必须量个指针。
 func LoadYAMLFile(path string, obj interface{}) error {

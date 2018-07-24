@@ -13,6 +13,7 @@ import (
 	"github.com/caixw/gitype/path"
 	"github.com/issue9/assert"
 	"github.com/issue9/mux"
+	"github.com/issue9/web/encoding/html"
 )
 
 var (
@@ -59,7 +60,7 @@ func TestMain(t *testing.T) {
 	a := assert.New(t)
 	path := path.New("../testdata")
 
-	client, err := New(path, router)
+	client, err := New(path, router, html.New(nil))
 	a.NotError(err).NotNil(client)
 	a.NotError(client.Mount())
 

@@ -13,6 +13,7 @@ import (
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 	"github.com/issue9/utils"
+	"github.com/issue9/web"
 )
 
 // 资源内容
@@ -64,13 +65,14 @@ func (client *Client) getTheme(w http.ResponseWriter, r *http.Request) {
 
 // /...
 func (client *Client) getRaw(w http.ResponseWriter, r *http.Request) {
+	ctx := web.NewContext(w, r)
 	if r.URL.Path == "/" {
 		client.getPosts(w, r)
 		return
 	}
 
 	if !utils.FileExists(filepath.Join(client.path.RawsDir, r.URL.Path)) {
-		client.renderError(w, r, http.StatusNotFound)
+		client.renderError(ctx, http.StatusNotFound)
 		return
 	}
 
@@ -80,6 +82,7 @@ func (client *Client) getRaw(w http.ResponseWriter, r *http.Request) {
 }
 
 func (client *Client) serveFile(w http.ResponseWriter, r *http.Request, filename string) {
+	ctx := web.NewContext(w, r)
 	if !utils.FileExists(filename) {
 		client.getRaw(w, r)
 		return
@@ -88,7 +91,7 @@ func (client *Client) serveFile(w http.ResponseWriter, r *http.Request, filename
 	stat, err := os.Stat(filename)
 	if err != nil {
 		logs.Error(err)
-		client.renderError(w, r, http.StatusInternalServerError)
+		client.renderError(ctx, http.StatusInternalServerError)
 		return
 	}
 
