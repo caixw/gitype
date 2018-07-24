@@ -64,10 +64,6 @@ func main() {
 		fmt.Println("预览模式，监视以下数据文件：", path.DataDir)
 	}
 
-	if err := logs.InitFromXMLFile(path.LogsConfigFile); err != nil {
-		panic(err)
-	}
-
 	logs.Critical(app.Run(path, *pprof, *preview))
 	logs.Flush()
 }

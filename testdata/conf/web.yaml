@@ -1,0 +1,7 @@
+# app.yaml
+
+https: false
+httpState: disable
+port: 8080
+headers: 
+  server: gitype

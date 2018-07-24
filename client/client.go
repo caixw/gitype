@@ -12,6 +12,7 @@ import (
 	"github.com/caixw/gitype/data"
 	"github.com/caixw/gitype/path"
 	"github.com/issue9/mux"
+	"github.com/issue9/web/encoding/html"
 )
 
 // Client 包含了整个可动态加载的数据以及路由的相关操作。
@@ -26,7 +27,7 @@ type Client struct {
 }
 
 // New 声明一个新的 Client 实例
-func New(path *path.Path, mux *mux.Mux) (*Client, error) {
+func New(path *path.Path, mux *mux.Mux, html *html.HTML) (*Client, error) {
 	d, err := data.Load(path)
 	if err != nil {
 		return nil, err
@@ -38,6 +39,8 @@ func New(path *path.Path, mux *mux.Mux) (*Client, error) {
 		data: d,
 		info: newInfo(d),
 	}
+
+	html.SetTemplate(d.Theme.Template)
 
 	return client, nil
 }

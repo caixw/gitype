@@ -25,7 +25,7 @@ func (w *logWriter) Write(bs []byte) (int, error) {
 
 // webhooks 的回调接口
 func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
-	if time.Now().Sub(a.client.Created()) < a.conf.Webhook.Frequency {
+	if time.Now().Sub(a.client.Created()) < a.webhook.Frequency {
 		logs.Error("更新过于频繁，被中止！")
 		helper.StatusError(w, http.StatusTooManyRequests)
 		return
@@ -36,7 +36,7 @@ func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
 		cmd = exec.Command("git", "pull")
 		cmd.Dir = a.path.DataDir
 	} else {
-		cmd = exec.Command("git", "clone", a.conf.Webhook.RepoURL, a.path.DataDir)
+		cmd = exec.Command("git", "clone", a.webhook.RepoURL, a.path.DataDir)
 		cmd.Dir = a.path.Root
 	}
 
