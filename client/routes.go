@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/issue9/logs"
-	"github.com/issue9/middleware/compress"
 	"github.com/issue9/web"
 	"github.com/issue9/web/context"
 
@@ -16,7 +15,12 @@ import (
 	"github.com/caixw/gitype/vars"
 )
 
-func (client *Client) initRoutes() (err error) {
+func (client *Client) initRoutes() error {
+	err := client.initFeedRoutes()
+	if err != nil {
+		return err
+	}
+
 	handle := func(pattern string, h http.HandlerFunc) {
 		if err != nil {
 			return
@@ -36,6 +40,27 @@ func (client *Client) initRoutes() (err error) {
 	handle(vars.SearchURL("", 1), client.getSearch)  // search.html
 	handle(vars.ThemeURL("{path}"), client.getTheme) // themes/...          themes/{path}
 	handle("/{path}", client.getRaw)                 // /...                /{path}
+
+	return err
+}
+
+func (client *Client) initFeedRoutes() (err error) {
+	handle := func(feed *data.Feed) {
+		if err != nil || feed == nil {
+			return
+		}
+
+		client.patterns = append(client.patterns, feed.URL)
+		err = client.mux.HandleFunc(feed.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", feed.Type)
+			w.Write(feed.Content)
+		}), http.MethodGet)
+	}
+
+	handle(client.data.RSS)
+	handle(client.data.Atom)
+	handle(client.data.Sitemap)
+	handle(client.data.Opensearch)
 
 	return err
 }
@@ -96,7 +121,6 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	page := client.queryInt(ctx, vars.URLQueryPage, 1)
 
 	if page < 1 {
-		logs.Debugf("请求的页码[%d]小于1\n", page)
 		client.renderError(ctx, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
@@ -153,7 +177,6 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 
 	page := client.queryInt(ctx, vars.URLQueryPage, 1)
 	if page < 1 {
-		logs.Debugf("请求的页码[%d]小于 1", page)
 		client.renderError(ctx, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
@@ -240,26 +263,6 @@ func (client *Client) getPostsRange(postsSize, page int, w http.ResponseWriter, 
 	}
 
 	return start, end, true
-}
-
-// 每次访问前需要做的预处理工作。
-func (client *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		logs.Infof("%s: %s", r.UserAgent(), r.URL) // 输出访问日志
-
-		// 直接根据整个博客的最后更新时间来确认 etag
-		if r.Header.Get("If-None-Match") == client.data.Etag {
-			logs.Infof("304: %s", r.URL)
-			w.WriteHeader(http.StatusNotModified)
-			return
-		}
-		w.Header().Set("Etag", client.data.Etag)
-		w.Header().Set("Content-Language", client.data.Language)
-		compress.New(f, logs.ERROR(), map[string]compress.BuildCompressWriter{
-			"gzip":    compress.NewGzip,
-			"deflate": compress.NewDeflate,
-		}).ServeHTTP(w, r)
-	}
 }
 
 // 获取查询参数 key 的值，并将其转换成 Int 类型，若该值不存在返回 def 作为其默认值，

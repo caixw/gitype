@@ -31,7 +31,7 @@ type app struct {
 }
 
 // Run 运行程序
-func Run(path *path.Path, pprof, preview bool) error {
+func Run(path *path.Path, preview bool) error {
 	logs.Info("程序工作路径为:", path.Root)
 
 	htmlMgr := html.New(nil)
@@ -88,7 +88,7 @@ func (a *app) reload() error {
 	a.loading = true
 	defer func() { a.loading = false }()
 
-	c, err := client.New(a.path, a.mux, a.html)
+	c, err := client.New(a.path)
 	if err != nil {
 		return err
 	}
@@ -98,5 +98,5 @@ func (a *app) reload() error {
 		a.client.Free()
 	}
 	a.client = c
-	return a.client.Mount()
+	return a.client.Mount(a.mux, a.html)
 }

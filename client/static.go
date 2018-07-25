@@ -14,11 +14,14 @@ import (
 	"github.com/issue9/mux"
 	"github.com/issue9/utils"
 	"github.com/issue9/web"
+	"github.com/issue9/web/context"
 )
 
 // 资源内容
 // /posts/{path}
 func (client *Client) getAsset(w http.ResponseWriter, r *http.Request) {
+	ctx := web.NewContext(w, r)
+
 	// 不展示模板文件，查看 raws 中是否有同名文件
 	name := filepath.Base(r.URL.Path)
 	if name == vars.PostMetaFilename || name == vars.PostContentFilename {
@@ -34,12 +37,14 @@ func (client *Client) getAsset(w http.ResponseWriter, r *http.Request) {
 	}
 
 	filename := filepath.Join(client.path.PostsDir, path)
-	client.serveFile(w, r, filename)
+	client.serveFile(ctx, filename)
 }
 
 // 主题文件
 // /themes/...
 func (client *Client) getTheme(w http.ResponseWriter, r *http.Request) {
+	ctx := web.NewContext(w, r)
+
 	// 不展示模板文件，查看 raws 中是否有同名文件
 	if filepath.Ext(r.URL.Path) == vars.TemplateExtension {
 		client.getRaw(w, r)
@@ -60,13 +65,13 @@ func (client *Client) getTheme(w http.ResponseWriter, r *http.Request) {
 	}
 
 	filename := filepath.Join(client.path.ThemesDir, path)
-	client.serveFile(w, r, filename)
+	client.serveFile(ctx, filename)
 }
 
 // /...
 func (client *Client) getRaw(w http.ResponseWriter, r *http.Request) {
 	ctx := web.NewContext(w, r)
-	if r.URL.Path == "/" {
+	if ctx.Request.URL.Path == "/" {
 		client.getPosts(w, r)
 		return
 	}
@@ -81,10 +86,9 @@ func (client *Client) getRaw(w http.ResponseWriter, r *http.Request) {
 	http.StripPrefix(prefix, http.FileServer(root)).ServeHTTP(w, r)
 }
 
-func (client *Client) serveFile(w http.ResponseWriter, r *http.Request, filename string) {
-	ctx := web.NewContext(w, r)
+func (client *Client) serveFile(ctx *context.Context, filename string) {
 	if !utils.FileExists(filename) {
-		client.getRaw(w, r)
+		client.getRaw(ctx.Response, ctx.Request)
 		return
 	}
 
@@ -96,9 +100,9 @@ func (client *Client) serveFile(w http.ResponseWriter, r *http.Request, filename
 	}
 
 	if stat.IsDir() {
-		client.getRaw(w, r)
+		client.getRaw(ctx.Response, ctx.Request)
 		return
 	}
 
-	http.ServeFile(w, r, filename)
+	http.ServeFile(ctx.Response, ctx.Request, filename)
 }

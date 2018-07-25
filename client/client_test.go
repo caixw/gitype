@@ -56,17 +56,20 @@ func runHTTPTester(testers []*httpTester, t *testing.T) {
 	}
 }
 
-func TestMain(t *testing.T) {
-	a := assert.New(t)
+func TestMain(m *testing.M) {
 	path := path.New("../testdata")
 
-	client, err := New(path, router, html.New(nil))
-	a.NotError(err).NotNil(client)
-	a.NotError(client.Mount())
+	client, err := New(path)
+	if err != nil {
+		panic(err)
+	}
 
-	a.Equal(client.path, path)
-	a.NotNil(client.data)
-	a.Equal(client.Created(), client.data.Created)
+	err = client.Mount(router, html.New(nil))
+	if err != nil {
+		panic(err)
+	}
 
 	c = client
+
+	m.Run()
 }
