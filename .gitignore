@@ -4,6 +4,7 @@
 *.so
 
 *.exe
+*.exe~
 *.test
 *.prof
 
