@@ -57,9 +57,6 @@ const (
 
 // 文件名的定义
 const (
-	AppConfigFilename  = "app.yaml"
-	LogsConfigFilename = "logs.xml"
-
 	ConfigFilename = "config.yaml"
 	TagsFilename   = "tags.yaml"
 	LinksFilename  = "links.yaml"

@@ -87,6 +87,6 @@ func initConfDir(path *path.Path) error {
 		return err
 	}
 
-	// app.yaml
+	// webhook.yaml
 	return helper.DumpYAMLFile(web.File("webhook.yaml"), defaultConfig)
 }

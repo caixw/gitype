@@ -1,4 +1,4 @@
-# app.yaml
+# web.yaml
 
 https: false
 httpState: disable

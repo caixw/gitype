@@ -53,7 +53,9 @@ data 为博客的实际内容，包含了文章，标签，友链以及网站名
 |     |
 |     |--- logs.xml 日志的配置文件
 |     |
-|     |--- app.yaml 程序的配置文件
+|     |--- web.yaml 程序的配置文件
+|     |
+|     |--- webhook.yaml webhook 的配置文件
 |
 |--- data 程序的数据目录
       |
@@ -79,25 +81,18 @@ data 为博客的实际内容，包含了文章，标签，友链以及网站名
 #### conf 目录下内容
 
 conf 目录下的为程序级别的配置文件，需要重启才能使更改生效。其中：
-- app.yaml 定义了诸如端口，证书等基本数据；
+- web.yaml 网站的启动数据信息；
+- webhook.yaml 自动更新的触发条件；
 - logs.xml 定义了日志的输出形式和保存路径，具体配置可参考 [logs](https://github.com/issue9/logs) 的相关文档。
 
 
-##### app.yaml
+##### web.yaml
 
-名称         | 类型     | 描述
-:------------|:---------|:------
-https        | bool     | 是否启用 https
-httpState    | string   | 当 https 为 true 时，对 80 端口的处理方式，可以为 disable、redirect 和 default
-certFile     | string   | 当 https 为 true 时，此值为必填
-keyFile      | string   | 当 https 为 true 时，此值为必填
-port         | string   | 端口，不指定，默认为 80 或是 443
-headers      | map      | 附加的头信息，头信息可能在其它地方被修改
-webhook      | Webhook  | 与 webhook 相关的设置
+参考 https://github.com/issue9/web 中的配置文件内容
 
 
 
-###### Webhook
+##### webhook.yaml
 
 名称        | 类型          | 描述
 :-----------|:--------------|:------
