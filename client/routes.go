@@ -6,17 +6,21 @@ package client
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/issue9/logs"
-	"github.com/issue9/middleware/compress"
-	"github.com/issue9/mux"
+	"github.com/issue9/web"
+	"github.com/issue9/web/context"
 
 	"github.com/caixw/gitype/data"
 	"github.com/caixw/gitype/vars"
 )
 
-func (client *Client) initRoutes() (err error) {
+func (client *Client) initRoutes() error {
+	err := client.initFeedRoutes()
+	if err != nil {
+		return err
+	}
+
 	handle := func(pattern string, h http.HandlerFunc) {
 		if err != nil {
 			return
@@ -40,10 +44,32 @@ func (client *Client) initRoutes() (err error) {
 	return err
 }
 
+func (client *Client) initFeedRoutes() (err error) {
+	handle := func(feed *data.Feed) {
+		if err != nil || feed == nil {
+			return
+		}
+
+		client.patterns = append(client.patterns, feed.URL)
+		err = client.mux.HandleFunc(feed.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", feed.Type)
+			w.Write(feed.Content)
+		}), http.MethodGet)
+	}
+
+	handle(client.data.RSS)
+	handle(client.data.Atom)
+	handle(client.data.Sitemap)
+	handle(client.data.Opensearch)
+
+	return err
+}
+
 // 文章详细页
 // /posts/{slug}.html
 func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
-	slug, err := mux.Params(r).String("slug")
+	ctx := web.NewContext(w, r)
+	slug, err := ctx.ParamString("slug")
 	if err != nil {
 		logs.Error(err)
 		client.getAsset(w, r)
@@ -65,7 +91,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post := client.data.Posts[index]
-	p := client.page(vars.PagePost, w, r)
+	p := client.page(vars.PagePost, ctx)
 
 	p.Post = post
 	p.Keywords = post.Keywords
@@ -91,18 +117,15 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 // /
 // /index.html?page=2
 func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
-	page, ok := client.queryInt(w, r, vars.URLQueryPage, 1)
-	if !ok {
-		return
-	}
+	ctx := web.NewContext(w, r)
+	page := client.queryInt(ctx, vars.URLQueryPage, 1)
 
 	if page < 1 {
-		logs.Debugf("请求的页码[%d]小于1\n", page)
-		client.renderError(w, r, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
+		client.renderError(ctx, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
 
-	p := client.page(vars.PageIndex, w, r)
+	p := client.page(vars.PageIndex, ctx)
 	if page > 1 { // 非首页，标题显示页码数
 		p.Type = vars.PagePosts
 	}
@@ -130,7 +153,8 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 // 标签详细页
 // /tags/tag1.html?page=2
 func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
-	slug, err := mux.Params(r).String("slug")
+	ctx := web.NewContext(w, r)
+	slug, err := ctx.ParamString("slug")
 	if err != nil {
 		logs.Error(err)
 		client.getRaw(w, r)
@@ -151,17 +175,13 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page, ok := client.queryInt(w, r, vars.URLQueryPage, 1)
-	if !ok {
-		return
-	}
+	page := client.queryInt(ctx, vars.URLQueryPage, 1)
 	if page < 1 {
-		logs.Debugf("请求的页码[%d]小于 1", page)
-		client.renderError(w, r, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
+		client.renderError(ctx, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
 
-	p := client.page(vars.PageTag, w, r)
+	p := client.page(vars.PageTag, ctx)
 	p.Tag = tag
 	p.Title = tag.HTMLTitle
 	p.Keywords = tag.Keywords
@@ -186,7 +206,8 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 // 友情链接页
 // /links.html
 func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
-	p := client.page(vars.PageLinks, w, r)
+	ctx := web.NewContext(w, r)
+	p := client.page(vars.PageLinks, ctx)
 	pp := client.data.Pages[vars.PageLinks]
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
@@ -199,7 +220,8 @@ func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 // 标签列表页
 // /tags.html
 func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
-	p := client.page(vars.PageTags, w, r)
+	ctx := web.NewContext(w, r)
+	p := client.page(vars.PageTags, ctx)
 	pp := client.data.Pages[vars.PageTags]
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
@@ -212,7 +234,8 @@ func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 // 归档页
 // /archives.html
 func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
-	p := client.page(vars.PageArchives, w, r)
+	ctx := web.NewContext(w, r)
+	p := client.page(vars.PageArchives, ctx)
 	pp := client.data.Pages[vars.PageArchives]
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
@@ -225,11 +248,12 @@ func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 
 // 确认当前文章列表页选择范围。
 func (client *Client) getPostsRange(postsSize, page int, w http.ResponseWriter, r *http.Request) (start, end int, ok bool) {
+	ctx := web.NewContext(w, r)
 	size := client.data.PageSize
 	start = size * (page - 1) // 系统从零开始计数
 	if start > postsSize {
 		logs.Debugf("请求页码为[%d]，实际文章数量为[%d]\n", page, postsSize)
-		client.renderError(w, r, http.StatusNotFound) // 页码超出范围，不存在
+		client.renderError(ctx, http.StatusNotFound) // 页码超出范围，不存在
 		return 0, 0, false
 	}
 
@@ -241,39 +265,16 @@ func (client *Client) getPostsRange(postsSize, page int, w http.ResponseWriter, 
 	return start, end, true
 }
 
-// 每次访问前需要做的预处理工作。
-func (client *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		logs.Infof("%s: %s", r.UserAgent(), r.URL) // 输出访问日志
-
-		// 直接根据整个博客的最后更新时间来确认 etag
-		if r.Header.Get("If-None-Match") == client.data.Etag {
-			logs.Infof("304: %s", r.URL)
-			w.WriteHeader(http.StatusNotModified)
-			return
-		}
-		w.Header().Set("Etag", client.data.Etag)
-		w.Header().Set("Content-Language", client.data.Language)
-		compress.New(f, logs.ERROR(), map[string]compress.BuildCompressWriter{
-			"gzip":    compress.NewGzip,
-			"deflate": compress.NewDeflate,
-		}).ServeHTTP(w, r)
-	}
-}
-
 // 获取查询参数 key 的值，并将其转换成 Int 类型，若该值不存在返回 def 作为其默认值，
 // 若是类型不正确，则返回一个 false，并向客户端输出一个 400 错误。
-func (client *Client) queryInt(w http.ResponseWriter, r *http.Request, key string, def int) (int, bool) {
-	val := r.FormValue(key)
-	if len(val) == 0 {
-		return def, true
+func (client *Client) queryInt(ctx *context.Context, key string, def int) int {
+	q := ctx.Queries()
+	v := q.Int(key, def)
+
+	if q.HasErrors() {
+		logs.Error(q.Errors()[key])
+		ctx.Exit(http.StatusBadRequest)
 	}
 
-	ret, err := strconv.Atoi(val)
-	if err != nil {
-		logs.Error(err)
-		client.renderError(w, r, http.StatusBadRequest)
-		return 0, false
-	}
-	return ret, true
+	return v
 }

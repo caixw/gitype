@@ -33,7 +33,6 @@ const usage = `%s 是一个基于 Git 的博客系统。
 func main() {
 	help := flag.Bool("h", false, "显示当前信息")
 	version := flag.Bool("v", false, "显示程序的版本信息")
-	pprof := flag.Bool("pprof", false, "是否在 /debug/pprof/ 启用调试功能")
 	preview := flag.Bool("preview", false, "是否启用预览模式")
 	appdir := flag.String("appdir", "./", "指定运行的工作目录")
 	init := flag.String("init", "", "初始化一个工作目录")
@@ -64,11 +63,7 @@ func main() {
 		fmt.Println("预览模式，监视以下数据文件：", path.DataDir)
 	}
 
-	if err := logs.InitFromXMLFile(path.LogsConfigFile); err != nil {
-		panic(err)
-	}
-
-	logs.Critical(app.Run(path, *pprof, *preview))
+	logs.Critical(app.Run(path, *preview))
 	logs.Flush()
 }
 

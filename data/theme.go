@@ -27,9 +27,10 @@ type Theme struct {
 	URL         string  `yaml:"url,omitempty"`
 	Author      *Author `yaml:"author"`
 
-	template        *template.Template // 当前主题的预编译结果
-	longDateFormat  string             // 长时间的显示格式
-	shortDateFormat string             // 短时间的显示格式
+	Template *template.Template // 当前主题的预编译结果
+
+	longDateFormat  string // 长时间的显示格式
+	shortDateFormat string // 短时间的显示格式
 }
 
 // 查找与 conf.Theme 相同的主题。若找不到，则返回 errors
@@ -87,7 +88,7 @@ func loadTheme(path *path.Path, conf *config) (*Theme, error) {
 
 // ExecuteTemplate 渲染指定的模块并输出到 w
 func (d *Data) ExecuteTemplate(w io.Writer, name string, data interface{}) error {
-	return d.Theme.template.ExecuteTemplate(w, name, data)
+	return d.Theme.Template.ExecuteTemplate(w, name, data)
 }
 
 // 编译主题的模板。
@@ -98,13 +99,13 @@ func (d *Data) compileTemplate() error {
 	}
 
 	// 编译模板
-	d.Theme.template, err = snippets.Clone()
+	d.Theme.Template, err = snippets.Clone()
 	if err != nil {
 		return err
 	}
 
 	path := d.path.ThemesPath(d.Theme.ID, "*"+vars.TemplateExtension)
-	_, err = d.Theme.template.ParseGlob(path)
+	_, err = d.Theme.Template.ParseGlob(path)
 	if err != nil {
 		return err
 	}
@@ -113,7 +114,7 @@ func (d *Data) compileTemplate() error {
 	// 模板定义未必是按文件分的，所以不能简单地判断文件是否存在
 	templates := d.templatesName()
 	for _, tpl := range templates {
-		if nil == d.Theme.template.Lookup(tpl) {
+		if nil == d.Theme.Template.Lookup(tpl) {
 			return fmt.Errorf("模板 %s 未定义", tpl)
 		}
 	}

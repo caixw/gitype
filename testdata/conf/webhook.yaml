@@ -1,0 +1,4 @@
+
+url: /admin/webhooks
+frequency: 1m
+repoURL: https://github.com/caixw/gitype.git
