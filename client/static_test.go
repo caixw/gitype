@@ -7,90 +7,90 @@ package client
 import (
 	"net/http"
 	"testing"
+
+	"github.com/issue9/assert/rest"
+	"github.com/issue9/web"
 )
 
 func TestGetAsset(t *testing.T) {
-	testers := []*httpTester{
-		{
-			path:    "/posts/folder/post2/assets/assets.txt",
-			content: "assets.txt\n",
-			status:  http.StatusOK,
-		},
-
-		// content.html
-		// 此条会优先匹配 getPost，然后跳转到 getRaw
-		{
-			path:   "/posts/folder/post2/content.html",
-			status: http.StatusNotFound,
-		},
-
-		// meta.yaml
-		{
-			path:   "/posts/folder/post2/meta.yaml",
-			status: http.StatusNotFound,
-		},
-
-		// 跳转到 getRaws
-		{
-			path:    "/posts/folder/post2/raws.txt",
-			content: "raws.txt\n",
-			status:  http.StatusOK,
-		},
+	h, err := web.Handler()
+	if err != nil {
+		panic(err)
 	}
+	s := rest.NewServer(t, h, nil)
 
-	runHTTPTester(testers, t)
+	// getAsset
+	s.NewRequest(http.MethodGet, "/posts/folder/post2/assets/assets.txt").
+		Do().
+		StringBody("assets.txt\n").
+		Status(http.StatusOK)
+
+	// content.html
+	// 此条会优先匹配 getPost，然后跳转到 getRaw
+	s.NewRequest(http.MethodGet, "/posts/folder/post2/content.html").
+		Do().
+		Status(http.StatusNotFound)
+
+	// meta.yaml
+	s.NewRequest(http.MethodGet, "/posts/folder/post2/meta.yaml").
+		Do().
+		Status(http.StatusNotFound)
+
+	// 跳转到 getRaws
+	s.NewRequest(http.MethodGet, "/posts/folder/post2/raws.txt").
+		Do().
+		StringBody("raws.txt\n").
+		Status(http.StatusOK)
 }
 
 func TestGetTheme(t *testing.T) {
-	testers := []*httpTester{
-		{
-			path:    "/themes/t1/style.css",
-			content: "*{}\n",
-			status:  http.StatusOK,
-		},
-
-		// 模板文件
-		{
-			path:   "/themes/t1/template.html",
-			status: http.StatusNotFound,
-		},
-
-		// theme.yaml
-		{
-			path:   "/themes/t1/theme.yaml",
-			status: http.StatusNotFound,
-		},
-
-		// themes/analytics.html
-		{
-			path:   "/themes/analytics",
-			status: http.StatusNotFound,
-		},
-
-		// 跳转到 getRaws
-		{
-			path:    "/themes/t1/raws.txt",
-			content: "raws.txt\n",
-			status:  http.StatusOK,
-		},
+	h, err := web.Handler()
+	if err != nil {
+		panic(err)
 	}
+	s := rest.NewServer(t, h, nil)
 
-	runHTTPTester(testers, t)
+	// css
+	s.NewRequest(http.MethodGet, "/themes/t1/style.css").
+		Do().
+		StringBody("*{}\n").
+		Status(http.StatusOK)
+
+	// 模板文件
+	s.NewRequest(http.MethodGet, "/themes/t1/template.html").
+		Do().
+		Status(http.StatusNotFound)
+
+	// theme.yaml
+	s.NewRequest(http.MethodGet, "/themes/t1/theme.yaml").
+		Do().
+		Status(http.StatusNotFound)
+
+	// themes/analytics.html
+	s.NewRequest(http.MethodGet, "/themes/analytics").
+		Do().
+		Status(http.StatusNotFound)
+
+	// 跳转到 getRaws
+	s.NewRequest(http.MethodGet, "/themes/t1/raws.txt").
+		Do().
+		StringBody("raws.txt\n").
+		Status(http.StatusOK)
 }
 
 func TestGetRaws(t *testing.T) {
-	testers := []*httpTester{
-		{
-			path:    "/raws.txt",
-			content: "raws.txt\n",
-			status:  http.StatusOK,
-		},
-
-		{
-			path:   "/not-exists.txt",
-			status: http.StatusNotFound,
-		},
+	h, err := web.Handler()
+	if err != nil {
+		panic(err)
 	}
+	s := rest.NewServer(t, h, nil)
 
-	runHTTPTester(testers, t)
+	s.NewRequest(http.MethodGet, "/raws.txt").
+		Do().
+		StringBody("raws.txt\n").
+		Status(http.StatusOK)
+
+	s.NewRequest(http.MethodGet, "/not-exists.txt").
+		Do().
+		Status(http.StatusNotFound)
 }

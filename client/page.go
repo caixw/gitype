@@ -183,7 +183,7 @@ func (client *Client) renderError(ctx *context.Context, code int) {
 		return
 	}
 
-	ctx.Response.Header().Set("Content-Type", client.data.Type)
+	ctx.Response.Header().Set("Content-Type", encoding.BuildContentType(client.data.Type, "utf-8"))
 	ctx.Response.WriteHeader(code)
 	ctx.Response.Write(data)
 }
