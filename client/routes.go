@@ -97,7 +97,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	p.Keywords = post.Keywords
 	p.Description = post.Summary
 	p.Title = post.HTMLTitle
-	p.Canonical = client.data.BuildURL(post.Permalink)
+	p.Canonical = web.URL(post.Permalink)
 	p.License = post.License // 文章可具体指定协议
 	p.Author = post.Author   // 文章可具体指定作者
 
@@ -133,7 +133,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
 	p.Description = pp.Description
-	p.Canonical = client.data.BuildURL(vars.PostsURL(page))
+	p.Canonical = web.URL(vars.PostsURL(page))
 
 	start, end, ok := client.getPostsRange(len(client.data.Posts), page, w, r)
 	if !ok {
@@ -186,7 +186,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 	p.Title = tag.HTMLTitle
 	p.Keywords = tag.Keywords
 	p.Description = tag.Content
-	p.Canonical = client.data.BuildURL(vars.TagURL(slug, page))
+	p.Canonical = web.URL(vars.TagURL(slug, page))
 
 	start, end, ok := client.getPostsRange(len(tag.Posts), page, w, r)
 	if !ok {
@@ -212,7 +212,7 @@ func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
 	p.Description = pp.Description
-	p.Canonical = client.data.BuildURL(vars.LinksURL())
+	p.Canonical = web.URL(vars.LinksURL())
 
 	p.render(vars.PageLinks)
 }
@@ -226,7 +226,7 @@ func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
 	p.Description = pp.Description
-	p.Canonical = client.data.BuildURL(vars.TagsURL())
+	p.Canonical = web.URL(vars.TagsURL())
 
 	p.render(vars.PageTags)
 }
@@ -240,7 +240,7 @@ func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
 	p.Description = pp.Description
-	p.Canonical = client.data.BuildURL(vars.ArchivesURL())
+	p.Canonical = web.URL(vars.ArchivesURL())
 	p.Archives = client.data.Archives
 
 	p.render(vars.PageArchives)

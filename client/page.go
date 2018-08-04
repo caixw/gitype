@@ -14,6 +14,7 @@ import (
 
 	"github.com/issue9/logs"
 	"github.com/issue9/utils"
+	"github.com/issue9/web"
 	"github.com/issue9/web/context"
 	"github.com/issue9/web/encoding"
 	"github.com/issue9/web/encoding/html"
@@ -82,7 +83,7 @@ func newInfo(d *data.Data) *info {
 		Theme:      d.Theme,
 
 		SiteName:    d.SiteName,
-		URL:         d.URL,
+		URL:         web.URL(""),
 		Icon:        d.Icon,
 		Language:    d.Language,
 		PostSize:    len(d.Posts),

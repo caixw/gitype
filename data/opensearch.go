@@ -9,6 +9,7 @@ import (
 
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/vars"
+	"github.com/issue9/web"
 )
 
 const contentTypeOpensearch = "application/opensearchdescription+xml"
@@ -57,7 +58,7 @@ func (d *Data) buildOpensearch(conf *config) error {
 		"method": http.MethodGet,
 		// 需要全链接，否则 Firefox 的搜索框不认。
 		// https://github.com/caixw/gitype/issues/18
-		"template": d.BuildURL(vars.SearchURL("{searchTerms}", 0)),
+		"template": web.URL(vars.SearchURL("{searchTerms}", 0)),
 	})
 
 	w.WriteElement("Developer", vars.Name, nil)

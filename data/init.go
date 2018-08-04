@@ -43,7 +43,6 @@ var defaultConfig = &config{
 	Title:           "Title",
 	Language:        language,
 	Subtitle:        "subtitle",
-	URL:             "https://caixw.io",
 	PageSize:        20,
 	LongDateFormat:  "2006-01-02 15:04:05",
 	ShortDateFormat: "2006-01-02",

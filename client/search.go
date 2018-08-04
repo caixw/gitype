@@ -39,7 +39,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p.Keywords = helper.ReplaceContent(pp.Keywords, q)
 	p.Description = helper.ReplaceContent(pp.Description, q)
 	p.Q = q
-	p.Canonical = client.data.BuildURL(vars.SearchURL(p.Q, page))
+	p.Canonical = web.URL(vars.SearchURL(p.Q, page))
 
 	posts := search(q, client.data) // 获取所有的搜索结果
 	start, end, ok := client.getPostsRange(len(posts), page, w, r)

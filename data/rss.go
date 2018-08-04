@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/caixw/gitype/helper"
+	"github.com/issue9/web"
 )
 
 const (
@@ -39,14 +40,14 @@ func (d *Data) buildRSS(conf *config) error {
 
 	w.WriteElement("title", conf.Title, nil)
 	w.WriteElement("description", conf.Subtitle, nil)
-	w.WriteElement("link", conf.URL, nil)
+	w.WriteElement("link", web.URL(""), nil)
 
 	if conf.Opensearch != nil {
 		w.WriteCloseElement("atom:link", map[string]string{
 			"rel":   "search",
 			"type":  conf.Opensearch.Type,
 			"title": conf.Opensearch.Title,
-			"href":  d.BuildURL(conf.Opensearch.URL),
+			"href":  web.URL(conf.Opensearch.URL),
 		})
 	}
 
@@ -73,7 +74,7 @@ func addPostsToRSS(w *helper.XMLWriter, d *Data) {
 	for _, p := range d.Posts {
 		w.WriteStartElement("item", nil)
 
-		w.WriteElement("link", d.BuildURL(p.Permalink), nil)
+		w.WriteElement("link", web.URL(p.Permalink), nil)
 		w.WriteElement("title", p.Title, nil)
 		w.WriteElement("pubDate", p.Created.Format(time.RFC1123), nil)
 		w.WriteElement("description", p.Summary, nil)

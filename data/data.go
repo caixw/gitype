@@ -30,7 +30,6 @@ type Data struct {
 	SiteName string
 	Subtitle string           // 网站副标题
 	Language string           // 语言标记，比如 zh-cmn-Hans
-	URL      string           // 网站的域名
 	Beian    string           // 备案号
 	Uptime   time.Time        // 上线时间
 	PageSize int              // 每页显示的数量
@@ -91,7 +90,6 @@ func Load(path *path.Path) (*Data, error) {
 		SiteName: conf.Title,
 		Language: conf.Language,
 		Subtitle: conf.Subtitle,
-		URL:      conf.URL,
 		Beian:    conf.Beian,
 		Uptime:   conf.Uptime,
 		PageSize: conf.PageSize,
@@ -218,9 +216,4 @@ func (d *Data) buildData(conf *config) (err error) {
 	errFilter(d.buildRSS)
 	errFilter(d.buildAtom)
 	return err
-}
-
-// BuildURL 生成一个带域名的地址
-func (d *Data) BuildURL(path string) string {
-	return d.URL + path
 }

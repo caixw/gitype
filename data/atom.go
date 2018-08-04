@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/caixw/gitype/helper"
+	"github.com/issue9/web"
 )
 
 // 用于生成一个符合 atom 规范的 XML 文本。
@@ -22,9 +23,9 @@ func (d *Data) buildAtom(conf *config) error {
 		"xmlns":            "http://www.w3.org/2005/Atom",
 		"xmlns:opensearch": "http://a9.com/-/spec/opensearch/1.1/",
 	})
-	w.WriteElement("id", conf.URL, nil)
+	w.WriteElement("id", web.URL(""), nil)
 	w.WriteCloseElement("link", map[string]string{
-		"href": conf.URL,
+		"href": web.URL(""),
 	})
 
 	if conf.Opensearch != nil {
@@ -32,7 +33,7 @@ func (d *Data) buildAtom(conf *config) error {
 		w.WriteCloseElement("link", map[string]string{
 			"rel":   "search",
 			"type":  o.Type,
-			"href":  d.BuildURL(o.URL),
+			"href":  web.URL(o.URL),
 			"title": o.Title,
 		})
 	}
@@ -66,7 +67,7 @@ func addPostsToAtom(w *helper.XMLWriter, d *Data) {
 		w.WriteElement("id", p.Permalink, nil)
 
 		w.WriteCloseElement("link", map[string]string{
-			"href": d.BuildURL(p.Permalink),
+			"href": web.URL(p.Permalink),
 		})
 
 		w.WriteElement("title", p.Title, nil)

@@ -6,13 +6,11 @@ package data
 
 import (
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
 	"github.com/caixw/gitype/vars"
-	"github.com/issue9/is"
 )
 
 const (
@@ -49,7 +47,7 @@ type config struct {
 	//
 	// NOTE: 若项目在非根路径下，需要修改 vars.urlRoot 的值，
 	// 这需要重新编译源代码。
-	URL string `yaml:"url"`
+	//URL string `yaml:"url"`
 
 	// 各个页面的一些自定义项，目前支持以下几个元素的修改：
 	// 1) html>head>title
@@ -131,13 +129,6 @@ func (conf *config) sanitize() *helper.FieldError {
 
 	if len(conf.Title) == 0 {
 		return &helper.FieldError{Message: "不能为空", Field: "title"}
-	}
-
-	if !is.URL(conf.URL) {
-		return &helper.FieldError{Message: "不是一个合法的域名或 IP", Field: "url"}
-	}
-	if strings.HasSuffix(conf.URL, "/") {
-		conf.URL = conf.URL[:len(conf.URL)-1]
 	}
 
 	// theme
