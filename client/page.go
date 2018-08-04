@@ -36,6 +36,7 @@ type page struct {
 	PrevPage    *data.Link   // 前一页
 	NextPage    *data.Link   // 下一页
 	Type        string       // 当前页面类型
+	Charset     string       // 当前页的字符集
 	Author      *data.Author // 作者
 	License     *data.Link   // 当前页的版本信息，可以为空
 
@@ -133,6 +134,7 @@ func (client *Client) page(typ string, ctx *context.Context) *page {
 		Type:     typ,
 		Author:   d.Author,
 		License:  d.License,
+		Charset:  ctx.OutputCharsetName,
 	}
 }
 
@@ -154,9 +156,7 @@ func (p *page) prevPage(url, text string) {
 
 // 输出当前内容到指定模板
 func (p *page) render(name string) {
-	p.ctx.Render(http.StatusOK, html.Tpl(name, p), map[string]string{
-		"Content-Type": encoding.BuildContentType(p.client.data.Type, "utf-8"),
-	})
+	p.ctx.Render(http.StatusOK, html.Tpl(name, p), nil)
 }
 
 // 输出一个特定状态码下的错误页面。
