@@ -7,12 +7,13 @@ package data
 import (
 	"time"
 
+	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/helper"
 	"github.com/issue9/web"
 )
 
 // 用于生成一个符合 atom 规范的 XML 文本。
-func (d *Data) buildAtom(conf *config) error {
+func (d *Data) buildAtom(conf *loader.Config) error {
 	if conf.Atom == nil { // 不需要生成 atom
 		return nil
 	}

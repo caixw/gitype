@@ -7,25 +7,13 @@ package data
 import (
 	"time"
 
+	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/helper"
 	"github.com/issue9/web"
 )
 
-const (
-	contentTypeAtom = "application/atom+xml"
-	contentTypeRSS  = "application/rss+xml"
-)
-
-// RSS 和 Atom 相关的配置项
-type rssConfig struct {
-	Title string `yaml:"title"`
-	URL   string `yaml:"url"`
-	Type  string `yaml:"type,omitempty"`
-	Size  int    `yaml:"size"` // 显示数量
-}
-
 // 生成一个符合 RSS 规范的 XML 文本。
-func (d *Data) buildRSS(conf *config) error {
+func (d *Data) buildRSS(conf *loader.Config) error {
 	if conf.RSS == nil {
 		return nil
 	}
@@ -81,28 +69,4 @@ func addPostsToRSS(w *helper.XMLWriter, d *Data) {
 
 		w.WriteEndElement("item")
 	}
-}
-
-func (rss *rssConfig) sanitize(conf *config, typ string) *helper.FieldError {
-	if rss.Size <= 0 {
-		return &helper.FieldError{Message: "必须大于 0", Field: typ + ".Size"}
-	}
-	if len(rss.URL) == 0 {
-		return &helper.FieldError{Message: "不能为空", Field: typ + ".URL"}
-	}
-
-	switch typ {
-	case "rss":
-		rss.Type = contentTypeRSS
-	case "atom":
-		rss.Type = contentTypeAtom
-	default:
-		panic("无效的 typ 值")
-	}
-
-	if len(rss.Title) == 0 {
-		rss.Title = conf.Title
-	}
-
-	return nil
 }

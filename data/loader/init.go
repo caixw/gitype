@@ -36,7 +36,7 @@ var defaultPostMeta = &Post{
 	Tags:     "default",
 	Created:  time.Now().Format(vars.DateFormat),
 	Modified: time.Now().Format(vars.DateFormat),
-	State:    stateLast,
+	State:    StateLast,
 }
 
 var defaultConfig = &Config{

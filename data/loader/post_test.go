@@ -40,7 +40,7 @@ func TestLoadPost(t *testing.T) {
 
 	post, err = loadPost(testdataPath, "/draft")
 	a.NotError(err).NotNil(post)
-	a.Equal(post.State, stateDraft)
+	a.Equal(post.State, StateDraft)
 }
 
 func TestLoadPosts(t *testing.T) {

@@ -8,17 +8,8 @@ import (
 	"sort"
 	"time"
 
+	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/helper"
-)
-
-const (
-	// 归档的类型
-	archiveTypeYear  = "year"
-	archiveTypeMonth = "month"
-
-	// 归档的排序方式
-	archiveOrderDesc = "desc"
-	archiveOrderAsc  = "asc"
 )
 
 // Archive 表示某一时间段的存档信息
@@ -28,14 +19,7 @@ type Archive struct {
 	Posts []*Post   // 当前存档的文章列表
 }
 
-// 存档页的配置内容
-type archiveConfig struct {
-	Order  string `yaml:"order"`            // 排序方式
-	Type   string `yaml:"type,omitempty"`   // 存档的分类方式，可以按年或是按月
-	Format string `yaml:"format,omitempty"` // 标题的格式化字符串
-}
-
-func (d *Data) buildArchives(conf *config) error {
+func (d *Data) buildArchives(conf *loader.Config) error {
 	archives := make([]*Archive, 0, 10)
 
 	for _, post := range d.Posts {
@@ -43,9 +27,9 @@ func (d *Data) buildArchives(conf *config) error {
 		var date time.Time
 
 		switch conf.Archive.Type {
-		case archiveTypeMonth:
+		case loader.ArchiveTypeMonth:
 			date = time.Date(t.Year(), t.Month(), 2, 0, 0, 0, 0, t.Location())
-		case archiveTypeYear:
+		case loader.ArchiveTypeYear:
 			date = time.Date(t.Year(), 2, 0, 0, 0, 0, 0, t.Location())
 		default:
 			return &helper.FieldError{File: d.path.MetaConfigFile, Field: "archive.type", Message: "无效的取值"}
@@ -69,33 +53,13 @@ func (d *Data) buildArchives(conf *config) error {
 	} // end for
 
 	sort.SliceStable(archives, func(i, j int) bool {
-		if conf.Archive.Order == archiveOrderDesc {
+		if conf.Archive.Order == loader.ArchiveOrderDesc {
 			return archives[i].date.After(archives[j].date)
 		}
 		return archives[i].date.Before(archives[j].date)
 	})
 
 	d.Archives = archives
-
-	return nil
-}
-
-func (a *archiveConfig) sanitize() *helper.FieldError {
-	if len(a.Type) == 0 {
-		a.Type = archiveTypeYear
-	} else {
-		if a.Type != archiveTypeMonth && a.Type != archiveTypeYear {
-			return &helper.FieldError{Message: "取值不正确", Field: "archive.type"}
-		}
-	}
-
-	if len(a.Order) == 0 {
-		a.Order = archiveOrderDesc
-	} else {
-		if a.Order != archiveOrderAsc && a.Order != archiveOrderDesc {
-			return &helper.FieldError{Message: "取值不正确", Field: "archive.order"}
-		}
-	}
 
 	return nil
 }

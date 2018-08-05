@@ -76,6 +76,7 @@ func LoadTheme(path *path.Path, name string) (*Theme, error) {
 	if err := helper.LoadYAMLFile(p, theme); err != nil {
 		return nil, err
 	}
+	theme.ID = name
 
 	if len(theme.Name) == 0 {
 		return nil, &helper.FieldError{File: path.ThemeMetaPath(theme.ID), Message: "不能为空", Field: "name"}

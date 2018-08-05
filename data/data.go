@@ -6,10 +6,9 @@
 package data
 
 import (
-	"strings"
 	"time"
 
-	"github.com/caixw/gitype/helper"
+	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/path"
 	"github.com/caixw/gitype/vars"
 )
@@ -57,27 +56,27 @@ type Data struct {
 
 // Load 函数用于加载一份新的数据。
 func Load(path *path.Path) (*Data, error) {
-	conf, err := loadConfig(path)
+	conf, err := loader.LoadConfig(path)
 	if err != nil {
 		return nil, err
 	}
 
-	tags, err := loadTags(path)
+	tags, err := loadTags(path, conf)
 	if err != nil {
 		return nil, err
 	}
 
-	links, err := loadLinks(path)
+	links, err := loader.LoadLinks(path)
 	if err != nil {
 		return nil, err
 	}
 
-	posts, err := loadPosts(path)
+	posts, err := loadPosts(path, tags, conf)
 	if err != nil {
 		return nil, err
 	}
 
-	theme, err := findTheme(path, conf)
+	theme, err := loadTheme(path, conf)
 	if err != nil {
 		return nil, err
 	}
@@ -130,31 +129,9 @@ func (d *Data) setUpdated(t time.Time) {
 }
 
 // 对各个数据再次进行检测，主要是一些关联数据的相互初始化
-func (d *Data) sanitize(conf *config) error {
+func (d *Data) sanitize(conf *loader.Config) error {
 	if err := d.compileTemplate(); err != nil {
 		return err
-	}
-
-	p := conf.Pages[vars.PageTag]
-	for _, tag := range d.Tags {
-		// 将标签的默认修改时间设置为网站的上线时间
-		tag.Modified = conf.Uptime
-
-		tag.HTMLTitle = helper.ReplaceContent(p.Title, tag.Title)
-	}
-
-	for _, post := range d.Posts {
-		if post.Author == nil {
-			post.Author = conf.Author
-		}
-
-		if post.License == nil {
-			post.License = conf.License
-		}
-
-		if err := d.attachPostTag(post, conf); err != nil {
-			return err
-		}
 	}
 
 	// 过滤空标签
@@ -174,36 +151,8 @@ func (d *Data) sanitize(conf *config) error {
 	return nil
 }
 
-// 关联文章与标签的相关信息
-func (d *Data) attachPostTag(post *Post, conf *config) *helper.FieldError {
-	ts := strings.Split(post.TagsString, ",")
-	for _, tag := range d.Tags {
-		for _, slug := range ts {
-			if tag.Slug != slug {
-				continue
-			}
-
-			post.Tags = append(post.Tags, tag)
-			tag.Posts = append(tag.Posts, post)
-
-			if tag.Modified.Before(post.Modified) {
-				tag.Modified = post.Modified
-			}
-			break
-		}
-	} // end for tags
-
-	post.HTMLTitle = helper.ReplaceContent(conf.Pages[vars.PagePost].Title, post.Title)
-
-	if len(post.Tags) == 0 {
-		return &helper.FieldError{File: d.path.PostMetaPath(post.Slug), Message: "未指定任何关联标签信息", Field: "tags"}
-	}
-
-	return nil
-}
-
-func (d *Data) buildData(conf *config) (err error) {
-	errFilter := func(fn func(*config) error) {
+func (d *Data) buildData(conf *loader.Config) (err error) {
+	errFilter := func(fn func(*loader.Config) error) {
 		if err != nil {
 			return
 		}

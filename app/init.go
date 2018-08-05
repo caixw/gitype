@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/caixw/gitype/data"
+	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
 	"github.com/issue9/utils"
@@ -71,7 +71,7 @@ func Init(path *path.Path) error {
 		return err
 	}
 
-	return data.Init(path)
+	return loader.Init(path)
 }
 
 // 初始化 conf 目录下的数据

@@ -7,6 +7,7 @@ package data
 import (
 	"time"
 
+	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/vars"
 )
 
@@ -22,7 +23,7 @@ type outdatedServer struct {
 	posts           []*Post
 }
 
-func (d *Data) initOutdatedServer(conf *config) {
+func (d *Data) initOutdatedServer(conf *loader.Config) {
 	if conf.Outdated == 0 {
 		return
 	}

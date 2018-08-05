@@ -19,18 +19,18 @@ import (
 
 // 文章是否过时的比较方式
 const (
-	outdatedTypeCreated  = "created"
-	outdatedTypeModified = "modified"
-	outdatedTypeNone     = "none"
-	outdatedTypeCustom   = "custom"
+	OutdatedTypeCreated  = "created"
+	OutdatedTypeModified = "modified"
+	OutdatedTypeNone     = "none"
+	OutdatedTypeCustom   = "custom"
 )
 
 // 表示 Post.State 的各类值
 const (
-	stateTop     = "top"     // 置顶
-	stateLast    = "last"    // 放在尾部
-	stateDefault = "default" // 默认值
-	stateDraft   = "draft"   // 表示为草稿，不会加载此条数据
+	StateTop     = "top"     // 置顶
+	StateLast    = "last"    // 放在尾部
+	StateDefault = "default" // 默认值
+	StateDraft   = "draft"   // 表示为草稿，不会加载此条数据
 )
 
 // Post 表示文章的信息
@@ -117,7 +117,7 @@ func LoadPosts(path *path.Path) ([]*Post, error) {
 			return nil, err
 		}
 
-		if post.State != stateDraft {
+		if post.State != StateDraft {
 			posts = append(posts, post)
 		}
 	}
@@ -134,7 +134,7 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 	if err := helper.LoadYAMLFile(path.PostMetaPath(slug), post); err != nil {
 		return nil, err
 	}
-	if post.State == stateDraft {
+	if post.State == StateDraft {
 		return post, nil
 	}
 
@@ -161,10 +161,10 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 
 	// state
 	if len(post.State) == 0 {
-		post.State = stateDefault
-	} else if post.State != stateDefault &&
-		post.State != stateLast &&
-		post.State != stateTop {
+		post.State = StateDefault
+	} else if post.State != StateDefault &&
+		post.State != StateLast &&
+		post.State != StateTop {
 		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "无效的值", Field: "order"}
 	}
 
