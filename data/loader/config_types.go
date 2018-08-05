@@ -25,15 +25,16 @@ const (
 	contentTypeXML        = "application/xml"
 )
 
-// RSS 和 Atom 相关的配置项
-type rssConfig struct {
+// RSSConfig RSS 和 Atom 相关的配置项
+type RSSConfig struct {
 	Title string `yaml:"title"`
 	URL   string `yaml:"url"`
 	Type  string `yaml:"type,omitempty"`
 	Size  int    `yaml:"size"` // 显示数量
 }
 
-type opensearchConfig struct {
+// OpensearchConfig opensearch 相关的配置
+type OpensearchConfig struct {
 	URL   string `yaml:"url"`
 	Type  string `yaml:"type,omitempty"`
 	Title string `yaml:"title,omitempty"`
@@ -44,7 +45,8 @@ type opensearchConfig struct {
 	Image       *Icon  `yaml:"image,omitempty"`
 }
 
-type sitemapConfig struct {
+// SitemapConfig sitemap 相关的配置
+type SitemapConfig struct {
 	URL  string `yaml:"url"`
 	Type string `yaml:"type,omitempty"`
 
@@ -58,14 +60,14 @@ type sitemapConfig struct {
 	PostChangefreq string  `yaml:"postChangefreq"`
 }
 
-// 存档页的配置内容
-type archiveConfig struct {
+// ArchiveConfig 存档页的配置内容
+type ArchiveConfig struct {
 	Order  string `yaml:"order"`            // 排序方式
 	Type   string `yaml:"type,omitempty"`   // 存档的分类方式，可以按年或是按月
 	Format string `yaml:"format,omitempty"` // 标题的格式化字符串
 }
 
-func (rss *rssConfig) sanitize(conf *Config, typ string) *helper.FieldError {
+func (rss *RSSConfig) sanitize(conf *Config, typ string) *helper.FieldError {
 	if rss.Size <= 0 {
 		return &helper.FieldError{Message: "必须大于 0", Field: typ + ".Size"}
 	}
@@ -90,7 +92,7 @@ func (rss *rssConfig) sanitize(conf *Config, typ string) *helper.FieldError {
 }
 
 // 检测 opensearch 取值是否正确
-func (s *opensearchConfig) sanitize(conf *Config) *helper.FieldError {
+func (s *OpensearchConfig) sanitize(conf *Config) *helper.FieldError {
 	switch {
 	case len(s.URL) == 0:
 		return &helper.FieldError{Message: "不能为空", Field: "opensearch.url"}
@@ -112,7 +114,7 @@ func (s *opensearchConfig) sanitize(conf *Config) *helper.FieldError {
 }
 
 // 检测 sitemap 取值是否正确
-func (s *sitemapConfig) sanitize() *helper.FieldError {
+func (s *SitemapConfig) sanitize() *helper.FieldError {
 	switch {
 	case len(s.URL) == 0:
 		return &helper.FieldError{Message: "不能为空", Field: "sitemap.url"}
@@ -133,7 +135,7 @@ func (s *sitemapConfig) sanitize() *helper.FieldError {
 	return nil
 }
 
-func (a *archiveConfig) sanitize() *helper.FieldError {
+func (a *ArchiveConfig) sanitize() *helper.FieldError {
 	if len(a.Type) == 0 {
 		a.Type = ArchiveTypeYear
 	} else {

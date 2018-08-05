@@ -39,15 +39,8 @@ type Config struct {
 	LongDateFormat  string        `yaml:"longDateFormat"`
 	ShortDateFormat string        `yaml:"shortDateFormat"`
 	Outdated        time.Duration `yaml:"outdated,omitempty"`
-
-	// URL 网站的域名，
-	//
-	// 若是非默认端口，则还得包含端口值，但不能包含最后的斜杠，
-	// 也不能包含后面的路径名称，即使项目在非根路径下。
-	//
-	// NOTE: 若项目在非根路径下，需要修改 vars.urlRoot 的值，
-	// 这需要重新编译源代码。
-	//URL string `yaml:"url"`
+	Theme           string        `yaml:"theme"`
+	UptimeFormat    string        `yaml:"uptime"`
 
 	// 各个页面的一些自定义项，目前支持以下几个元素的修改：
 	// 1) html>head>title
@@ -55,14 +48,11 @@ type Config struct {
 	// 3) html>head>meta.description
 	Pages map[string]*Page `yaml:"pages,omitempty"`
 
-	// 以下内容不直接存在于 Data 中
-	Theme        string            `yaml:"theme"`
-	UptimeFormat string            `yaml:"uptime"`
-	Archive      *archiveConfig    `yaml:"archive"`
-	RSS          *rssConfig        `yaml:"rss,omitempty"`
-	Atom         *rssConfig        `yaml:"atom,omitempty"`
-	Sitemap      *sitemapConfig    `yaml:"sitemap,omitempty"`
-	Opensearch   *opensearchConfig `yaml:"opensearch,omitempty"`
+	Archive    *ArchiveConfig    `yaml:"archive"`
+	RSS        *RSSConfig        `yaml:"rss,omitempty"`
+	Atom       *RSSConfig        `yaml:"atom,omitempty"`
+	Sitemap    *SitemapConfig    `yaml:"sitemap,omitempty"`
+	Opensearch *OpensearchConfig `yaml:"opensearch,omitempty"`
 }
 
 // LoadConfig 加载配置信息
