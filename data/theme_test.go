@@ -7,28 +7,14 @@ package data
 import (
 	"testing"
 
+	"github.com/caixw/gitype/data/loader"
 	"github.com/issue9/assert"
 )
-
-func TestFindTheme(t *testing.T) {
-	a := assert.New(t)
-
-	conf := &config{Theme: "no exists"}
-	theme, err := findTheme(testdataPath, conf)
-	a.Error(err).Nil(theme)
-
-	conf.Theme = "t1"
-	theme, err = findTheme(testdataPath, conf)
-	a.NotError(err).NotNil(theme)
-	a.Equal(theme.ID, "t1")
-	a.Equal(theme.Name, "name")
-	a.Equal(theme.Author.Name, "caixw")
-}
 
 func TestLoadTheme(t *testing.T) {
 	a := assert.New(t)
 
-	conf := &config{Theme: "t1"}
+	conf := &loader.Config{Theme: "t1"}
 	theme, err := loadTheme(testdataPath, conf)
 	a.NotError(err).NotNil(theme)
 

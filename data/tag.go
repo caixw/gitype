@@ -21,11 +21,11 @@ import (
 type Tag struct {
 	loader.Tag
 
-	HTMLTitle string    `yaml:"-"` // 用于网页的标题
-	Posts     []*Post   `yaml:"-"` // 关联的文章
-	Keywords  string    `yaml:"-"` // meta.keywords 标签的内容，如果为空，使用 Tag.Title 属性的值
-	Modified  time.Time `yaml:"-"` // 所有文章中最迟修改的
-	Permalink string    `yaml:"-"` // 唯一链接，指向第一页
+	HTMLTitle string    // 用于网页的标题
+	Posts     []*Post   // 关联的文章
+	Keywords  string    // meta.keywords 标签的内容，如果为空，使用 Tag.Title 属性的值
+	Modified  time.Time // 所有文章中最迟修改的
+	Permalink string    // 唯一链接，指向第一页
 
 	// 用于搜索的副本内容，会全部转换成小写
 	SearchTitle string

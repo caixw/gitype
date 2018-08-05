@@ -9,9 +9,18 @@ import (
 
 	"github.com/caixw/gitype/path"
 	"github.com/issue9/assert"
+	"github.com/issue9/web"
 )
 
 var testdataPath = path.New("../testdata")
+
+func TestMain(m *testing.M) {
+	if err := web.Init(testdataPath.ConfDir); err != nil {
+		panic(err)
+	}
+
+	m.Run()
+}
 
 func TestLoad(t *testing.T) {
 	a := assert.New(t)

@@ -19,3 +19,29 @@ func TestLoadTheme(t *testing.T) {
 	a.Equal(theme.Name, "name")
 	a.Equal(theme.Author.Name, "caixw")
 }
+
+func TestLoadLinks(t *testing.T) {
+	a := assert.New(t)
+
+	links, err := LoadLinks(testdataPath)
+	a.NotError(err).NotNil(links)
+
+	a.True(len(links) > 0)
+	a.Equal(links[0].Text, "text0")
+	a.Equal(links[0].URL, "url0")
+	a.Equal(links[1].Text, "text1")
+	a.Equal(links[1].URL, "url1")
+}
+
+func TestAuthor_sanitize(t *testing.T) {
+	a := assert.New(t)
+
+	author := &Author{}
+	a.Error(author.sanitize())
+
+	author.Name = ""
+	a.Error(author.sanitize())
+
+	author.Name = "caixw"
+	a.NotError(author.sanitize())
+}

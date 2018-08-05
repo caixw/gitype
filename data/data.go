@@ -107,10 +107,6 @@ func Load(path *path.Path) (*Data, error) {
 		return nil, err
 	}
 
-	if err := d.buildData(conf); err != nil {
-		return nil, err
-	}
-
 	d.initOutdatedServer(conf)
 
 	d.setUpdated(now)
@@ -144,11 +140,9 @@ func (d *Data) sanitize(conf *loader.Config) error {
 	}
 
 	// 最后才分离标签和专题
-	ts, series := splitTags(tags)
-	d.Tags = ts
-	d.Series = series
+	d.Tags, d.Series = splitTags(tags)
 
-	return nil
+	return d.buildData(conf)
 }
 
 func (d *Data) buildData(conf *loader.Config) (err error) {
