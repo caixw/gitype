@@ -36,7 +36,6 @@ gitype [![Build Status](https://travis-ci.org/caixw/gitype.svg?branch=nosql)](ht
 
 参数名   | 值类型     | 描述
 |:-------|:-----------|:-----
-pprof    | bool       | 指定此参数，会预留一个 /debug/pprof/ 的 URL 地址，用户可以从此地址获取一此调试用的信息。
 preview  | bool       | 预览模式，指定此参数，可以监视用户的数据目录，一旦有更改，就会自动重新加载数据，当用户在本地创作文章时，可以指这此值。
 
 
@@ -116,7 +115,6 @@ config.yaml 指定了网站的一些基本配置情况：
 :---------------|:----------------|:------
 title           | string          | 网站标题
 subtitle        | string          | 网站副标题
-url             | string          | 网站的地址
 beian           | string          | 备案号
 uptime          | string          | 上线时间，符合 rfc 3339 标准的时间字符串
 pageSize        | int             | 每页显示的数量
