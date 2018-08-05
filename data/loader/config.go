@@ -10,17 +10,12 @@ import (
 
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
-	"github.com/caixw/gitype/vars"
 )
 
-const (
-	contentTypeHTML = "text/html"
-
-	// 默认的语言，在配置文件中未指定时，使用此值，
-	// 作为默认值，此值最好不要修改，若需要修改，
-	// 则最好将诸如 tagTitle 等与语言相关的常量一起修改。
-	language = "zh-cmn-Hans"
-)
+// 默认的语言，在配置文件中未指定时，使用此值，
+// 作为默认值，此值最好不要修改，若需要修改，
+// 则最好将诸如 tagTitle 等与语言相关的常量一起修改。
+const language = "zh-cmn-Hans"
 
 // Config 配置信息，用于从文件中读取
 type Config struct {
@@ -29,7 +24,7 @@ type Config struct {
 	Language        string        `yaml:"language"`
 	Subtitle        string        `yaml:"subtitle,omitempty"`
 	Beian           string        `yaml:"beian,omitempty"`
-	Uptime          time.Time     `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	Uptime          string        `yaml:"uptime"`
 	PageSize        int           `yaml:"pageSize"`
 	Type            string        `yaml:"type,omitempty"`
 	Icon            *Icon         `yaml:"icon,omitempty"`
@@ -40,7 +35,6 @@ type Config struct {
 	ShortDateFormat string        `yaml:"shortDateFormat"`
 	Outdated        time.Duration `yaml:"outdated,omitempty"`
 	Theme           string        `yaml:"theme"`
-	UptimeFormat    string        `yaml:"uptime"`
 
 	// 各个页面的一些自定义项，目前支持以下几个元素的修改：
 	// 1) html>head>title
@@ -86,12 +80,6 @@ func (conf *Config) sanitize() *helper.FieldError {
 	if len(conf.ShortDateFormat) == 0 {
 		return &helper.FieldError{Message: "不能为空", Field: "shortDateFormat"}
 	}
-
-	t, err := time.Parse(vars.DateFormat, conf.UptimeFormat)
-	if err != nil {
-		return &helper.FieldError{Message: err.Error(), Field: "uptimeFormat"}
-	}
-	conf.Uptime = t
 
 	if conf.Outdated < 0 {
 		return &helper.FieldError{Message: "必须大于 0", Field: "outdated"}

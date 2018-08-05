@@ -56,8 +56,8 @@ var defaultConfig = &Config{
 		URL:   "https://creativecommons.org/licenses/by/4.0/deed.zh",
 	},
 
-	Theme:        "default",
-	UptimeFormat: time.Now().Format(vars.DateFormat),
+	Theme:  "default",
+	Uptime: time.Now().Format(vars.DateFormat),
 	Archive: &ArchiveConfig{
 		Type:   ArchiveTypeYear,
 		Format: "2006 年",

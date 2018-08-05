@@ -18,13 +18,6 @@ const (
 	ArchiveOrderAsc  = "asc"
 )
 
-const (
-	contentTypeAtom       = "application/atom+xml"
-	contentTypeRSS        = "application/rss+xml"
-	contentTypeOpensearch = "application/opensearchdescription+xml"
-	contentTypeXML        = "application/xml"
-)
-
 // RSSConfig RSS 和 Atom 相关的配置项
 type RSSConfig struct {
 	Title string `yaml:"title"`
