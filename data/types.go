@@ -7,6 +7,7 @@ package data
 import (
 	"strconv"
 
+	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
 	"github.com/issue9/is"
@@ -21,30 +22,13 @@ type Feed struct {
 }
 
 // Author 描述作者信息
-type Author struct {
-	Name   string `yaml:"name"`
-	URL    string `yaml:"url,omitempty"`
-	Email  string `yaml:"email,omitempty"`
-	Avatar string `yaml:"avatar,omitempty"`
-}
+type Author = loader.Author
 
 // Link 描述链接的内容
-type Link struct {
-	// 链接对应的图标。可以是字体图标或是图片链接，模板根据情况自动选择。
-	Icon  string `yaml:"icon,omitempty"`
-	Title string `yaml:"title,omitempty"` // 链接的 title 属性
-	Rel   string `yaml:"rel,omitempty"`   // 链接的 rel 属性
-	URL   string `yaml:"url"`             // 链接地址
-	Text  string `yaml:"text"`            // 链接的文本
-	Type  string `yaml:"type,omitempty"`  // 链接的类型，一般用于 a 和 link 标签的 type 属性
-}
+type Link = loader.Link
 
 // Icon 表示网站图标，比如 html>head>link.rel="short icon"
-type Icon struct {
-	URL   string `yaml:"url"`
-	Type  string `yaml:"type"` // mime type
-	Sizes string `yaml:"sizes"`
-}
+type Icon = loader.Icon
 
 func loadLinks(path *path.Path) ([]*Link, error) {
 	links := make([]*Link, 0, 20)
