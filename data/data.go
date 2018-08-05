@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/caixw/gitype/data/loader"
-	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
 	"github.com/caixw/gitype/vars"
 )
@@ -82,11 +81,6 @@ func Load(path *path.Path) (*Data, error) {
 		return nil, err
 	}
 
-	uptime, err := time.Parse(vars.DateFormat, conf.Uptime)
-	if err != nil {
-		return nil, &helper.FieldError{File: path.MetaConfigFile, Message: err.Error(), Field: "uptime"}
-	}
-
 	now := time.Now()
 	d := &Data{
 		path:    path,
@@ -96,7 +90,7 @@ func Load(path *path.Path) (*Data, error) {
 		Language: conf.Language,
 		Subtitle: conf.Subtitle,
 		Beian:    conf.Beian,
-		Uptime:   uptime,
+		Uptime:   conf.Uptime,
 		PageSize: conf.PageSize,
 		Type:     conf.Type,
 		Icon:     conf.Icon,
@@ -141,10 +135,6 @@ func (d *Data) sanitize(conf *loader.Config) error {
 	for _, tag := range d.Tags {
 		if len(tag.Posts) == 0 {
 			continue
-		}
-
-		if tag.Modified.Before(d.Uptime) {
-			tag.Modified = d.Uptime
 		}
 
 		tags = append(tags, tag)

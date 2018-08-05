@@ -52,6 +52,7 @@ func loadTags(path *path.Path, conf *loader.Config) ([]*Tag, error) {
 			SearchTitle: strings.ToLower(tag.Title),
 			Keywords:    keywords,
 			HTMLTitle:   helper.ReplaceContent(p.Title, tag.Title),
+			Modified:    conf.Uptime,
 		})
 	}
 

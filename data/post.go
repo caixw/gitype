@@ -78,22 +78,12 @@ func loadPosts(path *path.Path, tags []*Tag, conf *loader.Config) ([]*Post, erro
 			continue
 		}
 
-		created, err := time.Parse(vars.DateFormat, p.Created)
-		if err != nil {
-			return nil, &helper.FieldError{File: path.PostMetaPath(p.Slug), Message: err.Error(), Field: "created"}
-		}
-
-		modified, err := time.Parse(vars.DateFormat, p.Modified)
-		if err != nil {
-			return nil, &helper.FieldError{File: path.PostMetaPath(p.Slug), Message: err.Error(), Field: "modified"}
-		}
-
 		post := &Post{
 			Slug:      p.Slug,
 			Permalink: vars.PostURL(p.Slug),
 			Title:     p.Title,
-			Created:   created,
-			Modified:  modified,
+			Created:   p.Created,
+			Modified:  p.Modified,
 			Summary:   p.Summary,
 			Content:   p.Content,
 			State:     p.State,
@@ -120,12 +110,12 @@ func loadPosts(path *path.Path, tags []*Tag, conf *loader.Config) ([]*Post, erro
 		case loader.OutdatedTypeCreated, "":
 			post.Outdated = &Outdated{
 				Type: outdatedTypeCreated,
-				Date: created,
+				Date: post.Created,
 			}
 		case loader.OutdatedTypeModified:
 			post.Outdated = &Outdated{
 				Type: outdatedTypeModified,
-				Date: modified,
+				Date: post.Modified,
 			}
 		case loader.OutdatedTypeNone:
 			post.Outdated = nil

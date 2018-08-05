@@ -24,12 +24,6 @@ const (
 	// URL 项目的地址
 	URL = "https://github.com/caixw/gitype"
 
-	// DateFormat 客户配置文件中所使用的的时间格式。
-	// 所有的时间字符串，都将使用此格式去解析。
-	//
-	// 只负责时间的解析，如果是输出时间，则其格式由 meta/config.yaml 中定义。
-	DateFormat = time.RFC3339
-
 	// TemplateExtension 模板的扩展名
 	TemplateExtension = ".html"
 

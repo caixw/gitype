@@ -24,7 +24,7 @@ type Config struct {
 	Language        string        `yaml:"language"`
 	Subtitle        string        `yaml:"subtitle,omitempty"`
 	Beian           string        `yaml:"beian,omitempty"`
-	Uptime          string        `yaml:"uptime"`
+	Uptime          time.Time     `yaml:"uptime"`
 	PageSize        int           `yaml:"pageSize"`
 	Type            string        `yaml:"type,omitempty"`
 	Icon            *Icon         `yaml:"icon,omitempty"`

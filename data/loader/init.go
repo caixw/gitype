@@ -34,8 +34,8 @@ var defaultTheme = &Theme{
 var defaultPostMeta = &Post{
 	Title:    "about",
 	Tags:     "default",
-	Created:  time.Now().Format(vars.DateFormat),
-	Modified: time.Now().Format(vars.DateFormat),
+	Created:  time.Now(),
+	Modified: time.Now(),
 	State:    StateLast,
 }
 
@@ -57,7 +57,7 @@ var defaultConfig = &Config{
 	},
 
 	Theme:  "default",
-	Uptime: time.Now().Format(vars.DateFormat),
+	Uptime: time.Now(),
 	Archive: &ArchiveConfig{
 		Type:   ArchiveTypeYear,
 		Format: "2006 年",

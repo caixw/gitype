@@ -35,10 +35,10 @@ const (
 
 // Post 表示文章的信息
 type Post struct {
-	Title    string `yaml:"title"`    // 标题
-	Created  string `yaml:"created"`  // 创建时间
-	Modified string `yaml:"modified"` // 修改时间
-	Summary  string `yaml:"summary"`  // 摘要，同时也作为 meta.description 的内容
+	Title    string    `yaml:"title"`    // 标题
+	Created  time.Time `yaml:"created"`  // 创建时间
+	Modified time.Time `yaml:"modified"` // 修改时间
+	Summary  string    `yaml:"summary"`  // 摘要，同时也作为 meta.description 的内容
 
 	// 这两个变量，并不直接对应变量
 	Slug    string `yaml:"-"` // 唯一名称
