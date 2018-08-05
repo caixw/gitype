@@ -10,7 +10,7 @@ import (
 	"github.com/issue9/web"
 
 	"github.com/caixw/gitype/data/loader"
-	"github.com/caixw/gitype/helper"
+	"github.com/caixw/gitype/data/xmlwriter"
 	"github.com/caixw/gitype/vars"
 )
 
@@ -20,7 +20,7 @@ func (d *Data) buildOpensearch(conf *loader.Config) error {
 		return nil
 	}
 
-	w := helper.NewWriter()
+	w := xmlwriter.New()
 	o := conf.Opensearch
 
 	w.WriteStartElement("OpenSearchDescription", map[string]string{

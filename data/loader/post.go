@@ -14,6 +14,7 @@ import (
 
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
+	"github.com/caixw/gitype/vars"
 	"github.com/issue9/utils"
 )
 
@@ -138,7 +139,6 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 		return post, nil
 	}
 
-	// slug
 	post.Slug = slug
 
 	// 加载内容
@@ -166,6 +166,14 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 		post.State != StateLast &&
 		post.State != StateTop {
 		return nil, &helper.FieldError{File: path.PostMetaPath(slug), Message: "无效的值", Field: "order"}
+	}
+
+	if post.Keywords == "" {
+		post.Keywords = post.Tags
+	}
+
+	if len(post.Template) == 0 {
+		post.Template = vars.PagePost
 	}
 
 	return post, nil

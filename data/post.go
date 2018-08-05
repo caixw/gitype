@@ -98,14 +98,6 @@ func loadPosts(path *path.Path, tags []*Tag, conf *loader.Config) ([]*Post, erro
 			SearchTitle:   strings.ToLower(p.Title),
 		}
 
-		if post.Keywords == "" {
-			post.Keywords = p.Tags
-		}
-
-		if len(post.Template) == 0 {
-			post.Template = vars.PagePost
-		}
-
 		switch p.Outdated {
 		case loader.OutdatedTypeCreated, "":
 			post.Outdated = &Outdated{

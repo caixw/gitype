@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/caixw/gitype/data/loader"
-	"github.com/caixw/gitype/helper"
+	"github.com/caixw/gitype/data/xmlwriter"
 	"github.com/issue9/web"
 )
 
@@ -18,7 +18,7 @@ func (d *Data) buildAtom(conf *loader.Config) error {
 		return nil
 	}
 
-	w := helper.NewWriter()
+	w := xmlwriter.New()
 
 	w.WriteStartElement("feed", map[string]string{
 		"xmlns":            "http://www.w3.org/2005/Atom",
@@ -61,7 +61,7 @@ func (d *Data) buildAtom(conf *loader.Config) error {
 	return nil
 }
 
-func addPostsToAtom(w *helper.XMLWriter, d *Data) {
+func addPostsToAtom(w *xmlwriter.XMLWriter, d *Data) {
 	for _, p := range d.Posts {
 		w.WriteStartElement("entry", nil)
 
