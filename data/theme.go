@@ -5,89 +5,45 @@
 package data
 
 import (
-	"errors"
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"regexp"
 	"time"
 
-	"github.com/caixw/gitype/helper"
+	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/path"
 	"github.com/caixw/gitype/vars"
 )
 
 // Theme 表示主题信息
 type Theme struct {
-	ID          string  `yaml:"-"`    // 唯一 ID，即当前目录名称
-	Name        string  `yaml:"name"` // 名称，不必唯一，可以与 ID 值不同。
-	Version     string  `yaml:"version"`
-	Description string  `yaml:"description"`
-	URL         string  `yaml:"url,omitempty"`
-	Author      *Author `yaml:"author"`
+	loader.Theme
 
-	template        *template.Template // 当前主题的预编译结果
+	Template        *template.Template // 当前主题的预编译结果
 	longDateFormat  string             // 长时间的显示格式
 	shortDateFormat string             // 短时间的显示格式
-}
-
-// 查找与 conf.Theme 相同的主题。若找不到，则返回 errors
-func findTheme(path *path.Path, conf *config) (*Theme, error) {
-	dir := path.ThemesDir
-	fs, err := ioutil.ReadDir(dir)
-	if err != nil {
-		return nil, err
-	}
-	if len(fs) == 0 {
-		return nil, errors.New("未找到任何主题文件")
-	}
-
-	for _, file := range fs {
-		if file.IsDir() && (file.Name() == conf.Theme) {
-			return loadTheme(path, conf)
-		}
-	}
-
-	return nil, &helper.FieldError{
-		Message: "不存在",
-		Field:   "theme",
-		File:    path.MetaConfigFile,
-	}
 }
 
 // 加载主题
 //
 // id 主题当前目录名称
-func loadTheme(path *path.Path, conf *config) (*Theme, error) {
-	p := path.ThemeMetaPath(conf.Theme)
-
-	theme := &Theme{}
-	if err := helper.LoadYAMLFile(p, theme); err != nil {
+func loadTheme(path *path.Path, conf *loader.Config) (*Theme, error) {
+	t, err := loader.LoadTheme(path, conf.Theme)
+	if err != nil {
 		return nil, err
 	}
 
-	theme.ID = conf.Theme
-	theme.longDateFormat = conf.LongDateFormat
-	theme.shortDateFormat = conf.ShortDateFormat
-
-	if len(theme.Name) == 0 {
-		return nil, &helper.FieldError{File: path.ThemeMetaPath(theme.ID), Message: "不能为空", Field: "name"}
-	}
-
-	if theme.Author != nil {
-		if err := theme.Author.sanitize(); err != nil {
-			err.Field = path.ThemeMetaPath(theme.ID)
-			return nil, err
-		}
-	}
-
-	return theme, nil
+	return &Theme{
+		Theme:           *t,
+		longDateFormat:  conf.LongDateFormat,
+		shortDateFormat: conf.ShortDateFormat,
+	}, nil
 }
 
 // ExecuteTemplate 渲染指定的模块并输出到 w
 func (d *Data) ExecuteTemplate(w io.Writer, name string, data interface{}) error {
-	return d.Theme.template.ExecuteTemplate(w, name, data)
+	return d.Theme.Template.ExecuteTemplate(w, name, data)
 }
 
 // 编译主题的模板。
@@ -98,13 +54,13 @@ func (d *Data) compileTemplate() error {
 	}
 
 	// 编译模板
-	d.Theme.template, err = snippets.Clone()
+	d.Theme.Template, err = snippets.Clone()
 	if err != nil {
 		return err
 	}
 
 	path := d.path.ThemesPath(d.Theme.ID, "*"+vars.TemplateExtension)
-	_, err = d.Theme.template.ParseGlob(path)
+	_, err = d.Theme.Template.ParseGlob(path)
 	if err != nil {
 		return err
 	}
@@ -113,7 +69,7 @@ func (d *Data) compileTemplate() error {
 	// 模板定义未必是按文件分的，所以不能简单地判断文件是否存在
 	templates := d.templatesName()
 	for _, tpl := range templates {
-		if nil == d.Theme.template.Lookup(tpl) {
+		if nil == d.Theme.Template.Lookup(tpl) {
 			return fmt.Errorf("模板 %s 未定义", tpl)
 		}
 	}

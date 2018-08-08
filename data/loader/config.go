@@ -2,36 +2,29 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package data
+package loader
 
 import (
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
-	"github.com/caixw/gitype/vars"
-	"github.com/issue9/is"
 )
 
-const (
-	contentTypeHTML = "text/html"
+// 默认的语言，在配置文件中未指定时，使用此值，
+// 作为默认值，此值最好不要修改，若需要修改，
+// 则最好将诸如 tagTitle 等与语言相关的常量一起修改。
+const language = "zh-cmn-Hans"
 
-	// 默认的语言，在配置文件中未指定时，使用此值，
-	// 作为默认值，此值最好不要修改，若需要修改，
-	// 则最好将诸如 tagTitle 等与语言相关的常量一起修改。
-	language = "zh-cmn-Hans"
-)
-
-// 配置信息，用于从文件中读取
-type config struct {
+// Config 配置信息，用于从文件中读取
+type Config struct {
 	Title           string        `yaml:"title"`
 	TitleSeparator  string        `yaml:"titleSeparator"`
 	Language        string        `yaml:"language"`
 	Subtitle        string        `yaml:"subtitle,omitempty"`
 	Beian           string        `yaml:"beian,omitempty"`
-	Uptime          time.Time     `yaml:"-"` // 上线时间，unix 时间戳，由 UptimeFormat 转换而来
+	Uptime          time.Time     `yaml:"uptime"`
 	PageSize        int           `yaml:"pageSize"`
 	Type            string        `yaml:"type,omitempty"`
 	Icon            *Icon         `yaml:"icon,omitempty"`
@@ -41,15 +34,7 @@ type config struct {
 	LongDateFormat  string        `yaml:"longDateFormat"`
 	ShortDateFormat string        `yaml:"shortDateFormat"`
 	Outdated        time.Duration `yaml:"outdated,omitempty"`
-
-	// URL 网站的域名，
-	//
-	// 若是非默认端口，则还得包含端口值，但不能包含最后的斜杠，
-	// 也不能包含后面的路径名称，即使项目在非根路径下。
-	//
-	// NOTE: 若项目在非根路径下，需要修改 vars.urlRoot 的值，
-	// 这需要重新编译源代码。
-	URL string `yaml:"url"`
+	Theme           string        `yaml:"theme"`
 
 	// 各个页面的一些自定义项，目前支持以下几个元素的修改：
 	// 1) html>head>title
@@ -57,18 +42,16 @@ type config struct {
 	// 3) html>head>meta.description
 	Pages map[string]*Page `yaml:"pages,omitempty"`
 
-	// 以下内容不直接存在于 Data 中
-	Theme        string            `yaml:"theme"`
-	UptimeFormat string            `yaml:"uptime"`
-	Archive      *archiveConfig    `yaml:"archive"`
-	RSS          *rssConfig        `yaml:"rss,omitempty"`
-	Atom         *rssConfig        `yaml:"atom,omitempty"`
-	Sitemap      *sitemapConfig    `yaml:"sitemap,omitempty"`
-	Opensearch   *opensearchConfig `yaml:"opensearch,omitempty"`
+	Archive    *ArchiveConfig    `yaml:"archive"`
+	RSS        *RSSConfig        `yaml:"rss,omitempty"`
+	Atom       *RSSConfig        `yaml:"atom,omitempty"`
+	Sitemap    *SitemapConfig    `yaml:"sitemap,omitempty"`
+	Opensearch *OpensearchConfig `yaml:"opensearch,omitempty"`
 }
 
-func loadConfig(path *path.Path) (*config, error) {
-	conf := &config{}
+// LoadConfig 加载配置信息
+func LoadConfig(path *path.Path) (*Config, error) {
+	conf := &Config{}
 	if err := helper.LoadYAMLFile(path.MetaConfigFile, conf); err != nil {
 		return nil, err
 	}
@@ -81,7 +64,7 @@ func loadConfig(path *path.Path) (*config, error) {
 	return conf, nil
 }
 
-func (conf *config) sanitize() *helper.FieldError {
+func (conf *Config) sanitize() *helper.FieldError {
 	if len(conf.Language) == 0 {
 		conf.Language = language
 	}
@@ -97,12 +80,6 @@ func (conf *config) sanitize() *helper.FieldError {
 	if len(conf.ShortDateFormat) == 0 {
 		return &helper.FieldError{Message: "不能为空", Field: "shortDateFormat"}
 	}
-
-	t, err := time.Parse(vars.DateFormat, conf.UptimeFormat)
-	if err != nil {
-		return &helper.FieldError{Message: err.Error(), Field: "uptimeFormat"}
-	}
-	conf.Uptime = t
 
 	if conf.Outdated < 0 {
 		return &helper.FieldError{Message: "必须大于 0", Field: "outdated"}
@@ -131,13 +108,6 @@ func (conf *config) sanitize() *helper.FieldError {
 
 	if len(conf.Title) == 0 {
 		return &helper.FieldError{Message: "不能为空", Field: "title"}
-	}
-
-	if !is.URL(conf.URL) {
-		return &helper.FieldError{Message: "不是一个合法的域名或 IP", Field: "url"}
-	}
-	if strings.HasSuffix(conf.URL, "/") {
-		conf.URL = conf.URL[:len(conf.URL)-1]
 	}
 
 	// theme

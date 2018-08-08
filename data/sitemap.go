@@ -8,33 +8,19 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/caixw/gitype/helper"
+	"github.com/caixw/gitype/data/loader"
+	"github.com/caixw/gitype/data/xmlwriter"
 	"github.com/caixw/gitype/vars"
+	"github.com/issue9/web"
 )
 
-const contentTypeXML = "application/xml"
-
-type sitemapConfig struct {
-	URL  string `yaml:"url"`
-	Type string `yaml:"type,omitempty"`
-
-	XslURL     string  `yaml:"xslURL,omitempty"`    // 为 sitemap 指定一个 xsl 文件
-	Priority   float64 `yaml:"priority"`            // 默认的优先级
-	Changefreq string  `yaml:"changefreq"`          // 默认的更新频率
-	EnableTag  bool    `yaml:"enableTag,omitempty"` // 是否将标签相关的页面写入 sitemap
-
-	// 文章可以指定一个专门的值
-	PostPriority   float64 `yaml:"postPriority"`
-	PostChangefreq string  `yaml:"postChangefreq"`
-}
-
 // 生成一个符合 sitemap 规范的 XML 文本。
-func (d *Data) buildSitemap(conf *config) error {
+func (d *Data) buildSitemap(conf *loader.Config) error {
 	if conf.Sitemap == nil {
 		return nil
 	}
 
-	w := helper.NewWriter()
+	w := xmlwriter.New()
 
 	if len(conf.Sitemap.XslURL) > 0 {
 		w.WritePI("xml-stylesheet", map[string]string{
@@ -50,11 +36,11 @@ func (d *Data) buildSitemap(conf *config) error {
 	addPostsToSitemap(w, d, conf)
 
 	// archives.html
-	loc := d.BuildURL(vars.ArchivesURL())
+	loc := web.URL(vars.ArchivesURL())
 	addItemToSitemap(w, loc, conf.Sitemap.Changefreq, d.Created, conf.Sitemap.Priority)
 
 	// links.html
-	loc = d.BuildURL(vars.LinksURL())
+	loc = web.URL(vars.LinksURL())
 	addItemToSitemap(w, loc, conf.Sitemap.Changefreq, d.Created, conf.Sitemap.Priority)
 
 	if conf.Sitemap.EnableTag {
@@ -76,28 +62,28 @@ func (d *Data) buildSitemap(conf *config) error {
 	return nil
 }
 
-func addPostsToSitemap(w *helper.XMLWriter, d *Data, conf *config) {
+func addPostsToSitemap(w *xmlwriter.XMLWriter, d *Data, conf *loader.Config) {
 	sitemap := conf.Sitemap
 	for _, p := range d.Posts {
-		loc := d.BuildURL(p.Permalink)
+		loc := web.URL(p.Permalink)
 		addItemToSitemap(w, loc, sitemap.PostChangefreq, p.Modified, sitemap.PostPriority)
 	}
 }
 
-func addTagsToSitemap(w *helper.XMLWriter, d *Data, conf *config) error {
+func addTagsToSitemap(w *xmlwriter.XMLWriter, d *Data, conf *loader.Config) error {
 	sitemap := conf.Sitemap
 
-	loc := d.BuildURL(vars.TagsURL())
+	loc := web.URL(vars.TagsURL())
 	addItemToSitemap(w, loc, sitemap.Changefreq, d.Created, sitemap.Priority)
 
 	for _, tag := range d.Tags {
-		loc = d.BuildURL(vars.TagURL(tag.Slug, 1))
+		loc = web.URL(vars.TagURL(tag.Slug, 1))
 		addItemToSitemap(w, loc, sitemap.Changefreq, tag.Modified, sitemap.Priority)
 	}
 	return nil
 }
 
-func addItemToSitemap(w *helper.XMLWriter, loc, changefreq string, lastmod time.Time, priority float64) {
+func addItemToSitemap(w *xmlwriter.XMLWriter, loc, changefreq string, lastmod time.Time, priority float64) {
 	w.WriteStartElement("url", nil)
 
 	w.WriteElement("loc", loc, nil)
@@ -106,45 +92,4 @@ func addItemToSitemap(w *helper.XMLWriter, loc, changefreq string, lastmod time.
 	w.WriteElement("priority", strconv.FormatFloat(priority, 'f', 1, 32), nil)
 
 	w.WriteEndElement("url")
-}
-
-// 检测 sitemap 取值是否正确
-func (s *sitemapConfig) sanitize() *helper.FieldError {
-	switch {
-	case len(s.URL) == 0:
-		return &helper.FieldError{Message: "不能为空", Field: "sitemap.url"}
-	case s.Priority > 1 || s.Priority < 0:
-		return &helper.FieldError{Message: "介于[0,1]之间的浮点数", Field: "sitemap.priority"}
-	case s.PostPriority > 1 || s.PostPriority < 0:
-		return &helper.FieldError{Message: "介于[0,1]之间的浮点数", Field: "sitemap.postPriority"}
-	case !isChangereq(s.Changefreq):
-		return &helper.FieldError{Message: "取值不正确", Field: "sitemap.changefreq"}
-	case !isChangereq(s.PostChangefreq):
-		return &helper.FieldError{Message: "取值不正确", Field: "sitemap.postChangefreq"}
-	}
-
-	if len(s.Type) == 0 {
-		s.Type = contentTypeXML
-	}
-
-	return nil
-}
-
-var changereqs = []string{
-	"never",
-	"yearly",
-	"monthly",
-	"weekly",
-	"daily",
-	"hourly",
-	"always",
-}
-
-func isChangereq(val string) bool {
-	for _, v := range changereqs {
-		if v == val {
-			return true
-		}
-	}
-	return false
 }

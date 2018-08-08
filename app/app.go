@@ -7,39 +7,56 @@ package app
 
 import (
 	"errors"
-	"net/http"
-	"strings"
+
+	"github.com/issue9/logs"
+	"github.com/issue9/mux"
+	"github.com/issue9/web"
+	"github.com/issue9/web/encoding"
+	"github.com/issue9/web/encoding/html"
 
 	"github.com/caixw/gitype/client"
 	"github.com/caixw/gitype/path"
-	"github.com/issue9/logs"
-	"github.com/issue9/mux"
 )
 
 type app struct {
 	path *path.Path
-	mux  *mux.Mux
-	conf *config
 
 	// 当前是否正处在加载数据的状态，
 	// 防止在 reload 一次调用未完成的情况下，再次调用 reload
 	loading bool
 	client  *client.Client
+	html    *html.HTML
+	webhook *webhook
+	mux     *mux.Mux
 }
 
 // Run 运行程序
-func Run(path *path.Path, pprof, preview bool) error {
+func Run(path *path.Path, preview bool) error {
 	logs.Info("程序工作路径为:", path.Root)
 
-	conf, err := loadConfig(path)
-	if err != nil {
+	htmlMgr := html.New(nil)
+	if err := encoding.AddMarshal("text/html", htmlMgr.Marshal); err != nil {
+		return err
+	}
+	if err := encoding.AddMarshal("application/xhtml+xml", htmlMgr.Marshal); err != nil {
 		return err
 	}
 
+	if err := web.Init(path.ConfDir); err != nil {
+		return err
+	}
+
+	module := web.NewModule("main", "main")
+
 	a := &app{
-		path: path,
-		mux:  mux.New(false, false, nil, nil),
-		conf: conf,
+		path:    path,
+		html:    htmlMgr,
+		webhook: &webhook{},
+		mux:     module.Mux(),
+	}
+
+	if err := web.LoadConfig("webhook.yaml", a.webhook); err != nil {
+		return err
 	}
 
 	if preview {
@@ -51,42 +68,18 @@ func Run(path *path.Path, pprof, preview bool) error {
 
 		a.watch(watcher)
 	} else {
-		err = a.mux.HandleFunc(a.conf.Webhook.URL, a.postWebhooks, a.conf.Webhook.Method)
-		if err != nil {
+		conf := a.webhook
+		if err := a.mux.HandleFunc(conf.URL, a.postWebhooks, conf.Method); err != nil {
 			return err
 		}
 	}
 
 	// 加载数据，此时出错，只记录错误信息，但不中断执行
-	if err = a.reload(); err != nil {
+	if err := a.reload(); err != nil {
 		logs.Error(err)
 	}
 
-	h := a.buildHandler(pprof)
-
-	if !a.conf.HTTPS {
-		return http.ListenAndServe(a.conf.Port, h)
-	}
-
-	go a.serveHTTP(h) // 对 80 端口的处理方式
-	return http.ListenAndServeTLS(a.conf.Port, a.conf.CertFile, a.conf.KeyFile, h)
-}
-
-// 对 80 端口的处理方式
-func (a *app) serveHTTP(h http.Handler) {
-	switch a.conf.HTTPState {
-	case httpStateDefault:
-		logs.Error(http.ListenAndServe(httpPort, h))
-	case httpStateRedirect:
-		logs.Error(http.ListenAndServe(httpPort, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// 构建跳转链接
-			url := r.URL
-			url.Scheme = "HTTPS"
-			url.Host = strings.Split(r.Host, ":")[0] + a.conf.Port
-
-			http.Redirect(w, r, url.String(), http.StatusMovedPermanently)
-		})))
-	} // end switch
+	return web.Serve()
 }
 
 // 重新加载数据
@@ -98,7 +91,7 @@ func (a *app) reload() error {
 	a.loading = true
 	defer func() { a.loading = false }()
 
-	c, err := client.New(a.path, a.mux)
+	c, err := client.New(a.path)
 	if err != nil {
 		return err
 	}
@@ -108,5 +101,5 @@ func (a *app) reload() error {
 		a.client.Free()
 	}
 	a.client = c
-	return a.client.Mount()
+	return a.client.Mount(a.mux, a.html)
 }

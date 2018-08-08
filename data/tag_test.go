@@ -7,46 +7,19 @@ package data
 import (
 	"testing"
 
-	"github.com/caixw/gitype/vars"
+	"github.com/caixw/gitype/data/loader"
 	"github.com/issue9/assert"
 )
 
 func TestSplitTags(t *testing.T) {
 	a := assert.New(t)
 	tags := []*Tag{
-		{Slug: "1", Series: true},
-		{Slug: "2", Series: false},
-		{Slug: "3", Series: false},
-		{Slug: "4", Series: true},
+		{Tag: loader.Tag{Slug: "1", Series: true}},
+		{Tag: loader.Tag{Slug: "2", Series: false}},
+		{Tag: loader.Tag{Slug: "3", Series: false}},
+		{Tag: loader.Tag{Slug: "4", Series: true}},
 	}
 
 	ts, series := splitTags(tags)
 	a.Equal(len(ts), 2).Equal(len(series), 2)
-}
-
-func TestLoadTags(t *testing.T) {
-	a := assert.New(t)
-
-	tags, err := loadTags(testdataPath)
-	a.NotError(err).NotNil(tags)
-
-	a.Equal(tags[0].Slug, "default1")
-	a.Equal(tags[0].Color, "efefef")
-	a.Equal(tags[0].Title, "默认1")
-	a.Equal(tags[1].Slug, "default2")
-	a.Equal(tags[0].Permalink, vars.TagURL("default1", 0))
-}
-
-func TestCheckTagsDup(t *testing.T) {
-	a := assert.New(t)
-
-	tags := []*Tag{
-		{Slug: "1"},
-		{Slug: "2"},
-		{Slug: "3"},
-	}
-	a.NotError(checkTagsDup(tags))
-
-	tags = append(tags, &Tag{Slug: "1"})
-	a.Error(checkTagsDup(tags))
 }

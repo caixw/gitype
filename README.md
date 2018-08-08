@@ -36,7 +36,6 @@ gitype [![Build Status](https://travis-ci.org/caixw/gitype.svg?branch=nosql)](ht
 
 参数名   | 值类型     | 描述
 |:-------|:-----------|:-----
-pprof    | bool       | 指定此参数，会预留一个 /debug/pprof/ 的 URL 地址，用户可以从此地址获取一此调试用的信息。
 preview  | bool       | 预览模式，指定此参数，可以监视用户的数据目录，一旦有更改，就会自动重新加载数据，当用户在本地创作文章时，可以指这此值。
 
 
@@ -53,7 +52,9 @@ data 为博客的实际内容，包含了文章，标签，友链以及网站名
 |     |
 |     |--- logs.xml 日志的配置文件
 |     |
-|     |--- app.yaml 程序的配置文件
+|     |--- web.yaml 程序的配置文件
+|     |
+|     |--- webhook.yaml webhook 的配置文件
 |
 |--- data 程序的数据目录
       |
@@ -79,25 +80,18 @@ data 为博客的实际内容，包含了文章，标签，友链以及网站名
 #### conf 目录下内容
 
 conf 目录下的为程序级别的配置文件，需要重启才能使更改生效。其中：
-- app.yaml 定义了诸如端口，证书等基本数据；
+- web.yaml 网站的启动数据信息；
+- webhook.yaml 自动更新的触发条件；
 - logs.xml 定义了日志的输出形式和保存路径，具体配置可参考 [logs](https://github.com/issue9/logs) 的相关文档。
 
 
-##### app.yaml
+##### web.yaml
 
-名称         | 类型     | 描述
-:------------|:---------|:------
-https        | bool     | 是否启用 https
-httpState    | string   | 当 https 为 true 时，对 80 端口的处理方式，可以为 disable、redirect 和 default
-certFile     | string   | 当 https 为 true 时，此值为必填
-keyFile      | string   | 当 https 为 true 时，此值为必填
-port         | string   | 端口，不指定，默认为 80 或是 443
-headers      | map      | 附加的头信息，头信息可能在其它地方被修改
-webhook      | Webhook  | 与 webhook 相关的设置
+参考 https://github.com/issue9/web 中的配置文件内容
 
 
 
-###### Webhook
+##### webhook.yaml
 
 名称        | 类型          | 描述
 :-----------|:--------------|:------
@@ -121,7 +115,6 @@ config.yaml 指定了网站的一些基本配置情况：
 :---------------|:----------------|:------
 title           | string          | 网站标题
 subtitle        | string          | 网站副标题
-url             | string          | 网站的地址
 beian           | string          | 备案号
 uptime          | string          | 上线时间，符合 rfc 3339 标准的时间字符串
 pageSize        | int             | 每页显示的数量

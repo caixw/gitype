@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package data
+package loader
 
 import "github.com/caixw/gitype/vars"
 
@@ -23,7 +23,7 @@ type Page struct {
 	Description string `yaml:"description"`
 }
 
-func (conf *config) initPages() {
+func (conf *Config) initPages() {
 	if conf.Pages == nil {
 		conf.Pages = make(map[string]*Page, 10)
 	}

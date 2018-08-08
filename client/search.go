@@ -8,15 +8,18 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/issue9/logs"
+	"github.com/issue9/web"
+
 	"github.com/caixw/gitype/data"
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/vars"
-	"github.com/issue9/logs"
 )
 
 // /search.html?q=key&page=2
 func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
-	p := client.page(vars.PageSearch, w, r)
+	ctx := web.NewContext(w, r)
+	p := client.page(vars.PageSearch, ctx)
 
 	q := r.FormValue(vars.URLQuerySearch)
 	if len(q) == 0 {
@@ -24,13 +27,10 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page, ok := client.queryInt(w, r, vars.URLQueryPage, 1)
-	if !ok {
-		return
-	}
+	page := client.queryInt(ctx, vars.URLQueryPage, 1)
 	if page < 1 {
 		logs.Debugf("参数 page: %d 小于 1", page)
-		client.renderError(w, r, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
+		client.renderError(ctx, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
 
@@ -39,7 +39,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	p.Keywords = helper.ReplaceContent(pp.Keywords, q)
 	p.Description = helper.ReplaceContent(pp.Description, q)
 	p.Q = q
-	p.Canonical = client.data.BuildURL(vars.SearchURL(p.Q, page))
+	p.Canonical = web.URL(vars.SearchURL(p.Q, page))
 
 	posts := search(q, client.data) // 获取所有的搜索结果
 	start, end, ok := client.getPostsRange(len(posts), page, w, r)

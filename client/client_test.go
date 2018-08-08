@@ -5,67 +5,41 @@
 package client
 
 import (
-	"io/ioutil"
-	"net/http"
-	"net/http/httptest"
+	"os"
 	"testing"
 
+	"github.com/issue9/web"
+	"github.com/issue9/web/encoding"
+	"github.com/issue9/web/encoding/html"
+
 	"github.com/caixw/gitype/path"
-	"github.com/issue9/assert"
-	"github.com/issue9/mux"
 )
 
 var (
-	router = mux.New(false, false, nil, nil)
-	server = httptest.NewServer(router)
-	c      *Client
+	client *Client
 )
 
-type httpTester struct {
-	path    string
-	content string
-	status  int
-}
-
-func (t *httpTester) test(a *assert.Assertion) {
-	// 非正常状态下，初始化 content 内容
-	if len(t.content) == 0 && t.status > 299 {
-		t.content = http.StatusText(t.status) + "\n"
-	}
-
-	resp, err := http.Get(server.URL + t.path)
-	a.NotError(err).NotNil(resp)
-
-	a.Equal(resp.StatusCode, t.status, "v1:%v,v2:%v,path:%v", resp.StatusCode, t.status, t.path)
-
-	bs, err := ioutil.ReadAll(resp.Body)
-	a.NotError(err).NotNil(bs)
-	a.NotError(resp.Body.Close())
-
-	if len(t.content) > 0 {
-		a.Equal(bs, []byte(t.content), "v1:%v,v2:%v,path:%v", string(bs), t.content, t.path)
-	}
-}
-
-func runHTTPTester(testers []*httpTester, t *testing.T) {
-	a := assert.New(t)
-
-	for _, test := range testers {
-		test.test(a)
-	}
-}
-
-func TestMain(t *testing.T) {
-	a := assert.New(t)
+func TestMain(m *testing.M) {
 	path := path.New("../testdata")
+	var err error
 
-	client, err := New(path, router)
-	a.NotError(err).NotNil(client)
-	a.NotError(client.Mount())
+	htmlMgr := html.New(nil)
+	encoding.AddMarshal("text/html", htmlMgr.Marshal)
 
-	a.Equal(client.path, path)
-	a.NotNil(client.data)
-	a.Equal(client.Created(), client.data.Created)
+	client, err = New(path)
+	if err != nil {
+		panic(err)
+	}
 
-	c = client
+	if err = web.Init(path.ConfDir); err != nil {
+		panic(err)
+	}
+
+	module := web.NewModule("test", "test")
+	err = client.Mount(module.Mux(), htmlMgr)
+	if err != nil {
+		panic(err)
+	}
+
+	os.Exit(m.Run())
 }

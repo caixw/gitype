@@ -25,9 +25,6 @@ type Path struct {
 	MetaDir   string
 	RawsDir   string
 
-	AppConfigFile  string
-	LogsConfigFile string
-
 	MetaConfigFile string
 	MetaLinksFile  string
 	MetaTagsFile   string
@@ -50,9 +47,6 @@ func New(root string) *Path {
 		RawsDir:   filepath.Join(dataDir, vars.RawsFolderName),
 	}
 
-	p.AppConfigFile = p.ConfPath(vars.AppConfigFilename)
-	p.LogsConfigFile = p.ConfPath(vars.LogsConfigFilename)
-
 	p.MetaConfigFile = p.MetaPath(vars.ConfigFilename)
 	p.MetaLinksFile = p.MetaPath(vars.LinksFilename)
 	p.MetaTagsFile = p.MetaPath(vars.TagsFilename)
@@ -63,11 +57,6 @@ func New(root string) *Path {
 // MetaPath 获取 data/meta/ 下的文件
 func (p *Path) MetaPath(file string) string {
 	return filepath.Join(p.MetaDir, file)
-}
-
-// ConfPath 获取 conf/ 下的文件
-func (p *Path) ConfPath(file string) string {
-	return filepath.Join(p.ConfDir, file)
 }
 
 // RawsPath 获取 raws/ 下的文件

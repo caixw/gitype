@@ -2,12 +2,11 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package data
+package loader
 
 import (
 	"testing"
 
-	"github.com/caixw/gitype/vars"
 	"github.com/issue9/assert"
 )
 
@@ -30,9 +29,8 @@ func TestLoadPost(t *testing.T) {
 
 	post, err := loadPost(testdataPath, "/post1")
 	a.NotError(err).NotNil(post)
-	a.Equal(len(post.Tags), 0) // 未调用 Data.sanitize 初始化
-	a.False(post.Modified.IsZero())
-	a.Equal(post.Template, vars.PagePost)
+	a.Equal(post.Tags, "default1,default2")
+	a.Equal(post.Template, "") // 未指定，则为空
 	a.Equal(post.Content, "<article>a1</article>\n")
 
 	post, err = loadPost(testdataPath, "/folder/post2")
@@ -42,13 +40,13 @@ func TestLoadPost(t *testing.T) {
 
 	post, err = loadPost(testdataPath, "/draft")
 	a.NotError(err).NotNil(post)
-	a.Equal(post.State, stateDraft)
+	a.Equal(post.State, StateDraft)
 }
 
 func TestLoadPosts(t *testing.T) {
 	a := assert.New(t)
 
-	posts, err := loadPosts(testdataPath)
+	posts, err := LoadPosts(testdataPath)
 	a.NotError(err).NotNil(posts)
 	a.Equal(len(posts), 2) // 只有两条记录，Draft=true 的没有被加载
 }

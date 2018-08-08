@@ -32,16 +32,15 @@ const (
 const (
 	urlSuffix = ".html" // 地址后缀
 
-	urlRoot     = "/"                              // 根地址       /
-	indexURL    = urlRoot + "index" + urlSuffix    // 列表页       /index.html
-	postURL     = urlRoot + "posts"                // 文章详细页   /posts
-	tagsURL     = urlRoot + "tags" + urlSuffix     // 标签列表页   /tags.html
-	tagURL      = urlRoot + "tags"                 // 标签详细页   /tags
-	linksURL    = urlRoot + "links" + urlSuffix    // 友情链接     /links.html
-	archivesURL = urlRoot + "archives" + urlSuffix // 归档         /archives.html
-	searchURL   = urlRoot + "search" + urlSuffix   // 搜索         /search.html
-	themeURL    = urlRoot + "themes/"              // 主题目录前缀 /themes/
-	assetURL    = urlRoot + "posts/"               // 文章资源前缀 /posts/
+	indexURL    = "/index" + urlSuffix    // 列表页       /index.html
+	postURL     = "/posts"                // 文章详细页   /posts
+	tagsURL     = "/tags" + urlSuffix     // 标签列表页   /tags.html
+	tagURL      = "/tags"                 // 标签详细页   /tags
+	linksURL    = "/links" + urlSuffix    // 友情链接     /links.html
+	archivesURL = "/archives" + urlSuffix // 归档         /archives.html
+	searchURL   = "/search" + urlSuffix   // 搜索         /search.html
+	themeURL    = "/themes/"              // 主题目录前缀 /themes/
+	assetURL    = "/posts/"               // 文章资源前缀 /posts/
 )
 
 // LinksURL 生成友情链接的 URL
@@ -59,7 +58,7 @@ func PostURL(slug string) string {
 // 其它页面返回 /index.html?page=xx
 func PostsURL(page int) string {
 	if page <= 1 {
-		return urlRoot
+		return "/"
 	}
 	return indexURL + "?" + URLQueryPage + "=" + strconv.Itoa(page)
 }

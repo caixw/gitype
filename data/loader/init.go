@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package data
+package loader
 
 import (
 	"fmt"
@@ -32,18 +32,17 @@ var defaultTheme = &Theme{
 }
 
 var defaultPostMeta = &Post{
-	Title:      "about",
-	TagsString: "default",
-	Permalink:  time.Now().Format(vars.DateFormat),
-	HTMLTitle:  time.Now().Format(vars.DateFormat),
-	State:      stateLast,
+	Title:    "about",
+	Tags:     "default",
+	Created:  time.Now(),
+	Modified: time.Now(),
+	State:    StateLast,
 }
 
-var defaultConfig = &config{
+var defaultConfig = &Config{
 	Title:           "Title",
 	Language:        language,
 	Subtitle:        "subtitle",
-	URL:             "https://caixw.io",
 	PageSize:        20,
 	LongDateFormat:  "2006-01-02 15:04:05",
 	ShortDateFormat: "2006-01-02",
@@ -57,14 +56,14 @@ var defaultConfig = &config{
 		URL:   "https://creativecommons.org/licenses/by/4.0/deed.zh",
 	},
 
-	Theme:        "default",
-	UptimeFormat: time.Now().Format(vars.DateFormat),
-	Archive: &archiveConfig{
-		Type:   archiveTypeYear,
+	Theme:  "default",
+	Uptime: time.Now(),
+	Archive: &ArchiveConfig{
+		Type:   ArchiveTypeYear,
 		Format: "2006 年",
 	},
 
-	RSS: &rssConfig{
+	RSS: &RSSConfig{
 		Title: "RSS",
 		URL:   "/rss.xml",
 		Type:  contentTypeRSS,

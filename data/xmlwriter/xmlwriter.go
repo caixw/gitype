@@ -2,7 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package helper
+// Package xmlwriter XML 写入工具。
+package xmlwriter
 
 import (
 	"bytes"
@@ -21,8 +22,8 @@ type XMLWriter struct {
 	indent int   // 保存当前的缩进量
 }
 
-// NewWriter 声明一个新的 XMLWriter
-func NewWriter() *XMLWriter {
+// New 声明一个新的 XMLWriter
+func New() *XMLWriter {
 	w := &XMLWriter{
 		buf: bytes.NewBufferString(xml.Header),
 	}

@@ -9,9 +9,15 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/issue9/logs"
+	"github.com/issue9/middleware/compress"
+	"github.com/issue9/mux"
+	"github.com/issue9/web/encoding/html"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+
 	"github.com/caixw/gitype/data"
 	"github.com/caixw/gitype/path"
-	"github.com/issue9/mux"
 )
 
 // Client 包含了整个可动态加载的数据以及路由的相关操作。
@@ -26,7 +32,7 @@ type Client struct {
 }
 
 // New 声明一个新的 Client 实例
-func New(path *path.Path, mux *mux.Mux) (*Client, error) {
+func New(path *path.Path) (*Client, error) {
 	d, err := data.Load(path)
 	if err != nil {
 		return nil, err
@@ -34,7 +40,6 @@ func New(path *path.Path, mux *mux.Mux) (*Client, error) {
 
 	client := &Client{
 		path: path,
-		mux:  mux,
 		data: d,
 		info: newInfo(d),
 	}
@@ -42,11 +47,13 @@ func New(path *path.Path, mux *mux.Mux) (*Client, error) {
 	return client, nil
 }
 
-// Mount 挂载路由
-func (client *Client) Mount() error {
-	if err := client.initFeedRoutes(); err != nil {
-		return err
-	}
+// Mount 挂载路由以及数据
+func (client *Client) Mount(mux *mux.Mux, html *html.HTML) error {
+	client.mux = mux
+
+	html.SetTemplate(client.data.Theme.Template)
+
+	message.SetString(language.Make(client.data.Language), "xx", "xx")
 
 	return client.initRoutes()
 }
@@ -67,23 +74,21 @@ func (client *Client) Free() {
 	client.data.Free()
 }
 
-func (client *Client) initFeedRoutes() (err error) {
-	handle := func(feed *data.Feed) {
-		if err != nil || feed == nil {
+// 每次访问前需要做的预处理工作。
+func (client *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		logs.Tracef("%s: %s", r.UserAgent(), r.URL) // 输出访问日志
+
+		// 直接根据整个博客的最后更新时间来确认 etag
+		if r.Header.Get("If-None-Match") == client.data.Etag {
+			logs.Tracef("304: %s", r.URL)
+			w.WriteHeader(http.StatusNotModified)
 			return
 		}
-
-		client.patterns = append(client.patterns, feed.URL)
-		err = client.mux.HandleFunc(feed.URL, client.prepare(func(w http.ResponseWriter, r *http.Request) {
-			setContentType(w, feed.Type)
-			w.Write(feed.Content)
-		}), http.MethodGet)
+		w.Header().Set("Etag", client.data.Etag)
+		compress.New(f, logs.ERROR(), map[string]compress.BuildCompressWriter{
+			"gzip":    compress.NewGzip,
+			"deflate": compress.NewDeflate,
+		}).ServeHTTP(w, r)
 	}
-
-	handle(client.data.RSS)
-	handle(client.data.Atom)
-	handle(client.data.Sitemap)
-	handle(client.data.Opensearch)
-
-	return err
 }

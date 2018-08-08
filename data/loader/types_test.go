@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package data
+package loader
 
 import (
 	"testing"
@@ -10,10 +10,20 @@ import (
 	"github.com/issue9/assert"
 )
 
+func TestLoadTheme(t *testing.T) {
+	a := assert.New(t)
+
+	theme, err := LoadTheme(testdataPath, "t1")
+	a.NotError(err).NotNil(theme)
+
+	a.Equal(theme.Name, "name")
+	a.Equal(theme.Author.Name, "caixw")
+}
+
 func TestLoadLinks(t *testing.T) {
 	a := assert.New(t)
 
-	links, err := loadLinks(testdataPath)
+	links, err := LoadLinks(testdataPath)
 	a.NotError(err).NotNil(links)
 
 	a.True(len(links) > 0)

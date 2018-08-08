@@ -9,11 +9,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/caixw/gitype/data"
+	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
-	"github.com/caixw/gitype/vars"
 	"github.com/issue9/utils"
+	"github.com/issue9/web"
 )
 
 // 从 /testdata/conf.logs.xml 而来
@@ -52,21 +52,11 @@ var defaultLogsXML = `<?xml version="1.0" encoding="utf-8" ?>
 `
 
 // 输出的默认配置内容
-var defaultConfig = &config{
-	HTTPS:     true,
-	HTTPState: httpStateRedirect,
-	CertFile:  "cert",
-	KeyFile:   "key",
-	Port:      httpsPort,
-	Headers: map[string]string{
-		"Server": vars.Name + vars.Version(),
-	},
-	Webhook: &webhook{
-		URL:       "/webhooks",
-		Frequency: time.Minute,
-		Method:    http.MethodPost,
-		RepoURL:   "https://github.com/caixw/blogs",
-	},
+var defaultConfig = &webhook{
+	URL:       "/webhooks",
+	Frequency: time.Minute,
+	Method:    http.MethodPost,
+	RepoURL:   "https://github.com/caixw/blogs",
 }
 
 // Init 初始化整个工作目录
@@ -81,7 +71,7 @@ func Init(path *path.Path) error {
 		return err
 	}
 
-	return data.Init(path)
+	return loader.Init(path)
 }
 
 // 初始化 conf 目录下的数据
@@ -93,10 +83,10 @@ func initConfDir(path *path.Path) error {
 	}
 
 	// logs.xml
-	if err := helper.DumpTextFile(path.LogsConfigFile, defaultLogsXML); err != nil {
+	if err := helper.DumpTextFile(web.File("logs.xml"), defaultLogsXML); err != nil {
 		return err
 	}
 
-	// app.yaml
-	return helper.DumpYAMLFile(path.AppConfigFile, defaultConfig)
+	// webhook.yaml
+	return helper.DumpYAMLFile(web.File("webhook.yaml"), defaultConfig)
 }

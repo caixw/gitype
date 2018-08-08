@@ -7,30 +7,20 @@ package data
 import (
 	"net/http"
 
-	"github.com/caixw/gitype/helper"
+	"github.com/issue9/web"
+
+	"github.com/caixw/gitype/data/loader"
+	"github.com/caixw/gitype/data/xmlwriter"
 	"github.com/caixw/gitype/vars"
 )
 
-const contentTypeOpensearch = "application/opensearchdescription+xml"
-
-type opensearchConfig struct {
-	URL   string `yaml:"url"`
-	Type  string `yaml:"type,omitempty"`
-	Title string `yaml:"title,omitempty"`
-
-	ShortName   string `yaml:"shortName"`
-	Description string `yaml:"description"`
-	LongName    string `yaml:"longName,omitempty"`
-	Image       *Icon  `yaml:"image,omitempty"`
-}
-
 // 用于生成一个符合 opensearch 规范的 XML 文本。
-func (d *Data) buildOpensearch(conf *config) error {
+func (d *Data) buildOpensearch(conf *loader.Config) error {
 	if conf.Opensearch == nil {
 		return nil
 	}
 
-	w := helper.NewWriter()
+	w := xmlwriter.New()
 	o := conf.Opensearch
 
 	w.WriteStartElement("OpenSearchDescription", map[string]string{
@@ -57,7 +47,7 @@ func (d *Data) buildOpensearch(conf *config) error {
 		"method": http.MethodGet,
 		// 需要全链接，否则 Firefox 的搜索框不认。
 		// https://github.com/caixw/gitype/issues/18
-		"template": d.BuildURL(vars.SearchURL("{searchTerms}", 0)),
+		"template": web.URL(vars.SearchURL("{searchTerms}", 0)),
 	})
 
 	w.WriteElement("Developer", vars.Name, nil)
@@ -74,28 +64,6 @@ func (d *Data) buildOpensearch(conf *config) error {
 		Type:    o.Type,
 		Title:   o.Title,
 		Content: bs,
-	}
-
-	return nil
-}
-
-// 检测 opensearch 取值是否正确
-func (s *opensearchConfig) sanitize(conf *config) *helper.FieldError {
-	switch {
-	case len(s.URL) == 0:
-		return &helper.FieldError{Message: "不能为空", Field: "opensearch.url"}
-	case len(s.ShortName) == 0:
-		return &helper.FieldError{Message: "不能为空", Field: "opensearch.shortName"}
-	case len(s.Description) == 0:
-		return &helper.FieldError{Message: "不能为空", Field: "opensearch.description"}
-	}
-
-	if len(s.Type) == 0 {
-		s.Type = contentTypeOpensearch
-	}
-
-	if s.Image == nil && conf.Icon != nil {
-		s.Image = conf.Icon
 	}
 
 	return nil
