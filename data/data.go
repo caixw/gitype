@@ -11,6 +11,7 @@ import (
 	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/path"
 	"github.com/caixw/gitype/vars"
+	"golang.org/x/text/language"
 	"golang.org/x/text/search"
 )
 
@@ -26,19 +27,18 @@ type Data struct {
 	// Etag 表示 根据 Updated 生成的 etag 字符串
 	Etag string
 
-	// 直接从 config 中继承过来的变量
-	SiteName string
-	Subtitle string           // 网站副标题
-	Language string           // 语言标记，比如 zh-cmn-Hans
-	Beian    string           // 备案号
-	Uptime   time.Time        // 上线时间
-	PageSize int              // 每页显示的数量
-	Type     string           // 页面的 mime type 类型
-	Icon     *Icon            // 程序默认的图标
-	Menus    []*Link          // 导航菜单
-	Author   *Author          // 默认作者信息
-	License  *Link            // 默认版权信息
-	Pages    map[string]*Page // 各个页面的自定义内容
+	SiteName    string
+	Subtitle    string
+	Beian       string           // 备案号
+	Uptime      time.Time        // 上线时间
+	PageSize    int              // 每页显示的数量
+	Type        string           // 页面的 mime type 类型
+	Icon        *Icon            // 程序默认的图标
+	Menus       []*Link          // 导航菜单
+	Author      *Author          // 默认作者信息
+	License     *Link            // 默认版权信息
+	Pages       map[string]*Page // 各个页面的自定义内容
+	LanguageTag language.Tag
 
 	outdatedServer *outdatedServer
 
@@ -89,16 +89,16 @@ func Load(path *path.Path) (*Data, error) {
 		path:    path,
 		Created: now,
 
-		SiteName: conf.Title,
-		Language: conf.Language,
-		Subtitle: conf.Subtitle,
-		Beian:    conf.Beian,
-		Uptime:   conf.Uptime,
-		PageSize: conf.PageSize,
-		Type:     conf.Type,
-		Icon:     conf.Icon,
-		Menus:    conf.Menus,
-		Pages:    conf.Pages,
+		SiteName:    conf.Title,
+		Subtitle:    conf.Subtitle,
+		Beian:       conf.Beian,
+		Uptime:      conf.Uptime,
+		PageSize:    conf.PageSize,
+		Type:        conf.Type,
+		Icon:        conf.Icon,
+		Menus:       conf.Menus,
+		Pages:       conf.Pages,
+		LanguageTag: conf.LanguageTag,
 
 		Tags:  tags,
 		Links: links,

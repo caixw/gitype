@@ -85,7 +85,7 @@ func newInfo(d *data.Data) *info {
 		SiteName:    d.SiteName,
 		URL:         web.URL(""),
 		Icon:        d.Icon,
-		Language:    d.Language,
+		Language:    d.LanguageTag.String(),
 		PostSize:    len(d.Posts),
 		Beian:       d.Beian,
 		Uptime:      d.Uptime,

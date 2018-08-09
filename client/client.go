@@ -13,7 +13,6 @@ import (
 	"github.com/issue9/middleware/compress"
 	"github.com/issue9/mux"
 	"github.com/issue9/web/encoding/html"
-	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 
 	"github.com/caixw/gitype/data"
@@ -53,7 +52,7 @@ func (client *Client) Mount(mux *mux.Mux, html *html.HTML) error {
 
 	html.SetTemplate(client.data.Theme.Template)
 
-	message.SetString(language.Make(client.data.Language), "xx", "xx")
+	message.SetString(client.data.LanguageTag, "xx", "xx") // TODO，去掉
 
 	return client.initRoutes()
 }
