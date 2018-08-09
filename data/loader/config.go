@@ -10,6 +10,7 @@ import (
 
 	"github.com/caixw/gitype/helper"
 	"github.com/caixw/gitype/path"
+	l "golang.org/x/text/language"
 )
 
 // 默认的语言，在配置文件中未指定时，使用此值，
@@ -47,6 +48,8 @@ type Config struct {
 	Atom       *RSSConfig        `yaml:"atom,omitempty"`
 	Sitemap    *SitemapConfig    `yaml:"sitemap,omitempty"`
 	Opensearch *OpensearchConfig `yaml:"opensearch,omitempty"`
+
+	LanguageTag l.Tag `yaml:"-"`
 }
 
 // LoadConfig 加载配置信息
@@ -68,6 +71,12 @@ func (conf *Config) sanitize() *helper.FieldError {
 	if len(conf.Language) == 0 {
 		conf.Language = language
 	}
+
+	tag, err := l.Parse(conf.Language)
+	if err != nil {
+		return &helper.FieldError{Message: err.Error(), Field: "language"}
+	}
+	conf.LanguageTag = tag
 
 	if conf.PageSize <= 0 {
 		return &helper.FieldError{Message: "必须为大于零的整数", Field: "pageSize"}

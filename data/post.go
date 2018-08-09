@@ -50,10 +50,6 @@ type Post struct {
 	License  *Link
 	Template string
 	Keywords string
-
-	// 用于搜索的副本内容，会全部转换成小写
-	SearchTitle   string
-	SearchContent string
 }
 
 // Outdated 表示每一篇文章的过时情况
@@ -93,9 +89,6 @@ func loadPosts(path *path.Path, tags []*Tag, conf *loader.Config) ([]*Post, erro
 			License:  p.License,
 			Template: p.Template,
 			Keywords: p.Keywords,
-
-			SearchContent: strings.ToLower(p.Content),
-			SearchTitle:   strings.ToLower(p.Title),
 		}
 
 		switch p.Outdated {

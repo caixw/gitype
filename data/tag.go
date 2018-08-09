@@ -5,7 +5,6 @@
 package data
 
 import (
-	"strings"
 	"time"
 
 	"github.com/caixw/gitype/data/loader"
@@ -26,9 +25,6 @@ type Tag struct {
 	Keywords  string    // meta.keywords 标签的内容，如果为空，使用 Tag.Title 属性的值
 	Modified  time.Time // 所有文章中最迟修改的
 	Permalink string    // 唯一链接，指向第一页
-
-	// 用于搜索的副本内容，会全部转换成小写
-	SearchTitle string
 }
 
 func loadTags(path *path.Path, conf *loader.Config) ([]*Tag, error) {
@@ -45,15 +41,15 @@ func loadTags(path *path.Path, conf *loader.Config) ([]*Tag, error) {
 			keywords = keywords + "," + tag.Slug
 		}
 
-		ret = append(ret, &Tag{
-			Tag:         *tag,
-			Posts:       make([]*Post, 0, 100),
-			Permalink:   vars.TagURL(tag.Slug, 1),
-			SearchTitle: strings.ToLower(tag.Title),
-			Keywords:    keywords,
-			HTMLTitle:   helper.ReplaceContent(p.Title, tag.Title),
-			Modified:    conf.Uptime,
-		})
+		t := &Tag{
+			Tag:       *tag,
+			Posts:     make([]*Post, 0, 100),
+			Permalink: vars.TagURL(tag.Slug, 1),
+			Keywords:  keywords,
+			HTMLTitle: helper.ReplaceContent(p.Title, tag.Title),
+			Modified:  conf.Uptime,
+		}
+		ret = append(ret, t)
 	}
 
 	return ret, nil

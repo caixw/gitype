@@ -11,6 +11,7 @@ import (
 	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/path"
 	"github.com/caixw/gitype/vars"
+	"golang.org/x/text/search"
 )
 
 // Data 结构体包含了数据目录下所有需要加载的数据内容。
@@ -52,6 +53,8 @@ type Data struct {
 	Sitemap    *Feed
 	RSS        *Feed
 	Atom       *Feed
+
+	Matcher *search.Matcher
 }
 
 // Load 函数用于加载一份新的数据。
@@ -101,6 +104,8 @@ func Load(path *path.Path) (*Data, error) {
 		Links: links,
 		Posts: posts,
 		Theme: theme,
+
+		Matcher: search.New(conf.LanguageTag, search.Loose),
 	}
 
 	if err := d.sanitize(conf); err != nil {

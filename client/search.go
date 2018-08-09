@@ -84,10 +84,9 @@ func search(q string, d *data.Data) []*data.Post {
 // 按标签进行搜索
 func searchSeries(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
-	q = strings.ToLower(q)
 
 	for _, tag := range d.Series {
-		if strings.Contains(tag.SearchTitle, q) {
+		if containes(d, tag.Title, q) {
 			posts = append(posts, tag.Posts...)
 		}
 	}
@@ -98,10 +97,9 @@ func searchSeries(q string, d *data.Data) []*data.Post {
 // 按标签进行搜索
 func searchTag(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
-	q = strings.ToLower(q)
 
 	for _, tag := range d.Tags {
-		if strings.Contains(tag.SearchTitle, q) {
+		if containes(d, tag.Title, q) {
 			posts = append(posts, tag.Posts...)
 		}
 	}
@@ -112,10 +110,9 @@ func searchTag(q string, d *data.Data) []*data.Post {
 // 仅搜索标题
 func searchTitle(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
-	q = strings.ToLower(q)
 
 	for _, post := range d.Posts {
-		if strings.Contains(post.SearchTitle, q) {
+		if containes(d, post.Title, q) {
 			posts = append(posts, post)
 		}
 	}
@@ -126,13 +123,19 @@ func searchTitle(q string, d *data.Data) []*data.Post {
 // 默认情况下，搜索标题和内容
 func searchDefault(q string, d *data.Data) []*data.Post {
 	posts := make([]*data.Post, 0, len(d.Posts))
-	q = strings.ToLower(q)
 
 	for _, post := range d.Posts {
-		if strings.Contains(post.SearchTitle, q) || strings.Contains(post.SearchContent, q) {
+		if containes(d, post.Title, q) ||
+			containes(d, post.Content, q) ||
+			containes(d, post.Summary, q) {
 			posts = append(posts, post)
 		}
 	}
 
 	return posts
+}
+
+func containes(d *data.Data, text, key string) bool {
+	s1, _ := d.Matcher.IndexString(text, key)
+	return s1 >= 0
 }
