@@ -1,6 +1,7 @@
 # web.yaml
 
 https: false
+domain: localhost
 httpState: disable
 port: 8080
 headers: 

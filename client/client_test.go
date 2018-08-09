@@ -15,9 +15,7 @@ import (
 	"github.com/caixw/gitype/path"
 )
 
-var (
-	client *Client
-)
+var client *Client
 
 func TestMain(m *testing.M) {
 	path := path.New("../testdata")
@@ -26,18 +24,17 @@ func TestMain(m *testing.M) {
 	htmlMgr := html.New(nil)
 	encoding.AddMarshal("text/html", htmlMgr.Marshal)
 
+	if err = web.Init(path.ConfDir); err != nil {
+		panic(err)
+	}
+
 	client, err = New(path)
 	if err != nil {
 		panic(err)
 	}
 
-	if err = web.Init(path.ConfDir); err != nil {
-		panic(err)
-	}
-
 	module := web.NewModule("test", "test")
-	err = client.Mount(module.Mux(), htmlMgr)
-	if err != nil {
+	if err = client.Mount(module.Mux(), htmlMgr); err != nil {
 		panic(err)
 	}
 

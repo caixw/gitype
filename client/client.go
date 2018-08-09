@@ -6,17 +6,25 @@
 package client
 
 import (
+	"fmt"
+	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/issue9/logs"
 	"github.com/issue9/middleware/compress"
 	"github.com/issue9/mux"
+	"github.com/issue9/utils"
+	"github.com/issue9/web/context"
+	"github.com/issue9/web/encoding"
 	"github.com/issue9/web/encoding/html"
 	"golang.org/x/text/message"
 
+	"github.com/caixw/gitype/client/page"
 	"github.com/caixw/gitype/data"
 	"github.com/caixw/gitype/path"
+	"github.com/caixw/gitype/vars"
 )
 
 // Client 包含了整个可动态加载的数据以及路由的相关操作。
@@ -27,7 +35,7 @@ type Client struct {
 
 	data     *data.Data
 	patterns []string // 记录所有的路由项，方便释放时删除
-	info     *info
+	site     *page.Site
 }
 
 // New 声明一个新的 Client 实例
@@ -40,7 +48,7 @@ func New(path *path.Path) (*Client, error) {
 	client := &Client{
 		path: path,
 		data: d,
-		info: newInfo(d),
+		site: page.NewSite(d),
 	}
 
 	return client, nil
@@ -92,4 +100,44 @@ func (client *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
 			"deflate": compress.NewDeflate,
 		}).ServeHTTP(w, r)
 	}
+}
+
+// Page 生成页面
+func (client *Client) page(typ string) *page.Page {
+	return client.site.Page(typ, client.data)
+}
+
+// 输出当前内容到指定模板
+func (client *Client) render(ctx *context.Context, p *page.Page, name string) {
+	p.Charset = ctx.OutputCharsetName
+	ctx.Render(http.StatusOK, html.Tpl(name, p), nil)
+}
+
+// 输出一个特定状态码下的错误页面。
+// 若该页面模板不存在，则输出状态码对应的文本内容。
+// 只查找当前主题目录下的相关文件。
+// 只对状态码大于等于 400 的起作用。
+func (client *Client) renderError(ctx *context.Context, code int) {
+	if code < 400 {
+		return
+	}
+	logs.Debug("输出非正常状态码：", code)
+
+	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
+	filename := strconv.Itoa(code) + vars.TemplateExtension
+	path := client.path.ThemesPath(client.data.Theme.ID, filename)
+	if !utils.FileExists(path) {
+		ctx.Error(code, fmt.Sprintf("模板文件 %s 不存在\n", path))
+		return
+	}
+
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		ctx.Error(code, err)
+		return
+	}
+
+	ctx.Response.Header().Set("Content-Type", encoding.BuildContentType(client.data.Type, "utf-8"))
+	ctx.Response.WriteHeader(code)
+	ctx.Response.Write(data)
 }

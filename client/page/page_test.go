@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-package client
+package page
 
 import (
 	"testing"
@@ -10,29 +10,29 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestPage_nextPage(t *testing.T) {
+func TestPage_Next(t *testing.T) {
 	a := assert.New(t)
-	p := &page{}
+	p := &Page{}
 
-	p.nextPage("url", "")
+	p.Next("url", "")
 	a.Equal(p.NextPage.URL, "url")
 	a.Equal(p.NextPage.Rel, "next")
 
-	p.nextPage("url", "text")
+	p.Next("url", "text")
 	a.Equal(p.NextPage.URL, "url")
 	a.Equal(p.NextPage.Rel, "next")
 	a.Equal(p.NextPage.Text, "text")
 }
 
-func TestPage_prevPage(t *testing.T) {
+func TestPage_Prev(t *testing.T) {
 	a := assert.New(t)
-	p := &page{}
+	p := &Page{}
 
-	p.prevPage("url", "")
+	p.Prev("url", "")
 	a.Equal(p.PrevPage.URL, "url")
 	a.Equal(p.PrevPage.Rel, "prev")
 
-	p.prevPage("url", "text")
+	p.Prev("url", "text")
 	a.Equal(p.PrevPage.URL, "url")
 	a.Equal(p.PrevPage.Rel, "prev")
 	a.Equal(p.PrevPage.Text, "text")
