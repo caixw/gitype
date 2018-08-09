@@ -64,7 +64,7 @@ const (
 // 页面的类型，除了 PageIndex 其它的同时也是模板名称。
 const (
 	PageIndex    = "index" // 首页
-	PagePosts    = "posts" // 除首页外的文章列表页
+	PagePosts    = "posts" // 除首页外的文章列表页，与首页会有细微差别，比如标题
 	PagePost     = "post"
 	PageTags     = "tags"
 	PageTag      = "tag"
