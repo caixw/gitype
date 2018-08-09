@@ -52,7 +52,9 @@ func (client *Client) Mount(mux *mux.Mux, html *html.HTML) error {
 
 	html.SetTemplate(client.data.Theme.Template)
 
-	message.SetString(client.data.LanguageTag, "xx", "xx") // TODO，去掉
+	// 为当前的语言注册一条数据
+	// 使当前语言能被正确解析
+	message.SetString(client.data.LanguageTag, "xx", "xx")
 
 	return client.initRoutes()
 }
