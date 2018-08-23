@@ -41,7 +41,7 @@ func DumpYAMLFile(path string, obj interface{}) error {
 	return err
 }
 
-// DumpTextFile 将文本内容 text 输出到  path 指定的文件中
+// DumpTextFile 将文本内容 text 输出到 path 指定的文件中
 func DumpTextFile(path, text string) error {
 	file, err := os.Create(path)
 	if err != nil {

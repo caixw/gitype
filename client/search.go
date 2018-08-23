@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/issue9/logs"
 	"github.com/issue9/web"
 
 	"github.com/caixw/gitype/data"
@@ -29,9 +28,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 
 	page := client.queryInt(ctx, vars.URLQueryPage, 1)
 	if page < 1 {
-		logs.Debugf("参数 page: %d 小于 1", page)
-		client.renderError(ctx, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
-		return
+		ctx.Exit(http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 	}
 
 	pp := client.data.Pages[vars.PageSearch]

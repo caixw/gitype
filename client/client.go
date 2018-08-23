@@ -19,6 +19,7 @@ import (
 	"github.com/issue9/web/context"
 	"github.com/issue9/web/encoding"
 	"github.com/issue9/web/encoding/html"
+	"github.com/issue9/web/errorhandler"
 	"golang.org/x/text/message"
 
 	"github.com/caixw/gitype/client/page"
@@ -63,6 +64,9 @@ func (client *Client) Mount(mux *mux.Mux, html *html.HTML) error {
 	// 为当前的语言注册一条数据
 	// 使当前语言能被正确解析
 	message.SetString(client.data.LanguageTag, "xx", "xx")
+
+	// 将所有的错误处理都指向同一个函数
+	errorhandler.SetErrorHandler(client.renderError, 0)
 
 	return client.initRoutes()
 }
@@ -117,27 +121,25 @@ func (client *Client) render(ctx *context.Context, p *page.Page, name string) {
 // 若该页面模板不存在，则输出状态码对应的文本内容。
 // 只查找当前主题目录下的相关文件。
 // 只对状态码大于等于 400 的起作用。
-func (client *Client) renderError(ctx *context.Context, code int) {
-	if code < 400 {
-		return
-	}
+func (client *Client) renderError(w http.ResponseWriter, code int) {
 	logs.Debug("输出非正常状态码：", code)
+	var data []byte
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	filename := strconv.Itoa(code) + vars.TemplateExtension
 	path := client.path.ThemesPath(client.data.Theme.ID, filename)
 	if !utils.FileExists(path) {
-		ctx.Error(code, fmt.Sprintf("模板文件 %s 不存在\n", path))
-		return
+		data = []byte(fmt.Sprintf("模板文件 %s 不存在\n", path))
 	}
 
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		ctx.Error(code, err)
-		return
+		data = []byte(err.Error())
 	}
 
-	ctx.Response.Header().Set("Content-Type", encoding.BuildContentType(client.data.Type, "utf-8"))
-	ctx.Response.WriteHeader(code)
-	ctx.Response.Write(data)
+	w.Header().Set("Content-Type", errorContentType)
+	w.WriteHeader(code)
+	w.Write(data)
 }
+
+var errorContentType = encoding.BuildContentType("text/html", "utf-8")

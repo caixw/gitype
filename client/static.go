@@ -77,8 +77,7 @@ func (client *Client) getRaw(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !utils.FileExists(filepath.Join(client.path.RawsDir, r.URL.Path)) {
-		client.renderError(ctx, http.StatusNotFound)
-		return
+		ctx.Exit(http.StatusNotFound)
 	}
 
 	prefix := "/"
@@ -94,8 +93,7 @@ func (client *Client) serveFile(ctx *context.Context, filename string) {
 
 	stat, err := os.Stat(filename)
 	if err != nil {
-		logs.Error(err)
-		client.renderError(ctx, http.StatusInternalServerError)
+		ctx.Error(http.StatusInternalServerError, err)
 		return
 	}
 

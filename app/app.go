@@ -46,13 +46,11 @@ func Run(path *path.Path, preview bool) error {
 		return err
 	}
 
-	module := web.NewModule("main", "main")
-
 	a := &app{
 		path:    path,
 		html:    htmlMgr,
 		webhook: &webhook{},
-		mux:     module.Mux(),
+		mux:     web.NewModule("gitype", "gitype").Mux(),
 	}
 
 	if err := web.LoadConfig("webhook.yaml", a.webhook); err != nil {

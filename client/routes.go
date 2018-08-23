@@ -121,7 +121,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 	page := client.queryInt(ctx, vars.URLQueryPage, 1)
 
 	if page < 1 {
-		client.renderError(ctx, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
+		ctx.Exit(http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 		return
 	}
 
@@ -177,8 +177,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 
 	page := client.queryInt(ctx, vars.URLQueryPage, 1)
 	if page < 1 {
-		client.renderError(ctx, http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
-		return
+		ctx.Exit(http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 	}
 
 	p := client.page(vars.PageTag)
@@ -253,7 +252,7 @@ func (client *Client) getPostsRange(postsSize, page int, w http.ResponseWriter, 
 	start = size * (page - 1) // 系统从零开始计数
 	if start > postsSize {
 		logs.Debugf("请求页码为[%d]，实际文章数量为[%d]\n", page, postsSize)
-		client.renderError(ctx, http.StatusNotFound) // 页码超出范围，不存在
+		ctx.Exit(http.StatusNotFound) // 页码超出范围，不存在
 		return 0, 0, false
 	}
 
