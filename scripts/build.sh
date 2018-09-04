@@ -18,4 +18,4 @@ path=github.com/caixw/gitype/vars
 cd ${wd}
 
 echo '开始编译'
-go build -ldflags "-X ${path}.buildDate=${date} -X ${path}.commitHash=${hash}" -v
+GOPROXY=http://localhost:8899 go build -ldflags "-X ${path}.buildDate=${date} -X ${path}.commitHash=${hash}" -v

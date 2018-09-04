@@ -13,13 +13,12 @@ import (
 	"time"
 
 	"github.com/issue9/logs"
-	"github.com/issue9/middleware/compress"
 	"github.com/issue9/mux"
 	"github.com/issue9/utils"
+	"github.com/issue9/web"
 	"github.com/issue9/web/context"
 	"github.com/issue9/web/encoding"
 	"github.com/issue9/web/encoding/html"
-	"github.com/issue9/web/errorhandler"
 	"golang.org/x/text/message"
 
 	"github.com/caixw/gitype/client/page"
@@ -66,7 +65,7 @@ func (client *Client) Mount(mux *mux.Mux, html *html.HTML) error {
 	message.SetString(client.data.LanguageTag, "xx", "xx")
 
 	// 将所有的错误处理都指向同一个函数
-	errorhandler.SetErrorHandler(client.renderError, 0)
+	web.SetErrorHandler(client.renderError, 0)
 
 	return client.initRoutes()
 }
@@ -99,10 +98,12 @@ func (client *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Etag", client.data.Etag)
-		compress.New(f, logs.ERROR(), map[string]compress.BuildCompressWriter{
+		/*compress.New(f, logs.ERROR(), map[string]compress.BuildCompressWriter{
 			"gzip":    compress.NewGzip,
 			"deflate": compress.NewDeflate,
 		}).ServeHTTP(w, r)
+		*/
+		f(w, r)
 	}
 }
 
