@@ -20,7 +20,7 @@ install:
   - go get github.com/issue9/utils
   - go get github.com/issue9/mux
 
-  script:
+script:
   -env GO111MODULE=on go test -v -coverprofile=coverage.txt -covermode=atomic $(go list ./...)
 
 after_success:

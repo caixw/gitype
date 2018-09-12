@@ -7,7 +7,6 @@
 *.exe~
 *.test
 *.prof
-go.sum
 
 # macOS
 .DS_Store

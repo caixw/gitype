@@ -6,7 +6,6 @@
 package client
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -98,11 +97,6 @@ func (client *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Etag", client.data.Etag)
-		/*compress.New(f, logs.ERROR(), map[string]compress.BuildCompressWriter{
-			"gzip":    compress.NewGzip,
-			"deflate": compress.NewDeflate,
-		}).ServeHTTP(w, r)
-		*/
 		f(w, r)
 	}
 }
@@ -121,23 +115,27 @@ func (client *Client) render(ctx *context.Context, p *page.Page, name string) {
 // 输出一个特定状态码下的错误页面。
 // 若该页面模板不存在，则输出状态码对应的文本内容。
 // 只查找当前主题目录下的相关文件。
-// 只对状态码大于等于 400 的起作用。
 func (client *Client) renderError(w http.ResponseWriter, code int) {
 	logs.Debug("输出非正常状态码：", code)
 	var data []byte
+	var err error
 
 	// 根据情况输出内容，若不存在模板，则直接输出最简单的状态码对应的文本。
 	filename := strconv.Itoa(code) + vars.TemplateExtension
 	path := client.path.ThemesPath(client.data.Theme.ID, filename)
 	if !utils.FileExists(path) {
-		data = []byte(fmt.Sprintf("模板文件 %s 不存在\n", path))
+		logs.Debugf("模板文件 %s 不存在\n", path)
+		data = []byte(http.StatusText(code))
+		goto RENDER
 	}
 
-	data, err := ioutil.ReadFile(path)
+	data, err = ioutil.ReadFile(path)
 	if err != nil {
-		data = []byte(err.Error())
+		logs.Errorf("加载模板文件 %s 出错\n", path)
+		data = []byte(http.StatusText(code))
 	}
 
+RENDER:
 	w.Header().Set("Content-Type", errorContentType)
 	w.WriteHeader(code)
 	w.Write(data)
