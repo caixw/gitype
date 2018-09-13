@@ -91,7 +91,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post := client.data.Posts[index]
-	p := client.page(vars.PagePost)
+	p := client.page(ctx, vars.PagePost)
 
 	p.Post = post
 	p.Keywords = post.Keywords
@@ -110,7 +110,7 @@ func (client *Client) getPost(w http.ResponseWriter, r *http.Request) {
 		p.Next(next.Permalink, next.Title)
 	}
 
-	client.render(ctx, p, post.Template)
+	p.Render(post.Template)
 }
 
 // 首页及文章列表页
@@ -125,7 +125,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := client.page(vars.PageIndex)
+	p := client.page(ctx, vars.PageIndex)
 	if page > 1 { // 非首页，标题显示页码数
 		p.Type = vars.PagePosts
 	}
@@ -147,7 +147,7 @@ func (client *Client) getPosts(w http.ResponseWriter, r *http.Request) {
 		p.Next(vars.PostsURL(page+1), "")
 	}
 
-	client.render(ctx, p, vars.PagePosts)
+	p.Render(vars.PagePosts)
 }
 
 // 标签详细页
@@ -180,7 +180,7 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 		ctx.Exit(http.StatusNotFound) // 页码为负数的表示不存在，跳转到 404 页面
 	}
 
-	p := client.page(vars.PageTag)
+	p := client.page(ctx, vars.PageTag)
 	p.Tag = tag
 	p.Title = tag.HTMLTitle
 	p.Keywords = tag.Keywords
@@ -199,42 +199,42 @@ func (client *Client) getTag(w http.ResponseWriter, r *http.Request) {
 		p.Next(vars.TagURL(slug, page+1), "")
 	}
 
-	client.render(ctx, p, vars.PageTag)
+	p.Render(vars.PageTag)
 }
 
 // 友情链接页
 // /links.html
 func (client *Client) getLinks(w http.ResponseWriter, r *http.Request) {
 	ctx := web.NewContext(w, r)
-	p := client.page(vars.PageLinks)
+	p := client.page(ctx, vars.PageLinks)
 	pp := client.data.Pages[vars.PageLinks]
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
 	p.Description = pp.Description
 	p.Canonical = web.URL(vars.LinksURL())
 
-	client.render(ctx, p, vars.PageLinks)
+	p.Render(vars.PageLinks)
 }
 
 // 标签列表页
 // /tags.html
 func (client *Client) getTags(w http.ResponseWriter, r *http.Request) {
 	ctx := web.NewContext(w, r)
-	p := client.page(vars.PageTags)
+	p := client.page(ctx, vars.PageTags)
 	pp := client.data.Pages[vars.PageTags]
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
 	p.Description = pp.Description
 	p.Canonical = web.URL(vars.TagsURL())
 
-	client.render(ctx, p, vars.PageTags)
+	p.Render(vars.PageTags)
 }
 
 // 归档页
 // /archives.html
 func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	ctx := web.NewContext(w, r)
-	p := client.page(vars.PageArchives)
+	p := client.page(ctx, vars.PageArchives)
 	pp := client.data.Pages[vars.PageArchives]
 	p.Title = pp.Title
 	p.Keywords = pp.Keywords
@@ -242,7 +242,7 @@ func (client *Client) getArchives(w http.ResponseWriter, r *http.Request) {
 	p.Canonical = web.URL(vars.ArchivesURL())
 	p.Archives = client.data.Archives
 
-	client.render(ctx, p, vars.PageArchives)
+	p.Render(vars.PageArchives)
 }
 
 // 确认当前文章列表页选择范围。

@@ -18,7 +18,7 @@ import (
 // /search.html?q=key&page=2
 func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 	ctx := web.NewContext(w, r)
-	p := client.page(vars.PageSearch)
+	p := client.page(ctx, vars.PageSearch)
 
 	q := r.FormValue(vars.URLQuerySearch)
 	if len(q) == 0 {
@@ -51,7 +51,7 @@ func (client *Client) getSearch(w http.ResponseWriter, r *http.Request) {
 		p.Next(vars.SearchURL(q, page+1), "")
 	}
 
-	client.render(ctx, p, vars.PageSearch)
+	p.Render(vars.PageSearch)
 }
 
 // 查找出所有符合要求的文章列表

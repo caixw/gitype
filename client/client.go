@@ -102,14 +102,8 @@ func (client *Client) prepare(f http.HandlerFunc) http.HandlerFunc {
 }
 
 // Page 生成页面
-func (client *Client) page(typ string) *page.Page {
-	return client.site.Page(typ, client.data)
-}
-
-// 输出当前内容到指定模板
-func (client *Client) render(ctx *context.Context, p *page.Page, name string) {
-	p.Charset = ctx.OutputCharsetName
-	ctx.Render(http.StatusOK, html.Tpl(name, p), nil)
+func (client *Client) page(ctx *context.Context, typ string) *page.Page {
+	return client.site.Page(ctx, typ, client.data)
 }
 
 // 输出一个特定状态码下的错误页面。

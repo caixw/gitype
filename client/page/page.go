@@ -5,12 +5,20 @@
 // Package page 定义 html 页面需要的内容
 package page
 
-import "github.com/caixw/gitype/data"
+import (
+	"net/http"
+
+	"github.com/issue9/web/context"
+	"github.com/issue9/web/encoding/html"
+
+	"github.com/caixw/gitype/data"
+)
 
 // Page 用于描述一个页面的所有无素
 type Page struct {
 	Site *Site
 
+	context     *context.Context
 	Title       string       // 文章标题
 	Subtitle    string       // 副标题
 	Canonical   string       // 当前页的唯一链接
@@ -32,10 +40,11 @@ type Page struct {
 }
 
 // Page 生成 Page 实例
-func (site *Site) Page(typ string, d *data.Data) *Page {
+func (site *Site) Page(ctx *context.Context, typ string, d *data.Data) *Page {
 	return &Page{
 		Site: site,
 
+		context:  ctx,
 		Subtitle: d.Subtitle,
 		Type:     typ,
 		Author:   d.Author,
@@ -59,4 +68,10 @@ func (p *Page) Prev(url, text string) {
 		URL:  url,
 		Rel:  "prev",
 	}
+}
+
+// Render 渲染内容
+func (p *Page) Render(name string) {
+	p.Charset = p.context.OutputCharsetName
+	p.context.Render(http.StatusOK, html.Tpl(name, p), nil)
 }
