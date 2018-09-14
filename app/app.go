@@ -50,7 +50,7 @@ func Run(path *path.Path, preview bool) error {
 		path:    path,
 		html:    htmlMgr,
 		webhook: &webhook{},
-		mux:     web.NewModule("gitype", "gitype").Mux(),
+		mux:     web.Mux(),
 	}
 
 	if err := web.LoadConfig("webhook.yaml", a.webhook); err != nil {

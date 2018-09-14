@@ -8,8 +8,8 @@ require (
 	github.com/issue9/mux v1.0.0
 	github.com/issue9/utils v1.0.0
 	github.com/issue9/version v1.0.0
-	github.com/issue9/web v0.16.0
-	golang.org/x/sys v0.0.0-20180905080454-ebe1bf3edb33
+	github.com/issue9/web v0.16.1
+	golang.org/x/sys v0.0.0-20180905080454-ebe1bf3edb33 // indirect
 	golang.org/x/text v0.3.0
 	gopkg.in/fsnotify.v1 v1.4.7
 	gopkg.in/yaml.v2 v2.2.1
