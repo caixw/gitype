@@ -7,6 +7,7 @@ package app
 
 import (
 	"errors"
+	"path/filepath"
 
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
@@ -53,7 +54,7 @@ func Run(path *path.Path, preview bool) error {
 		mux:     web.Mux(),
 	}
 
-	if err := web.LoadConfig("webhook.yaml", a.webhook); err != nil {
+	if err := web.LoadConfig(filepath.Join(path.ConfDir, "webhook.yaml"), a.webhook); err != nil {
 		return err
 	}
 
