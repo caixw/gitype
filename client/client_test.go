@@ -33,8 +33,7 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	module := web.NewModule("test", "test")
-	if err = client.Mount(module.Mux(), htmlMgr); err != nil {
+	if err = client.Mount(web.Mux(), htmlMgr); err != nil {
 		panic(err)
 	}
 

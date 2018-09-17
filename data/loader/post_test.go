@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	"github.com/issue9/assert"
+
+	"github.com/caixw/gitype/vars"
 )
 
 func TestCheckPostsDup(t *testing.T) {
@@ -30,7 +32,7 @@ func TestLoadPost(t *testing.T) {
 	post, err := loadPost(testdataPath, "/post1")
 	a.NotError(err).NotNil(post)
 	a.Equal(post.Tags, "default1,default2")
-	a.Equal(post.Template, "") // 未指定，则为空
+	a.Equal(post.Template, vars.PagePost) // 未指定，则为默认值
 	a.Equal(post.Content, "<article>a1</article>\n")
 
 	post, err = loadPost(testdataPath, "/folder/post2")

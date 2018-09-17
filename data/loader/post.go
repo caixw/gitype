@@ -172,7 +172,7 @@ func loadPost(path *path.Path, slug string) (*Post, error) {
 		post.Keywords = post.Tags
 	}
 
-	if len(post.Template) == 0 {
+	if post.Template == "" {
 		post.Template = vars.PagePost
 	}
 
