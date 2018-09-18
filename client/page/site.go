@@ -23,6 +23,7 @@ type Site struct {
 	Theme      *data.Theme
 
 	SiteName    string     // 网站名称
+	Subtitle    string     // 网站副标题
 	URL         string     // 网站地址，若是一个子目录，则需要包含该子目录
 	Icon        *data.Icon // 网站图标
 	Language    string     // 页面语言
@@ -49,6 +50,7 @@ func NewSite(d *data.Data) *Site {
 		Theme:      d.Theme,
 
 		SiteName:    d.SiteName,
+		Subtitle:    d.Subtitle,
 		URL:         web.URL(""),
 		Icon:        d.Icon,
 		Language:    d.LanguageTag.String(),
