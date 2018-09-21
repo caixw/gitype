@@ -58,12 +58,12 @@ var defaultConfig = &Config{
 
 	Theme:  "default",
 	Uptime: time.Now(),
-	Archive: &ArchiveConfig{
+	Archive: &Archive{
 		Type:   ArchiveTypeYear,
 		Format: "2006 年",
 	},
 
-	RSS: &RSSConfig{
+	RSS: &RSS{
 		Title: "RSS",
 		URL:   "/rss.xml",
 		Type:  contentTypeRSS,
