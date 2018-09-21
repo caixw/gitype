@@ -71,15 +71,15 @@ type Manifest struct {
 
 	Lang        string  `yaml:"lang"`
 	Name        string  `yaml:"name"`
-	ShortName   string  `yaml:"short_name"`
-	StartURL    string  `yaml:"start_url,omitempty"`
+	ShortName   string  `yaml:"shortName"`
+	StartURL    string  `yaml:"startURL,omitempty"`
 	Display     string  `yaml:"display,omitempty"`
 	Description string  `yaml:"description,omitempty"`
 	Dir         string  `yaml:"dir,omitempty"`
 	Orientation string  `yaml:"orientation,omitempty"`
 	Scope       string  `yaml:"scope,omitempty"`
-	ThemeColor  string  `yaml:"theme_color,omitempty"`
-	Background  string  `yaml:"background_color,omitempty"`
+	ThemeColor  string  `yaml:"themeColor,omitempty"`
+	Background  string  `yaml:"backgroundColor,omitempty"`
 	Icons       []*Icon `yaml:"icons"`
 }
 
