@@ -198,10 +198,18 @@ func (m *Manifest) sanitize(conf *Config) *helper.FieldError {
 
 	if m.Display == "" {
 		m.Display = "browser"
-	} else {
-		if !inStrings(m.Display, pwaDisplays) {
-			return &helper.FieldError{Message: "取值不正确", Field: "pwa.display"}
-		}
+	} else if !inStrings(m.Display, pwaDisplays) {
+		return &helper.FieldError{Message: "取值不正确", Field: "pwa.display"}
+	}
+
+	if m.Dir == "" {
+		m.Dir = "auto"
+	} else if !inStrings(m.Dir, pwaDirs) {
+		return &helper.FieldError{Message: "取值不正确", Field: "pwa.dir"}
+	}
+
+	if m.Orientation != "" && !inStrings(m.Orientation, pwaOrientations) {
+		return &helper.FieldError{Message: "取值不正确", Field: "pwa.orientation"}
 	}
 
 	if len(m.Icons) == 0 { // nil 或是 len(m.Icons) == 0
@@ -226,6 +234,23 @@ var pwaDisplays = []string{
 	"standalone",
 	"minimal-ul",
 	"browser",
+}
+
+var pwaOrientations = []string{
+	"any",
+	"natural",
+	"landscape",
+	"landscape-primary",
+	"landscape-secondary",
+	"portrait",
+	"portrait-primary",
+	"portrait-secondary",
+}
+
+var pwaDirs = []string{
+	"rtl",
+	"ltr",
+	"auto",
 }
 
 func isChangereq(val string) bool {
