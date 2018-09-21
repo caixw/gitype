@@ -66,6 +66,9 @@ type Archive struct {
 
 // Manifest 表示 PWA 中的相关配置
 type Manifest struct {
+	URL  string `yaml:"url"`
+	Type string `yaml:"type,omitempty"`
+
 	Lang        string  `yaml:"lang"`
 	Name        string  `yaml:"name"`
 	ShortName   string  `yaml:"short_name"`
@@ -169,6 +172,14 @@ func (a *Archive) sanitize() *helper.FieldError {
 }
 
 func (m *Manifest) sanitize(conf *Config) *helper.FieldError {
+	if m.URL == "" {
+		return &helper.FieldError{Message: "不能为空", Field: "pwa.url"}
+	}
+
+	if m.Type == "" {
+		m.Type = contentManifest
+	}
+
 	if m.Lang == "" {
 		m.Lang = conf.Language
 	}
