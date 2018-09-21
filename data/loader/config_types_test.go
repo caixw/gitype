@@ -10,10 +10,10 @@ import (
 	"github.com/issue9/assert"
 )
 
-func TestRSSConfig_sanitize(t *testing.T) {
+func TestRSS_sanitize(t *testing.T) {
 	a := assert.New(t)
 
-	rss := &RSSConfig{}
+	rss := &RSS{}
 	conf := &Config{
 		Title: "title",
 		RSS:   rss,
@@ -38,7 +38,7 @@ func TestRSSConfig_sanitize(t *testing.T) {
 func TestSitemapConfig_sanitize(t *testing.T) {
 	a := assert.New(t)
 
-	s := &SitemapConfig{}
+	s := &Sitemap{}
 	a.Error(s.sanitize())
 
 	s.URL = "url"

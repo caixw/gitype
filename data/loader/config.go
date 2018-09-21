@@ -43,11 +43,11 @@ type Config struct {
 	// 3) html>head>meta.description
 	Pages map[string]*Page `yaml:"pages,omitempty"`
 
-	Archive    *ArchiveConfig    `yaml:"archive"`
-	RSS        *RSSConfig        `yaml:"rss,omitempty"`
-	Atom       *RSSConfig        `yaml:"atom,omitempty"`
-	Sitemap    *SitemapConfig    `yaml:"sitemap,omitempty"`
-	Opensearch *OpensearchConfig `yaml:"opensearch,omitempty"`
+	Archive    *Archive    `yaml:"archive"`
+	RSS        *RSS        `yaml:"rss,omitempty"`
+	Atom       *RSS        `yaml:"atom,omitempty"`
+	Sitemap    *Sitemap    `yaml:"sitemap,omitempty"`
+	Opensearch *Opensearch `yaml:"opensearch,omitempty"`
 
 	LanguageTag l.Tag `yaml:"-"`
 }
