@@ -4,7 +4,11 @@
 
 package loader
 
-import "github.com/caixw/gitype/helper"
+import (
+	"github.com/issue9/web"
+
+	"github.com/caixw/gitype/helper"
+)
 
 // 归档的类型
 const (
@@ -58,6 +62,22 @@ type Archive struct {
 	Order  string `yaml:"order"`            // 排序方式
 	Type   string `yaml:"type,omitempty"`   // 存档的分类方式，可以按年或是按月
 	Format string `yaml:"format,omitempty"` // 标题的格式化字符串
+}
+
+// Manifest 表示 PWA 中的相关配置
+type Manifest struct {
+	Lang        string  `yaml:"lang"`
+	Name        string  `yaml:"name"`
+	ShortName   string  `yaml:"short_name"`
+	StartURL    string  `yaml:"start_url,omitempty"`
+	Display     string  `yaml:"display,omitempty"`
+	Description string  `yaml:"description,omitempty"`
+	Dir         string  `yaml:"dir,omitempty"`
+	Orientation string  `yaml:"orientation,omitempty"`
+	Scope       string  `yaml:"scope,omitempty"`
+	ThemeColor  string  `yaml:"theme_color,omitempty"`
+	Background  string  `yaml:"background_color,omitempty"`
+	Icons       []*Icon `yaml:"icons"`
 }
 
 func (rss *RSS) sanitize(conf *Config, typ string) *helper.FieldError {
@@ -148,6 +168,38 @@ func (a *Archive) sanitize() *helper.FieldError {
 	return nil
 }
 
+func (m *Manifest) sanitize(conf *Config) *helper.FieldError {
+	if m.Lang == "" {
+		m.Lang = conf.Language
+	}
+
+	if m.Name == "" {
+		m.Name = conf.Title
+	}
+
+	if m.ShortName == "" {
+		m.ShortName = conf.Subtitle
+	}
+
+	if m.StartURL == "" {
+		m.StartURL = web.URL("")
+	}
+
+	if m.Display == "" {
+		m.Display = "browser"
+	} else {
+		if !inStrings(m.Display, pwaDisplays) {
+			return &helper.FieldError{Message: "取值不正确", Field: "pwa.display"}
+		}
+	}
+
+	if len(m.Icons) == 0 { // nil 或是 len(m.Icons) == 0
+		m.Icons = []*Icon{conf.Icon}
+	}
+
+	return nil
+}
+
 var changereqs = []string{
 	"never",
 	"yearly",
@@ -158,8 +210,19 @@ var changereqs = []string{
 	"always",
 }
 
+var pwaDisplays = []string{
+	"fullscreen",
+	"standalone",
+	"minimal-ul",
+	"browser",
+}
+
 func isChangereq(val string) bool {
-	for _, v := range changereqs {
+	return inStrings(val, changereqs)
+}
+
+func inStrings(val string, vals []string) bool {
+	for _, v := range vals {
 		if v == val {
 			return true
 		}
