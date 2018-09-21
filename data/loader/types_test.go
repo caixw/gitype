@@ -45,3 +45,21 @@ func TestAuthor_sanitize(t *testing.T) {
 	author.Name = "caixw"
 	a.NotError(author.sanitize())
 }
+
+func TestIcon_sanitize(t *testing.T) {
+	a := assert.New(t)
+
+	icon := &Icon{}
+	a.Error(icon.sanitize())
+
+	// type 会根据 URL 的扩展名，可能会自动计算获得。
+	// png 有内置，肯定可以成功检测到
+	icon = &Icon{URL: "http://example.com/1.png"}
+	a.NotError(icon.sanitize())
+	a.Equal(icon.Type, "image/png")
+
+	// 不存在的扩展名，则不会计算工其 type
+	icon = &Icon{URL: "http://example.com/1.not-exists"}
+	a.NotError(icon.sanitize())
+	a.Equal(icon.Type, "")
+}

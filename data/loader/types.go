@@ -5,6 +5,8 @@
 package loader
 
 import (
+	"mime"
+	stdpath "path"
 	"strconv"
 
 	"github.com/caixw/gitype/helper"
@@ -95,6 +97,10 @@ func LoadTheme(path *path.Path, name string) (*Theme, error) {
 func (icon *Icon) sanitize() *helper.FieldError {
 	if len(icon.URL) == 0 {
 		return &helper.FieldError{Field: "url", Message: "不能为空"}
+	}
+
+	if icon.Type == "" {
+		icon.Type = mime.TypeByExtension(stdpath.Ext(icon.URL))
 	}
 
 	return nil
