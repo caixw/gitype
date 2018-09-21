@@ -132,6 +132,7 @@ rss             | RSS             | rss 配置，若不需要，则不指定该�
 atom            | RSS             | atom 配置，若不需要，则不指定该值即可
 sitemap         | Sitemap         | sitemap 相关配置，若不需要，则不指定该值即可
 opensearch      | Opensearch      | opensearch 相关配置，若不需要，则不指定该值即可
+pwa             | PWA             | PWA 的相关配置，不指定，则不支持该功能
 pages           | map[string]Page | 各个类型页面的一些自定义项
 
 
@@ -189,6 +190,30 @@ description | string   | description 值
 longName    | string   | longName 值
 image       | Icon     | image 值
 type        | string   | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
+
+
+###### PWA
+
+*https://developer.mozilla.org/zh-CN/docs/Web/Manifest*
+
+名称            | 类型     | 描述
+:---------------|:---------|:----------
+url             | string   | opensearch 的地址
+type            | string   | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
+lang            | string   | name 值所使用的语言
+name            | string   | name 值
+shortName       | string   | short_name 值
+startURL        | string   | start_url 值
+display         | string   | display 值
+description     | string   | description 值
+dir             | string   | dir 值，表示文字方向
+orientation     | string   | orientation 值
+scope           | string   | scope 值
+themeColor      | string   | theme_color 值
+backgroundColor | string   | background_color 值
+longName        | string   | longName 值
+serviceWorkers  | string   | 指向 sw.js 的路径。为空表示不需要
+icons           | []Icon   | icons 值
 
 
 ###### Icon
