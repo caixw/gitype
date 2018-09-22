@@ -12,5 +12,6 @@ const (
 	contentTypeRSS        = "application/rss+xml"
 	contentTypeOpensearch = "application/opensearchdescription+xml"
 	contentTypeXML        = "application/xml"
+	contentManifest       = "application/manifest+json"
 	contentTypeHTML       = "text/html"
 )

@@ -57,12 +57,12 @@ func TestSitemapConfig_sanitize(t *testing.T) {
 	a.Equal(s.Type, contentTypeXML) // 默认值
 }
 
-func TestIsChangereq(t *testing.T) {
+func TestInString(t *testing.T) {
 	a := assert.New(t)
 
-	a.False(isChangereq("n"))
-	a.False(isChangereq(""))
-	a.False(isChangereq("m"))
+	a.False(inStrings("n", changereqs))
+	a.False(inStrings("", changereqs))
+	a.False(inStrings("m", changereqs))
 
-	a.True(isChangereq("never"))
+	a.True(inStrings("never", changereqs))
 }

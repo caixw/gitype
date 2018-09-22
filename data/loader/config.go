@@ -48,6 +48,7 @@ type Config struct {
 	Atom       *RSS        `yaml:"atom,omitempty"`
 	Sitemap    *Sitemap    `yaml:"sitemap,omitempty"`
 	Opensearch *Opensearch `yaml:"opensearch,omitempty"`
+	PWA        *Manifest   `yaml:"pwa,omitempty"`
 
 	LanguageTag l.Tag `yaml:"-"`
 }
@@ -165,6 +166,12 @@ func (conf *Config) sanitize() *helper.FieldError {
 	// opensearch，需要用到 config.Icon 变量
 	if conf.Opensearch != nil {
 		if err := conf.Opensearch.sanitize(conf); err != nil {
+			return err
+		}
+	}
+
+	if conf.PWA != nil {
+		if err := conf.PWA.sanitize(conf); err != nil {
 			return err
 		}
 	}

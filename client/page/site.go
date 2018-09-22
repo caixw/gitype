@@ -34,6 +34,7 @@ type Site struct {
 	RSS         *data.Link // RSS，NOTICE:指针方便模板判断其值是否为空
 	Atom        *data.Link
 	Opensearch  *data.Link
+	PWA         *data.Link
 	Tags        []*data.Tag  // 标签列表
 	Series      []*data.Tag  // 专题列表
 	Links       []*data.Link // 友情链接
@@ -85,6 +86,14 @@ func NewSite(d *data.Data) *Site {
 			Title: d.Opensearch.Title,
 			URL:   d.Opensearch.URL,
 			Type:  d.Opensearch.Type,
+		}
+	}
+
+	if d.PWA != nil {
+		site.PWA = &data.Link{
+			Title: d.PWA.Title,
+			URL:   d.PWA.URL,
+			Type:  d.PWA.Type,
 		}
 	}
 
