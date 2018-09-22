@@ -194,6 +194,8 @@ type        | string   | 当前文件的 mimetype 若不指定，会使用 vars 
 
 ###### PWA
 
+有关 pwa 的说明，可以参考以下内容：
+
 *https://developer.mozilla.org/zh-CN/docs/Web/Manifest*
 
 名称            | 类型     | 描述
@@ -212,7 +214,6 @@ scope           | string   | scope 值
 themeColor      | string   | theme_color 值
 backgroundColor | string   | background_color 值
 longName        | string   | longName 值
-serviceWorkers  | string   | 指向 sw.js 的路径。为空表示不需要
 icons           | []Icon   | icons 值
 
 
