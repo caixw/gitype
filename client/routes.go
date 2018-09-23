@@ -61,7 +61,7 @@ func (client *Client) initFeedRoutes() (err error) {
 	handle(client.data.Atom)
 	handle(client.data.Sitemap)
 	handle(client.data.Opensearch)
-	handle(client.data.PWA)
+	handle(client.data.Manifest)
 
 	return err
 }

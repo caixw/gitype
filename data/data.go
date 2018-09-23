@@ -53,7 +53,7 @@ type Data struct {
 	Sitemap    *Feed
 	RSS        *Feed
 	Atom       *Feed
-	PWA        *Feed
+	Manifest   *Feed
 
 	Matcher *search.Matcher
 }
@@ -165,6 +165,6 @@ func (d *Data) buildData(conf *loader.Config) (err error) {
 	errFilter(d.buildSitemap)
 	errFilter(d.buildRSS)
 	errFilter(d.buildAtom)
-	errFilter(d.buildPWA)
+	errFilter(d.buildManifest)
 	return err
 }

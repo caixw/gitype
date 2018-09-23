@@ -32,7 +32,7 @@ type icon struct {
 	Type  string `json:"type"`
 }
 
-func (d *Data) buildPWA(conf *loader.Config) error {
+func (d *Data) buildManifest(conf *loader.Config) error {
 	if conf.PWA == nil { // 不需要生成 pwa
 		return nil
 	}
@@ -45,7 +45,7 @@ func (d *Data) buildPWA(conf *loader.Config) error {
 		return err
 	}
 
-	d.PWA = &Feed{
+	d.Manifest = &Feed{
 		URL:     conf.PWA.URL,
 		Type:    conf.PWA.Type,
 		Content: bs,
