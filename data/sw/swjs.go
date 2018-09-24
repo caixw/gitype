@@ -13,17 +13,17 @@ const versions = new Map();
 {{VERSIONS}}
 
 self.addEventListener('install', (event)=>{
-    log.info('sw install');
+    console.info('sw install');
     event.waitUntil(onInstall());
 });
 
 self.addEventListener('fetch', (event)=>{
-    log.info('sw fetch');
+    console.info('sw fetch');
     event.respondWith(onFetch(event));
 });
 
 self.addEventListener('activate', (event)=>{
-    log.info('sw activate');
+    console.info('sw activate');
     event.waitUntil(onActivate());
 })
 
@@ -44,7 +44,7 @@ function onFetch(event) {
     caches.match(event.request).then((resp)=>{
         return resp || fetch(e.request);
     }).catch((err)=>{
-        console.log('sw fetch error:', err);
+        console.error('sw fetch error:', err);
         return fetch(e.request);
     })
 }
