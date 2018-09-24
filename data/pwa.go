@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 
 	"github.com/caixw/gitype/data/loader"
+	"github.com/caixw/gitype/data/sw"
 )
 
 // Manifest 表示 PWA 中的 manifest.json 文件
@@ -37,8 +38,12 @@ func (d *Data) buildManifest(conf *loader.Config) error {
 		return nil
 	}
 
+	if conf.PWA.Manifest == nil {
+		return nil
+	}
+
 	m := &Manifest{}
-	m.fromLoader(conf.PWA)
+	m.fromLoader(conf.PWA.Manifest)
 
 	bs, err := json.Marshal(m)
 	if err != nil {
@@ -46,8 +51,8 @@ func (d *Data) buildManifest(conf *loader.Config) error {
 	}
 
 	d.Manifest = &Feed{
-		URL:     conf.PWA.URL,
-		Type:    conf.PWA.Type,
+		URL:     conf.PWA.Manifest.URL,
+		Type:    conf.PWA.Manifest.Type,
 		Content: bs,
 	}
 
@@ -75,4 +80,13 @@ func (m *Manifest) fromLoader(conf *loader.Manifest) {
 			Type:  img.Type,
 		}
 	}
+}
+
+func (d *Data) buildSW(conf *loader.Config) error {
+	sw := sw.New()
+
+	d.ServiceWorker = sw.Bytes()
+	d.ServiceWorkerPath = conf.PWA.ServiceWorker
+
+	return nil
 }
