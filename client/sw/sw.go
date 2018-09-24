@@ -5,9 +5,9 @@
 // Package sw 提供 service worker 的支持
 package sw
 
-import (
-	"bytes"
-)
+import "bytes"
+
+var replacement = []byte("{{VERSIONS}}")
 
 // ServiceWorker SW 功能的管理
 type ServiceWorker struct {
@@ -49,5 +49,5 @@ func (sw *ServiceWorker) Bytes() []byte {
 		content.WriteString("]);")
 	}
 
-	return bytes.Replace(swjs, []byte("{{VERSIONS}}"), content.Bytes(), 1)
+	return bytes.Replace(swjs, replacement, content.Bytes(), 1)
 }
