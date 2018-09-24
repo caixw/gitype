@@ -11,6 +11,7 @@ gitype [![Build Status](https://travis-ci.org/caixw/gitype.svg?branch=nosql)](ht
 1. 不区分页面和普通文章；
 1. 可以实时搜索内容；
 1. 自动生成 RSS、Atom、Sitemap 和 Opensearch 等内容；
+1. 支持 PWA；
 1. 自定义主题。
 
 
