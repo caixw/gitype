@@ -189,7 +189,7 @@ shortName   | string   | shortName 值
 description | string   | description 值
 longName    | string   | longName 值
 image       | Icon     | image 值
-type        | string   | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
+type        | string   | 当前文件的 mimetype 若不指定，则使用 application/opensearchdescription+xml
 
 
 ###### PWA
@@ -200,8 +200,16 @@ type        | string   | 当前文件的 mimetype 若不指定，会使用 vars 
 
 名称            | 类型     | 描述
 :---------------|:---------|:----------
-url             | string   | opensearch 的地址
-type            | string   | 当前文件的 mimetype 若不指定，会使用 vars 包中的默认值
+serviceWorkers  | string   | 指定 service worker 文件的地址，相对于根
+manifest        | Manifest | manifest.json 的相关配置
+
+
+###### Manifest
+
+名称            | 类型     | 描述
+:---------------|:---------|:----------
+url             | string   | manifest 的地址
+type            | string   | 当前文件的 mimetype 若不指定，则使用 application/manifest+json
 lang            | string   | name 值所使用的语言
 name            | string   | name 值
 shortName       | string   | short_name 值
@@ -332,6 +340,22 @@ data/themes 下为主题文件，可定义多个主题，通过 config 中的 th
 
 单一主题下，可以为文章详细页定义多个模板，通过每篇文章的 meta.yaml 可以自定义当前文章使用的模板，
 默认情况下，使用 post 模板。
+
+
+###### theme.yaml
+
+定义了主题相关的一些属性。
+
+名称         | 类型      | 描述
+:------------|:----------|:----------
+name         | string    | 名称
+version      | string    | 版本号
+description  | string    | 主题的详细描述信息
+author       | Author    | 作者信息
+assets       | []string  | 需要 PWA 缓存的信息，如果系统未启用，这些内容不启作用。
+
+*如果指定了 assets 的内容，则每次更新主题内容时，必须改变版本号，PWA 根据版本号确定是否需要更新缓存的内容*
+
 
 
 ###### 错误模板

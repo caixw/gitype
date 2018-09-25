@@ -6,7 +6,6 @@ package data
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -87,6 +86,10 @@ func (m *Manifest) fromLoader(conf *loader.Manifest) {
 }
 
 func (d *Data) buildSW(conf *loader.Config) error {
+	if conf.PWA == nil {
+		return nil
+	}
+
 	sw := sw.New()
 
 	// 首页、archives.html 和 tags.html
@@ -110,7 +113,6 @@ func (d *Data) buildSW(conf *loader.Config) error {
 			continue
 		}
 
-		fmt.Println("url:", url)
 		if !strings.HasPrefix(url, "https://") {
 			url = themeURL(url)
 		}

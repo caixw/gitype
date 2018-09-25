@@ -49,7 +49,7 @@ type Theme struct {
 
 	// 需要被 service worker 缓存的内容。
 	// 如果是带 https 开头的 URL，则直接使用，
-	// 如果是不带 https 或是 / 开头的 URL，则会被映射到当前主题下。
+	// 如果是不以 https 开头的 URL，则会被映射到当前主题下。
 	Assets []string `yaml:"assets,omitempty"`
 }
 
