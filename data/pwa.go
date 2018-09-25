@@ -6,8 +6,12 @@ package data
 
 import (
 	"encoding/json"
+	"strconv"
+	"strings"
 
 	"github.com/caixw/gitype/data/loader"
+	"github.com/caixw/gitype/data/sw"
+	"github.com/caixw/gitype/vars"
 )
 
 // Manifest 表示 PWA 中的 manifest.json 文件
@@ -32,22 +36,26 @@ type icon struct {
 	Type  string `json:"type"`
 }
 
-func (d *Data) buildPWA(conf *loader.Config) error {
+func (d *Data) buildManifest(conf *loader.Config) error {
 	if conf.PWA == nil { // 不需要生成 pwa
 		return nil
 	}
 
+	if conf.PWA.Manifest == nil {
+		return nil
+	}
+
 	m := &Manifest{}
-	m.fromLoader(conf.PWA)
+	m.fromLoader(conf.PWA.Manifest)
 
 	bs, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
 
-	d.PWA = &Feed{
-		URL:     conf.PWA.URL,
-		Type:    conf.PWA.Type,
+	d.Manifest = &Feed{
+		URL:     conf.PWA.Manifest.URL,
+		Type:    conf.PWA.Manifest.Type,
 		Content: bs,
 	}
 
@@ -75,4 +83,44 @@ func (m *Manifest) fromLoader(conf *loader.Manifest) {
 			Type:  img.Type,
 		}
 	}
+}
+
+func (d *Data) buildSW(conf *loader.Config) error {
+	if conf.PWA == nil {
+		return nil
+	}
+
+	sw := sw.New()
+
+	// 首页、archives.html 和 tags.html
+	ver := "gitype-" + strconv.FormatInt(d.Created.Unix(), 10)
+	sw.Add(ver, "/", vars.TagsURL(), vars.ArchivesURL())
+
+	for _, post := range d.Posts {
+		ver = "post-" + strconv.FormatInt(post.Modified.Unix(), 10)
+		sw.Add(ver, post.Permalink)
+	}
+
+	for _, tag := range d.Tags {
+		ver = "tag-" + strconv.FormatInt(tag.Modified.Unix(), 10)
+		sw.Add(ver, tag.Permalink)
+	}
+
+	// 主题提供的缓存内容
+	ver = "theme-" + d.Theme.ID + "-" + d.Theme.Version
+	for _, url := range d.Theme.Assets {
+		if url == "" {
+			continue
+		}
+
+		if !strings.HasPrefix(url, "https://") {
+			url = themeURL(url)
+		}
+		sw.Add(ver, url)
+	}
+
+	d.ServiceWorker = sw.Bytes()
+	d.ServiceWorkerPath = conf.PWA.ServiceWorker
+
+	return nil
 }

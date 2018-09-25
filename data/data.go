@@ -49,11 +49,13 @@ type Data struct {
 	Archives []*Archive
 	Theme    *Theme // 当前主题
 
-	Opensearch *Feed
-	Sitemap    *Feed
-	RSS        *Feed
-	Atom       *Feed
-	PWA        *Feed
+	Opensearch        *Feed
+	Sitemap           *Feed
+	RSS               *Feed
+	Atom              *Feed
+	Manifest          *Feed
+	ServiceWorker     []byte // service worker 的内容
+	ServiceWorkerPath string // service worker 的 URL
 
 	Matcher *search.Matcher
 }
@@ -165,6 +167,7 @@ func (d *Data) buildData(conf *loader.Config) (err error) {
 	errFilter(d.buildSitemap)
 	errFilter(d.buildRSS)
 	errFilter(d.buildAtom)
-	errFilter(d.buildPWA)
+	errFilter(d.buildManifest)
+	errFilter(d.buildSW)
 	return err
 }

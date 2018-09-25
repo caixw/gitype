@@ -48,7 +48,7 @@ type Config struct {
 	Atom       *RSS        `yaml:"atom,omitempty"`
 	Sitemap    *Sitemap    `yaml:"sitemap,omitempty"`
 	Opensearch *Opensearch `yaml:"opensearch,omitempty"`
-	PWA        *Manifest   `yaml:"pwa,omitempty"`
+	PWA        *PWA        `yaml:"pwa,omitempty"`
 
 	LanguageTag l.Tag `yaml:"-"`
 }

@@ -4,11 +4,7 @@
 
 package loader
 
-import (
-	"github.com/issue9/web"
-
-	"github.com/caixw/gitype/helper"
-)
+import "github.com/caixw/gitype/helper"
 
 // 归档的类型
 const (
@@ -62,25 +58,6 @@ type Archive struct {
 	Order  string `yaml:"order"`            // 排序方式
 	Type   string `yaml:"type,omitempty"`   // 存档的分类方式，可以按年或是按月
 	Format string `yaml:"format,omitempty"` // 标题的格式化字符串
-}
-
-// Manifest 表示 PWA 中的相关配置
-type Manifest struct {
-	URL  string `yaml:"url"`
-	Type string `yaml:"type,omitempty"`
-
-	Lang        string  `yaml:"lang"`
-	Name        string  `yaml:"name"`
-	ShortName   string  `yaml:"shortName"`
-	StartURL    string  `yaml:"startURL,omitempty"`
-	Display     string  `yaml:"display,omitempty"`
-	Description string  `yaml:"description,omitempty"`
-	Dir         string  `yaml:"dir,omitempty"`
-	Orientation string  `yaml:"orientation,omitempty"`
-	Scope       string  `yaml:"scope,omitempty"`
-	ThemeColor  string  `yaml:"themeColor,omitempty"`
-	Background  string  `yaml:"backgroundColor,omitempty"`
-	Icons       []*Icon `yaml:"icons"`
 }
 
 func (rss *RSS) sanitize(conf *Config, typ string) *helper.FieldError {
@@ -138,9 +115,9 @@ func (s *Sitemap) sanitize() *helper.FieldError {
 		return &helper.FieldError{Message: "介于[0,1]之间的浮点数", Field: "sitemap.priority"}
 	case s.PostPriority > 1 || s.PostPriority < 0:
 		return &helper.FieldError{Message: "介于[0,1]之间的浮点数", Field: "sitemap.postPriority"}
-	case !isChangereq(s.Changefreq):
+	case !inStrings(s.Changefreq, changereqs):
 		return &helper.FieldError{Message: "取值不正确", Field: "sitemap.changefreq"}
-	case !isChangereq(s.PostChangefreq):
+	case !inStrings(s.PostChangefreq, changereqs):
 		return &helper.FieldError{Message: "取值不正确", Field: "sitemap.postChangefreq"}
 	}
 
@@ -171,54 +148,6 @@ func (a *Archive) sanitize() *helper.FieldError {
 	return nil
 }
 
-func (m *Manifest) sanitize(conf *Config) *helper.FieldError {
-	if m.URL == "" {
-		return &helper.FieldError{Message: "不能为空", Field: "pwa.url"}
-	}
-
-	if m.Type == "" {
-		m.Type = contentManifest
-	}
-
-	if m.Lang == "" {
-		m.Lang = conf.Language
-	}
-
-	if m.Name == "" {
-		m.Name = conf.Title
-	}
-
-	if m.ShortName == "" {
-		m.ShortName = conf.Subtitle
-	}
-
-	if m.StartURL == "" {
-		m.StartURL = web.URL("")
-	}
-
-	if m.Display == "" {
-		m.Display = "browser"
-	} else if !inStrings(m.Display, pwaDisplays) {
-		return &helper.FieldError{Message: "取值不正确", Field: "pwa.display"}
-	}
-
-	if m.Dir == "" {
-		m.Dir = "auto"
-	} else if !inStrings(m.Dir, pwaDirs) {
-		return &helper.FieldError{Message: "取值不正确", Field: "pwa.dir"}
-	}
-
-	if m.Orientation != "" && !inStrings(m.Orientation, pwaOrientations) {
-		return &helper.FieldError{Message: "取值不正确", Field: "pwa.orientation"}
-	}
-
-	if len(m.Icons) == 0 { // nil 或是 len(m.Icons) == 0
-		m.Icons = []*Icon{conf.Icon}
-	}
-
-	return nil
-}
-
 var changereqs = []string{
 	"never",
 	"yearly",
@@ -227,34 +156,6 @@ var changereqs = []string{
 	"daily",
 	"hourly",
 	"always",
-}
-
-var pwaDisplays = []string{
-	"fullscreen",
-	"standalone",
-	"minimal-ul",
-	"browser",
-}
-
-var pwaOrientations = []string{
-	"any",
-	"natural",
-	"landscape",
-	"landscape-primary",
-	"landscape-secondary",
-	"portrait",
-	"portrait-primary",
-	"portrait-secondary",
-}
-
-var pwaDirs = []string{
-	"rtl",
-	"ltr",
-	"auto",
-}
-
-func isChangereq(val string) bool {
-	return inStrings(val, changereqs)
 }
 
 func inStrings(val string, vals []string) bool {

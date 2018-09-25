@@ -22,23 +22,24 @@ type Site struct {
 	GoVersion  string // 编译的 Go 版本号
 	Theme      *data.Theme
 
-	SiteName    string     // 网站名称
-	Subtitle    string     // 网站副标题
-	URL         string     // 网站地址，若是一个子目录，则需要包含该子目录
-	Icon        *data.Icon // 网站图标
-	Language    string     // 页面语言
-	PostSize    int        // 总文章数量
-	Beian       string     // 备案号
-	Uptime      time.Time  // 上线时间
-	LastUpdated time.Time  // 最后更新时间
-	RSS         *data.Link // RSS，NOTICE:指针方便模板判断其值是否为空
-	Atom        *data.Link
-	Opensearch  *data.Link
-	PWA         *data.Link
-	Tags        []*data.Tag  // 标签列表
-	Series      []*data.Tag  // 专题列表
-	Links       []*data.Link // 友情链接
-	Menus       []*data.Link // 导航菜单
+	SiteName      string     // 网站名称
+	Subtitle      string     // 网站副标题
+	URL           string     // 网站地址，若是一个子目录，则需要包含该子目录
+	Icon          *data.Icon // 网站图标
+	Language      string     // 页面语言
+	PostSize      int        // 总文章数量
+	Beian         string     // 备案号
+	Uptime        time.Time  // 上线时间
+	LastUpdated   time.Time  // 最后更新时间
+	RSS           *data.Link // RSS，NOTICE:指针方便模板判断其值是否为空
+	Atom          *data.Link
+	Opensearch    *data.Link
+	Manifest      *data.Link
+	ServiceWorker string       // 指向 service worker 的 js 文件
+	Tags          []*data.Tag  // 标签列表
+	Series        []*data.Tag  // 专题列表
+	Links         []*data.Link // 友情链接
+	Menus         []*data.Link // 导航菜单
 }
 
 // NewSite 声明 Site 实例
@@ -50,19 +51,20 @@ func NewSite(d *data.Data) *Site {
 		GoVersion:  runtime.Version(),
 		Theme:      d.Theme,
 
-		SiteName:    d.SiteName,
-		Subtitle:    d.Subtitle,
-		URL:         web.URL(""),
-		Icon:        d.Icon,
-		Language:    d.LanguageTag.String(),
-		PostSize:    len(d.Posts),
-		Beian:       d.Beian,
-		Uptime:      d.Uptime,
-		LastUpdated: d.Created,
-		Tags:        d.Tags,
-		Series:      d.Series,
-		Links:       d.Links,
-		Menus:       d.Menus,
+		SiteName:      d.SiteName,
+		Subtitle:      d.Subtitle,
+		URL:           web.URL(""),
+		Icon:          d.Icon,
+		Language:      d.LanguageTag.String(),
+		PostSize:      len(d.Posts),
+		Beian:         d.Beian,
+		Uptime:        d.Uptime,
+		LastUpdated:   d.Created,
+		ServiceWorker: d.ServiceWorkerPath,
+		Tags:          d.Tags,
+		Series:        d.Series,
+		Links:         d.Links,
+		Menus:         d.Menus,
 	}
 
 	if d.RSS != nil {
@@ -89,11 +91,11 @@ func NewSite(d *data.Data) *Site {
 		}
 	}
 
-	if d.PWA != nil {
-		site.PWA = &data.Link{
-			Title: d.PWA.Title,
-			URL:   d.PWA.URL,
-			Type:  d.PWA.Type,
+	if d.Manifest != nil {
+		site.Manifest = &data.Link{
+			Title: d.Manifest.Title,
+			URL:   d.Manifest.URL,
+			Type:  d.Manifest.Type,
 		}
 	}
 

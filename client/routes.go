@@ -30,16 +30,17 @@ func (client *Client) initRoutes() error {
 		err = client.mux.HandleFunc(pattern, client.prepare(h), http.MethodGet)
 	}
 
-	handle(vars.PostURL("{slug}"), client.getPost)   // posts/2016/about.html   posts/{slug}.html
-	handle(vars.AssetURL("{path}"), client.getAsset) // posts/2016/about/abc.png  posts/{path}
-	handle(vars.IndexURL(0), client.getPosts)        // index.html
-	handle(vars.LinksURL(), client.getLinks)         // links.html
-	handle(vars.TagURL("{slug}", 1), client.getTag)  // tags/tag1.html     tags/{slug}.html
-	handle(vars.TagsURL(), client.getTags)           // tags.html
-	handle(vars.ArchivesURL(), client.getArchives)   // archives.html
-	handle(vars.SearchURL("", 1), client.getSearch)  // search.html
-	handle(vars.ThemeURL("{path}"), client.getTheme) // themes/...          themes/{path}
-	handle("/{path}", client.getRaw)                 // /...                /{path}
+	handle(vars.PostURL("{slug}"), client.getPost)                 // posts/2016/about.html   posts/{slug}.html
+	handle(vars.AssetURL("{path}"), client.getAsset)               // posts/2016/about/abc.png  posts/{path}
+	handle(vars.IndexURL(0), client.getPosts)                      // index.html
+	handle(vars.LinksURL(), client.getLinks)                       // links.html
+	handle(vars.TagURL("{slug}", 1), client.getTag)                // tags/tag1.html     tags/{slug}.html
+	handle(vars.TagsURL(), client.getTags)                         // tags.html
+	handle(vars.ArchivesURL(), client.getArchives)                 // archives.html
+	handle(vars.SearchURL("", 1), client.getSearch)                // search.html
+	handle(vars.ThemeURL("{path}"), client.getTheme)               // themes/...          themes/{path}
+	handle("/{path}", client.getRaw)                               // /...                /{path}
+	handle(client.data.ServiceWorkerPath, client.getServiceWorker) // /sw.js
 
 	return err
 }
@@ -61,9 +62,18 @@ func (client *Client) initFeedRoutes() (err error) {
 	handle(client.data.Atom)
 	handle(client.data.Sitemap)
 	handle(client.data.Opensearch)
-	handle(client.data.PWA)
+	handle(client.data.Manifest)
 
 	return err
+}
+
+// /sw.js
+func (client *Client) getServiceWorker(w http.ResponseWriter, r *http.Request) {
+	// https://github.com/golang/go/issues/17083
+	// 需要保证 Header().Set 在 WriteHeader 之前调用
+	w.Header().Set("Content-Type", "application/javascript;charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(client.data.ServiceWorker)
 }
 
 // 文章详细页

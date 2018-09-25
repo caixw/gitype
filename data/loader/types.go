@@ -48,6 +48,11 @@ type Theme struct {
 	Description string  `yaml:"description"`
 	URL         string  `yaml:"url,omitempty"`
 	Author      *Author `yaml:"author"`
+
+	// 需要被 service worker 缓存的内容。
+	// 如果是带 https 开头的 URL，则直接使用，
+	// 如果是不以 https 开头的 URL，则会被映射到当前主题下。
+	Assets []string `yaml:"assets,omitempty"`
 }
 
 // LoadLinks 加载友情链接的内容
