@@ -71,7 +71,7 @@ func (client *Client) initFeedRoutes() (err error) {
 func (client *Client) getServiceWorker(w http.ResponseWriter, r *http.Request) {
 	// https://github.com/golang/go/issues/17083
 	// 需要保证 Header().Set 在 WriteHeader 之前调用
-	w.Header().Set("Content-Type", "application/javascript")
+	w.Header().Set("Content-Type", "application/javascript;charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(client.data.ServiceWorker)
 }

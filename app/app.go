@@ -39,9 +39,6 @@ func Run(path *path.Path, preview bool) error {
 	if err := encoding.AddMarshal("text/html", htmlMgr.Marshal); err != nil {
 		return err
 	}
-	if err := encoding.AddMarshal("application/xhtml+xml", htmlMgr.Marshal); err != nil {
-		return err
-	}
 
 	if err := web.Init(path.ConfDir); err != nil {
 		return err

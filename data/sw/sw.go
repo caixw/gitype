@@ -38,15 +38,19 @@ func (sw *ServiceWorker) Bytes() []byte {
 	content := new(bytes.Buffer)
 
 	for ver, list := range sw.caches {
-		content.WriteString("versions.set(")
+		content.WriteString("versions.set(\"")
 		content.WriteString(ver)
-		content.WriteString(", [")
+		content.WriteString("\", [")
 		for _, item := range list {
 			content.WriteByte('"')
 			content.WriteString(item)
 			content.WriteString("\",")
 		}
-		content.WriteString("]);")
+		if len(list) > 0 {
+			content.Truncate(content.Len() - 1) // 去掉最后的逗号
+		}
+
+		content.WriteString("]);\n")
 	}
 
 	return bytes.Replace(swjs, replacement, content.Bytes(), 1)

@@ -37,16 +37,16 @@ function onInstall() {
 }
 
 function onFetch(event) {
-    caches.match(event.request).then((resp)=>{
-        return resp || fetch(e.request);
+    return caches.match(event.request).then((resp)=>{
+        return resp || fetch(event.request);
     }).catch((err)=>{
         console.error('sw fetch error:', err);
-        return fetch(e.request);
+        return fetch(event.request);
     })
 }
 
 function onActivate() {
-    caches.keys().then((cachesName)=>{
+    return caches.keys().then((cachesName)=>{
         const ps = [];
 
         cachesName.forEach((name)=>{
