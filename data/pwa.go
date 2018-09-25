@@ -6,9 +6,11 @@ package data
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/data/sw"
+	"github.com/caixw/gitype/vars"
 )
 
 // Manifest 表示 PWA 中的 manifest.json 文件
@@ -84,6 +86,20 @@ func (m *Manifest) fromLoader(conf *loader.Manifest) {
 
 func (d *Data) buildSW(conf *loader.Config) error {
 	sw := sw.New()
+
+	for _, post := range d.Posts {
+		ver := "post-" + strconv.FormatInt(post.Modified.Unix(), 10)
+		sw.Add(ver, post.Permalink)
+	}
+
+	for _, tag := range d.Tags {
+		ver := "tag-" + strconv.FormatInt(tag.Modified.Unix(), 10)
+		sw.Add(ver, tag.Permalink)
+	}
+
+	// 首页、archives.html 和 tags.html
+	ver := "gitype-" + strconv.FormatInt(d.Created.Unix(), 10)
+	sw.Add(ver, "/", vars.TagsURL(), vars.ArchivesURL())
 
 	d.ServiceWorker = sw.Bytes()
 	d.ServiceWorkerPath = conf.PWA.ServiceWorker
