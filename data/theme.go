@@ -86,7 +86,7 @@ func (d *Data) snippetsTemplate() (*template.Template, error) {
 		"ldate":    d.Theme.longDate,
 		"sdate":    d.Theme.shortDate,
 		"rfc3339":  rfc3339Date,
-		"themeURL": func(p string) string { return vars.ThemeURL(p) },
+		"themeURL": themeURL,
 	}
 
 	return template.New("snippets").
@@ -122,6 +122,10 @@ func (d *Data) templatesName() []string {
 	}
 
 	return templates
+}
+
+func themeURL(path string) string {
+	return vars.ThemeURL(path)
 }
 
 func rfc3339Date(t time.Time) interface{} {

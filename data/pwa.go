@@ -6,7 +6,9 @@ package data
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/caixw/gitype/data/loader"
 	"github.com/caixw/gitype/data/sw"
@@ -87,19 +89,33 @@ func (m *Manifest) fromLoader(conf *loader.Manifest) {
 func (d *Data) buildSW(conf *loader.Config) error {
 	sw := sw.New()
 
+	// 首页、archives.html 和 tags.html
+	ver := "gitype-" + strconv.FormatInt(d.Created.Unix(), 10)
+	sw.Add(ver, "/", vars.TagsURL(), vars.ArchivesURL())
+
 	for _, post := range d.Posts {
-		ver := "post-" + strconv.FormatInt(post.Modified.Unix(), 10)
+		ver = "post-" + strconv.FormatInt(post.Modified.Unix(), 10)
 		sw.Add(ver, post.Permalink)
 	}
 
 	for _, tag := range d.Tags {
-		ver := "tag-" + strconv.FormatInt(tag.Modified.Unix(), 10)
+		ver = "tag-" + strconv.FormatInt(tag.Modified.Unix(), 10)
 		sw.Add(ver, tag.Permalink)
 	}
 
-	// 首页、archives.html 和 tags.html
-	ver := "gitype-" + strconv.FormatInt(d.Created.Unix(), 10)
-	sw.Add(ver, "/", vars.TagsURL(), vars.ArchivesURL())
+	// 主题提供的缓存内容
+	ver = "theme-" + d.Theme.ID + "-" + d.Theme.Version
+	for _, url := range d.Theme.Assets {
+		if url == "" {
+			continue
+		}
+
+		fmt.Println("url:", url)
+		if !strings.HasPrefix(url, "https://") {
+			url = themeURL(url)
+		}
+		sw.Add(ver, url)
+	}
 
 	d.ServiceWorker = sw.Bytes()
 	d.ServiceWorkerPath = conf.PWA.ServiceWorker
