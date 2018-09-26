@@ -72,6 +72,11 @@ type Post struct {
 	License  *Link   `yaml:"license,omitempty"`
 	Template string  `yaml:"template,omitempty"`
 	Keywords string  `yaml:"keywords,omitempty"`
+
+	// 需要被 service worker 缓存的内容。
+	// 如果是带 https 开头的 URL，则直接使用，
+	// 如果是不以 https 开头的 URL，则会被映射到当前主题下。
+	Assets []string `yaml:"assets,omitempty"`
 }
 
 // Outdated 表示每一篇文章的过时情况

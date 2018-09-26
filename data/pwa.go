@@ -102,6 +102,14 @@ func (d *Data) buildSW(conf *loader.Config) error {
 		if post.Image != "" {
 			sw.Add(ver, post.Image)
 		}
+
+		for _, url := range post.Assets {
+			if url == "" {
+				continue
+			}
+
+			sw.Add(ver, url)
+		}
 	}
 
 	for _, tag := range d.Tags {

@@ -35,6 +35,8 @@ type Post struct {
 	License  *Link
 	Template string
 	Keywords string
+
+	Assets []string
 }
 
 // Outdated 表示每一篇文章的过时情况
@@ -75,6 +77,8 @@ func loadPosts(path *path.Path, tags []*Tag, conf *loader.Config) ([]*Post, erro
 			License:  p.License,
 			Template: p.Template,
 			Keywords: p.Keywords,
+
+			Assets: p.Assets,
 		}
 
 		switch p.Outdated {
