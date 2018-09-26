@@ -12,7 +12,6 @@ import (
 	"github.com/issue9/logs"
 	"github.com/issue9/mux"
 	"github.com/issue9/web"
-	"github.com/issue9/web/encoding"
 	"github.com/issue9/web/encoding/html"
 
 	"github.com/caixw/gitype/client"
@@ -32,21 +31,12 @@ type app struct {
 }
 
 // Run 运行程序
-func Run(path *path.Path, preview bool) error {
+func Run(path *path.Path, html *html.HTML, preview bool) error {
 	logs.Info("程序工作路径为:", path.Root)
-
-	htmlMgr := html.New(nil)
-	if err := encoding.AddMarshal("text/html", htmlMgr.Marshal); err != nil {
-		return err
-	}
-
-	if err := web.Init(path.ConfDir); err != nil {
-		return err
-	}
 
 	a := &app{
 		path:    path,
-		html:    htmlMgr,
+		html:    html,
 		webhook: &webhook{},
 		mux:     web.Mux(),
 	}

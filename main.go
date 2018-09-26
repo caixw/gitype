@@ -10,10 +10,14 @@ import (
 	"fmt"
 	"runtime"
 
+	"github.com/issue9/logs"
+	"github.com/issue9/web"
+	"github.com/issue9/web/encoding"
+	"github.com/issue9/web/encoding/html"
+
 	"github.com/caixw/gitype/app"
 	"github.com/caixw/gitype/path"
 	"github.com/caixw/gitype/vars"
-	"github.com/issue9/logs"
 )
 
 const usage = `%s 是一个基于 Git 的博客系统。
@@ -63,7 +67,16 @@ func main() {
 		fmt.Println("预览模式，监视以下数据文件：", path.DataDir)
 	}
 
-	logs.Critical(app.Run(path, *preview))
+	if err := web.Init(path.ConfDir); err != nil {
+		panic(err)
+	}
+
+	htmlMgr := html.New(nil)
+	if err := encoding.AddMarshal("text/html", htmlMgr.Marshal); err != nil {
+		panic(err)
+	}
+
+	logs.Critical(app.Run(path, htmlMgr, *preview))
 	logs.Flush()
 }
 
