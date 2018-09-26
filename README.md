@@ -329,6 +329,7 @@ summary   | string    | 摘要，同时也作为 html>head>meta.description 的�
 content   | string    | 内容
 outdated  | string    | 已过时文章的提示信息
 state     | string    | 状态，可以是 top、last、draft 和 default，默认为 default
+image     | string    | 封面图片
 author    | Author    | 作者，默认为 meta/config.yaml 中的 author 内容
 license   | Link      | 版本信息，默认为 meta/config.yaml 中的 license 内容
 template  | string    | 使用的模板，默认为 post

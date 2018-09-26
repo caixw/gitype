@@ -99,6 +99,9 @@ func (d *Data) buildSW(conf *loader.Config) error {
 	for _, post := range d.Posts {
 		ver = "post-" + strconv.FormatInt(post.Modified.Unix(), 10)
 		sw.Add(ver, post.Permalink)
+		if post.Image != "" {
+			sw.Add(ver, post.Image)
+		}
 	}
 
 	for _, tag := range d.Tags {
