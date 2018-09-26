@@ -15,22 +15,6 @@ import (
 	"github.com/caixw/gitype/vars"
 )
 
-// 文章是否过时的比较方式
-const (
-	outdatedTypeCreated  = "created"
-	outdatedTypeModified = "modified"
-	outdatedTypeNone     = "none"
-	outdatedTypeCustom   = "custom"
-)
-
-// 表示 Post.State 的各类值
-const (
-	stateTop     = "top"     // 置顶
-	stateLast    = "last"    // 放在尾部
-	stateDefault = "default" // 默认值
-	stateDraft   = "draft"   // 表示为草稿，不会加载此条数据
-)
-
 // Post 表示文章的信息
 type Post struct {
 	Slug      string    // 唯一名称
@@ -44,6 +28,7 @@ type Post struct {
 	Tags      []*Tag
 	Outdated  *Outdated
 	State     string
+	Image     string // 封面图片
 
 	// 以下内容不存在时，则会使用全局的默认选项
 	Author   *Author
@@ -78,12 +63,13 @@ func loadPosts(path *path.Path, tags []*Tag, conf *loader.Config) ([]*Post, erro
 			Slug:      p.Slug,
 			Permalink: vars.PostURL(p.Slug),
 			Title:     p.Title,
+			HTMLTitle: helper.ReplaceContent(conf.Pages[vars.PagePost].Title, p.Title),
 			Created:   p.Created,
 			Modified:  p.Modified,
 			Summary:   p.Summary,
 			Content:   p.Content,
 			State:     p.State,
-			HTMLTitle: helper.ReplaceContent(conf.Pages[vars.PagePost].Title, p.Title),
+			Image:     p.Image,
 
 			Author:   p.Author,
 			License:  p.License,
@@ -94,19 +80,19 @@ func loadPosts(path *path.Path, tags []*Tag, conf *loader.Config) ([]*Post, erro
 		switch p.Outdated {
 		case loader.OutdatedTypeCreated, "":
 			post.Outdated = &Outdated{
-				Type: outdatedTypeCreated,
+				Type: loader.OutdatedTypeCreated,
 				Date: post.Created,
 			}
 		case loader.OutdatedTypeModified:
 			post.Outdated = &Outdated{
-				Type: outdatedTypeModified,
+				Type: loader.OutdatedTypeModified,
 				Date: post.Modified,
 			}
 		case loader.OutdatedTypeNone:
 			post.Outdated = nil
 		default:
 			post.Outdated = &Outdated{
-				Type:    outdatedTypeCustom,
+				Type:    loader.OutdatedTypeCustom,
 				Content: post.Content,
 			}
 		}
@@ -161,9 +147,9 @@ func attachPostTag(p *path.Path, post *Post, tags []*Tag, tagString string) *hel
 func sortPosts(posts []*Post) {
 	sort.SliceStable(posts, func(i, j int) bool {
 		switch {
-		case (posts[i].State == stateTop) || (posts[j].State == stateLast):
+		case (posts[i].State == loader.StateTop) || (posts[j].State == loader.StateLast):
 			return true
-		case (posts[i].State == stateLast) || (posts[j].State == stateTop):
+		case (posts[i].State == loader.StateLast) || (posts[j].State == loader.StateTop):
 			return false
 		default:
 			return posts[i].Created.After(posts[j].Created)

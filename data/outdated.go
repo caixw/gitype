@@ -73,8 +73,8 @@ func (d *Data) updateOutdated() {
 
 	now := time.Now()
 	for _, post := range srv.posts {
-		if post.Outdated.Type != outdatedTypeCreated &&
-			post.Outdated.Type != outdatedTypeModified {
+		if post.Outdated.Type != loader.OutdatedTypeCreated &&
+			post.Outdated.Type != loader.OutdatedTypeModified {
 			continue
 		}
 

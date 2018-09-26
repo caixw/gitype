@@ -64,6 +64,9 @@ type Post struct {
 	// - default 表示默认情况，也可以为空，按默认的方式进行处理。
 	State string `yaml:"state,omitempty"`
 
+	// 封面地址，可以为空。
+	Image string `yaml:"image,omitempty"`
+
 	// 以下内容不存在时，则会使用全局的默认选项
 	Author   *Author `yaml:"author,omitempty"`
 	License  *Link   `yaml:"license,omitempty"`
