@@ -51,6 +51,8 @@ func (w *logWriter) Write(bs []byte) (int, error) {
 
 // webhooks 的回调接口
 func (a *app) postWebhooks(w http.ResponseWriter, r *http.Request) {
+	logs.Trace("接收到 webhook 请求")
+
 	ctx := web.NewContext(w, r)
 	if time.Now().Sub(a.client.Created()) < a.webhook.Frequency {
 		logs.Error("更新过于频繁，被中止！")

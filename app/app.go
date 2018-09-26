@@ -35,14 +35,9 @@ func Run(path *path.Path, html *html.HTML, preview bool) error {
 	logs.Info("程序工作路径为:", path.Root)
 
 	a := &app{
-		path:    path,
-		html:    html,
-		webhook: &webhook{},
-		mux:     web.Mux(),
-	}
-
-	if err := web.LoadConfig(filepath.Join(path.ConfDir, "webhook.yaml"), a.webhook); err != nil {
-		return err
+		path: path,
+		html: html,
+		mux:  web.Mux(),
 	}
 
 	if preview {
@@ -54,8 +49,15 @@ func Run(path *path.Path, html *html.HTML, preview bool) error {
 
 		a.watch(watcher)
 	} else {
-		conf := a.webhook
-		if err := a.mux.HandleFunc(conf.URL, a.postWebhooks, conf.Method); err != nil {
+		conf := &webhook{}
+		p := filepath.Join(path.ConfDir, "webhook.yaml")
+		if err := web.LoadConfig(p, conf); err != nil {
+			return err
+		}
+		a.webhook = conf
+
+		err := a.mux.HandleFunc(conf.URL, a.postWebhooks, conf.Method)
+		if err != nil {
 			return err
 		}
 	}
