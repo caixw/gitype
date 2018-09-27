@@ -29,12 +29,13 @@ type Post struct {
 	Outdated  *Outdated
 	State     string
 	Image     string // 封面图片
+	Keywords  string
 
 	// 以下内容不存在时，则会使用全局的默认选项
 	Author   *Author
 	License  *Link
 	Template string
-	Keywords string
+	Language string
 
 	Assets []string
 }
@@ -72,11 +73,12 @@ func loadPosts(path *path.Path, tags []*Tag, conf *loader.Config) ([]*Post, erro
 			Content:   p.Content,
 			State:     p.State,
 			Image:     p.Image,
+			Keywords:  p.Keywords,
 
 			Author:   p.Author,
 			License:  p.License,
 			Template: p.Template,
-			Keywords: p.Keywords,
+			Language: p.Language,
 
 			Assets: p.Assets,
 		}
@@ -99,6 +101,10 @@ func loadPosts(path *path.Path, tags []*Tag, conf *loader.Config) ([]*Post, erro
 				Type:    loader.OutdatedTypeCustom,
 				Content: post.Content,
 			}
+		}
+
+		if post.Language == "" {
+			post.Language = conf.Language
 		}
 
 		if post.Author == nil {

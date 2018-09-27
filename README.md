@@ -334,6 +334,7 @@ author    | Author    | 作者，默认为 meta/config.yaml 中的 author 内容
 license   | Link      | 版本信息，默认为 meta/config.yaml 中的 license 内容
 template  | string    | 使用的模板，默认为 post
 keywords  | string    | html>head>meta.keywords 标签的内容，如果为空，使用 tags
+language  | string    | 语言标签
 assets    | array     | 需要 PWA 缓存的信息，如果系统未启用，这些内容不启作用。
 
 

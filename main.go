@@ -6,6 +6,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"runtime"
@@ -73,6 +74,11 @@ func main() {
 
 	htmlMgr := html.New(nil)
 	if err := encoding.AddMarshal("text/html", htmlMgr.Marshal); err != nil {
+		panic(err)
+	}
+
+	// webhook 用到此编码
+	if err := encoding.AddMarshal("application/json", json.Marshal); err != nil {
 		panic(err)
 	}
 

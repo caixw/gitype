@@ -67,11 +67,13 @@ type Post struct {
 	// 封面地址，可以为空。
 	Image string `yaml:"image,omitempty"`
 
+	Keywords string `yaml:"keywords,omitempty"`
+
 	// 以下内容不存在时，则会使用全局的默认选项
 	Author   *Author `yaml:"author,omitempty"`
 	License  *Link   `yaml:"license,omitempty"`
 	Template string  `yaml:"template,omitempty"`
-	Keywords string  `yaml:"keywords,omitempty"`
+	Language string  `yaml:"language,omitempty"`
 
 	// 需要被 service worker 缓存的内容。
 	// 如果是带 https 开头的 URL，则直接使用，
